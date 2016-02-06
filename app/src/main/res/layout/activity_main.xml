@@ -1,0 +1,161 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+    android:layout_height="100dp"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal" android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:padding="0dp">
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:layout_weight="0.60"
+                    android:padding="0dp"
+                    android:id="@+id/song_title"
+                    android:orientation="vertical">
+                <TextView android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="I don&apos;t want to spoil the party met nog langere naam"
+                    android:layout_margin="0dp"
+                    android:ellipsize="end" android:lines="1"
+                    android:id="@+id/title_top"
+                    android:textSize="20dp" />
+                    <TextView android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="Beatles-Revolver langer"
+
+                        android:layout_margin="0dp"
+                        android:id="@+id/artist_top"
+                        android:ellipsize="end" android:lines="1"
+                        android:layout_gravity="left"
+                        android:textSize="15dp" />
+                </LinearLayout>
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="70dp"
+                    android:id="@+id/time_layout"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0dp"
+                    android:padding="0dp"
+                    android:layout_weight="0.15"
+                    android:orientation="vertical">
+                <TextView android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="04:30"
+                    android:padding="0dp"
+
+                    android:layout_margin="4dp"
+                    android:id="@+id/time_top"
+                    android:ellipsize="end" android:lines="1"
+                    android:layout_gravity="end"
+                    android:textSize="15dp" />
+                    <TextView android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:padding="0dp"
+                        android:text="04:30"
+
+                        android:layout_margin="4dp"
+                        android:id="@+id/totaltime_top"
+                        android:ellipsize="end" android:lines="1"
+                        android:layout_gravity="end"
+                        android:textSize="15dp" />
+                </LinearLayout>
+                <!-- Right button -->
+
+                <ImageView
+                    android:padding="0dp"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:text="ab"
+                    android:gravity="right"
+                    android:scaleType="centerInside"
+                    android:layout_weight="0.30"
+                    android:id="@+id/thumbnail_top"
+                    android:layout_gravity="center"
+                    android:src="@drawable/pause" />
+<!--android:scaleType="centerInside"-->
+            </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/app_bar"
+        android:background="#888888"
+        android:scrollbars="horizontal"
+        app:layout_scrollFlags="scroll|enterAlways"
+        android:foregroundTint="#7eff3a">
+
+    </android.support.design.widget.TabLayout>
+    <FrameLayout
+        android:id="@+id/frLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tabLayout">
+
+    </FrameLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="40dp"
+        android:src="@drawable/ic_refresh_white"
+        app:borderWidth="0dp"
+        app:fabSize="normal" />
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="#333"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            style="@style/ToolBarButtonStyle"
+
+            android:id="@+id/playButton"
+            android:src="@drawable/play" />
+        <ImageButton
+            style="@style/ToolBarButtonStyle"
+
+            android:id="@+id/stopButton"
+            android:src="@drawable/stop" />
+        <ImageButton
+            style="@style/ToolBarButtonStyle"
+            android:id="@+id/pauseButton"
+            android:src="@drawable/pause" />
+        <ImageButton
+            style="@style/ToolBarButtonStyle"
+
+            android:id="@+id/backButton"
+            android:src="@drawable/back" />
+        <ImageButton
+            style="@style/ToolBarButtonStyle"
+
+            android:id="@+id/forwardButton"
+            android:src="@drawable/forward" />
+
+    </LinearLayout>
+</RelativeLayout>

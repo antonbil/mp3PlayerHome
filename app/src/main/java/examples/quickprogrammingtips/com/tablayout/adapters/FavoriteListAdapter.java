@@ -59,7 +59,7 @@ public class FavoriteListAdapter extends BaseAdapter {
         if(convertView == null){
             convertView = mInflater.inflate(R.layout.item_favorite, null);
             holder = new ViewHolder();
-            holder.url = (TextView) convertView.findViewById(R.id.textView_favoriteurl);
+            //holder.url = (TextView) convertView.findViewById(R.id.textView_favoriteurl);
             holder.description = (TextView) convertView.findViewById(R.id.textView_favoritedescription);
 
             convertView.setTag(holder);
@@ -67,7 +67,7 @@ public class FavoriteListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.url.setText(favoritesList.get(position).getUri());
+        //holder.url.setText(favoritesList.get(position).getUri());
         holder.description.setText(favoritesList.get(position).getDescription());
         final int pos2=position;
 
@@ -118,7 +118,7 @@ public class FavoriteListAdapter extends BaseAdapter {
     }
 
     static class ViewHolder{
-        TextView url, description;
+        TextView description;
     }
 
 

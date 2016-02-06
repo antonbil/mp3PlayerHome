@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="examples.quickprogrammingtips.com.tablayout">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/swan2"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="bc2197999b21e7ba11c8a95c07b57385c5ccd83a" />
+
+        <activity
+            android:name=".SearchActivity"
+            android:label="search" />
+        <activity
+            android:name=".SpotifyActivity"
+            android:label="Spotify" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".EditFavoriteActivity"
+            android:label="@string/title_activity_edit_favorite2" />
+        <activity
+            android:name=".PlaylistsActivity"
+            android:label="@string/title_activity_playlists"
+            android:theme="@style/AppTheme" />
+    </application>
+
+</manifest>

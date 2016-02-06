@@ -1,0 +1,615 @@
+package examples.quickprogrammingtips.com.tablayout;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.StrictMode;
+import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.orm.SugarContext;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import examples.quickprogrammingtips.com.tablayout.model.File;
+import examples.quickprogrammingtips.com.tablayout.model.Logic;
+import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
+import examples.quickprogrammingtips.com.tablayout.tools.ImageLoadTask;
+import mpc.DatabaseCommand;
+import mpc.MPC;
+import mpc.MPCDatabaseListener;
+import mpc.MPCListener;
+import mpc.MPCSong;
+import mpc.MPCStatus;
+
+
+public class MainActivity extends AppCompatActivity  implements MpdInterface,MPCListener , MPCDatabaseListener , OnTaskCompleted{
+
+    static final int STATIC_RESULT=3; //positive > 0 integer.
+    private boolean footerVisible=false;
+    private int tabSelected=0;
+    private ListFragment listFragment;
+    protected DBFragment dbFragment;
+    private Logic logic;
+    private PlayFragment playFragment;
+    protected TabLayout tabLayout;
+    private MainActivity mainActivity;
+    public static HashMap<String, Bitmap>albumPictures=new HashMap<>();
+    private String currentArtist;
+
+
+    public static MainActivity getThis;
+    public static void panicMessage(final String message){
+        //Let this be the code in your n'th level thread from main UI thread
+        Handler h = new Handler(Looper.getMainLooper());
+        h.post(new Runnable() {
+            public void run() {
+                Toast.makeText(getThis, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+        SugarContext.init(this);//init db
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        StrictMode.setThreadPolicy(policy);
+        mainActivity=this;
+        getThis=this;
+        logic=new Logic(this);
+        setContentView(R.layout.activity_main);
+        LinearLayout ll=((LinearLayout)findViewById(R.id.time_layout));
+        ll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playPause();
+            }
+        });//android:id="@+id/song_title"
+        ll=((LinearLayout)findViewById(R.id.song_title));
+        ll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getThis, SpotifyActivity.class);
+                intent.putExtra("artist", currentArtist);
+
+                getThis.startActivity(intent);
+            }
+        });//android:id="@+id/thumbnail_top"
+        ImageView im=((ImageView)findViewById(R.id.thumbnail_top));
+        im.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                //your stuff
+                logic.getMpc().sendSingleMessage("volume 1");
+                return true;
+            }
+        });
+        im.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logic.getMpc().sendSingleMessage("volume -1");
+            }
+        });        tabLayout = (TabLayout)findViewById(R.id.tabLayout);
+        tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.addTab(tabLayout.newTab().setText("Play"));
+        tabLayout.addTab(tabLayout.newTab().setText("List"));
+        tabLayout.addTab(tabLayout.newTab().setText("DB"));
+        tabLayout.addTab(tabLayout.newTab().setText("Select"));
+        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
+
+        this.setTitle("");
+        final LinearLayout footerView  = (LinearLayout) findViewById(R.id.footer);
+        footerView.setVisibility(View.GONE);
+        FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
+        FAB.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+
+                //Toast.makeText(MainActivity.this, "Hello Worl", Toast.LENGTH_SHORT).show();
+                if (tabSelected == 1 || (tabSelected == 2)) {
+                    //Toast.makeText(MainActivity.this, "Back key", Toast.LENGTH_SHORT).show();
+                    if (tabSelected == 1) listFragment.back();
+                    if (tabSelected == 2) dbFragment.back();
+                } else {
+                    setFooterVisibility();
+                }
+
+
+            }
+        });
+
+        listFragment = new ListFragment();
+        dbFragment = new DBFragment();
+
+        //display tablayout
+        displayHome();
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                //playlistThread.interrupt();
+                tabSelected = tab.getPosition();
+                if (tab.getPosition() == 0)
+                    displayHome();
+                if (tabSelected == 1) {
+
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, listFragment).commit();
+                }
+                if (tab.getPosition() == 2) {
+                    try {
+
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
+                    }catch(Exception e){}
+                }
+                if (tab.getPosition() == 3)
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new SelectFragment()).commit();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
+
+        Toolbar tool = (Toolbar)findViewById(R.id.app_bar);//cast it to ToolBar
+        setSupportActionBar(tool);
+        ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logic.getMpc().play();
+                logic.setPaused(false);
+            }
+        });
+        ImageButton stopButton = (ImageButton) findViewById(R.id.stopButton);
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logic.getMpc().pause();
+                logic.setPaused(true);
+            }
+        });
+        ImageButton pauseButton = (ImageButton) findViewById(R.id.pauseButton);
+        pauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playPause();
+            }
+        });
+        ImageButton forwardButton = (ImageButton) findViewById(R.id.forwardButton);
+        forwardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logic.getMpc().next();
+            }
+        });
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logic.getMpc().previous();
+            }
+        });
+
+        updateDisplay();
+
+    }
+
+    public void playPause() {
+        if (logic.getPaused()) {
+            logic.getMpc().play();
+            logic.setPaused(false);
+        } else {
+            logic.getMpc().pause();
+            logic.setPaused(true);
+
+        }
+    }
+
+    private void updateDisplay() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                try{
+                    MPC mpc = logic.getMpc();
+                    //if (tabSelected == 0)
+                        playlistGetContent(mpc, MainActivity.getThis);
+                    mpc.getStatusSynch();
+                } catch(Exception e){
+                    //mpc.connectionFailed("Connection failed, check settings");
+                    //t.stop();
+                }
+            }
+
+        },0,1000);//Update text every second
+    }
+    private void setFooterVisibility() {
+        LinearLayout footerView  = (LinearLayout) findViewById(R.id.footer);
+        if (footerVisible)
+            footerView.setVisibility(View.GONE);
+        else
+            footerView.setVisibility(View.VISIBLE);
+        footerVisible = !footerVisible;
+    }
+
+    public boolean areCrashesEnabled() {
+        SharedPreferences preferences;
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        return preferences.getBoolean("are_crashes_enabled", false);
+    }
+    private void displayHome() {
+        playFragment = new PlayFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, playFragment).commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+
+    public void onGroupItemClick (MenuItem item) {
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a logic activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Intent myIntent = new Intent(MainActivity.this,
+                    SettingsActivity.class);
+            startActivity(myIntent);
+            return true;
+        }
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.display_footer) {
+            setFooterVisibility();
+            return true;
+        }
+        if ((id == R.id.search_option)) {//playlists_option
+            if ((tabSelected == 2)) {
+                Intent myIntent = new Intent(MainActivity.this,
+                        SearchActivity.class);
+                startActivityForResult(myIntent, STATIC_RESULT);
+                return true;
+            } else
+                Toast.makeText(MainActivity.this, "select db-tab for searching", Toast.LENGTH_SHORT).show();
+        }
+        if ((id == R.id.playlists_option)) {//
+
+                Intent myIntent = new Intent(MainActivity.this,
+                        PlaylistsActivity.class);
+                startActivity(myIntent);
+                return true;
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == STATIC_RESULT) //check if the request code is the one you've sent
+        {
+            if (resultCode == Activity.RESULT_OK)
+            {
+
+                new DatabaseCommand(logic.getMpc(),"find any \""+data.getExtras().getString("search_string")+"\"",dbFragment,true).run();
+                //new DatabaseCommand(logic.getMpc(),"find genre \"Soul\"",dbFragment,true).run();
+                //new DatabaseCommand(logic.getMpc(),"find any \"Hotel California\"",dbFragment,true).run();
+
+            } else {
+                // the result code is different from the one you've finished with, do something else.
+            }
+        }
+
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    public Logic getLogic() {
+        return logic;
+    }
+    public void playlistGetContent(final MPC mpc, final MpdInterface mpdInterface){
+        Thread  thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Socket sock=null;
+                BufferedReader in=null;
+                PrintWriter out=null;
+
+                List<MPCSong> songs;
+                ArrayList<Mp3File>playlist;
+                // Establish socket connection
+                try{
+                    sock = new Socket();
+                    sock.connect(new InetSocketAddress(mpc.getAddress(), mpc.getPort()), mpc.timeout);
+                    in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+                    out = new PrintWriter(sock.getOutputStream(), true);
+                    out.println("playlistinfo");
+                    // Clear version number from buffer
+                    in.readLine();
+                    playlist=new ArrayList<Mp3File>();
+                    String response;
+                    ArrayList<String> list=new ArrayList<String>();
+                    while(((response = in.readLine()) != null)){
+                        if (response.startsWith("OK"))break;
+                        list.add(response);
+                        if (response.startsWith("Id:")){
+                            playlist.add(new Mp3File("", list));
+                        }
+                    }
+
+                    boolean change=false;
+                    int max=playlist.size();
+                    if (max==0){
+                        logic.getPlaylistFiles().clear();
+                        change=true;
+
+                    }else {
+
+                        if (logic.getPlaylistFiles().size() < max) {
+                            max = logic.getPlaylistFiles().size();
+                            change = true;
+                        }
+
+                        for (int i = 0; i < max; i++) {
+                            if (!(playlist.get(i).getTitle() == logic.getPlaylistFiles().get(i).getTitle()))
+                                change = true;
+                        }
+                        if (change) {
+                            logic.getPlaylistFiles().clear();
+                            logic.getPlaylistFiles().addAll(playlist);
+                        }
+                        String albumName="";
+
+                        for (final Mp3File f : logic.getPlaylistFiles()) {
+                            if (f.getBitmap()!=null) continue;
+                            f.setStartAlbum(!f.getAlbum().equals(albumName));
+
+                            albumName=f.getAlbum();
+                            String niceAlbumName = f.niceAlbum();
+                            if (albumPictures.containsKey(niceAlbumName)) {
+                                if (albumPictures.get(niceAlbumName)!=null)
+                                    f.setBitmap(albumPictures.get(niceAlbumName));
+                            }
+                            else try{
+                                albumPictures.put(niceAlbumName, null);//so image is loaded only once
+                                ImageView image = null;
+                                new ImageLoadTask(Logic.getUrlFromSongpath(f), niceAlbumName, new MpdInterface() {
+                                    @Override
+                                    public void playlistCall(ArrayList<Mp3File> playlist, boolean change) {
+
+                                    }
+
+                                    @Override
+                                    public void newMpdCall(Mp3File mp3File, int position, String command) {
+
+                                    }
+
+                                    @Override
+                                    public void printCover(Bitmap result, ImageView image, String nicealbumName) {
+                                        albumPictures.put(nicealbumName, result);
+                                        for (Mp3File f : logic.getPlaylistFiles()) {
+                                            if (f.niceAlbum().equals(nicealbumName))f.setBitmap(result);
+                                        }
+                                        //f.setBitmap(result);
+                                    }
+                                }, image).execute();
+                            }catch(Exception e){}
+
+                        }
+                    }
+                    mpdInterface.playlistCall(playlist,change);
+                } catch(Exception e){
+                    mpc.connectionFailed("Connection failed, check settings");
+                }
+
+                try{
+                    sock.close();
+                    if(in != null) in.close();
+                    if(out != null) out.close();
+                } catch(Exception e){}
+
+            }
+        });
+        thread.start();
+        try{
+            thread.join();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void selectTab(int tab){
+        tabLayout.getTabAt(tab).select();
+    }
+
+    @Override
+    public void playlistCall(ArrayList<Mp3File> playlist, boolean change) {
+        if (tabSelected == 0)
+            playFragment.playlistCall(playlist,change);
+
+    }
+
+    @Override
+    public void newMpdCall(Mp3File mp3File, int position, String command) {
+
+    }
+
+    @Override
+    public void printCover(final Bitmap result,  final ImageView image, String album) {
+        if(result != null){
+
+            albumPictures.put(album,result);
+
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //ImageView thumbnail=(ImageView) findViewById(R.id.thumbnail_top);
+                    image.setImageBitmap(result);
+                }
+        });
+        }else{
+
+            Log.v("samba","Image Does Not exist or Network Error");
+            Toast.makeText(MainActivity.this, "Image Does Not exist or Network Error", Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+    @Override
+    public void connectionFailed(String message) {
+
+    }
+
+    @Override
+    public void databaseCallCompleted(ArrayList<File> files) {
+
+             dbFragment.databaseCallCompleted(files);
+
+
+    }
+
+    @Override
+    public void databaseFindCompleted(ArrayList<File> files) {
+
+    }
+
+    @Override
+    public void onSaveInstanceState( Bundle outState ) {
+
+    }
+
+    @Override
+    public void databaseUpdated() {
+    }
+
+    @Override
+    public void databaseUpdateProgressChanged(int progress) {
+
+    }
+
+    @Override
+    public void statusUpdate(MPCStatus newStatus) {
+        final MPCStatus status=newStatus;
+        logic.mpcStatus=newStatus;
+        if (status.song==null) return;
+        Handler h = new Handler(Looper.getMainLooper());
+        h.post(new Runnable() {
+            public void run() {
+                //Log.v("samba","tijd:"+newStatus.time.toString());
+
+                if (status.song.intValue()<logic.getPlaylistFiles().size())
+                    runOnUiThread(new Runnable() {
+
+
+                        @Override
+                        public void run() {
+                            try {
+                                Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
+
+                                TextView tvName = (TextView) findViewById(R.id.title_top);
+                                tvName.setText(currentSong.getTitle());
+                                TextView time = (TextView) findViewById(R.id.time_top);
+                                time.setText(Mp3File.niceTime(status.time.intValue()));
+                                TextView totaltime = (TextView) findViewById(R.id.totaltime_top);
+                                totaltime.setText(currentSong.getTimeNice());
+                                TextView artist = (TextView) findViewById(R.id.artist_top);
+                                String album = currentSong.niceAlbum();
+                                currentArtist=currentSong.getArtist();
+                                artist.setText(album);
+
+                                final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
+                                String uri = Logic.getUrlFromSongpath(currentSong);
+
+                                if (albumPictures.containsKey(album)) {
+                                    final Bitmap b = albumPictures.get(album);
+                                    currentSong.setBitmap(b);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            image.setImageBitmap(b);
+                                        }
+                                    });
+                                } else {
+                                    albumPictures.put(album, null);
+
+
+                                    new ImageLoadTask(uri, album, mainActivity, image).execute();
+
+
+                                }
+                                ;
+                                //Log.v("samba",uri);
+                            } catch (Exception e) {
+                                //mpc.connectionFailed("Connection failed, check settings");
+                                //t.stop();
+                            }
+                    }
+                });
+            }
+        });
+    }
+
+
+    @Override public void onDestroy(){
+
+        super.onDestroy();
+        SugarContext.terminate();
+    }
+
+
+    @Override
+    public void onTaskCompleted(String result, String call) {
+        Log.v("samba",result);
+    }
+}
