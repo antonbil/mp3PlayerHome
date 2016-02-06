@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OLD CODE
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_margin="4dp"
+        android:textColor="@color/perf_name_color"
+        android:id="@+id/textViewPerformer"/>
+
+</LinearLayout>
+-->
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:stretchColumns="1" >
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_margin="4dp"
+        android:layout_height="60dp" >
+
+    <TextView android:layout_width="wrap_content"
+        android:text="name die erg lang is, om te kijken hoe dat op een regel uitvalt."
+        android:layout_weight="0.8"
+        android:maxLines = "2"
+
+        android:id="@+id/textView_favoriteurl"/>
+
+
+    <TextView         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+
+        android:text="favorites"
+        android:layout_weight="0.2"
+        android:maxLines = "2"
+        android:gravity="right"
+        android:id="@+id/textView_favoritedescription"
+        android:layout_gravity="right"
+        android:minWidth="100dp" />
+    </TableRow>
+
+</TableLayout>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OLD CODE
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_margin="4dp"
+        android:textColor="@color/perf_name_color"
+        android:id="@+id/textViewPerformer"/>
+
+</LinearLayout>
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_gravity="start"
+        android:text="name die ook wel eens langer kan zijn, maar dat zien we dan wel weer."
+        android:layout_margin="4dp"
+        android:id="@+id/textViewPerformer"
+
+        android:layout_weight="0.7"
+        android:maxLines="2"
+ />
+
+
+
+    <TextView android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:text="04:30"
+
+        android:layout_margin="4dp"
+        android:id="@+id/textViewPerformerCountry"
+        android:gravity="right"
+        android:minWidth="60dp"
+        android:layout_weight="0.3"
+/>
+
+
+    <!-- Right button
+
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:text="()"
+        android:gravity="right"
+        android:id="@+id/optionbutton"
+        android:layout_weight="0.3"
+        android:layout_gravity="right" />-->
+
+</LinearLayout>

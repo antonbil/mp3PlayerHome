@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OLD CODE
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_margin="4dp"
+        android:textColor="@color/perf_name_color"
+        android:id="@+id/textViewPerformer"/>
+
+</LinearLayout>
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp">
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:text="ab"
+        android:gravity="right"
+        android:scaleType="centerInside"
+
+        android:layout_weight="0.20"
+        android:id="@+id/thumbnail_playlist"
+        android:layout_gravity="center"
+        android:src="@drawable/pause" />
+    <TextView android:layout_height="match_parent"
+        android:layout_width="240dp"
+        android:layout_gravity="start"
+        android:text="name die ook wel eens langer kan zijn, maar dat zien we dan wel weer."
+        android:layout_margin="4dp"
+        android:gravity="center_vertical"
+        android:id="@+id/textViewPerformer"
+
+        android:layout_weight="0.5"
+        android:maxLines="2"
+ />
+
+
+
+    <TextView android:layout_height="match_parent"
+        android:layout_width="60dp"
+        android:text="04:30"
+
+        android:layout_margin="4dp"
+        android:id="@+id/textViewPerformerCountry"
+        android:gravity="center_vertical|right"
+
+        android:layout_weight="0.3"
+        android:minWidth="60dp"
+        android:paddingEnd="12dp"
+        android:paddingRight="12dp"/>
+
+
+    <!-- Right button
+
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:text="()"
+        android:gravity="right"
+        android:id="@+id/optionbutton"
+        android:layout_weight="0.3"
+        android:layout_gravity="right" />-->
+
+</LinearLayout>
