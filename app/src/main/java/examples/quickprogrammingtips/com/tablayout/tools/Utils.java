@@ -1,6 +1,5 @@
 package examples.quickprogrammingtips.com.tablayout.tools;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -26,7 +25,7 @@ public class Utils {
             childView.measure(UNBOUNDED, UNBOUNDED);
             grossElementHeight += childView.getMeasuredHeight();
         }
-        Log.v("samba", "gross:" + grossElementHeight);
+        //Log.v("samba", "gross:" + grossElementHeight);
 
         int height = 0;
         int desiredWidth = View.MeasureSpec.makeMeasureSpec(mListView.getWidth(), View.MeasureSpec.UNSPECIFIED);
@@ -35,7 +34,7 @@ public class Utils {
             listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
             height += listItem.getMeasuredHeight()+comp;
         }
-        Log.v("samba", "desired:" + height);
+        //Log.v("samba", "desired:" + height);
         ViewGroup.LayoutParams params = mListView.getLayoutParams();
         params.height = height + (mListView.getDividerHeight() * (mListAdapter.getCount() - 1));
         mListView.setLayoutParams(params);

@@ -90,7 +90,7 @@ public class FavoriteListAdapter extends BaseAdapter {
 
                 menu.getMenu().add("delete");
                 menu.getMenu().add("edit");
-                menu.getMenu().add("extra");
+                menu.getMenu().add("add to playlist");
                 menu.show();
 
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

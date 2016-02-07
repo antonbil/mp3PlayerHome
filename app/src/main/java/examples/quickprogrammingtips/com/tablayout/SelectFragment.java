@@ -20,8 +20,10 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -39,15 +41,13 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     private Logic logic;
     ArrayList<Favorite> favorites;
     ListView favoriteListView;
-    //ArrayList<Favorite> favoritesAdded = new ArrayList<>();;
     FavoriteListAdapter favoriteListAdapter;
-     //ListView favoritesAddedListView;
-     //FavoriteListAdapter favoritesAddedListAdapter;
     ArrayList<FavoritesListItem>favoritesListItemArray=new ArrayList<>();
-    //FavoritesListItem favoritesListItem;
 
     private ArrayList<Server>servers=Server.servers;//Server.servers.get(Server.getServer(getActivity())).url;
-        @Override
+    private boolean regularFavoritesVisible=true;
+
+    @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             servers.toArray();
@@ -83,9 +83,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     for (int i = 0; i < servers.size(); i++) {
                         if (checkedId == servers.get(i).code) {
                             setAddress(servers.get(i).url);
-                            //Toast.makeText(getActivity(), "choice: "+servers.get(i).description,
 
-                            //Toast.LENGTH_SHORT).show();
                             Server.setServer(i, getActivity());
                         }
                     }
@@ -94,32 +92,34 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
             });
 
+            TextView tv=(TextView)view.findViewById(R.id.favoriteTextlistView);
+            tv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    regularFavoritesVisible=!regularFavoritesVisible;
+                    getFavorites();                }
+            });
             favoriteListView = (android.widget.ListView) view.findViewById(R.id.selectlistView);
             favoriteListAdapter = new FavoriteListAdapter(getActivity(), this, false,favorites);
             favoriteListView.setAdapter(favoriteListAdapter);
 
-            for (int i=0;i<Favorite.categoryIds.size();i++)
-            favoritesListItemArray.add(new FavoritesListItem(this, view, Favorite.getCategory(i), Favorite.categoryIds.get(i)));
-            //favoritesListItem.favoritesAddedListView= (android.widget.ListView) view.findViewById(R.id.selectlist1View);
-            //favoritesAddedListAdapter = new FavoriteListAdapter(getActivity(), this, true, favoritesAdded);
-            //favoritesAddedListView.setAdapter(favoritesAddedListAdapter);
+            for (int i=0;i<Favorite.categoryIds.size();i++) {
+                final FavoritesListItem favoritesListItem = new FavoritesListItem(this, view, Favorite.getCategory(i), Favorite.categoryIds.get(i));
+                favoritesListItem.favoriteTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        favoritesListItem.toggleVisible();
+                        getFavorites();
+                    }
+                });
+                favoritesListItemArray.add(favoritesListItem);
+            }
 
             getFavorites();
-            setTest(view);
+
             return view;
         }
 
-    private void setTest(View view){
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-
-            }
-        });
-
-    }
     @NonNull
     public void getFavorites() {
 
@@ -139,7 +139,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             Favorite favnew=new Favorite(fav.url,fav.description,fav.category);
             favnew.setRecord(fav);
             for (FavoritesListItem favItem:favoritesListItemArray){
-                Log.v("samba", favItem.selectlistViewcode + " vs " + fav.category);
+                //Log.v("samba", favItem.selectlistViewcode + " vs " + fav.category);
                 if (favItem.selectlistViewcode.equals(fav.category))
                     favItem.favoritesAdded.add(favnew);
             }
@@ -150,8 +150,11 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                setHeightListView(favoriteListAdapter, favoriteListView,favorites);
+                if (regularFavoritesVisible)
+                    Utils.setDynamicHeight(favoriteListView, 0);
+                    //setHeightListView(favoriteListAdapter, favoriteListView,favorites);
+                    else
+                    setListViewHeight(favoriteListView, 0);
                 for (FavoritesListItem fi:favoritesListItemArray) {
                     Collections.sort(fi.favoritesAdded, new Comparator() {
                         public int compare(Object o1, Object o2) {
@@ -160,8 +163,10 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                             return mp1.getDescription().compareTo(mp2.getDescription());
                         }
                     });
+                    if (fi.isVisible())
                     //setHeightListView(fi.favoritesAddedListAdapter, fi.favoritesAddedListView, fi.favoritesAdded);
                     Utils.setDynamicHeight(fi.favoritesAddedListView, 0);
+                    else setListViewHeight(fi.favoritesAddedListView, 0);
                 }
 
 
@@ -170,11 +175,16 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     }
 
-    public void setHeightListView(FavoriteListAdapter nyAdapter, ListView myListView, ArrayList<Favorite> favorites) {
+    /*public void setHeightListView(FavoriteListAdapter nyAdapter, ListView myListView, ArrayList<Favorite> favorites) {
         nyAdapter.notifyDataSetChanged();
+        int height = 130 * favorites.size();
+        setListViewHeight(myListView, height);
+    }*/
 
+    public void setListViewHeight(ListView myListView, int height) {
         ViewGroup.LayoutParams params = myListView.getLayoutParams();
-        params.height = 130* favorites.size();
+
+        params.height = height;
         myListView.setLayoutParams(params);
         myListView.requestLayout();
     }
@@ -215,11 +225,21 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         } else {
             String uri = favorite.getUri();
             if (uri.startsWith("smb://")) {
-                logic.getHistory().add(uri);
-                ((MainActivity) getActivity()).selectTab(1);
+                if (id=="add to playlist"){}
+                else {//todo add item add to playlist
+                    Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
+                    logic.getHistory().add(uri);
+                    ((MainActivity) getActivity()).selectTab(1);
+                }
             }else{
-                logic.getHistoryMpd().add(uri);
-                ((MainActivity) getActivity()).selectTab(2);
+                if (id=="add to playlist"){
+                    String command=("add \"" + uri + "\"");
+                    Log.v("samba",command);
+                    logic.getMpc().enqueCommands(new ArrayList<>(Arrays.asList(command)));
+                } else {
+                    logic.getHistoryMpd().add(uri);
+                    ((MainActivity) getActivity()).selectTab(2);
+                }
             }
         }
 
@@ -247,27 +267,17 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     }
 
     private class FavoritesListItem {
-        private final View view;
+        private boolean visible=true;
         public  String selectlistViewcode;
         public  ListView favoritesAddedListView;
         public  FavoriteListAdapter favoritesAddedListAdapter;
-        private String listDescription;
         public ArrayList<Favorite> favoritesAdded;
         public TextView favoriteTextView;
 
-        public FavoritesListItem(SelectFragment selectFragment, View view, String selectlist1View, String selectlistViewcode) {
-            this.view=view;
-            this.listDescription =selectlist1View;
+        public FavoritesListItem(SelectFragment selectFragment, View parentView, String listDescription, String selectlistViewcode) {
             this.selectlistViewcode=selectlistViewcode;
-            /*
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dip"
-                    android:gravity="center_vertical"
 
-             */
             LinearLayout LL = new LinearLayout(selectFragment.getActivity());
-            //LL.setBackgroundColor(Color.CYAN);
             LL.setOrientation(LinearLayout.VERTICAL);
 
             LinearLayout.LayoutParams LLParams = new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
@@ -275,21 +285,32 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             LL.setPadding(10, 10, 10, 10);
             LL.setLayoutParams(LLParams);
             favoriteTextView = new TextView(selectFragment.getActivity());
-            favoriteTextView.setText(selectlist1View);
-            LLParams.setMargins(0, 10, 0, 0);
+            favoriteTextView.setText(listDescription);
+
+            LLParams.setMargins(0, 10, 10, 0);
             favoriteTextView.setLayoutParams(LLParams);
+
+            final float scale = getResources().getDisplayMetrics().density;
+            int dpHeightInPx = (int) (40 * scale);
+            favoriteTextView.setMinHeight(dpHeightInPx);
+
             favoriteTextView.setGravity(Gravity.CENTER_VERTICAL);
             favoriteTextView.setBackgroundColor(Color.parseColor("#4A9C67"));
             LL.addView(favoriteTextView);
             this.favoritesAdded = new ArrayList<>();
-            //this.favoritesAdded.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2014/", "2014"));
             this.favoritesAddedListView = new ListView(selectFragment.getActivity());
             this.favoritesAddedListAdapter = new FavoriteListAdapter(selectFragment.getActivity(), selectFragment, true, this.favoritesAdded);
             this.favoritesAddedListView.setAdapter(favoritesAddedListAdapter);
-            //favoriteTextView.setText(selectlist1View);
+
             LL.addView(this.favoritesAddedListView);
-            LinearLayout rl=((LinearLayout) view.findViewById(R.id.favoritesLinearLayout));
+            LinearLayout rl=((LinearLayout) parentView.findViewById(R.id.favoritesLinearLayout));
             rl.addView(LL);
+        }
+        public void toggleVisible(){
+            visible=!visible;
+        }
+        public boolean isVisible(){
+            return visible;
         }
     }
 }

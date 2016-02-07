@@ -54,9 +54,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dip"
                     android:gravity="center_vertical"
-                    android:id="@+id/textlistView"
+                    android:id="@+id/favoriteTextlistView"
                     android:text="favorites"
-                    android:background="#4A9C67" />
+                    android:background="#4A9C67"
+                    android:minHeight="40dp" />
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
