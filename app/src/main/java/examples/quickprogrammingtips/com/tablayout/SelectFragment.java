@@ -31,6 +31,7 @@ import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Server;
+import examples.quickprogrammingtips.com.tablayout.tools.Utils;
 
 
 public class SelectFragment extends Fragment implements FavoritesInterface{
@@ -154,12 +155,13 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 for (FavoritesListItem fi:favoritesListItemArray) {
                     Collections.sort(fi.favoritesAdded, new Comparator() {
                         public int compare(Object o1, Object o2) {
-                            Favorite mp1=(Favorite)o1;
-                            Favorite mp2=(Favorite)o2;
+                            Favorite mp1 = (Favorite) o1;
+                            Favorite mp2 = (Favorite) o2;
                             return mp1.getDescription().compareTo(mp2.getDescription());
                         }
                     });
-                    setHeightListView(fi.favoritesAddedListAdapter, fi.favoritesAddedListView, fi.favoritesAdded);
+                    //setHeightListView(fi.favoritesAddedListAdapter, fi.favoritesAddedListView, fi.favoritesAdded);
+                    Utils.setDynamicHeight(fi.favoritesAddedListView, 0);
                 }
 
 
