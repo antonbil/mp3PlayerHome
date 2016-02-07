@@ -6,9 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -120,7 +117,6 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             return view;
         }
 
-    @NonNull
     public void getFavorites() {
 
         favorites.clear();
@@ -192,8 +188,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
-        if (v.getId()==R.id.selectlistView) {
-        }
+
     }
     public void setAddress(String address) {
         logic.openServer(address);
@@ -202,7 +197,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     @Override
     public void favoritesCall(Favorite favorite, String id) {
-        if (id=="edit"){
+        if (id.equals("edit")){
             if (favorite.getRecord()!=null) {
                 Intent intent = new Intent(getActivity(), EditFavoriteActivity.class);
                 intent.putExtra("id", (int)(favorite.getRecord().getId()+0));
@@ -214,7 +209,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
 
         } else
-        if (id=="delete"){
+        if (id.equals("delete")){
             if (favorite.getRecord()!=null) {
 
                 FavoriteRecord book = FavoriteRecord.findById(FavoriteRecord.class, favorite.getRecord().getId());
@@ -225,17 +220,17 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         } else {
             String uri = favorite.getUri();
             if (uri.startsWith("smb://")) {
-                if (id=="add to playlist"){}
-                else {//todo add item add to playlist
+                if (!id.equals("add to playlist"))
+                {//todo add item add to playlist
                     Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
                     logic.getHistory().add(uri);
                     ((MainActivity) getActivity()).selectTab(1);
                 }
             }else{
-                if (id=="add to playlist"){
+                if (id.equals("add to playlist")){
                     String command=("add \"" + uri + "\"");
-                    Log.v("samba",command);
-                    logic.getMpc().enqueCommands(new ArrayList<>(Arrays.asList(command)));
+                    //Log.v("samba",command);
+                    logic.getMpc().enqueCommands(new ArrayList<>(Collections.singletonList(command)));
                 } else {
                     logic.getHistoryMpd().add(uri);
                     ((MainActivity) getActivity()).selectTab(2);
@@ -256,9 +251,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 getFavorites();
 
 
-                } else {
-                // the result code is different from the one you've finished with, do something else.
-            }
+                }
         }
 
 

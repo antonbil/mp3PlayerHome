@@ -3,18 +3,17 @@ package examples.quickprogrammingtips.com.tablayout.tools;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
 import examples.quickprogrammingtips.com.tablayout.MpdInterface;
 
 /**
  * Created by anton on 25-1-16.
+ * loads Image
  */
 public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
 
@@ -34,15 +33,14 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
     protected Bitmap doInBackground(Void... params) {
         try {
             URL urlConnection = new URL(url.replace(" ", "%20"));
-            Log.v("samba","get:"+url);
+            //Log.v("samba","get:"+url);
             HttpURLConnection connection = (HttpURLConnection) urlConnection
                     .openConnection();
             connection.setInstanceFollowRedirects(false);
             connection.setDoInput(true);
             connection.connect();
             InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
+            return BitmapFactory.decodeStream(input);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,7 +50,7 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);
-        Log.v("samba", "set image");
+        //Log.v("samba", "set image");
         imageView.printCover(result,image,album);
     }
 

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -87,7 +86,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
                     for (int i=0;i<radioButtons.size();i++)
                         if (radioButtons.get(i).isChecked())
                         {
-                            Log.v("samba", "set category to:" + Favorite.categoryIds.get(i));
+                            //Log.v("samba", "set category to:" + Favorite.categoryIds.get(i));
                             book.category =Favorite.categoryIds.get(i);}
                     book.save();
                     Intent i = getIntent(); //get the intent that has been called, i.e you did called with startActivityForResult();

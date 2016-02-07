@@ -7,6 +7,7 @@ import android.widget.ListView;
 
 /**
  * Created by anton on 4-2-16.
+ * Utils to be useed overall program
  */
 public class Utils {
     public static void setDynamicHeight(ListView mListView, int comp) {
@@ -19,12 +20,12 @@ public class Utils {
         //ListAdapter adapter = listView.getAdapter();
 
         int UNBOUNDED = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        int grossElementHeight = 0;
+        /*int grossElementHeight = 0;
         for (int i = 0; i < mListAdapter.getCount(); i++) {
             View childView = mListAdapter.getView(i, null, mListView);
             childView.measure(UNBOUNDED, UNBOUNDED);
             grossElementHeight += childView.getMeasuredHeight();
-        }
+        }*/
         //Log.v("samba", "gross:" + grossElementHeight);
 
         int height = 0;
