@@ -79,7 +79,7 @@ public class PlayFragment extends Fragment implements MpdInterface {
     @Override
     public void playlistCall(ArrayList<Mp3File> playlist, boolean change) {
         if (!isAdded()){
-            MainActivity.panicMessage("PlayFragment is detached from Activity");
+            //MainActivity.panicMessage("PlayFragment is detached from Activity");
             return;
         }
 
@@ -101,7 +101,7 @@ public class PlayFragment extends Fragment implements MpdInterface {
     @Override
     public void newMpdCall(Mp3File mp3File,int position, String command) {
         if (!isAdded()){
-            MainActivity.panicMessage("PlayFragment is detached from Activity");
+            //MainActivity.panicMessage("PlayFragment is detached from Activity");
             return;
         }
         if (command.equals(getString(R.string.command_play)))

@@ -1,6 +1,7 @@
 package mpc;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +10,8 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
+
+import examples.quickprogrammingtips.com.tablayout.MainActivity;
 
 /**
  * Handles playlist manipulation on the MPD server. Allows songs to be enqued on
@@ -83,24 +86,35 @@ public class EnqueThread extends Thread {
 		out.println("command_list_begin"); // indicate to server to wait for multiple entries
 		//Log.v("samba", "clear");
 
-		boolean needsDir=false;
-		String dir="";
-		for(MPCSong song : songs)
-			if (song.file.contains("'"))//%27
+		try {
+			boolean needsDir = false;
+			String dir = "";
+			for (MPCSong song : songs)
+				if (song.file.contains("'"))//%27
+				{
+					needsDir = true;
+					String[] s1 = song.file.split("/");
+					String fname = s1[s1.length - 1];
+					dir = song.file.substring(0, song.file.length() - fname.length() - 1);
+					Log.v("samba",song.file);				}
+			if (needsDir) {
+				out.println("add \"" + dir + "\"");
+				Log.v("samba",dir);
+				Log.v("samba", "add \"" + dir + "\"");
+			} else
+				for (MPCSong song : songs) {
+					Log.v("samba",song.file);
+					out.println("add \"" + song.file + "\"");
+					Log.v("samba", "add \"" + song.file.replace("'", "\'") + "\"");
+				}
+		}	catch(Exception e){
+			MainActivity.getThis.runOnUiThread(new Runnable()
 			{
-				needsDir = true;
-				String[]s1=song.file.split("/");
-				String fname=s1[s1.length-1];
-				dir=song.file.substring(0,song.file.length()-fname.length()-1);
-			}
-		if (needsDir){
-			out.println("add \"" + dir + "\"");
-			Log.v("samba", "add \"" + dir + "\"");
-		} else
-			for(MPCSong song : songs)
-			{
-				out.println("add \"" + song.file + "\"");
-				Log.v("samba", "add \"" + song.file.replace("'","\'") + "\"");
+				public void run()
+				{
+					Toast.makeText(MainActivity.getThis, "Error adding songs", Toast.LENGTH_LONG).show();;
+				}
+			});
 			}
 		out.println("command_list_end"); // indicate to server that it can process the entries
 		in.readLine();

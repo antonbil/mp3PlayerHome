@@ -1,5 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -52,6 +53,25 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
 
     @Override
     public void sambaCallCompleted(ArrayList<File> files1a, ArrayList<File> filesMp3, String id) {
+        if (id=="Download") {
+            Log.v("samba", "download list");
+            ArrayList<String> files=new ArrayList<>();
+            String dirname="artist-album";
+            for (File f:filesMp3){
+                if (f instanceof Mp3File)
+                {
+                    Mp3File mp=(Mp3File)f;
+                    dirname=String.format("%s-%s" ,mp.getMpcSong().artist,mp.getMpcSong().album);
+                }
+                ///home/wieneke/FamilyLibrary
+                String filename = f.getPath() + "/" + f.getFname();
+                files.add(filename);
+
+                Log.v("samba", filename);
+            }
+            NetworkShare.copyFile(files,dirname);
+            return;
+        }
         if (!isAdded()){
             MainActivity.panicMessage("ListFragment is detached from Activity");
             return;
@@ -114,13 +134,17 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     public void newSambaCall(String path, String id) {
         Log.v("samba","hier path in ListParent:"+path);
         if (!isAdded()){
-            MainActivity.panicMessage("ListFragment is detached from Activity");
+            //MainActivity.panicMessage("ListFragment is detached from Activity");
             return;
         }
         if (id.equals(getString(R.string.addsong_filelist))){
             String message = "add \"" + path + "\"";
             logic.getMpc().sendSingleMessage(message);
         }else {
+            if (id.equals("Download")) {
+
+                displayContentOfDir(this,path, id);
+            } else
             if (id==getString(R.string.select_filelist))
                 displayContentOfDir(this,path, id);
             else  if (id==getString(R.string.addtofavorites_filelist)){

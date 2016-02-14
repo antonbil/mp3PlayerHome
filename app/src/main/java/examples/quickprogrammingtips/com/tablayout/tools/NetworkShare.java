@@ -17,10 +17,18 @@ package examples.quickprogrammingtips.com.tablayout.tools;
  *
  */
 //example MPD: https://github.com/Ichimonji10/impedimenta/blob/master/Android/JeremysJamminJukebox/trunk/src/net/JeremyAudet/JeremysJamminJukebox
+
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -32,7 +40,9 @@ import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
-import mpc.*;
+import mpc.DatabaseCommand;
+import mpc.MPCDatabaseListener;
+import mpc.MPCSong;
 
 public class NetworkShare  implements MPCDatabaseListener{
     static final String USER_NAME = "wieneke";
@@ -64,10 +74,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                 ArrayList<File> filesMp3=new ArrayList<>();
                 String mp3FileForDatabaseCommand="";
                 try{
-                    String user = USER_NAME + ":" + PASSWORD;
-                    //Log.v("samba", "User: " + user);
-
-                    NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(user);
+                    NtlmPasswordAuthentication auth = getNtlmPasswordAuthentication();
 
                     //int countmp3=0;
                     waitForCallBack=false;
@@ -188,6 +195,13 @@ public class NetworkShare  implements MPCDatabaseListener{
         thread.start();
     }
 
+    @NonNull
+    public static NtlmPasswordAuthentication getNtlmPasswordAuthentication() {
+        String user = USER_NAME + ":" + PASSWORD;
+
+        return new NtlmPasswordAuthentication(user);
+    }
+
 
     private ArrayList<String> readFileContent(SmbFile sFile) {
         StringBuilder builder=new StringBuilder();
@@ -217,6 +231,128 @@ public class NetworkShare  implements MPCDatabaseListener{
             }
         }
         return list;
+    }
+
+    public static void copyFile(final ArrayList<String> files, final String dirname){
+
+        new AsyncTask<Void, Void, Void>(){
+
+            ProgressDialog dialog1 = MainActivity.getThis.dialog;
+            Handler updateBarHandler = MainActivity.getThis.updateBarHandler;
+            @Override
+            protected void onPreExecute() {
+                //dialog.setMessage("Doing something, please wait.");
+                //dialog.show();
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                updateBarHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (dialog1.isShowing())
+                            dialog1.dismiss();
+                    }
+                });
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    String sdCard = Environment.getExternalStorageDirectory().toString();
+                    final String dest=String.format("%s/Music/", sdCard, dirname);
+                    final ArrayList<SmbFile>filessmb=new ArrayList<>();
+                    NtlmPasswordAuthentication auth = getNtlmPasswordAuthentication();
+                    String lastdirname="New Dir";
+
+                    for (String s:files){
+                        String[]list=s.split("/");
+                        try {
+                            s=s.replace("/home/wieneke/FamilyLibrary","smb://192.168.2.8/FamilyLibrary");
+                            SmbFile from = new SmbFile(s, auth);
+
+                            lastdirname = list[list.length - 3];
+                            String url = String.format("%s%s/%s", dest,lastdirname,list[list.length - 1]);
+                            //SmbFile to = new SmbFile (url);
+                            filessmb.add(from);
+                            Log.v("samba", url);
+                            //to.createNewFile();
+                            //from.copyTo(to);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    if (!dirname.startsWith("-"))lastdirname=dirname;
+                    final String dirnametouse=lastdirname;
+                    updateBarHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ProgressDialog dialog1 = MainActivity.getThis.dialog;
+                            dialog1.setTitle("Downloading Files ...");
+                            dialog1.setMessage("To:"+dirnametouse);
+                            dialog1.setProgressStyle(dialog1.STYLE_HORIZONTAL);
+                            dialog1.setProgress(0);
+                            dialog1.setMax(files.size());
+                            dialog1.show();
+                        }
+                    });
+
+                    String path = dest + "pgplay";
+                    java.io.File directory = new java.io.File(path);
+                    directory.mkdirs();
+                    path += "/"+lastdirname;
+                    directory = new java.io.File(path);
+                    directory.mkdirs();
+                    String destFilename;
+                    FileOutputStream fileOutputStream;
+                    InputStream fileInputStream;
+                    byte[] buf;
+                    int len;
+                    int i=0;
+                    for (SmbFile smbFile: filessmb) {
+                        destFilename = String.format("%s%s/%s",dest + "pgplay/",lastdirname,smbFile.getName());
+                        String[]dirparts=smbFile.getPath().split("/");
+                        try {
+                            fileOutputStream = new FileOutputStream(destFilename);
+                            fileInputStream = smbFile.getInputStream();
+                            buf = new byte[16 * 1024 * 1024];
+                            while ((len = fileInputStream.read(buf)) > 0) {
+                                fileOutputStream.write(buf, 0, len);
+                            }
+                            fileInputStream.close();
+                            fileOutputStream.close();
+                            i++;
+
+                            updateBarHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dialog1.incrementProgressBy(1);
+
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+
+                        }
+                    };
+                    MainActivity.getThis.updateBarHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (dialog1.isShowing())
+                            dialog1.dismiss();
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+
+        }.execute();
+
     }
 
     @Override

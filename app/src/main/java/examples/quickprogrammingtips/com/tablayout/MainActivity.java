@@ -1,6 +1,9 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     private ListFragment listFragment;
     protected DBFragment dbFragment;
     private Logic logic;
+    public Handler updateBarHandler;
+
     private PlayFragment playFragment;
     protected TabLayout tabLayout;
     private MainActivity mainActivity;
@@ -65,6 +70,8 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
 
     public static MainActivity getThis;
+    public ProgressDialog dialog;
+
     public static void panicMessage(final String message){
         //Let this be the code in your n'th level thread from main UI thread
         Handler h = new Handler(Looper.getMainLooper());
@@ -78,13 +85,15 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         SugarContext.init(this);//init db
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
         StrictMode.setThreadPolicy(policy);
         mainActivity=this;
         getThis=this;
+        dialog=new ProgressDialog(this);//keep it hidden until needed
+        updateBarHandler = new Handler();
+
         logic=new Logic(this);
         setContentView(R.layout.activity_main);
         LinearLayout ll=((LinearLayout)findViewById(R.id.time_layout));
@@ -291,8 +300,25 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     public void onGroupItemClick (MenuItem item) {
 
     }
-
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem checkable = menu.findItem(R.id.display_footer);
+        checkable.setChecked(footerVisible);
+        return true;
+    }
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage("Are you sure you want to exit?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        MainActivity.this.finish();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -308,6 +334,8 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         }
         //noinspection SimplifiableIfStatement
         if (id == R.id.display_footer) {
+            boolean isChecked = !item.isChecked();
+            item.setChecked(isChecked);
             setFooterVisibility();
             return true;
         }

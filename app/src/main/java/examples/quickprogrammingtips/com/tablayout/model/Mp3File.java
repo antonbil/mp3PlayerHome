@@ -81,6 +81,7 @@ public class Mp3File extends File{
         fromMpd=true;
         String[] hs=s.split("=== ");
         this.setFile(hs[0].split("/home/wieneke/FamilyLibrary/FamilyMusic/")[1]);
+        if (hs[0].startsWith("/home/wieneke/FamilyLibrary/FamilyMusic/"))
         for (int i=1;i<hs.length;i++){
             //Log.v("samba",hs[i]);
             ///home/wieneke/FamilyLibrary/
