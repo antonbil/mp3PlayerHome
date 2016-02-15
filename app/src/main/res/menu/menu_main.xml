@@ -7,6 +7,8 @@
     <item android:id="@+id/display_footer" android:title="@string/display_footer"
         android:orderInCategory="100" app:showAsAction="never"
         android:checkable="true"/>
+    <item android:id="@+id/set_volume" android:title="Volume"
+        android:orderInCategory="100" app:showAsAction="never"/>
 
     <item android:id="@+id/search_option" android:title="Search"
         android:orderInCategory="100" app:showAsAction="never" />

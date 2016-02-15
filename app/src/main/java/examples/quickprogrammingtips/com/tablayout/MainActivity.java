@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,12 +19,14 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,6 +74,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
     public static MainActivity getThis;
     public ProgressDialog dialog;
+    private Bitmap albumBitmap;
 
     public static void panicMessage(final String message){
         //Let this be the code in your n'th level thread from main UI thread
@@ -112,23 +116,23 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
                 getThis.startActivity(intent);
             }
-        });//android:id="@+id/thumbnail_top"
+        });
         ImageView im=((ImageView)findViewById(R.id.thumbnail_top));
         im.setOnLongClickListener(new View.OnLongClickListener() {
 
             @Override
             public boolean onLongClick(View v) {
-                //your stuff
-                logic.getMpc().sendSingleMessage("volume 1");
+                displayLargeImage();
                 return true;
             }
         });
         im.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logic.getMpc().sendSingleMessage("volume -1");
+                setVolume();
             }
-        });        tabLayout = (TabLayout)findViewById(R.id.tabLayout);
+        });
+        tabLayout = (TabLayout)findViewById(R.id.tabLayout);
         tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.addTab(tabLayout.newTab().setText("Play"));
@@ -332,6 +336,9 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
             startActivity(myIntent);
             return true;
         }
+        if (id==R.id.set_volume){
+            setVolume();
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.display_footer) {
             boolean isChecked = !item.isChecked();
@@ -358,6 +365,86 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setVolume() {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Volume");
+
+        LinearLayout linear=new LinearLayout(this);
+
+        linear.setOrientation(LinearLayout.VERTICAL);
+        final TextView text=new TextView(this);
+        text.setPadding(10, 10, 10, 10);
+
+        Integer volume = logic.mpcStatus.volume;
+        text.setText(""+volume);
+        SeekBar seek=new SeekBar(this);
+
+        seek.setProgress(volume);
+        seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                text.setText("" + progress);
+                logic.getMpc().setVolume(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        linear.addView(seek);
+        linear.addView(text);
+
+        alert.setView(linear);
+
+
+        alert.setPositiveButton("Ok",new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog,int id)
+            {
+                dialog.dismiss();
+            }
+        });
+
+        alert.show();
+    }
+
+    public void displayLargeImage() {
+        final AlertDialog alert = new AlertDialog.Builder(this).create();
+
+        LinearLayout linear=new LinearLayout(this);
+
+        linear.setOrientation(LinearLayout.VERTICAL);
+        ImageView image = new ImageView(MainActivity.this);
+        //get width of screen
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+
+        //fit image to width of screen, keep aspect ratio
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width-140, width-140);
+        image.setLayoutParams(layoutParams);
+        image.setImageBitmap(this.albumBitmap);
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alert.dismiss();
+            }
+        });
+        linear.addView(image);
+        alert.setView(linear);
+
+        alert.show();
     }
 
     @Override
@@ -601,6 +688,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
                                 if (albumPictures.containsKey(album)) {
                                     final Bitmap b = albumPictures.get(album);
+                                    albumBitmap=b;
                                     currentSong.setBitmap(b);
                                     runOnUiThread(new Runnable() {
                                         @Override
