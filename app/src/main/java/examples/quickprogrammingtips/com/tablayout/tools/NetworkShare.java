@@ -266,10 +266,12 @@ public class NetworkShare  implements MPCDatabaseListener{
                     NtlmPasswordAuthentication auth = getNtlmPasswordAuthentication();
                     String lastdirname="New Dir";
 
+                    String originaldir="";
                     for (String s:files){
                         String[]list=s.split("/");
                         try {
                             s=s.replace("/home/wieneke/FamilyLibrary","smb://192.168.2.8/FamilyLibrary");
+                            originaldir = s.replace(list[list.length - 1], "");
                             SmbFile from = new SmbFile(s, auth);
 
                             lastdirname = list[list.length - 3];
@@ -284,6 +286,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                         }
 
                     }
+                    filessmb.add(new SmbFile(originaldir+"folder.jpg", auth));
                     if (!dirname.startsWith("-"))lastdirname=dirname;
                     final String dirnametouse=lastdirname;
                     updateBarHandler.post(new Runnable() {
@@ -291,7 +294,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                         public void run() {
                             ProgressDialog dialog1 = MainActivity.getThis.dialog;
                             dialog1.setTitle("Downloading Files ...");
-                            dialog1.setMessage("To:"+dirnametouse);
+                            dialog1.setMessage("To:" + dirnametouse);
                             dialog1.setProgressStyle(dialog1.STYLE_HORIZONTAL);
                             dialog1.setProgress(0);
                             dialog1.setMax(files.size());
