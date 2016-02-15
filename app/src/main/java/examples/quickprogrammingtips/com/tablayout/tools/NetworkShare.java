@@ -256,36 +256,34 @@ public class NetworkShare  implements MPCDatabaseListener{
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    String sdCard = Environment.getExternalStorageDirectory().toString();
-                    final String dest=String.format("%s/Music/", sdCard, dirname);
-                    final ArrayList<SmbFile>filessmb=new ArrayList<>();
+
+                    final ArrayList<SmbFile>smbFiles=new ArrayList<>();
                     NtlmPasswordAuthentication auth = getNtlmPasswordAuthentication();
-                    String lastdirname="New Dir";
+                    String destinationDirName="New Dir";
 
-                    String originaldir="";
-                    for (String s:files){
-                        String[]list=s.split("/");
+                    String originalDir="";
+                    for (String originalFilename:files){
+                        String[]list=originalFilename.split("/");
                         try {
-                            s=s.replace("/home/wieneke/FamilyLibrary","smb://192.168.2.8/FamilyLibrary");
-                            originaldir = s.replace(list[list.length - 1], "");
-                            SmbFile from = new SmbFile(s, auth);
-
-                            lastdirname = list[list.length - 3];
-                            filessmb.add(from);
-
+                            originalFilename=originalFilename.replace("/home/wieneke/FamilyLibrary","smb://192.168.2.8/FamilyLibrary");
+                            SmbFile from = new SmbFile(originalFilename, auth);
+                            smbFiles.add(from);
+                            originalDir = originalFilename.replace(list[list.length - 1], "");
+                            destinationDirName = list[list.length - 3];
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
 
                     }
-                    filessmb.add(new SmbFile(originaldir+"folder.jpg", auth));
-                    if (!dirname.startsWith("-"))lastdirname=dirname;
-                    final String dirnametouse=lastdirname;
+                    smbFiles.add(new SmbFile(originalDir + "folder.jpg", auth));
+                    if (!dirname.startsWith("-"))destinationDirName=dirname;
+                    final String destinationDirNameToUse=destinationDirName;
                     updateBarHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            dialog1.setTitle("Downloading Files ...");
-                            dialog1.setMessage("To:" + dirnametouse);
+                            dialog1=new ProgressDialog(MainActivity.getThis);
+                            dialog1.setTitle("Downloading to " + destinationDirNameToUse);
+                            dialog1.setMessage("To:" + destinationDirNameToUse);
                             dialog1.setProgressStyle(dialog1.STYLE_HORIZONTAL);
                             dialog1.setProgress(0);
                             dialog1.setMax(files.size());
@@ -293,16 +291,26 @@ public class NetworkShare  implements MPCDatabaseListener{
                         }
                     });
 
-                    String path = dest + "pgplay";
-                    java.io.File directory = new java.io.File(path);
+                    //create necessary dirs
+                    String sdCard = Environment.getExternalStorageDirectory().toString();
+                    final String dest=String.format("%s/Music/", sdCard, dirname);
+                    String createPath = dest + "pgplay";
+                    java.io.File directory = new java.io.File(createPath);
                     directory.mkdirs();
-                    path += "/"+lastdirname;
-                    directory = new java.io.File(path);
+                    createPath += "/"+destinationDirName;
+                    directory = new java.io.File(createPath);
                     directory.mkdirs();
-                    String destFilename;
-                    for (SmbFile smbFile: filessmb) {
-                        destFilename = String.format("%s%s/%s/%s",dest ,"pgplay",lastdirname,smbFile.getName());
-                        try {
+                    //copy files
+                     for (final SmbFile smbFile: smbFiles) {
+                        String destFilename;
+                        destFilename = String.format("%s/%s",createPath,smbFile.getName());
+                         updateBarHandler.post(new Runnable() {
+                             @Override
+                             public void run() {
+                                 dialog1.setMessage("file:" + smbFile.getName());
+                             }
+                         });
+                         try {
                             FileOutputStream fileOutputStream;
                             InputStream fileInputStream;
                             byte[] buf;
@@ -326,7 +334,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                             e.printStackTrace();
 
                         }
-                    };
+                    }
                     updateBarHandler.post(new Runnable() {
                         @Override
                         public void run() {

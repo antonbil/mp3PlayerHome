@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -72,7 +71,10 @@ public class FileListAdapter extends BaseAdapter {
             final String fname = fileArrayList.get(position).getFname();
         final String path=fileArrayList.get(position).getPath();
         if (!(fileArrayList.get(position) instanceof Mp3File)) {
-            holder.description.setText(fileArrayList.get(position).getFname());
+            String itemFname = fileArrayList.get(position).getFname();
+            if (itemFname.endsWith("/"))
+                itemFname=itemFname.substring(0,itemFname.length()-1);
+            holder.description.setText(itemFname);
         } else {
             Mp3File mp3File = (Mp3File) fileArrayList.get(position);;
             holder.description.setText(String.format("%s-%s(%s)\n%s-%s", mp3File.getTracknr(), mp3File.getTitle(), mp3File.getTimeNice(), mp3File.getArtist(), mp3File.getAlbum()));
@@ -157,6 +159,7 @@ public class FileListAdapter extends BaseAdapter {
         menu.getMenu().add(context.getString(R.string.addandplay_filelist));
         menu.getMenu().add(context.getString(R.string.replaceandplay_filelist));
         menu.getMenu().add(R.string.addtofavorites_filelist);
+        menu.getMenu().add("Download");
         return menu;
     }
 

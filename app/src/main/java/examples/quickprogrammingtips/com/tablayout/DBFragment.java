@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
+import examples.quickprogrammingtips.com.tablayout.tools.NetworkShare;
 import mpc.DatabaseCommand;
 import mpc.MPCDatabaseListener;
 
@@ -18,6 +19,7 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
 
     private boolean playit=false;//chdb
     private String currentId;//chdb
+    private boolean download=false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,6 +40,10 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     }
     @Override
     public void displayContentOfDir(SambaInterface si,String path, String id) {
+        if (id=="Download"){
+            download=true;
+            Log.v("samba","download "+path);
+        }
         displayContents(path);
     }
     @Override
@@ -66,13 +72,28 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
 
     @Override
     public void databaseCallCompleted(final ArrayList<File> files1a) {
-        for (File f:files1a)
-            Log.v("samba","path found:"+f.getPath());
+
 
         if (playit){
             logic.sambaCallCompleted(files1a, new ArrayList<File>(),currentId);//chdb
             playit=false;
         } else {
+            if (download){
+                download=false;
+                ArrayList<String> downloadFiles=new ArrayList<>();
+                String dirName ="-";
+                for (File f:files1a) {
+                    if (f instanceof Mp3File){
+                        Mp3File mp=(Mp3File) f;
+                        dirName = String.format("%s-%s", mp.getMpcSong().artist, mp.getMpcSong().album);
+                        Log.v("samba","file contains "+mp.getMpcSong().artist+"-"+mp.getMpcSong().album);
+                    }
+                    String path=String.format("%s/%s","/home/wieneke/FamilyLibrary/FamilyMusic",f.getPath());
+                    downloadFiles.add(path);
+                    Log.v("samba", "path found:" + f.getPath());
+                }
+                NetworkShare.copyFile(downloadFiles, dirName);
+            }else
             sortAndDisplay(files1a);
         }
     }
