@@ -210,7 +210,7 @@ public class NetworkShare  implements MPCDatabaseListener{
         try {
             reader = new BufferedReader(new InputStreamReader(new SmbFileInputStream(sFile)));
         } catch (Exception ex) {
-            //Logger.getLogger(SmbConnect.class.getName()).log(Level.SEVERE, null, ex);
+
             return list;
         }
         String lineReader = null;
@@ -226,7 +226,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                 try {
                     reader.close();
                 } catch (IOException ex) {
-                    //Logger.getLogger(SmbConnect.class.getName()).log(Level.SEVERE, null, ex);
+
                 }
             }
         }
@@ -239,14 +239,10 @@ public class NetworkShare  implements MPCDatabaseListener{
 
             ProgressDialog dialog1 = MainActivity.getThis.dialog;
             Handler updateBarHandler = MainActivity.getThis.updateBarHandler;
-            @Override
-            protected void onPreExecute() {
-                //dialog.setMessage("Doing something, please wait.");
-                //dialog.show();
-            }
 
             @Override
             protected void onPostExecute(Void result) {
+                //todo see if this code is executed already at end of doinbackground
                 updateBarHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -275,12 +271,8 @@ public class NetworkShare  implements MPCDatabaseListener{
                             SmbFile from = new SmbFile(s, auth);
 
                             lastdirname = list[list.length - 3];
-                            String url = String.format("%s%s/%s", dest,lastdirname,list[list.length - 1]);
-                            //SmbFile to = new SmbFile (url);
                             filessmb.add(from);
-                            Log.v("samba", url);
-                            //to.createNewFile();
-                            //from.copyTo(to);
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -292,7 +284,6 @@ public class NetworkShare  implements MPCDatabaseListener{
                     updateBarHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            ProgressDialog dialog1 = MainActivity.getThis.dialog;
                             dialog1.setTitle("Downloading Files ...");
                             dialog1.setMessage("To:" + dirnametouse);
                             dialog1.setProgressStyle(dialog1.STYLE_HORIZONTAL);
@@ -309,15 +300,13 @@ public class NetworkShare  implements MPCDatabaseListener{
                     directory = new java.io.File(path);
                     directory.mkdirs();
                     String destFilename;
-                    FileOutputStream fileOutputStream;
-                    InputStream fileInputStream;
-                    byte[] buf;
-                    int len;
-                    int i=0;
                     for (SmbFile smbFile: filessmb) {
-                        destFilename = String.format("%s%s/%s",dest + "pgplay/",lastdirname,smbFile.getName());
-                        String[]dirparts=smbFile.getPath().split("/");
+                        destFilename = String.format("%s%s/%s/%s",dest ,"pgplay",lastdirname,smbFile.getName());
                         try {
+                            FileOutputStream fileOutputStream;
+                            InputStream fileInputStream;
+                            byte[] buf;
+                            int len;
                             fileOutputStream = new FileOutputStream(destFilename);
                             fileInputStream = smbFile.getInputStream();
                             buf = new byte[16 * 1024 * 1024];
@@ -326,13 +315,11 @@ public class NetworkShare  implements MPCDatabaseListener{
                             }
                             fileInputStream.close();
                             fileOutputStream.close();
-                            i++;
 
                             updateBarHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     dialog1.incrementProgressBy(1);
-
                                 }
                             });
                         } catch (Exception e) {
@@ -340,9 +327,10 @@ public class NetworkShare  implements MPCDatabaseListener{
 
                         }
                     };
-                    MainActivity.getThis.updateBarHandler.post(new Runnable() {
+                    updateBarHandler.post(new Runnable() {
                         @Override
                         public void run() {
+                            //todo see if this code is executed already at postexecute
                             if (dialog1.isShowing())
                             dialog1.dismiss();
                         }
