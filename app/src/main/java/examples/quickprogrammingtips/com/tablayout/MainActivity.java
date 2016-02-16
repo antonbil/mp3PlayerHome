@@ -1,6 +1,5 @@
 package examples.quickprogrammingtips.com.tablayout;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -23,6 +22,8 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -347,13 +348,8 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
             return true;
         }
         if ((id == R.id.search_option)) {//playlists_option
-            if ((tabSelected == 2)) {
-                Intent myIntent = new Intent(MainActivity.this,
-                        SearchActivity.class);
-                startActivityForResult(myIntent, STATIC_RESULT);
+                searchTerm();
                 return true;
-            } else
-                Toast.makeText(MainActivity.this, "select db-tab for searching", Toast.LENGTH_SHORT).show();
         }
         if ((id == R.id.playlists_option)) {//
 
@@ -367,6 +363,36 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         return super.onOptionsItemSelected(item);
     }
 
+    public void searchTerm(){
+        selectTab(2);
+        final AlertDialog alert = new AlertDialog.Builder(this).create();
+
+        View inflate = getLayoutInflater().inflate(R.layout.activity_search, null);
+        alert.setView(inflate);
+        final EditText searchEditText = (EditText) inflate.findViewById(R.id.search);
+
+        Button save = (Button) inflate.findViewById(R.id.save_search_button);
+        save.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+
+            public void onClick(View v) {
+                try {
+
+                    new DatabaseCommand(logic.getMpc(), "find any \"" + searchEditText.getText().toString() + "\"", dbFragment, true).run();
+                    alert.dismiss();
+                } catch (Exception e) {
+                    Toast.makeText(getBaseContext(), "Error!", Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+
+        });
+
+        alert.show();
+
+    }
     public void setVolume() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -447,7 +473,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         alert.show();
     }
 
-    @Override
+/*    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == STATIC_RESULT) //check if the request code is the one you've sent
@@ -467,7 +493,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
         super.onActivityResult(requestCode, resultCode, data);
 
-    }
+    }*/
 
     public Logic getLogic() {
         return logic;
