@@ -12,6 +12,4 @@
 
     <item android:id="@+id/search_option" android:title="Search"
         android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/playlists_option" android:title="Radio/Playlists"
-        android:orderInCategory="100" app:showAsAction="never" />
 </menu>

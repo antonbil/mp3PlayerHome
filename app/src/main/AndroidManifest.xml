@@ -39,10 +39,6 @@
         <activity
             android:name=".EditFavoriteActivity"
             android:label="@string/title_activity_edit_favorite2" />
-        <activity
-            android:name=".PlaylistsActivity"
-            android:label="@string/title_activity_playlists"
-            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         tabLayout.addTab(tabLayout.newTab().setText("Play"));
         tabLayout.addTab(tabLayout.newTab().setText("List"));
         tabLayout.addTab(tabLayout.newTab().setText("DB"));
+        tabLayout.addTab(tabLayout.newTab().setText("Radio"));
         tabLayout.addTab(tabLayout.newTab().setText("Select"));
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
 
@@ -187,8 +188,10 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
                         getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
                     }catch(Exception e){}
                 }
-                if (tab.getPosition() == 3)
+                if (tab.getPosition() == 4)
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new SelectFragment()).commit();
+                if (tab.getPosition() == 3)
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new PlaylistsFragment()).commit();
             }
 
             @Override
@@ -351,15 +354,6 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
                 searchTerm();
                 return true;
         }
-        if ((id == R.id.playlists_option)) {//
-
-                Intent myIntent = new Intent(MainActivity.this,
-                        PlaylistsActivity.class);
-                startActivity(myIntent);
-                return true;
-
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
