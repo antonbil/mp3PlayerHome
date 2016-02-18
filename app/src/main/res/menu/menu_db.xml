@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
     <item android:id="@+id/action_settings2" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/display_footer2" android:title="@string/display_footer"
+    <item android:id="@+id/display_footer2" android:title="@string/display_buttons"
         android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/search_option2" android:title="Search2"
         android:orderInCategory="100" app:showAsAction="never" />

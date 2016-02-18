@@ -9,7 +9,7 @@
     <string name="GET">GET</string>
     <string name="POST">POST</string>
     <string name="program_name">Muziek</string>
-    <string name="display_footer">Display footer</string>
+    <string name="display_buttons">Play Buttons</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->

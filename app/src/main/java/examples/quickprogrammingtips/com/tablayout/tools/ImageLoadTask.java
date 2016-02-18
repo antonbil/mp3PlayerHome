@@ -29,6 +29,12 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
         this.album=album;
     }
 
+    public ImageLoadTask(String url, String album, MpdInterface imageView) {
+        this.url = url;
+        this.imageView = imageView;
+        this.image=image;
+        this.album=album;
+    }
     @Override
     protected Bitmap doInBackground(Void... params) {
         try {
