@@ -160,13 +160,18 @@ public class NetworkShare  implements MPCDatabaseListener{
                     }
                     SmbFile smbFile = new SmbFile(networkPath+"mp3info.txt", auth);
                     ArrayList<String> builder;
-                    //ArrayList<MPCSong> songs=new ArrayList<>();
                     try {
                         builder = readFileContent(smbFile);
-
-                        for (int i=1;i<builder.size();i++){
+                        String dirname="";
+                        for (int i=0;i<builder.size();i++){
+                            if (i==0){dirname=Mp3File.removePath(builder.get(0));continue;}
                             Mp3File mp=new Mp3File(networkPath,builder.get(i));
                             if (mp.getTitle()!=null) {
+                                if (!mp.getMpcSong().file.startsWith(dirname)){
+                                    //dirname is better than path itself, because , can be removed.
+                                    String[] spl=mp.getMpcSong().file.split("/");
+                                    mp.getMpcSong().file=dirname+"/"+spl[spl.length-1];
+                                }
                                 waitForCallBack=false;
                                 files.add(mp);
                             }

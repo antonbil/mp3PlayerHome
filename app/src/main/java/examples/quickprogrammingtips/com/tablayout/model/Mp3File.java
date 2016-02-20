@@ -76,15 +76,16 @@ public class Mp3File extends File{
     public Mp3File(){
 
     }
+    public static String removePath(String s){
+        return s.split("/home/wieneke/FamilyLibrary/FamilyMusic/")[1];
+    }
     public Mp3File(String path,String s){
         setPath(path);
         fromMpd=true;
         String[] hs=s.split("=== ");
-        this.setFile(hs[0].split("/home/wieneke/FamilyLibrary/FamilyMusic/")[1]);
+        this.setFile(removePath(hs[0]));
         if (hs[0].startsWith("/home/wieneke/FamilyLibrary/FamilyMusic/"))
         for (int i=1;i<hs.length;i++){
-            //Log.v("samba",hs[i]);
-            ///home/wieneke/FamilyLibrary/
             if(hs[i].startsWith("TIT2")){
                 try {
                     String title = hs[i].split("TIT2")[1].trim();
