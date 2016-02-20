@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.AsyncTask;
@@ -35,10 +36,13 @@ import android.widget.Toast;
 import com.orm.SugarContext;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -522,6 +526,12 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
                             playlist.add(new Mp3File("", list));
                         }
                     }
+                    try {
+                        sock.close();
+                        if (in != null) in.close();
+                        if (out != null) out.close();
+                    } catch (Exception e) {
+                    }
 
                     boolean change = false;
                     int max = playlist.size();
@@ -556,34 +566,29 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
                                 if (albumPictures.get(niceAlbumName) != null)
                                     f.setBitmap(albumPictures.get(niceAlbumName));
                             } else try {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
                                         albumPictures.put(niceAlbumName, null);//so image is loaded only once
-                                        ImageView image = null;
-                                        new ImageLoadTask(Logic.getUrlFromSongpath(f), niceAlbumName, new MpdInterface() {
-                                            @Override
-                                            public void playlistCall(ArrayList<Mp3File> playlist, boolean change) {
-
+                                        try {
+                                            URL urlConnection = new URL(Logic.getUrlFromSongpath(f).replace(" ", "%20"));
+                                            //Log.v("samba","get:"+url);
+                                            HttpURLConnection connection = (HttpURLConnection) urlConnection
+                                                    .openConnection();
+                                            connection.setInstanceFollowRedirects(false);
+                                            connection.setDoInput(true);
+                                            connection.connect();
+                                            InputStream input = connection.getInputStream();
+                                            Bitmap bitmap = BitmapFactory.decodeStream(input);
+                                            albumPictures.put(niceAlbumName, bitmap);
+                                            for (Mp3File f1 : logic.getPlaylistFiles()) {
+                                                if (f1.niceAlbum().equals(niceAlbumName))
+                                                    f1.setBitmap(bitmap);
                                             }
+                                            connection.disconnect();
+                                        } catch (Exception e) {
+                                            albumPictures.remove(niceAlbumName);
+                                            Log.v("samba", "error connect " + Logic.getUrlFromSongpath(f));
+                                            e.printStackTrace();
+                                        }
 
-                                            @Override
-                                            public void newMpdCall(Mp3File mp3File, int position, String command) {
-
-                                            }
-
-                                            @Override
-                                            public void printCover(Bitmap result, ImageView image, String nicealbumName) {
-                                                albumPictures.put(nicealbumName, result);
-                                                for (Mp3File f : logic.getPlaylistFiles()) {
-                                                    if (f.niceAlbum().equals(nicealbumName))
-                                                        f.setBitmap(result);
-                                                }
-                                                //f.setBitmap(result);
-                                            }
-                                        }, image).execute();
-                                    }
-                                });
                             } catch (Exception e) {
                             }
 
@@ -594,23 +599,11 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
                     mpc.connectionFailed("Connection failed, check settings");
                 }
 
-                try {
-                    sock.close();
-                    if (in != null) in.close();
-                    if (out != null) out.close();
-                } catch (Exception e) {
-                }
 
                 return true;
             }
         };
         thread.execute();
-        /*thread.start();
-        try{
-            thread.join();
-        } catch(Exception e){
-            e.printStackTrace();
-        }*/
     }
 
     public void selectTab(int tab){
