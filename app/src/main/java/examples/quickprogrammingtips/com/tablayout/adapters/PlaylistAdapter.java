@@ -100,6 +100,7 @@ public class PlaylistAdapter extends BaseAdapter {
                 convertView = mInflater.inflate(R.layout.item_playlist, null);
                 holder = new ViewHolder();
                 holder.performer = (TextView) convertView.findViewById(R.id.textViewPerformer);
+                holder.title = (TextView) convertView.findViewById(R.id.textViewTitle);
                 holder.time = (TextView) convertView.findViewById(R.id.textViewPerformerCountry);
 
                 convertView.setTag(holder);
@@ -122,7 +123,8 @@ public class PlaylistAdapter extends BaseAdapter {
                 if (MainActivity.albumPictures.containsKey(niceAlbum)&&MainActivity.albumPictures.get(niceAlbum)!=null)
                     image.setImageBitmap(MainActivity.albumPictures.get(niceAlbum));
                 else image.setImageBitmap(BitmapFactory.decodeResource(convertView.getResources(), R.drawable.pause));
-                holder.performer.setText(String.format("%s-%s\n%s-%s", mp3File.getArtist(), mp3File.getAlbum(), mp3File.getTracknr(), mp3File.getTitle()));
+                holder.performer.setText(String.format("%s-%s", mp3File.getArtist(), mp3File.getAlbum()));
+                holder.title.setText(String.format("%s-%s", mp3File.getTracknr(), mp3File.getTitle()));
             }
             holder.time.setText(mp3File.getTimeNice());
             final int pos2=position;
@@ -258,7 +260,7 @@ public class PlaylistAdapter extends BaseAdapter {
     }
 
     static class ViewHolder{
-        TextView performer, time;
+        TextView performer, title,time;
     }
 
 

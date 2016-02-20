@@ -29,20 +29,35 @@
         android:id="@+id/thumbnail_playlist"
         android:layout_gravity="center"
         android:src="@drawable/pause" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:padding="4dp">
     <TextView android:layout_height="match_parent"
         android:layout_width="240dp"
         android:layout_gravity="start"
         android:text="name die ook wel eens langer kan zijn, maar dat zien we dan wel weer."
-        android:layout_margin="4dp"
         android:gravity="center_vertical"
         android:id="@+id/textViewPerformer"
 
-        android:layout_weight="0.5"
+
         android:maxLines="2"
  />
+    <TextView android:layout_height="match_parent"
+        android:layout_width="240dp"
+        android:layout_gravity="start"
+        android:text="name die ook wel eens langer kan zijn, maar dat zien we dan wel weer."
+        android:gravity="center_vertical"
+        android:id="@+id/textViewTitle"
+
+        android:layout_weight="0.5"
+        android:maxLines="2"
+        />
 
 
 
+    </LinearLayout>
     <TextView android:layout_height="match_parent"
         android:layout_width="60dp"
         android:text="04:30"
