@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     protected DBFragment dbFragment;
     private Logic logic;
     public Handler updateBarHandler;
-
+    private int timerTime=0;
     private PlayFragment playFragment;
     protected TabLayout tabLayout;
     private MainActivity mainActivity;
@@ -273,7 +273,10 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
                 try{
                     MPC mpc = logic.getMpc();
                     //if (tabSelected == 0)
+                    if (timerTime>=3) {
                         playlistGetContent(mpc, MainActivity.getThis);
+                        timerTime=0;
+                    } else timerTime++;
                     mpc.getStatusSynch();
                 } catch(Exception e){
                     //mpc.connectionFailed("Connection failed, check settings");
