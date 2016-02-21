@@ -272,15 +272,13 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
             public void run() {
                 try{
                     MPC mpc = logic.getMpc();
-                    //if (tabSelected == 0)
                     if (timerTime>=3) {
                         playlistGetContent(mpc, MainActivity.getThis);
                         timerTime=0;
                     } else timerTime++;
                     mpc.getStatusSynch();
                 } catch(Exception e){
-                    //mpc.connectionFailed("Connection failed, check settings");
-                    //t.stop();
+
                 }
             }
 
