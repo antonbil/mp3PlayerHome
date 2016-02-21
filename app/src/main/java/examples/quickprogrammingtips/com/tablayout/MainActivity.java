@@ -338,7 +338,6 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a logic activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent myIntent = new Intent(MainActivity.this,
@@ -361,6 +360,13 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void startWikipediaPage(String outsiders) {
+        Intent myIntent = new Intent(MainActivity.this,
+                WikipediaActivity.class);
+        myIntent.putExtra("searchitem", outsiders);
+        startActivity(myIntent);
     }
 
     public void searchTerm(){

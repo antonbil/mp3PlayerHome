@@ -176,6 +176,8 @@ public class PlaylistAdapter extends BaseAdapter {
 
                                         menu.getMenu().add("info");
                                         menu.getMenu().add("spotify");
+                                        menu.getMenu().add("artist-wikipedia");
+                                        menu.getMenu().add("album-wikipedia");
                                         menu.show();
                                         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
@@ -187,7 +189,13 @@ public class PlaylistAdapter extends BaseAdapter {
 
                                                     //selectFragmentContext.startActivity(intent);
                                                     selectFragmentContext.startActivity(intent);
-                                                }else                                    //Toast.makeText(v1.getContext(), "click:" + fileArrayList.get(pos2).getFname() + ":" + item.getTitle(), Toast.LENGTH_LONG).show();
+                                                }else
+                                                if (item.getTitle().toString().equals("artist-wikipedia")) {
+                                                    MainActivity.getThis.startWikipediaPage(mp3File.getArtist());
+                                                }else
+                                                if (item.getTitle().toString().equals("album-wikipedia")) {
+                                                    MainActivity.getThis.startWikipediaPage(mp3File.getAlbum());
+                                                }else
                                                     if (item.getTitle().toString().equals("info")) {
                                                         int length=0;
                                                         for (Mp3File mp:fileArrayList){

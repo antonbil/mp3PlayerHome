@@ -110,4 +110,5 @@
     <string name="studeerdesc">Studeerkamer</string>
     <string name="pref_header_server">Server</string>
     <string name="sambaserver">192.168.2.8/FamilyLibrary</string>
+    <string name="title_activity_wikpedia">WikpediaActivity</string>
 </resources>

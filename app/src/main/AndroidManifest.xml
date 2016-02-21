@@ -39,6 +39,10 @@
         <activity
             android:name=".EditFavoriteActivity"
             android:label="@string/title_activity_edit_favorite2" />
+        <activity
+            android:name=".WikipediaActivity"
+            android:label="@string/title_activity_wikpedia"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
