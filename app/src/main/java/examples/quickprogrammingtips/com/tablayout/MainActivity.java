@@ -504,6 +504,9 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     public Logic getLogic() {
         return logic;
     }
+    public void playlistGetContent() {
+        playlistGetContent( logic.getMpc(),MainActivity.getThis);
+    }
     public void playlistGetContent(final MPC mpc, final MpdInterface mpdInterface){
         AsyncTask thread = new AsyncTask(){
             @Override

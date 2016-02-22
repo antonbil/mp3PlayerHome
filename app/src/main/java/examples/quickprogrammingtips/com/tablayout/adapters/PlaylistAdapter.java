@@ -19,6 +19,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.MainActivity;
@@ -28,6 +29,7 @@ import examples.quickprogrammingtips.com.tablayout.R;
 import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
+import examples.quickprogrammingtips.com.tablayout.model.Server;
 
 public class PlaylistAdapter extends BaseAdapter {
 
@@ -140,12 +142,40 @@ public class PlaylistAdapter extends BaseAdapter {
                             menu.getMenu().add("remove->");//submenu
                     menu.getMenu().add("move->");//submenu
                     menu.getMenu().add("info->");//submenu
+                    menu.getMenu().add("export->");//submenu
                             menu.show();
                             final View v1 = v;
                             menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {
+                                    if (item.getTitle().toString().equals("export->")) {
+                                        //submenu
+                                        PopupMenu menu = new PopupMenu(v.getContext(), v);
+                                        final ArrayList<Server> servers=Server.servers;
+                                        for (int i = 0; i < servers.size(); i++) {
+                                            menu.getMenu().add(servers.get(i).description);
+                                        }
+
+                                        menu.show();
+                                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                                            @Override
+                                            public boolean onMenuItemClick(MenuItem item) {
+                                                int position=0;
+                                                for (int i = 0; i < servers.size(); i++) {
+                                                    if (item.getTitle().toString().equals(servers.get(i).description)) position=i;
+                                                }
+
+                                                caller.newMpdCall(mp3File, position,"export" );
+                                                return true;
+
+
+                                            }
+
+                                            ;
+                                        });
+                                    } else
                                     if (item.getTitle().toString().equals("remove->")) {
                                         //submenu
                                         PopupMenu menu = new PopupMenu(v.getContext(), v);
