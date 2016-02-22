@@ -5,6 +5,7 @@ package examples.quickprogrammingtips.com.tablayout.adapters;
  */
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
@@ -17,8 +18,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import examples.quickprogrammingtips.com.tablayout.MainActivity;
 import examples.quickprogrammingtips.com.tablayout.R;
 import examples.quickprogrammingtips.com.tablayout.SambaInterface;
+import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
@@ -87,6 +90,8 @@ public class FileListAdapter extends BaseAdapter {
 //                    Log.v("test", fileArrayList.get(pos2).getFname());
                             //Toast.makeText(v.getContext(), "click:" + (String) fileArrayList.get(pos2).getName(), Toast.LENGTH_LONG).show();
                             PopupMenu menu = getPopupMenu(v);
+                            if (fileArrayList.get(position) instanceof Mp3File)
+                                menu.getMenu().add("info-->");
                             menu.show();
                             final View v1 = v;
                             //TODO: merge two onclick-listener together
@@ -95,6 +100,39 @@ public class FileListAdapter extends BaseAdapter {
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {
                                     String title = item.getTitle().toString();
+                                    if (title.equals("info-->")){
+                                        PopupMenu menu = new PopupMenu(v.getContext(), v);
+
+                                        menu.getMenu().add("spotify");
+                                        menu.getMenu().add("artist-wikipedia");
+                                        menu.getMenu().add("album-wikipedia");
+                                        menu.show();
+                                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                                            @Override
+                                            public boolean onMenuItemClick(MenuItem item) {
+                                                Mp3File mp3File=(Mp3File)fileArrayList.get(position);
+                                                final MainActivity context = MainActivity.getThis;
+                                                if (item.getTitle().toString().equals("spotify")) {
+                                                    Intent intent = new Intent(context, SpotifyActivity.class);
+                                                    intent.putExtra("artist", mp3File.getArtist());
+                                                    context.startActivity(intent);
+                                                }else
+                                                if (item.getTitle().toString().equals("artist-wikipedia")) {
+                                                    context.startWikipediaPage(mp3File.getArtist());
+                                                }else
+                                                if (item.getTitle().toString().equals("album-wikipedia")) {
+                                                    context.startWikipediaPage(mp3File.getAlbum());
+                                                }
+                                                return true;
+
+
+                                            }
+
+                                            ;
+                                        });
+                                        return true;
+                                    }
                                     //Log.v("samba", "title:"+title);
                                     if (!(fileArrayList.get(position) instanceof Mp3File)) {
                                         caller.newSambaCall(path + fname, title);
