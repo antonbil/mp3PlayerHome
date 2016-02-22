@@ -133,7 +133,7 @@ public class FileListAdapter extends BaseAdapter {
                                         });
                                         return true;
                                     }
-                                    //Log.v("samba", "title:"+title);
+
                                     if (!(fileArrayList.get(position) instanceof Mp3File)) {
                                         caller.newSambaCall(path + fname, title);
                                     } else

@@ -511,6 +511,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         AsyncTask thread = new AsyncTask(){
             @Override
             protected Object doInBackground(Object[] params) {
+                String address=logic.getMpc().getAddress();
                 Socket sock=null;
                 BufferedReader in=null;
                 PrintWriter out=null;
@@ -543,6 +544,8 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
                     } catch (Exception e) {
                     }
 
+                    //see if address has not changed while getting information
+                    if (address!=logic.getMpc().getAddress()) return true;
                     boolean change = false;
                     int max = playlist.size();
                     if (max == 0) {

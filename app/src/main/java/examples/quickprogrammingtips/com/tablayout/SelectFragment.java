@@ -193,6 +193,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     public void setAddress(String address) {
         logic.openServer(address);
         logic.getMpc().setMPCListener((MainActivity) getActivity());
+        MainActivity.getThis.playlistGetContent();
     }
 
     @Override
