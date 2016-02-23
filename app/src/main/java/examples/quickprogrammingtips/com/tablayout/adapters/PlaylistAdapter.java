@@ -142,14 +142,14 @@ public class PlaylistAdapter extends BaseAdapter {
                             menu.getMenu().add("remove->");//submenu
                     menu.getMenu().add("move->");//submenu
                     menu.getMenu().add("info->");//submenu
-                    menu.getMenu().add("export->");//submenu
+                    menu.getMenu().add("transfer->");//submenu
                             menu.show();
                             final View v1 = v;
                             menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {
-                                    if (item.getTitle().toString().equals("export->")) {
+                                    if (item.getTitle().toString().equals("transfer->")) {
                                         //submenu
                                         PopupMenu menu = new PopupMenu(v.getContext(), v);
                                         final ArrayList<Server> servers=Server.servers;

@@ -159,6 +159,8 @@ public class PlayFragment extends Fragment implements MpdInterface {
         }
         final int currentSong=logic.mpcStatus.song.intValue();
         final int currentTime=logic.mpcStatus.time;
+        //stop playing of first server
+        logic.getMpc().pause();
         //select new server
         logic.openServer(Server.servers.get(position).url);
         logic.getMpc().setMPCListener((MainActivity) getActivity());
