@@ -158,6 +158,7 @@ public class PlayFragment extends Fragment implements MpdInterface {
             copyPlaylist.add(mp);
         }
         final int currentSong=logic.mpcStatus.song.intValue();
+        final int currentTime=logic.mpcStatus.time;
         //select new server
         logic.openServer(Server.servers.get(position).url);
         logic.getMpc().setMPCListener((MainActivity) getActivity());
@@ -175,14 +176,18 @@ public class PlayFragment extends Fragment implements MpdInterface {
                     String s = "add \"" + mp.getMpcSong().file + "\"";
                     commands.add(s);
                 }
+                String s = "play " + currentSong;
+                commands.add(s);
+                s = "seek " + currentSong + " "+currentTime;
+                commands.add(s);
                 logic.getMpc().enqueCommands(commands);
                 //set currentSong after one second
-                handler.postDelayed(new Runnable() {
+                /*handler.postDelayed(new Runnable() {
                     public void run() {
                         MainActivity.getThis.playlistGetContent();
                         logic.getMpc().play(currentSong);
                     }
-                }, 1000);
+                }, 1000);*/
             }
         }, 1000);
     }
