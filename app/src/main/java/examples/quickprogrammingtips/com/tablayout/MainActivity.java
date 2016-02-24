@@ -76,11 +76,12 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     private MainActivity mainActivity;
     public static HashMap<String, Bitmap>albumPictures=new HashMap<>();
     private String currentArtist;
+    public ViewHolder viewHolder=new ViewHolder();
 
 
     public static MainActivity getThis;
     public ProgressDialog dialog;
-    private Bitmap albumBitmap;
+    public Bitmap albumBitmap;
 
     public static void panicMessage(final String message){
         //Let this be the code in your n'th level thread from main UI thread
@@ -121,6 +122,15 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
                 intent.putExtra("artist", currentArtist);
 
                 getThis.startActivity(intent);
+            }
+        });
+        ll.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                MainScreenDialog msDialog=new MainScreenDialog(getThis);
+                msDialog.show();
+                return true;
             }
         });
         ImageView im=((ImageView)findViewById(R.id.thumbnail_top));
@@ -705,20 +715,38 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
                         @Override
                         public void run() {
+                            ViewHolder vh=getThis.viewHolder;
                             try {
                                 Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
 
                                 TextView tvName = (TextView) findViewById(R.id.title_top);
-                                tvName.setText(currentSong.getTitle());
+                                final String title = currentSong.getTitle();
+                                tvName.setText(title);
+                                vh.title=title;
+                                //Log.v("samba", currentSong.getTitle());
+                                //Log.v("samba", currentSong.getArtist());
                                 TextView time = (TextView) findViewById(R.id.time_top);
-                                time.setText(Mp3File.niceTime(status.time.intValue()));
+                                final String time1 = Mp3File.niceTime(status.time.intValue());
+                                vh.time=time1;
+                                time.setText(time1);
                                 TextView totaltime = (TextView) findViewById(R.id.totaltime_top);
-                                totaltime.setText(currentSong.getTimeNice());
+                                try{
+                                final String timeNice = currentSong.getTimeNice();
+                                totaltime.setText(timeNice);
+                                vh.totaltime=timeNice;
+                            } catch (Exception e) {
+                                    totaltime.setText("00:00");
+                            }
+                                String album="";
                                 TextView artist = (TextView) findViewById(R.id.artist_top);
-                                String album = currentSong.niceAlbum();
+                                try{
+                                album = currentSong.niceAlbum();
                                 currentArtist=currentSong.getArtist();
                                 artist.setText(album);
-
+                                vh.album=album;
+                            } catch (Exception e) {
+                                    artist.setText("");
+                            }
                                 final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
                                 String uri = Logic.getUrlFromSongpath(currentSong);
 
@@ -759,6 +787,13 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         SugarContext.terminate();
     }
 
+    public class ViewHolder{
+        public String totaltime;
+        public String time;
+        public String title;
+        public String album;
+
+    }
 
     @Override
     public void onTaskCompleted(String result, String call) {
