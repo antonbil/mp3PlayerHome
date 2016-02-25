@@ -59,7 +59,7 @@
                 android:id="@+id/mainscreentime_top"
                 android:lines="1"
                 android:layout_gravity="end"
-                android:textSize="40dp" />
+                android:textSize="50dp" />
             <TextView android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
 
@@ -70,7 +70,7 @@
                 android:id="@+id/mainscreentotaltime_top"
                 android:lines="1"
                 android:layout_gravity="end"
-                android:textSize="40dp" />
+                android:textSize="50dp" />
         </LinearLayout>
         <!-- Right button -->
 
@@ -86,5 +86,12 @@
             android:layout_gravity="top" />
         <!--android:scaleType="centerInside"-->
     </LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="OK"
+            android:id="@+id/okbutton" />
     </LinearLayout>
+
+
 </LinearLayout>
