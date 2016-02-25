@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -58,8 +57,6 @@ public class MainScreenDialog extends Dialog  {
             public void run() {
                 try {
 
-                    //getThis.albumBitmap;
-
                     getThis.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -71,7 +68,6 @@ public class MainScreenDialog extends Dialog  {
                             tvName.setText(vh.title);
 
                             time.setText(vh.time);
-                            Log.v("samba", vh.time);
                             totaltime.setText(vh.totaltime);
                             TextView artist = (TextView) findViewById(R.id.mainscreenartist_top);
                             artist.setText(vh.album);

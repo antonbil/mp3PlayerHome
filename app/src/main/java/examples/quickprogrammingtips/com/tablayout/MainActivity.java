@@ -388,13 +388,14 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     }
     public void searchTerm(String myterm){
         myterm=myterm.trim();
-        selectTab(2);
+        //selectTab(2);
         //getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
         final AlertDialog alert = new AlertDialog.Builder(this).create();
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                selectTab(2);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
             }
         }, 100);
@@ -428,7 +429,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     }
 
     public void searchForItem(String searchString) {
-        Log.v("samba", "search:" + searchString);
+        //Log.v("samba", "search:" + searchString);
         //selectTab(2);
         new DatabaseCommand(logic.getMpc(), "find any \"" + searchString + "\"", dbFragment, true).run();
     }

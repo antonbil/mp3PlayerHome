@@ -183,7 +183,7 @@ public class FileListAdapter extends BaseAdapter {
                 });
             } catch (Exception e) {
                 //successful = false;
-                e.printStackTrace();
+                //e.printStackTrace();
             }
 
         return convertView;

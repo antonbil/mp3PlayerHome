@@ -13,7 +13,6 @@ import android.support.v7.widget.PopupMenu;
 import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -160,7 +159,7 @@ public class SpotifyActivity extends AppCompatActivity {
                                                int pos, long id) {
                     final String selectedItem = artistList.get(pos);
 
-                    Log.v("long clicked", "pos: " + pos + "artist: " + selectedItem);
+                    //Log.v("long clicked", "pos: " + pos + "artist: " + selectedItem);
                     PopupMenu menu = new PopupMenu(arg1.getContext(), arg1);
                     menu.getMenu().add("search");
                     menu.getMenu().add("wikipedia");
