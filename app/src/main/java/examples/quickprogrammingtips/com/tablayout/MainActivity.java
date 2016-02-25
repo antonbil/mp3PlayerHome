@@ -1,5 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -118,10 +119,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getThis, SpotifyActivity.class);
-                intent.putExtra("artist", currentArtist);
-
-                getThis.startActivity(intent);
+                callSpotify(currentArtist);
             }
         });
         ll.setOnLongClickListener(new View.OnLongClickListener() {
@@ -263,6 +261,13 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
     }
 
+    public void callSpotify(String currentArtist) {
+        Intent intent = new Intent(getThis, SpotifyActivity.class);
+        intent.putExtra("artist", currentArtist);
+
+        getThis.startActivityForResult(intent, 4);
+    }
+
     public void playPause() {
         if (logic.getPaused()) {
             logic.getMpc().play();
@@ -378,14 +383,26 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         myIntent.putExtra("searchitem", outsiders);
         startActivity(myIntent);
     }
-
     public void searchTerm(){
+        searchTerm("");
+    }
+    public void searchTerm(String myterm){
+        myterm=myterm.trim();
         selectTab(2);
+        //getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
         final AlertDialog alert = new AlertDialog.Builder(this).create();
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
+            }
+        }, 100);
 
         View inflate = getLayoutInflater().inflate(R.layout.activity_search, null);
         alert.setView(inflate);
         final EditText searchEditText = (EditText) inflate.findViewById(R.id.search);
+        searchEditText.setText(myterm);
 
         Button save = (Button) inflate.findViewById(R.id.save_search_button);
         save.setOnClickListener(new View.OnClickListener() {
@@ -394,8 +411,8 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
             public void onClick(View v) {
                 try {
-
-                    new DatabaseCommand(logic.getMpc(), "find any \"" + searchEditText.getText().toString() + "\"", dbFragment, true).run();
+                    final String searchString = searchEditText.getText().toString();
+                    searchForItem(searchString);
                     alert.dismiss();
                 } catch (Exception e) {
                     Toast.makeText(getBaseContext(), "Error!", Toast.LENGTH_SHORT).show();
@@ -409,6 +426,13 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         alert.show();
 
     }
+
+    public void searchForItem(String searchString) {
+        Log.v("samba", "search:" + searchString);
+        //selectTab(2);
+        new DatabaseCommand(logic.getMpc(), "find any \"" + searchString + "\"", dbFragment, true).run();
+    }
+
     public void setVolume() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -489,15 +513,17 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         alert.show();
     }
 
-/*    @Override
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.v("samba","activity is ended!"+data.getExtras().getString("artist"));
 
-        if (requestCode == STATIC_RESULT) //check if the request code is the one you've sent
+        //if (requestCode == STATIC_RESULT) //check if the request code is the one you've sent
         {
             if (resultCode == Activity.RESULT_OK)
             {
 
-                new DatabaseCommand(logic.getMpc(),"find any \""+data.getExtras().getString("search_string")+"\"",dbFragment,true).run();
+                //new DatabaseCommand(logic.getMpc(),"find any \""+data.getExtras().getString("artist")+"\"",dbFragment,true).run();
+                searchTerm(data.getExtras().getString("artist"));
                 //new DatabaseCommand(logic.getMpc(),"find genre \"Soul\"",dbFragment,true).run();
                 //new DatabaseCommand(logic.getMpc(),"find any \"Hotel California\"",dbFragment,true).run();
 
@@ -509,7 +535,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
         super.onActivityResult(requestCode, resultCode, data);
 
-    }*/
+    }
 
     public Logic getLogic() {
         return logic;

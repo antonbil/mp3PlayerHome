@@ -1,12 +1,7 @@
 package examples.quickprogrammingtips.com.tablayout;
-/*Last.fm account details
-Here are the details of your new API account.
-Application name	musicplayer
-API key	07e905eaba54f0d626c2fadcb0fe13f6
-Shared secret	378d85061b039f1f8ba34075e2eac11c
-Registered to	rockingbilly
- */
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -14,9 +9,12 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -59,10 +57,12 @@ public class SpotifyActivity extends AppCompatActivity {
     private ArrayList<String>albumIds=new ArrayList<>();
     private ArrayList<String>albumList=new ArrayList<>();
     private TextView MessageView;
+    private SpotifyActivity getThis;
     //private ListView albumsListview, relatedArtistsListView;
     public static String LastFMArtist(String artist) {
         //artist.getInfo
         String encArtist = artist;
+
         String api_key = "07e905eaba54f0d626c2fadcb0fe13f6";//see above; last.fm-key
         String urlString = String.format("http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=%s&api_key=%s&format=json",encArtist, api_key);
 //        String urlString = "http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist="
@@ -109,7 +109,8 @@ public class SpotifyActivity extends AppCompatActivity {
         @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_spotify);
+            getThis=this;
+            setContentView(R.layout.activity_spotify);
         final SpotifyApi api = new SpotifyApi();
         final SpotifyService spotify = api.getService();
 
@@ -153,7 +154,46 @@ public class SpotifyActivity extends AppCompatActivity {
 
         final ArrayAdapter<String> relatedArtistsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, artistList);
         relatedArtistsListView.setAdapter(relatedArtistsAdapter);
-        relatedArtistsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            relatedArtistsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                               int pos, long id) {
+                    final String selectedItem = artistList.get(pos);
+
+                    Log.v("long clicked", "pos: " + pos + "artist: " + selectedItem);
+                    PopupMenu menu = new PopupMenu(arg1.getContext(), arg1);
+                    menu.getMenu().add("search");
+                    menu.getMenu().add("wikipedia");
+                    menu.show();
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+
+                            String title = item.getTitle().toString();
+                            if ((title.equals("search"))) {
+                                /*MainActivity.getThis.selectTab(2);
+                                try{ Thread.sleep(1000); MainActivity.getThis.searchTerm(selectedItem);}catch(InterruptedException e){ }
+                                */
+                                final Intent intent = getThis.getIntent();
+                                intent.putExtra("artist", selectedItem);
+                                setResult(Activity.RESULT_OK, intent);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
+                                getThis.finish(); //finish the activity
+
+                            }
+                            if ((title.equals("wikipedia"))) {
+                                MainActivity.getThis.startWikipediaPage(selectedItem);
+                            }
+
+                            return true;
+                        }
+
+                    });
+
+                    return true;
+                }
+            });
+            relatedArtistsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 

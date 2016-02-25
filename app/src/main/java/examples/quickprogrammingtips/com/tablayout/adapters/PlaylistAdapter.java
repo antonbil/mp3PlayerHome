@@ -4,7 +4,6 @@ package examples.quickprogrammingtips.com.tablayout.adapters;
  * Created by anton on 20-1-16.
  */
 
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
@@ -26,7 +25,6 @@ import examples.quickprogrammingtips.com.tablayout.MainActivity;
 import examples.quickprogrammingtips.com.tablayout.MpdInterface;
 import examples.quickprogrammingtips.com.tablayout.PlayFragment;
 import examples.quickprogrammingtips.com.tablayout.R;
-import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import examples.quickprogrammingtips.com.tablayout.model.Server;
@@ -214,11 +212,11 @@ public class PlaylistAdapter extends BaseAdapter {
                                             @Override
                                             public boolean onMenuItemClick(MenuItem item) {
                                                 if (item.getTitle().toString().equals("spotify")) {
-                                                    Intent intent = new Intent(selectFragmentContext.getContext(), SpotifyActivity.class);
+                                                    MainActivity.getThis.callSpotify(mp3File.getArtist());
+                                                    /*Intent intent = new Intent(selectFragmentContext.getContext(), SpotifyActivity.class);
                                                     intent.putExtra("artist", mp3File.getArtist());
 
-                                                    //selectFragmentContext.startActivity(intent);
-                                                    selectFragmentContext.startActivity(intent);
+                                                    selectFragmentContext.startActivity(intent);*/
                                                 }else
                                                 if (item.getTitle().toString().equals("artist-wikipedia")) {
                                                     MainActivity.getThis.startWikipediaPage(mp3File.getArtist());

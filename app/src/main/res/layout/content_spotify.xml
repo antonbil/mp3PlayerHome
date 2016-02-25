@@ -53,20 +53,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:text="Albums" />
-
-        <ListView
-            android:id="@+id/albums_listview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dip"
-            android:background="#B29090" >
-        </ListView>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginTop="10dip"
             android:gravity="center_vertical"
             android:text="Related Artists" />
@@ -78,6 +64,20 @@
             android:layout_marginTop="10dip"
             android:background="#4A9C67" >
         </ListView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Albums" />
+
+        <ListView
+            android:id="@+id/albums_listview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:background="#B29090" >
+        </ListView>
+
     </LinearLayout>
 
 </ScrollView>
