@@ -107,7 +107,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                 public void run() {
                     files.clear();
                     files.addAll(files1);
-                    //hier checken voor eventuele toevoegingen aan bescchrijvingen
+                    //hier checken voor eventuele toevoegingen aan beschrijvingen
                     for (File f:files)
                         if (f instanceof Mp3File){
                             Mp3File mp=(Mp3File)f;
