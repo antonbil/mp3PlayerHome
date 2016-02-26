@@ -397,6 +397,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
             public void run() {
                 selectTab(2);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
+                //searchForItem(searchString);
             }
         }, 100);
 
@@ -515,18 +516,29 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.v("samba","activity is ended!"+data.getExtras().getString("artist"));
-
+    public void onActivityResult(int requestCode, int resultCode, final Intent data) {
         //if (requestCode == STATIC_RESULT) //check if the request code is the one you've sent
         {
             if (resultCode == Activity.RESULT_OK)
             {
+                //spotify window asks for search of artist
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        selectTab(2);
+                        //give the program time to restore saved instance
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                //start searching if right tab is selected
+                                searchForItem(data.getExtras().getString("artist"));
+                            }
+                        }, 100);
+                    }
+                }, 100);
 
-                //new DatabaseCommand(logic.getMpc(),"find any \""+data.getExtras().getString("artist")+"\"",dbFragment,true).run();
-                searchTerm(data.getExtras().getString("artist"));
-                //new DatabaseCommand(logic.getMpc(),"find genre \"Soul\"",dbFragment,true).run();
-                //new DatabaseCommand(logic.getMpc(),"find any \"Hotel California\"",dbFragment,true).run();
 
             } else {
                 // the result code is different from the one you've finished with, do something else.

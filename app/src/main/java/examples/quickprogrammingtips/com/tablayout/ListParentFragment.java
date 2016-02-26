@@ -99,13 +99,13 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
             files1a = logic.sort(files1a);
             //Collections.sort(files1a, new CustomComparator());
 
-            files.clear();
             final ArrayList<File> files1 = files1a;
             getActivity().runOnUiThread(new Runnable() {
                 public String albumCheck;
 
                 @Override
                 public void run() {
+                    files.clear();
                     files.addAll(files1);
                     //hier checken voor eventuele toevoegingen aan bescchrijvingen
                     for (File f:files)
@@ -117,12 +117,12 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                                 this.albumCheck=mp.getAlbum();
                             }
                         }
+                    fileListAdapter.notifyDataSetChanged();
                     if (filesToCheck.size()>0){
                         String fname=filesToCheck.remove(0).trim().replace("'", "\'");
                         new DatabaseCommand(MainActivity.getThis.getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
                         Log.v("samba", "now search " + fname);
                     }
-                    fileListAdapter.notifyDataSetChanged();
 
                 }
             });
