@@ -5,7 +5,6 @@ package examples.quickprogrammingtips.com.tablayout.adapters;
  */
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import examples.quickprogrammingtips.com.tablayout.MainActivity;
 import examples.quickprogrammingtips.com.tablayout.R;
 import examples.quickprogrammingtips.com.tablayout.SambaInterface;
-import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
@@ -114,9 +112,10 @@ public class FileListAdapter extends BaseAdapter {
                                                 Mp3File mp3File=(Mp3File)fileArrayList.get(position);
                                                 final MainActivity context = MainActivity.getThis;
                                                 if (item.getTitle().toString().equals("spotify")) {
-                                                    Intent intent = new Intent(context, SpotifyActivity.class);
+                                                    context.callSpotify(mp3File.getArtist());
+                                                    /*Intent intent = new Intent(context, SpotifyActivity.class);
                                                     intent.putExtra("artist", mp3File.getArtist());
-                                                    context.startActivity(intent);
+                                                    context.startActivity(intent);*/
                                                 }else
                                                 if (item.getTitle().toString().equals("artist-wikipedia")) {
                                                     context.startWikipediaPage(mp3File.getArtist());
