@@ -123,7 +123,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                         }
                     fileListAdapter.notifyDataSetChanged();
                     Log.v("samba", "set position of listview to:" + listViewPosition);
-                    fileListView.setSelection(listViewPosition);//todo: find why this has no effect. Now it is necessary to do a call after one second!
+                    fileListView.setSelection(listViewPosition);//todo: find why this has no effect. Now it is necessary to do a call after one second in goback()!
                     if (filesToCheck.size()>0){
                         String fname=filesToCheck.remove(0).trim().replace("'", "\'");
                         new DatabaseCommand(MainActivity.getThis.getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
