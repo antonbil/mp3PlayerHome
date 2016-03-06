@@ -10,6 +10,7 @@ public class HistoryListview {
     public int position;
 
     public HistoryListview(String path, Parcelable state, int firstVisiblePosition) {
+        //todo: state can be removed
         this.path = path;
         this.state = state;
         this.position=firstVisiblePosition;
