@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import examples.quickprogrammingtips.com.tablayout.model.HistoryListview;
 import examples.quickprogrammingtips.com.tablayout.tools.NetworkShare;
 
 
@@ -20,13 +21,13 @@ public class ListFragment extends ListParentFragment {
         networkShare=new NetworkShare();
         //networkShare.doTest();
 
-        displayContentOfDir(this,logic.getHistory().get(logic.getHistory().size() - 1), getString(R.string.select_filelist));
+        displayContentOfDir(this,logic.getHistory().get(logic.getHistory().size() - 1).path, getString(R.string.select_filelist));
         return view;
     }
 
 
     @Override
-    public ArrayList<String> history() {
+    public ArrayList<HistoryListview> history() {
         return logic.getHistory();
     }
     @Override

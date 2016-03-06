@@ -1,10 +1,8 @@
 package examples.quickprogrammingtips.com.tablayout.model;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -24,8 +22,8 @@ public class Logic  implements SambaInterface {
     public static final int DEFAULT_PORT = 6600;
     private String basePath = "smb://192.168.2.8/FamilyLibrary/TotalMusic/";
     private boolean paused=false;
-    private ArrayList<String> history=new ArrayList<>(Arrays.asList(basePath));
-    private ArrayList<String> historyMpd=new ArrayList<>(Arrays.asList(""));
+    private ArrayList<HistoryListview> history=new ArrayList<>();
+    private ArrayList<HistoryListview> historyMpd=new ArrayList<>();
     private CopyOnWriteArrayList<Mp3File> playlistFiles = new CopyOnWriteArrayList<>();
     MainActivity activity;
     public MPCStatus mpcStatus;
@@ -47,6 +45,8 @@ public class Logic  implements SambaInterface {
         openServer(Server.servers.get(Server.getServer(activity)).url);
         getMpc().setMPCListener(activity);
         this.activity=activity;
+        history.add(new HistoryListview(basePath,null, 0));
+        historyMpd.add(new HistoryListview("",null, 0));
 
     }
 
@@ -84,11 +84,11 @@ public class Logic  implements SambaInterface {
         mpc.sendSingleMessage("repeat 1");
     }
 
-    public ArrayList<String> getHistory() {
+    public ArrayList<HistoryListview> getHistory() {
         return history;
     }
 
-    public void setHistory(ArrayList<String> history) {
+    public void setHistory(ArrayList<HistoryListview> history) {
         this.history = history;
     }
 
@@ -215,11 +215,11 @@ public class Logic  implements SambaInterface {
 
     }
 
-    public ArrayList<String> getHistoryMpd() {
+    public ArrayList<HistoryListview> getHistoryMpd() {
         return historyMpd;
     }
 
-    public void setHistoryMpd(ArrayList<String> historyMpd) {
+    public void setHistoryMpd(ArrayList<HistoryListview> historyMpd) {
         this.historyMpd = historyMpd;
     }
 
@@ -227,5 +227,6 @@ public class Logic  implements SambaInterface {
         Collections.sort(files1a, new CustomComparator());
         return files1a;
     }
+
 }
 

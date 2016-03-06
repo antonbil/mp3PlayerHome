@@ -28,6 +28,7 @@ import java.util.List;
 import examples.quickprogrammingtips.com.tablayout.adapters.FavoriteListAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
+import examples.quickprogrammingtips.com.tablayout.model.HistoryListview;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Server;
 import examples.quickprogrammingtips.com.tablayout.tools.Utils;
@@ -224,7 +225,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 if (!id.equals("add to playlist"))
                 {//todo add item add to playlist
                     Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
-                    logic.getHistory().add(uri);
+                    logic.getHistory().add(new HistoryListview(uri,null, 0));
                     ((MainActivity) getActivity()).selectTab(1);
                 }
             }else{
@@ -233,7 +234,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     //Log.v("samba",command);
                     logic.getMpc().enqueCommands(new ArrayList<>(Collections.singletonList(command)));
                 } else {
-                    logic.getHistoryMpd().add(uri);
+                    logic.getHistoryMpd().add(new HistoryListview(uri,null, 0));
                     ((MainActivity) getActivity()).selectTab(2);
                 }
             }

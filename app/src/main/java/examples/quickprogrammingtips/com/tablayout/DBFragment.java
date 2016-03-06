@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.model.File;
+import examples.quickprogrammingtips.com.tablayout.model.HistoryListview;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import examples.quickprogrammingtips.com.tablayout.tools.NetworkShare;
 import mpc.DatabaseCommand;
@@ -26,12 +27,12 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
                              Bundle savedInstanceState) {
         View view=super.onCreateView(inflater,container,savedInstanceState);
 
-        displayContents(logic.getHistoryMpd().get(logic.getHistoryMpd().size() - 1));//chdb
+        displayContents(logic.getHistoryMpd().get(logic.getHistoryMpd().size() - 1).path);//chdb
         return view;
     }
 
     @Override
-    public ArrayList<String> history() {
+    public ArrayList<HistoryListview> history() {
         return logic.getHistoryMpd();
     }
 

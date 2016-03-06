@@ -23,7 +23,6 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -83,7 +82,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                         String name = f.getName();
                         String parent = f.getParent();
                         if (f.isDirectory()){
-                            Log.v("samba", f.getURL().getPath());
+                            //Log.v("samba", f.getURL().getPath());
                             File file=new File(name, parent);
                             files.add(file);
                             //Log.v("samba","a:"+file.toString()+";");
@@ -109,7 +108,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                                     while (last.length()>0 && (Character.isDigit(last.toCharArray()[last.length()-1])) || last.toCharArray()[last.length()-1]==')' || last.toCharArray()[last.length()-1]=='(')
                                         last=last.substring(0,last.length()-1).trim();
                                     album=last;
-                                    Log.v("samba","find song:"+n+", and album:"+last);
+                                    //Log.v("samba","find song:"+n+", and album:"+last);
                                     albumToSearch=last;
 
                                     //split string at /, last is filename, before: split at -, last is album
@@ -128,7 +127,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                                 file.setFname(name);
                                 filesMp3.add(file);
                                 String s = String.format("%s%s", parent, name);
-                                Log.v("samba", s);
+                                //Log.v("samba", s);
                                 MPCSong mp=new MPCSong(s,0,"", name,"",0);
                                 file.setTime(0);
                                 file.setAlbum(album);
@@ -384,7 +383,7 @@ public class NetworkShare  implements MPCDatabaseListener{
 
                 if (f instanceof Mp3File){
                     Mp3File mp=(Mp3File)f;
-                    Log.v("samba","file1a:"+mp.getFile());
+                    //Log.v("samba","file1a:"+mp.getFile());
                     if (mp.getFile().toLowerCase().contains(this.albumToSearch.toLowerCase())){
                         //found it!
                         String path=mp.getFile();
@@ -399,7 +398,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                                 //mp2.setFname(mp.getFname());
                                 mp2.setPath(path);
                                 String file = path +"/"+ mp2.getFname();
-                                Log.v("samba",file);
+                                //Log.v("samba",file);
                                 mp2.setFile(file);
                                 mp2.setAlbum(mp.getAlbum());
                                 mp2.setArtist(mp.getArtist());

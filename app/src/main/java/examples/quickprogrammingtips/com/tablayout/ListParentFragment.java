@@ -1,6 +1,8 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import examples.quickprogrammingtips.com.tablayout.adapters.FileListAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.CustomComparator;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 import examples.quickprogrammingtips.com.tablayout.model.File;
+import examples.quickprogrammingtips.com.tablayout.model.HistoryListview;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import examples.quickprogrammingtips.com.tablayout.tools.NetworkShare;
@@ -29,6 +32,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     ArrayList<File> files = new ArrayList<>();NetworkShare networkShare;Logic logic;
     ArrayList<String>filesToCheck=new ArrayList<>();
     ListParentFragment listParentFragment;
+    ListView fileListView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,7 +41,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
         listParentFragment=this;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-        final ListView fileListView = (android.widget.ListView) view.findViewById(R.id.listViewFiles);
+        fileListView = (android.widget.ListView) view.findViewById(R.id.listViewFiles);
         fileListAdapter = new FileListAdapter(getActivity(),this, files);
         fileListView.setAdapter(fileListAdapter);
         //registerForContextMenu(fileListView);
@@ -144,8 +148,12 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
 
                 displayContentOfDir(this,path, id);
             } else
-            if (id==getString(R.string.select_filelist))
-                displayContentOfDir(this,path, id);
+            if (id==getString(R.string.select_filelist)) {
+                HistoryListview hl=new HistoryListview(path,fileListView.onSaveInstanceState(), fileListView.getFirstVisiblePosition());
+                history().add(hl);
+                displayContentOfDir(this, path, id);
+                fileListView.setSelection(0);
+            }
             else  if (id==getString(R.string.addtofavorites_filelist)){
                 String[] paths=path.split("/");
                 FavoriteRecord fv=new FavoriteRecord(path, paths[paths.length-1], "2nd edition");
@@ -177,16 +185,12 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                     logic.playWithDelay(id, toplay);
                 }
             }
-            if (id == getString(R.string.select_filelist)) {
-
-                history().add(path);
-            }
         }
     }
 
 
 
-    public ArrayList<String> history() {
+    public ArrayList<HistoryListview> history() {
         return logic.getHistory();
     }
 
@@ -196,15 +200,42 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     public void getContentOfDirAndPlay(String path, String id) {
     }
 
-    protected void goBack(ArrayList<String >history){
+    protected void goBack(ArrayList<HistoryListview >history){
+        Parcelable state=null;
+        int position=0;
+        Parcelable prevstate=null;
+        int prevposition=0;
         String newPath="";
         for (int j=1;j<=2;j++) {
             int last = history.size() - 1;//chdb
-            newPath= history.get(last);//chdb
-            if (last>=1) history.remove(last);//chdb
+            newPath= history.get(last).path;//chdb
+            if (j==1) {
+                state = history.get(last).state;
+                position = history.get(last).position;
+                if (last>=1) history.remove(last);//chdb
+            }
+            /*if (j==2) {
+                prevstate = history.get(last).state;
+                prevposition = history.get(last).position;
+            }*/
         }
-        history.add(newPath);//chdb
+
+        //history.add(new HistoryListview(newPath, prevstate, prevposition));//chdb
         displayContentOfDir(this, newPath, getString(R.string.select_filelist));
+
+        final int pposition=position;
+        //if (state !=null){
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after 100ms
+                Log.v("samba", "set state back!" + pposition);
+                //fileListView.onRestoreInstanceState(state);}
+                fileListView.setSelection(pposition);
+            }
+        }, 500);
+
     }
 
     @Override

@@ -49,10 +49,17 @@ public class Mp3File extends File{
                 this.setTitle(title);
             }
             if (s.get(i).startsWith("Date:")){
+                String s1="";
                 try{
-                    this.setYear(Integer.parseInt(s.get(i).split("Date:")[1].trim()));
+                    s1 = s.get(i).split("Date:")[1].trim();
+                    this.setYear(Integer.parseInt(s1));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    try{
+                        this.setYear(Integer.parseInt(s1.substring(0, 4)));
+                    } catch (Exception e1) {
+
+                        e1.printStackTrace();
+                    }
                 }
             }
             if (s.get(i).startsWith("Track:")){
