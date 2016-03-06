@@ -2,7 +2,6 @@ package examples.quickprogrammingtips.com.tablayout;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +32,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     ArrayList<String>filesToCheck=new ArrayList<>();
     ListParentFragment listParentFragment;
     ListView fileListView;
+    private int listViewPosition=0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -122,6 +122,8 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                             }
                         }
                     fileListAdapter.notifyDataSetChanged();
+                    Log.v("samba", "set position of listview to:" + listViewPosition);
+                    fileListView.setSelection(listViewPosition);//todo: find why this has no effect. Now it is necessary to do a call after one second!
                     if (filesToCheck.size()>0){
                         String fname=filesToCheck.remove(0).trim().replace("'", "\'");
                         new DatabaseCommand(MainActivity.getThis.getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
@@ -201,37 +203,27 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     }
 
     protected void goBack(ArrayList<HistoryListview >history){
-        Parcelable state=null;
         int position=0;
-        Parcelable prevstate=null;
-        int prevposition=0;
+
         String newPath="";
         for (int j=1;j<=2;j++) {
             int last = history.size() - 1;//chdb
             newPath= history.get(last).path;//chdb
             if (j==1) {
-                state = history.get(last).state;
                 position = history.get(last).position;
                 if (last>=1) history.remove(last);//chdb
             }
-            /*if (j==2) {
-                prevstate = history.get(last).state;
-                prevposition = history.get(last).position;
-            }*/
         }
 
-        //history.add(new HistoryListview(newPath, prevstate, prevposition));//chdb
         displayContentOfDir(this, newPath, getString(R.string.select_filelist));
+        listViewPosition=position;
 
         final int pposition=position;
-        //if (state !=null){
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                //Do something after 100ms
-                Log.v("samba", "set state back!" + pposition);
-                //fileListView.onRestoreInstanceState(state);}
                 fileListView.setSelection(pposition);
             }
         }, 500);
