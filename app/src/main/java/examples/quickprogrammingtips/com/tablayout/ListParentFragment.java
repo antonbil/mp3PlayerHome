@@ -1,7 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -123,7 +122,13 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                         }
                     fileListAdapter.notifyDataSetChanged();
                     Log.v("samba", "set position of listview to:" + listViewPosition);
-                    fileListView.setSelection(listViewPosition);//todo: find why this has no effect. Now it is necessary to do a call after one second in goback()!
+                    //workaround; the following line does not work:fileListView.setSelection(listViewPosition);
+                    fileListView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            fileListView.setSelection(listViewPosition);
+                        }
+                    });
                     if (filesToCheck.size()>0){
                         String fname=filesToCheck.remove(0).trim().replace("'", "\'");
                         new DatabaseCommand(MainActivity.getThis.getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
@@ -216,17 +221,8 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
         }
 
         displayContentOfDir(this, newPath, getString(R.string.select_filelist));
+        //restore position. Dispaly it when new data is received
         listViewPosition=position;
-
-        final int pposition=position;
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                fileListView.setSelection(pposition);
-            }
-        }, 500);
 
     }
 
