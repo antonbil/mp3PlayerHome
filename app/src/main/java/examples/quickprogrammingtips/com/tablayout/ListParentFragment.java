@@ -159,7 +159,8 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                 HistoryListview hl=new HistoryListview(path,fileListView.onSaveInstanceState(), fileListView.getFirstVisiblePosition());
                 history().add(hl);
                 displayContentOfDir(this, path, id);
-                fileListView.setSelection(0);
+                listViewPosition=0;
+                //fileListView.setSelection(0);
             }
             else  if (id==getString(R.string.addtofavorites_filelist)){
                 String[] paths=path.split("/");
