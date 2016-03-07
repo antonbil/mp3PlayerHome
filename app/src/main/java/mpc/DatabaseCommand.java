@@ -1,7 +1,5 @@
 package mpc;
 
-import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -72,7 +70,7 @@ public class DatabaseCommand extends Thread{
 			in.readLine();
 
 			out.println(command);
-			Log.v("samba", command);
+			//Log.v("samba", command);
 			String line;
 
 			ArrayList<File> files=new ArrayList<File>();

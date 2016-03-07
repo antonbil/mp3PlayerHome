@@ -56,7 +56,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     @Override
     public void sambaCallCompleted(ArrayList<File> files1a, ArrayList<File> filesMp3, String id) {
         if (id=="Download") {
-            Log.v("samba", "download list");
+            //Log.v("samba", "download list");
             ArrayList<String> files=new ArrayList<>();
             String dirname="artist-album";
             for (File f:filesMp3){
@@ -69,7 +69,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                 String filename = f.getPath() + "/" + f.getFname();
                 files.add(filename);
 
-                Log.v("samba", filename);
+                //Log.v("samba", filename);
             }
             NetworkShare.copyFile(files,dirname);
             return;
@@ -141,7 +141,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
 
     @Override
     public void newSambaCall(String path, String id) {
-        Log.v("samba","hier path in ListParent:"+path);
+        //Log.v("samba","hier path in ListParent:"+path);
         if (!isAdded()){
             //MainActivity.panicMessage("ListFragment is detached from Activity");
             return;
