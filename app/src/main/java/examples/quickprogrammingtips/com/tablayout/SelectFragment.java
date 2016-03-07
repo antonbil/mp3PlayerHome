@@ -225,7 +225,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 if (!id.equals("add to playlist"))
                 {//todo add item add to playlist
                     Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
-                    logic.getHistory().add(new HistoryListview(uri,null, 0));
+                    logic.getHistory().add(new HistoryListview(uri, 0));
                     ((MainActivity) getActivity()).selectTab(1);
                 }
             }else{
@@ -234,7 +234,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     //Log.v("samba",command);
                     logic.getMpc().enqueCommands(new ArrayList<>(Collections.singletonList(command)));
                 } else {
-                    logic.getHistoryMpd().add(new HistoryListview(uri,null, 0));
+                    logic.getHistoryMpd().add(new HistoryListview(uri, 0));
                     ((MainActivity) getActivity()).selectTab(2);
                 }
             }

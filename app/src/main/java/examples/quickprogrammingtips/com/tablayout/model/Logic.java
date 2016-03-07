@@ -45,8 +45,8 @@ public class Logic  implements SambaInterface {
         openServer(Server.servers.get(Server.getServer(activity)).url);
         getMpc().setMPCListener(activity);
         this.activity=activity;
-        history.add(new HistoryListview(basePath,null, 0));
-        historyMpd.add(new HistoryListview("",null, 0));
+        history.add(new HistoryListview(basePath, 0));
+        historyMpd.add(new HistoryListview("", 0));
 
     }
 

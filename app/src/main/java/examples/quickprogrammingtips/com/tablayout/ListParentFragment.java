@@ -121,7 +121,6 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                             }
                         }
                     fileListAdapter.notifyDataSetChanged();
-                    Log.v("samba", "set position of listview to:" + listViewPosition);
                     //workaround; the following line does not work:fileListView.setSelection(listViewPosition);
                     fileListView.post(new Runnable() {
                         @Override
@@ -132,7 +131,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                     if (filesToCheck.size()>0){
                         String fname=filesToCheck.remove(0).trim().replace("'", "\'");
                         new DatabaseCommand(MainActivity.getThis.getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
-                        Log.v("samba", "now search " + fname);
+                        //Log.v("samba", "now search " + fname);
                     }
 
                 }
@@ -156,7 +155,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                 displayContentOfDir(this,path, id);
             } else
             if (id==getString(R.string.select_filelist)) {
-                HistoryListview hl=new HistoryListview(path,fileListView.onSaveInstanceState(), fileListView.getFirstVisiblePosition());
+                HistoryListview hl=new HistoryListview(path, fileListView.getFirstVisiblePosition());
                 history().add(hl);
                 displayContentOfDir(this, path, id);
                 listViewPosition=0;
