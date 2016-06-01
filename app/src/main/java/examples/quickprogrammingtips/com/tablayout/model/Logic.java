@@ -1,6 +1,7 @@
 package examples.quickprogrammingtips.com.tablayout.model;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,6 +79,7 @@ public class Logic  implements SambaInterface {
             }
         };
         //address = "192.168.2.16";
+        Log.v("samba", address);
         setMpc(new MPC(address, DEFAULT_PORT, 1000, db));
         mpc.sendSingleMessage("consume 0");
         mpc.sendSingleMessage("random 0");

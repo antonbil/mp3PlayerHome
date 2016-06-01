@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -81,6 +82,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     for (int i = 0; i < servers.size(); i++) {
                         if (checkedId == servers.get(i).code) {
                             setAddress(servers.get(i).url);
+                            Log.v("samba", servers.get(i).url);
 
                             Server.setServer(i, getActivity());
                         }

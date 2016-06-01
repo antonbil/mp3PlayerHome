@@ -1,7 +1,5 @@
 package mpc;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +65,9 @@ public class MPC {
 	 */
 	public void pause(){
 		sendSingleMessage("pause");
+	}
+	public void stop(){
+		sendSingleMessage("stop");
 	}
 
 	public ArrayList<Mp3File> playlist(){
