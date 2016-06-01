@@ -1,14 +1,14 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -42,6 +42,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import examples.quickprogrammingtips.com.tablayout.tools.Utils;
@@ -49,6 +50,7 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Album;
 import kaaes.spotify.webapi.android.models.Artist;
+import kaaes.spotify.webapi.android.models.ArtistSimple;
 import kaaes.spotify.webapi.android.models.Artists;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Image;
@@ -57,6 +59,9 @@ import kaaes.spotify.webapi.android.models.Track;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+
+import static examples.quickprogrammingtips.com.tablayout.model.Mp3File.niceTime;
+
 /*
 The most straightforward way to get the access token is to use the Authentication Library from the Spotify Android SDK.(https://github.com/spotify/android-sdk)
 explanation:https://developer.spotify.com/technologies/spotify-android-sdk/android-sdk-authentication-guide/#single-sign-on-with-spotify-client-and-a-webview-fallback
@@ -74,6 +79,14 @@ public class SpotifyActivity extends AppCompatActivity {
     private static int spotifyStartPosition=0;
     private static String spotifyToken="";
     private static HashMap hm = new HashMap();
+    private Track previousTrack=null;
+    private Handler customHandler = new Handler();
+    private static TextView tvName;
+    private static TextView time;
+    private static TextView totaltime;
+    private static TextView artist;
+    private static ImageView image;
+
     private static String GetSpotifyToken(){
         Log.v("samba", "ask starred:");
         String data="{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
@@ -89,47 +102,6 @@ public class SpotifyActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-        /*try {
-            URL url = new URL(urlString);
-            URLConnection uc = url.openConnection();
-            uc.setDoOutput(true);// Triggers POST.
-
-            uc.setRequestProperty("User-Agent", "@IT java-tips URLConnection");
-            uc.setRequestProperty("Content-Type","application/json");
-            uc.setRequestProperty("Accept-Language", "ja");
-            OutputStream os = uc.getOutputStream();
-
-            String postStr = data;
-            PrintStream ps = new PrintStream(os);
-            ps.print(postStr);
-            ps.close();
-
-            InputStream is = uc.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-
-            String line;
-            try {
-                while ((line = reader.readLine()) != null) {
-                    Log.v("samba", "line read:" + line);
-                    int startIndex = line.indexOf("Token=")+6;
-                    int endIndex = line.indexOf("&User");
-                        Log.v("samba", line.substring(startIndex, endIndex)); //is your string. do what you want
-                    spotifyToken=line.substring(startIndex, endIndex);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return sb.toString();
-
-        }catch (Exception e){e.printStackTrace();}*/
         return "";
     }
     private static void AddSpotifyTrack(SpotifyActivity getThis,ArrayList<String> ids, final int pos){
@@ -314,6 +286,7 @@ public class SpotifyActivity extends AppCompatActivity {
                             if (ids.size()>0)
                                 if(spotifyToken.length()==0)GetSpotifyToken();
                             AddSpotifyTrack(getThis,ids,0);
+
                         }
 
 
@@ -409,69 +382,41 @@ public class SpotifyActivity extends AppCompatActivity {
             playButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try{
+                    try {
                         //yarc.js:906 jsonrpc /jsonrpc?GetRemoteInfos [{"jsonrpc":"2.0","method":"Application.GetProperties","id":1,"params":[["muted"]]},{"jsonrpc":"2.0","method":"Player.GetProperties","id":2,"params":[0,["time", "totaltime", "percentage", "shuffled","repeat"]]},{ "jsonrpc": "2.0", "method": "Player.GetItem", "params": { "playerid": 0, "properties": [ "title", "showtitle", "artist", "thumbnail", "streamdetails", "file", "season", "episode"] }, "id": 3 }
-                    // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
-                    GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}", "http://192.168.2.3:8080/jsonrpc?StopPause");//
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                }
-            });
-            ImageButton infoButton = (ImageButton) findViewById(R.id.infospotifyButton);
-            infoButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try{
-                        String s=getJsonStringFromUrl("[{\"jsonrpc\":\"2.0\",\"method\":\"Application.GetProperties\",\"id\":1,\"params\":[[\"muted\"]]},{\"jsonrpc\":\"2.0\",\"method\":\"Player.GetProperties\",\"id\":2,\"params\":[0,[\"time\", \"totaltime\", \"percentage\", \"shuffled\",\"repeat\",\"speed\"]]}," +
-                                "{ \"jsonrpc\": \"2.0\", \"method\": \"Player.GetItem\", \"params\": { \"playerid\": 0, \"properties\": [ \"title\", \"showtitle\", \"artist\", \"thumbnail\", \"streamdetails\", \"file\", \"season\", \"episode\"] }, \"id\": 3 }]", "http://192.168.2.3:8080/jsonrpc?GetRemoteInfos");//
-                        //result:[{"id":1,"jsonrpc":"2.0","result":{"muted":false}},{"id":2,"jsonrpc":"2.0","result":{"percentage":85.810699462890625,"repeat":"off","shuffled":false,"speed":1,"time":{"hours":0,"milliseconds":493,"minutes":3,"seconds":4},"totaltime":{"hours":0,"milliseconds":0,"minutes":3,"seconds":35}}},{"id":3,"jsonrpc":"2.0","result":{"item":{"artist":[],"file":"http://127.0.0.1:8081/track/4btX6FOX75h0D40m8eQPAe.wav|X-Spotify-Token=d46cdae3fb885e0c3bd450a053c95916028f9790&User-Agent=Spotlight+1.0","label":"4btX6FOX75h0D40m8eQPAe.wav","thumbnail":"image://DefaultAlbumCover.png/","title":"4btX6FOX75h0D40m8eQPAe.wav","type":"song"}}}]
-                        //speed=0:paused or not playing
-                        JSONArray jsonRootObject=null;
-                        try {
-                            jsonRootObject = new JSONArray(s);
-                            String fname=jsonRootObject.getJSONObject(2).getJSONObject("result").getJSONObject("item").getString("file");
-                            int startIndex = fname.indexOf("track/")+6;
-                            int endIndex = fname.indexOf(".wav");
-                            Log.v("samba",fname.substring(startIndex, endIndex));
-                            Track t= (Track)hm.get(fname.substring(startIndex, endIndex));
-
-                            Double d=jsonRootObject.getJSONObject(1).getJSONObject("result").getDouble("percentage");
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
-                            builder.setMessage("percentage:"+d.toString()+"-"+t.artists.get(0).name+"-"+t.name).setCancelable(//
-                                    false).setPositiveButton("Yes",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.cancel();
-                                        }
-                                    }).setNegativeButton("No",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.cancel();
-                                        }
-                                    });
-                            AlertDialog alert = builder.create();
-                            alert.show();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
+                        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}", "http://192.168.2.3:8080/jsonrpc?StopPause");//
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
-        Utils.setDynamicHeight(albumsListview,0);
-        Utils.setDynamicHeight(relatedArtistsListView,0);
+            tvName = (TextView) findViewById(R.id.title_top);
+            time = (TextView) findViewById(R.id.time_top);
+            totaltime = (TextView) findViewById(R.id.totaltime_top);
+            artist = (TextView) findViewById(R.id.artist_top);
+            image = (ImageView) findViewById(R.id.thumbnail_top);
 
-        listAlbumsForArtist(api, spotify, beatles, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                albumsListview.setOnItemClickListener(cl);
-                listAlbumsForArtist(api, spotify, beatles, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
-            }
-        });
+            /*ImageButton infoButton = (ImageButton) findViewById(R.id.infospotifyButton);
+            infoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    updateSongInfo();
+                }
+            });*/
+            Utils.setDynamicHeight(albumsListview, 0);
+            Utils.setDynamicHeight(relatedArtistsListView, 0);
+
+            listAlbumsForArtist(api, spotify, beatles, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    albumsListview.setOnItemClickListener(cl);
+                    listAlbumsForArtist(api, spotify, beatles, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
+                }
+            });
+            customHandler.postDelayed(updateTimerThread, 0);
 
     }
 
@@ -588,7 +533,136 @@ public class SpotifyActivity extends AppCompatActivity {
             }
         });
     }
+    private Runnable updateTimerThread = new Runnable() {
 
+        public void run() {
+            updateSongInfo();
+
+            customHandler.postDelayed(this, 1000);
+        }
+
+    };
+
+    public void updateSongInfo() {
+        try{
+            String s=getJsonStringFromUrl("[{\"jsonrpc\":\"2.0\",\"method\":\"Application.GetProperties\",\"id\":1,\"params\":[[\"muted\"]]},{\"jsonrpc\":\"2.0\",\"method\":\"Player.GetProperties\",\"id\":2,\"params\":[0,[\"time\", \"totaltime\", \"percentage\", \"shuffled\",\"repeat\",\"speed\"]]}," +
+                    "{ \"jsonrpc\": \"2.0\", \"method\": \"Player.GetItem\", \"params\": { \"playerid\": 0, \"properties\": [ \"title\", \"showtitle\", \"artist\", \"thumbnail\", \"streamdetails\", \"file\", \"season\", \"episode\"] }, \"id\": 3 }]", "http://192.168.2.3:8080/jsonrpc?GetRemoteInfos");//
+            //result:[{"id":1,"jsonrpc":"2.0","result":{"muted":false}},{"id":2,"jsonrpc":"2.0","result":{"percentage":85.810699462890625,"repeat":"off","shuffled":false,"speed":1,"time":{"hours":0,"milliseconds":493,"minutes":3,"seconds":4},"totaltime":{"hours":0,"milliseconds":0,"minutes":3,"seconds":35}}},{"id":3,"jsonrpc":"2.0","result":{"item":{"artist":[],"file":"http://127.0.0.1:8081/track/4btX6FOX75h0D40m8eQPAe.wav|X-Spotify-Token=d46cdae3fb885e0c3bd450a053c95916028f9790&User-Agent=Spotlight+1.0","label":"4btX6FOX75h0D40m8eQPAe.wav","thumbnail":"image://DefaultAlbumCover.png/","title":"4btX6FOX75h0D40m8eQPAe.wav","type":"song"}}}]
+            //speed=0:paused or not playing
+            JSONArray jsonRootObject=null;
+            try {
+                jsonRootObject = new JSONArray(s);
+                Double speed=jsonRootObject.getJSONObject(1).getJSONObject("result").getDouble("speed");
+                if (speed.doubleValue()>0) {
+                    String fname = jsonRootObject.getJSONObject(2).getJSONObject("result").getJSONObject("item").getString("file");
+                    int startIndex = fname.indexOf("track/") + 6;
+                    int endIndex = fname.indexOf(".wav");
+                    final String trackid = fname.substring(startIndex, endIndex);
+
+                    Track t = (Track) hm.get(trackid);
+                    if (t == null) {
+                        Track nt = new Track();
+                        JSONObject o = new JSONObject(getStringFromUrl("https://api.spotify.com/v1/tracks/" + trackid));
+                        nt.id = trackid;
+                        List<ArtistSimple> a = new ArrayList();
+                        Artist art = new Artist();
+                        art.name = o.getJSONArray("artists").getJSONObject(0).getString("name");
+                        a.add(art);
+                        nt.artists = a;
+                        nt.name = o.getString("name");
+                        hm.put(nt.id, nt);
+                    } else if ((previousTrack == null) || !(t.id == previousTrack.id)) {
+                        Log.v("samba", trackid);
+                        previousTrack = t;
+                        try {
+                            String urlString = "https://api.spotify.com/v1/tracks/" + trackid;
+                            String getResult = getStringFromUrl(urlString);
+                            String imageurl = new JSONObject(getResult).getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                            new DownLoadImageTask(image).execute(imageurl);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    Double d = jsonRootObject.getJSONObject(1).getJSONObject("result").getDouble("percentage");
+                    JSONObject timeObject = jsonRootObject.getJSONObject(1).getJSONObject("result").getJSONObject("time");
+                    int hours = timeObject.getInt("hours");
+                    int mins = timeObject.getInt("minutes");
+                    int secs = timeObject.getInt("seconds");
+                    JSONObject ttimeObject = jsonRootObject.getJSONObject(1).getJSONObject("result").getJSONObject("totaltime");
+                    int thours = ttimeObject.getInt("hours");
+                    int tmins = ttimeObject.getInt("minutes");
+                    int tsecs = ttimeObject.getInt("seconds");
+                    int timeint = hours * 60 * 60 + mins * 60 + secs;
+                    time.setText(niceTime(timeint));
+                    int ttimeint = thours * 60 * 60 + tmins * 60 + tsecs;
+                    totaltime.setText(niceTime(ttimeint));
+                    tvName.setText(t.name);
+                    artist.setText(t.artists.get(0).name);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @NonNull
+    public String getStringFromUrl(String urlString){
+        try{
+            Log.v("samba", urlString);
+            StringBuilder sb = new StringBuilder();
+            InputStream is = new URL(urlString).openStream();
+
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+            String inputStr;
+            while ((inputStr = streamReader.readLine()) != null)
+                sb.append(inputStr);
+            return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    private class DownLoadImageTask extends AsyncTask<String,Void,Bitmap> {
+        ImageView imageView;
+
+        public DownLoadImageTask(ImageView imageView){
+            this.imageView = imageView;
+        }
+
+        /*
+            doInBackground(Params... params)
+                Override this method to perform a computation on a background thread.
+         */
+        protected Bitmap doInBackground(String...urls){
+            String urlOfImage = urls[0];
+            Bitmap logo = null;
+            try{
+                InputStream is = new URL(urlOfImage).openStream();
+                /*
+                    decodeStream(InputStream is)
+                        Decode an input stream into a bitmap.
+                 */
+                logo = BitmapFactory.decodeStream(is);
+            }catch(Exception e){ // Catch the download exception
+                e.printStackTrace();
+            }
+            return logo;
+        }
+
+        /*
+            onPostExecute(Result result)
+                Runs on the UI thread after doInBackground(Params...).
+         */
+        protected void onPostExecute(Bitmap result){
+            imageView.setImageBitmap(result);
+        }
+    }
     class MyLeadingMarginSpan2 implements LeadingMarginSpan.LeadingMarginSpan2 {
         private int margin;
         private int lines;
