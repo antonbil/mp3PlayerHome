@@ -106,9 +106,11 @@
     <string name="kamerdesc">Kamer</string>
     <string name="bankip">192.168.2.8</string>
     <string name="bankdesc">Bank</string>
-    <string name="studeerip">192.168.2.62</string>
+    <string name="studeerip">192.168.2.12</string>
     <string name="studeerdesc">Studeerkamer</string>
     <string name="pref_header_server">Server</string>
     <string name="sambaserver">192.168.2.8/FamilyLibrary</string>
     <string name="title_activity_wikpedia">WikpediaActivity</string>
+    <string name="xbmcip">192.168.2.3</string>
+    <string name="xbmcdesc">xbmc-rpi</string>
 </resources>

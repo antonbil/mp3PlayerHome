@@ -35,6 +35,11 @@
                 android:layout_height="wrap_content"
                 android:text="Studeerkamer"
                 android:id="@+id/selectstudeer" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Studeerkamer"
+                android:id="@+id/selectxbmc" />
         </RadioGroup>
 
         <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"

@@ -90,5 +90,23 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="fourth description" />
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/xbmcip"
+        android:inputType="textCapWords"
+        android:key="ipserver5"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="fourth ip" />
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/xbmcdesc"
+        android:inputType="textCapWords"
+        android:key="nameserver5"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="fourth description" />
 
 </PreferenceScreen>
