@@ -96,8 +96,9 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    regularFavoritesVisible=!regularFavoritesVisible;
-                    getFavorites();                }
+                    regularFavoritesVisible = !regularFavoritesVisible;
+                    getFavorites();
+                }
             });
             favoriteListView = (android.widget.ListView) view.findViewById(R.id.selectlistView);
             favoriteListAdapter = new FavoriteListAdapter(getActivity(), this, false,favorites);
@@ -123,6 +124,13 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     public void getFavorites() {
 
         favorites.clear();
+        //https://open.spotify.com/user/koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF
+        favorites.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "Spotify"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
+        favorites.add(new Favorite("spotify://redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "Spotify"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
+        favorites.add(new Favorite("https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB", "nltop40", "Spotify"));
+        favorites.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "Spotify"));
+        favorites.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/1WCuVrwkQbZZw6qmgockjv", "oor rockt", "Spotify"));
+        favorites.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF", "oor danst", "Spotify"));
         favorites.add(new Favorite("00tags/favorites", "favorites", ""));
         favorites.add(new Favorite("00tags/newest", "newest", ""));
         favorites.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2014/", "2014", ""));
@@ -201,48 +209,82 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     @Override
     public void favoritesCall(Favorite favorite, String id) {
-        if (id.equals("edit")){
-            if (favorite.getRecord()!=null) {
-                Intent intent = new Intent(getActivity(), EditFavoriteActivity.class);
-                intent.putExtra("id", (int)(favorite.getRecord().getId()+0));
-                intent.putExtra("url", favorite.getRecord().url);
-                intent.putExtra("description", favorite.getDescription());
-                intent.putExtra("category", favorite.getCategory());
-                startActivityForResult(intent, STATIC_RESULT);
+        Log.v("samba",favorite.getUri());
+        //spotify://
+        if (favorite.getUri().startsWith("spotify://")){
+            try {
+                SpotifyActivity.clearSpotifyPlaylist();
+                new SpotifyActivity.getEntirePlaylistFromSpotify(favorite.getUri().replace("spotify://",""),MainActivity.getThis){
+                    @Override
+                    public void atLast() {
+                        MainActivity.getThis.startPlaylistSpotify();
+                    }
+                }.run();
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+                //e.printStackTrace();
             }
 
-
-        } else
-        if (id.equals("delete")){
-            if (favorite.getRecord()!=null) {
-
-                FavoriteRecord book = FavoriteRecord.findById(FavoriteRecord.class, favorite.getRecord().getId());
-                book.delete();
-                getFavorites();
+        }
+        else
+        if (favorite.getUri().startsWith("https://")){
+            try {
+                SpotifyActivity.clearSpotifyPlaylist();
+                new SpotifyActivity.addExternalPlaylistToSpotify(favorite.getUri(),MainActivity.getThis){
+                    @Override
+                    public void atLast() {
+                        MainActivity.getThis.startPlaylistSpotify();
+                    }
+                }.run();
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+                //e.printStackTrace();
             }
 
-        } else {
-            String uri = favorite.getUri();
-            if (uri.startsWith("smb://")) {
-                if (!id.equals("add to playlist"))
-                {//todo add item add to playlist
-                    Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
-                    logic.getHistory().add(new HistoryListview(uri, 0));
-                    ((MainActivity) getActivity()).selectTab(1);
+        }
+        else {
+            if (id.equals("edit")) {
+                if (favorite.getRecord() != null) {
+                    Intent intent = new Intent(getActivity(), EditFavoriteActivity.class);
+                    intent.putExtra("id", (int) (favorite.getRecord().getId() + 0));
+                    intent.putExtra("url", favorite.getRecord().url);
+                    intent.putExtra("description", favorite.getDescription());
+                    intent.putExtra("category", favorite.getCategory());
+                    startActivityForResult(intent, STATIC_RESULT);
                 }
-            }else{
-                if (id.equals("add to playlist")){
-                    String command=("add \"" + uri + "\"");
-                    //Log.v("samba",command);
-                    logic.getMpc().enqueCommands(new ArrayList<>(Collections.singletonList(command)));
+
+
+            } else if (id.equals("delete")) {
+                if (favorite.getRecord() != null) {
+
+                    FavoriteRecord book = FavoriteRecord.findById(FavoriteRecord.class, favorite.getRecord().getId());
+                    book.delete();
+                    getFavorites();
+                }
+
+            } else {
+                String uri = favorite.getUri();
+                if (uri.startsWith("smb://")) {
+                    if (!id.equals("add to playlist")) {//todo add item add to playlist
+                        Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
+                        logic.getHistory().add(new HistoryListview(uri, 0));
+                        ((MainActivity) getActivity()).selectTab(1);
+                    }
                 } else {
-                    logic.getHistoryMpd().add(new HistoryListview(uri, 0));
-                    ((MainActivity) getActivity()).selectTab(2);
+                    if (id.equals("add to playlist")) {
+                        String command = ("add \"" + uri + "\"");
+                        //Log.v("samba",command);
+                        logic.getMpc().enqueCommands(new ArrayList<>(Collections.singletonList(command)));
+                    } else {
+                        logic.getHistoryMpd().add(new HistoryListview(uri, 0));
+                        ((MainActivity) getActivity()).selectTab(2);
+                    }
                 }
             }
         }
 
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 

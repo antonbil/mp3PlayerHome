@@ -4,6 +4,8 @@
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never"
         />
+    <item android:id="@+id/spotify_playlist" android:title="Spotify Playlist"
+        android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/display_footer" android:title="@string/display_buttons"
         android:orderInCategory="100" app:showAsAction="never"
         android:checkable="true"/>

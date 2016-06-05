@@ -1,10 +1,13 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,19 +20,26 @@ import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -70,11 +80,12 @@ and:https://github.com/kaaes/spotify-web-api-android/blob/master/sample-search/s
 Detailed information how to use it can be found in the Spotify Android SDK Authentication Guide.
  */
 public class SpotifyActivity extends AppCompatActivity {
+    private static ArrayList<String> mainids;
     private ArrayList<String>artistList=new ArrayList<>();
     private ArrayList<String>albumIds=new ArrayList<>();
     private ArrayList<String>albumList=new ArrayList<>();
     private TextView MessageView;
-    private SpotifyActivity getThis;
+    private static SpotifyActivity getThis;
     //private ListView albumsListview, relatedArtistsListView;
     private static int spotifyStartPosition=0;
     private static String spotifyToken="";
@@ -86,29 +97,48 @@ public class SpotifyActivity extends AppCompatActivity {
     private static TextView totaltime;
     private static TextView artist;
     private static ImageView image;
+    private static String ipAddress="";
+    private PlanetAdapter albumAdapter;
+    private ListView albumsListview;
+    private static ProgressDialog dialog1 = MainActivity.getThis.dialog;
+    private static Handler updateBarHandler = MainActivity.getThis.updateBarHandler;
+    AdapterView.OnItemClickListener selectOnPlaylist;
+    private boolean nosearch=false;
+    private TextView artistTitleTextView;
+    private ImageView icon;
+    private ArrayList<Track> tracksPlaylist;
+    private int currentTrack;
 
     private static String GetSpotifyToken(){
-        Log.v("samba", "ask starred:");
+        checkAddress();
+        //Log.v("samba", "ask starred:");
         String data="{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
-        String urlString = "http://192.168.2.3:8080/jsonrpc?OpenAddon_plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D";
+        String urlString = ipAddress+"?OpenAddon_plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D";
         try {
             String fname = GetJsonFromUrl(data, urlString).optJSONArray("files").getJSONObject(0).optString("file");
-            Log.v("samba", "filename:"+fname);
+            //Log.v("samba", "filename:"+fname);
             int startIndex = fname.indexOf("Token=")+6;
             int endIndex = fname.indexOf("&User");
-            Log.v("samba", fname.substring(startIndex, endIndex)); //is your string. do what you want
+            //Log.v("samba", fname.substring(startIndex, endIndex)); //is your string. do what you want
             spotifyToken=fname.substring(startIndex, endIndex);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return "";
     }
-    private static void AddSpotifyTrack(SpotifyActivity getThis,ArrayList<String> ids, final int pos){
+
+    private static void checkAddress() {
+        String ip= MainActivity.getThis.getLogic().getMpc().getAddress();
+        ipAddress=String.format("http://%s:8080/jsonrpc",ip);
+    }
+
+    private static void AddSpotifyTrack(Activity getThis,ArrayList<String> ids, final int pos){
         try {
             if (pos<ids.size()){
+                        dialog1.incrementProgressBy(1);
                 String data=String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Add\", \"params\": { \"playlistid\" : 0 , \"item\" : {\"file\" : \"http://127.0.0.1:8081/track/%s.wav|X-Spotify-Token=%s&User-Agent=Spotlight+1.0\"}}, \"id\": 1}",ids.get(pos),spotifyToken);
-                String urlString = "http://192.168.2.3:8080/jsonrpc?PlaylistAdd";
+                String urlString = ipAddress+"?PlaylistAdd";
                 GetJsonFromUrl(data, urlString);
                 AddSpotifyTrack(getThis,ids,pos+1);
             }
@@ -119,18 +149,23 @@ public class SpotifyActivity extends AppCompatActivity {
                 //todo:change http://192.168.2.3 to address of current server
                 JSONObject playlist = GetJsonFromUrl(
                         "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetItems\", \"params\": { \"properties\": [\"title\", \"album\", \"artist\", \"duration\", \"thumbnail\",\"file\"], \"playlistid\": 0 }, \"id\": 1}\u200B",
-                        "http://192.168.2.3:8080/jsonrpc?GetPLItemsAudio");
+                        ipAddress+"?GetPLItemsAudio");
 
                 spotifyStartPosition=playlist.getJSONArray("items").length()-ids.size();
-                GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": "+spotifyStartPosition+" } }, \"id\": 1}", "http://192.168.2.3:8080/jsonrpc");
-                GetJsonFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Player.GoTo\", \"params\": { \"playerid\": 0, \"to\": %s}, \"id\": 1}\u200B",spotifyStartPosition), "http://192.168.2.3:8080/jsonrpc?PlayerGoto");
-                //todo: following does NOT work!
-                Intent myIntent = new Intent(getThis,
-                        WebActivity.class);
-                myIntent.putExtra("url", "http://192.168.2.3:8080/#pl");
-                getThis.startActivity(myIntent);
+                GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": " + spotifyStartPosition + " } }, \"id\": 1}",
+                        ipAddress);
+                GetJsonFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Player.GoTo\", \"params\": { \"playerid\": 0, \"to\": %s}, \"id\": 1}\u200B", spotifyStartPosition),
+                        ipAddress+"?PlayerGoto");
+                getThis.runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (dialog1.isShowing())
+                            dialog1.dismiss();
 
-        }
+                    }
+                });
+
+
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -241,51 +276,86 @@ public class SpotifyActivity extends AppCompatActivity {
     }
         @Override
     protected void onCreate(Bundle savedInstanceState) {
+            tracksPlaylist=new ArrayList<Track>();
+
+            RelativeLayout mainLayout=(RelativeLayout)this.findViewById(R.id.spotifylayouttop);
+            String ip=MainActivity.getThis.getLogic().getMpc().getAddress();
+            ipAddress=String.format("http://%s:8080/jsonrpc",ip);
+            Log.v("samba","ip:"+ip);
+            selectOnPlaylist = new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+
+                    //Log.v("samba", "click on "+position); //is your string. do what you want
+                    Log.v("samba", "got position:" + (position));
+                    GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": " + (/*spotifyStartPosition + */position) + " } }, \"id\": 1}",
+                            ipAddress+"?PlayerOpen");
+                }
+
+                ;
+            };
         super.onCreate(savedInstanceState);
             getThis=this;
             setContentView(R.layout.activity_spotify);
-        final SpotifyApi api = new SpotifyApi();
+            Log.v("samba", "nosearch1");
+            final SpotifyApi api = new SpotifyApi();
         final SpotifyService spotify = api.getService();
             GetSpotifyToken();
 
 
 
             Bundle extras = getIntent().getExtras();
-            final String   beatles= extras.getString("artist");
+            String   temp= extras.getString("artist");
+            nosearch= (temp.startsWith("nosearch"));
+            if (nosearch)temp="The Beatles";
+            final String   beatles=temp;
 
+            Log.v("samba", "nosearch2");
 
-            final ListView albumsListview = (ListView)findViewById(R.id.albums_listview);
-        final ArrayAdapter<String> albumAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, albumList);
+            albumsListview = (ListView)findViewById(R.id.albums_listview);
+            albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        albumAdapter = new PlanetAdapter( albumList,this);
         albumsListview.setAdapter(albumAdapter);
             final AdapterView.OnItemClickListener cl=   new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view,
-                                        int position, long id) {
+                                        final int position, long id) {
 
                     String s = albumIds.get(position);
                     spotify.getAlbumTracks(s, new Callback<Pager<Track>>() {
 
                         @Override
                         public void success(Pager<Track> trackPager, Response response) {
-                            albumList.clear();
+                            //albumList.clear();
                             ArrayList<String>ids=new ArrayList<String>();
                             for (Track t : trackPager.items) {
-                                hm.put(t.id,t);
+                                try{
+                                    Album alb=new Album();
+                                    alb.name=albumList.get(position);
+                                    t.album=alb;
+                                    Artist art=new Artist();
+                                    art.name=beatles;
+                                    List<ArtistSimple> a = new ArrayList();
+                                    a.add(art);
+                                    t.artists=a;
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                hm.put(t.id, t);
                                 ids.add(t.id);
-                                albumList.add(t.name+String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue())));
+                                //albumList.add(t.name+String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue())));
                             }
-                            albumAdapter.notifyDataSetChanged();
-                            albumsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                public void onItemClick(AdapterView<?> parent, View view,
-                                                        int position, long id) {
+                            //albumAdapter.notifyDataSetChanged();
+                            //Utils.setDynamicHeight(albumsListview, 0);
+                            new AddTracksToPlaylist(ids,getThis){
+                                @Override
+                                public void atEnd() {
+                                    Log.v("samba", "einde taak");
+                                    refreshPlaylistFromSpotify(albumAdapter, albumsListview);
+                                }
 
-                                    Log.v("samba", "click on "+position); //is your string. do what you want
-                                    GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": " + (spotifyStartPosition + position) + " } }, \"id\": 1}", "http://192.168.2.3:8080/jsonrpc");
-                                };
-                            });
-                            Utils.setDynamicHeight(albumsListview, 0);
-                            if (ids.size()>0)
-                                if(spotifyToken.length()==0)GetSpotifyToken();
-                            AddSpotifyTrack(getThis,ids,0);
+                            }.run();
+
+                            //addTracksToPlaylist(ids);
 
                         }
 
@@ -301,6 +371,7 @@ public class SpotifyActivity extends AppCompatActivity {
             };
         albumsListview.setOnItemClickListener(cl);
         final ListView relatedArtistsListView = (ListView)findViewById(R.id.relatedartists_listview);
+            Log.v("samba", "nosearch3");
 
         final ArrayAdapter<String> relatedArtistsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, artistList);
         relatedArtistsListView.setAdapter(relatedArtistsAdapter);
@@ -343,27 +414,32 @@ public class SpotifyActivity extends AppCompatActivity {
                     return true;
                 }
             });
+            Log.v("samba", "nosearch4");
             relatedArtistsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
 
+                    albumsListview.setOnItemClickListener(cl);
                     String s = artistList.get(position);
                     listAlbumsForArtist(api, spotify, s, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
                 }
             });
+            Log.v("samba", "nosearch5");
             ImageButton stopButton = (ImageButton) findViewById(R.id.stopspotifyButton);
             stopButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
                     try {
-                        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.stop\", \"params\": { \"playerid\": 0 }, \"id\": 1}", "http://192.168.2.3:8080/jsonrpc?StopPause");//?StopPause
+                        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.stop\", \"params\": { \"playerid\": 0 }, \"id\": 1}",
+                                ipAddress+"?StopPause");//?StopPause
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
             //jsonrpc /jsonrpc?PlaylistClear {"jsonrpc": "2.0", "id": 0, "method": "Playlist.Clear", "params": {"playlistid": 0}}
+            Log.v("samba", "nosearch6");
             ImageButton clearButton = (ImageButton) findViewById(R.id.clearspotifyButton);
             clearButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -371,7 +447,7 @@ public class SpotifyActivity extends AppCompatActivity {
                     try{
                         //yarc.js:906 jsonrpc /jsonrpc?GetRemoteInfos [{"jsonrpc":"2.0","method":"Application.GetProperties","id":1,"params":[["muted"]]},{"jsonrpc":"2.0","method":"Player.GetProperties","id":2,"params":[0,["time", "totaltime", "percentage", "shuffled","repeat"]]},{ "jsonrpc": "2.0", "method": "Player.GetItem", "params": { "playerid": 0, "properties": [ "title", "showtitle", "artist", "thumbnail", "streamdetails", "file", "season", "episode"] }, "id": 3 }
                         // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
-                        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"Playlist.Clear\", \"params\": {\"playlistid\": 0}}", "http://192.168.2.3:8080/jsonrpc?PlaylistClear");//
+                        clearSpotifyPlaylist();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -385,43 +461,380 @@ public class SpotifyActivity extends AppCompatActivity {
                     try {
                         //yarc.js:906 jsonrpc /jsonrpc?GetRemoteInfos [{"jsonrpc":"2.0","method":"Application.GetProperties","id":1,"params":[["muted"]]},{"jsonrpc":"2.0","method":"Player.GetProperties","id":2,"params":[0,["time", "totaltime", "percentage", "shuffled","repeat"]]},{ "jsonrpc": "2.0", "method": "Player.GetItem", "params": { "playerid": 0, "properties": [ "title", "showtitle", "artist", "thumbnail", "streamdetails", "file", "season", "episode"] }, "id": 3 }
                         // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
-                        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}", "http://192.168.2.3:8080/jsonrpc?StopPause");//
+                        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}",
+                                ipAddress+"?StopPause");//
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
+            Log.v("samba", "nosearch7");
             tvName = (TextView) findViewById(R.id.title_top);
             time = (TextView) findViewById(R.id.time_top);
             totaltime = (TextView) findViewById(R.id.totaltime_top);
             artist = (TextView) findViewById(R.id.artist_top);
             image = (ImageView) findViewById(R.id.thumbnail_top);
 
-            /*ImageButton infoButton = (ImageButton) findViewById(R.id.infospotifyButton);
-            infoButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    updateSongInfo();
-                }
-            });*/
-            Utils.setDynamicHeight(albumsListview, 0);
-            Utils.setDynamicHeight(relatedArtistsListView, 0);
+            image.setOnClickListener(new View.OnClickListener() {
 
-            listAlbumsForArtist(api, spotify, beatles, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    albumsListview.setOnItemClickListener(cl);
-                    listAlbumsForArtist(api, spotify, beatles, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
+                public void onClick(View arg0) {
+                    Log.v("samba", "clicked!");
+                    // Toast.makeText(getApplicationContext(), "Clicked Image",
+                    //         Toast.LENGTH_SHORT).show();
+                    PopupMenu menu = new PopupMenu(image.getContext(), image);
+                    //jsonrpc /jsonrpc?OpenAddon_plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Aredactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D
+                    // {"jsonrpc":"2.0","method":"Files.GetDirectory","id":1,"params":["plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Aredactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D","music",["title","file","thumbnail", "art","duration"]]}
+
+                    //plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Aredactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D
+                    //{"jsonrpc":"2.0","method":"Files.GetDirectory","id":1,"params":["plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%…A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D","music",["title","file","thumbnail", "art","duration"]]
+                    menu.getMenu().add("oor11");
+                    menu.getMenu().add("wikipedia");
+                    menu.show();
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+
+                            String title = item.getTitle().toString();
+                            if ((title.equals("oor11"))) {
+                                /*
+                                spotify lijsten
+                                https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB
+                                wordt:nederlandse_top_40%3Aplaylist%3A5lH9NjOeJvctAO92ZrKQNB
+                                https://open.spotify.com/user/redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY​
+                                wordt:                     redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY​
+                                %22%3A+%22spotify%3Auser%3Aredactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22
+                                 */
+                                String playlistid = "redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY";
+                                new getEntirePlaylistFromSpotify(playlistid,getThis){
+                                    @Override
+                                    public void atLast() {
+                                        refreshPlaylistFromSpotify(albumAdapter, albumsListview);
+                                    }
+                                }.run();
+
+                            }
+                            if ((title.equals("wikipedia"))) {
+                                try {
+                                    String url = "https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB";
+                                    //addExternalPlaylistToSpotify
+                                    new addExternalPlaylistToSpotify(url,getThis){
+                                        @Override
+                                        public void atLast() {
+                                            refreshPlaylistFromSpotify(albumAdapter, albumsListview);
+                                        }
+                                    }.run();
+                                    //if (ids.size() > 0)
+                                    //    if (spotifyToken.length() == 0) GetSpotifyToken();
+                                    //AddSpotifyTrack(getThis, ids, 0);
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
+                            return true;
+                        }
+
+                    });
+
                 }
             });
+
+            Log.v("samba", "nosearch8");
+            ImageButton removeUpButton = (ImageButton) findViewById(R.id.removeupspotifyButton);
+            removeUpButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //jsonrpc /jsonrpc?PlayerRemove {"jsonrpc": "2.0", "method": "Playlist.Remove", "params": { "playlistid": 0, "position": 0}, "id": 1}
+                    for (int i = 0; i < spotifyStartPosition; i++)
+                        GetJsonFromUrl(
+                                "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Remove\", \"params\": { \"playlistid\": 0, \"position\": 0}, \"id\": 1}",
+                                ipAddress + "?PlayerRemove");
+                    spotifyStartPosition = 0;
+                    refreshPlaylistFromSpotify(albumAdapter, albumsListview);
+                }
+            });
+            ImageButton refreshButton = (ImageButton) findViewById(R.id.refreshspotifyButton);
+            refreshButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    refreshPlaylistFromSpotify(albumAdapter, albumsListview);
+                }
+            });
+
+            icon =(ImageView)findViewById(R.id.icon2 ) ;
+            artistTitleTextView = (TextView)findViewById(R.id.artist_title);//relatedartists_text
+            MessageView = ( TextView ) findViewById ( R.id.artist_content ) ;        //Expose the indent for the first three rows
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            Log.v("samba", "nosearch9");
+            if (!nosearch) {
+                Utils.setDynamicHeight(albumsListview, 0);
+                Utils.setDynamicHeight(relatedArtistsListView, 0);
+
+                listAlbumsForArtist(api, spotify, beatles, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        albumsListview.setOnItemClickListener(cl);
+                        listAlbumsForArtist(api, spotify, beatles, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
+                    }
+                });
+            } else {Log.v("samba", "nosearch");
+
+
+try{
+                //refreshPlaylistFromSpotify(albumAdapter, albumsListview);
+                //mainLayout.setVisibility(View.GONE);//spotifyscrollviewtop
+                relatedArtistsListView.setVisibility(View.GONE);
+                artistTitleTextView.setVisibility(View.GONE);
+                icon.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);//spotifyscrollviewtop
+    ((TextView)findViewById(R.id.relatedartists_text)).setVisibility(View.GONE);//albumsartist_listview
+    ((TextView)findViewById(R.id.albumsartist_listview)).setVisibility(View.GONE);//albumsartist_listview
+
+    MessageView.setVisibility(View.GONE);
+    ((ScrollView)findViewById(R.id.spotifyscrollviewtop)).setVisibility(View.GONE);//albumsartist_listview
+                //startPlaylistThread
+                customHandler.postDelayed(startPlaylistThread, 1000);
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+                //e.printStackTrace();
+            }
+
+            }
             customHandler.postDelayed(updateTimerThread, 0);
+    }
+
+    public static class getEntirePlaylistFromSpotify{
+        String playlistid; Activity getThis;
+        getEntirePlaylistFromSpotify(String playlistid, Activity getThis){
+            this.playlistid=playlistid;
+            this.getThis=getThis;
+        }
+        public void run(){
+        JSONObject playlist = GetJsonFromUrl(
+                "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3A" + playlistid + "%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}",
+                ipAddress + "?OpenAddon_plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3A" + playlistid + "%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D");
+
+        //line read:{"id":1,"jsonrpc":"2.0","result":{"files":[{"art":{"thumb":"image://http%3a%2f%2f127.0.0.1%3a8081%2fimage%2fae346f2c03ddf26e39ee5111b068c6b1e41543f0.jpg/"},"duration":247,"file":"http://127.0.0.1:8081
+        Log.v("samba", "clicked3!");
+        JSONArray items = null;
+        try {
+            items = playlist.getJSONArray("files");
+            ArrayList<String> ids = new ArrayList<String>();
+            for (int i = 0; i < items.length(); i++) {
+                String file = "";
+                JSONObject o = items.getJSONObject(i);
+                file = o.getString("file");
+                String fileid = getTrackId(file);
+                Log.v("samba", fileid);
+                ids.add(fileid);
+            }
+            new AddTracksToPlaylist(ids,getThis){
+                @Override
+                public void atEnd() {
+                    atLast();
+                    //refreshPlaylistFromSpotify(albumAdapter, albumsListview);
+                }
+
+            }.run();
+            //addTracksToPlaylist(ids);
+            //if (ids.size() > 0)
+            //    if (spotifyToken.length() == 0) GetSpotifyToken();
+            //AddSpotifyTrack(getThis, ids, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+        public void atLast(){
+
+        }
+}
+
+    public static void clearSpotifyPlaylist() {
+        checkAddress();
+        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"Playlist.Clear\", \"params\": {\"playlistid\": 0}}",
+                ipAddress+"?PlaylistClear");//
+    }
+
+    public static class addExternalPlaylistToSpotify {
+        String url; Activity getThis;
+        addExternalPlaylistToSpotify(String url, Activity getThis) {
+            this.url=url;
+            this.getThis=getThis;
+        }
+
+        public void run() {
+            if (MainActivity.getThis.getLogic().mpcStatus.playing) {
+                MainActivity.getThis.getLogic().getMpc().stop();
+            }
+
+            Document doc = null;
+            try {
+                doc = Jsoup.connect(url).get();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Elements trackelements = doc.select("meta[property=music:song]");
+            ArrayList<String> ids = new ArrayList<String>();
+            for (Element element : trackelements) {
+                String s = element.attr("content");
+                int startIndex = s.indexOf("track/") + 6;
+                ids.add(element.attr("content").substring(startIndex));
+
+                Log.v("samba", element.attr("content").substring(startIndex));
+            }
+            new AddTracksToPlaylist(ids, getThis) {
+                @Override
+                public void atEnd() {
+                    atLast();
+                }
+
+            }.run();
+            //addTracksToPlaylist(ids);
+        }
+        public void atLast(){
+
+        }
+    }
+
+    static class Task implements Runnable {
+        ArrayList<String> mainids;
+        Activity getThis;
+        Task(ArrayList<String> ids, Activity getThis){
+            mainids=ids;
+            this.getThis=getThis;
+
+        }
+        @Override
+
+        public void run() {
+
+            AddSpotifyTrack(getThis, mainids, 0);
+            atEnd2();
+
+        }
+
+        public void atEnd2(){
+
+        }
+
+
+
+    }
+    static class AddTracksToPlaylist  {
+        ArrayList<String> mainids;
+        Activity getThis;
+        AddTracksToPlaylist(ArrayList<String> ids, Activity getThis){
+            mainids=ids;
+            this.getThis=getThis;
+
+        }
+
+        public void run() {
+            try{
+
+            //mainids=ids;
+            if (mainids.size()>0)
+                if(spotifyToken.length()==0)GetSpotifyToken();
+            dialog1=new ProgressDialog(getThis);
+            dialog1.setTitle("spotify-playlist");
+            dialog1.setMessage("Adding to list");
+            dialog1.setProgressStyle(dialog1.STYLE_HORIZONTAL);
+            dialog1.setProgress(0);
+            dialog1.setMax(mainids.size());
+            dialog1.show();
+
+
+            new Thread(new Task(mainids,getThis){
+                public void atEnd2() {
+                    Log.v("samba", "einde taak");
+                    MainActivity.getThis.runOnUiThread(new Runnable() {
+                        public void run() {
+
+                            dialog1.dismiss();
+                            atEnd();
+
+                        }
+                    });
+                }
+
+            }).start();
+
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+            //e.printStackTrace();
+        }
+        }
+
+        public void atEnd(){
+
+        }
+
+
+
+    }
+    public static void addTracksToPlaylist(ArrayList<String> ids) {
+        try{
+        new AddTracksToPlaylist(ids,getThis){
+            @Override
+            public void atEnd() {
+                Log.v("samba", "einde taak");
+             }
+
+        }.run();
+    } catch (Exception e) {
+        Log.v("samba", Log.getStackTraceString(e));
+        //e.printStackTrace();
+    }
 
     }
 
+    public void refreshPlaylistFromSpotify(ArrayAdapter<String> albumAdapter, ListView albumsListview) {
+        try{
+        JSONObject playlist = GetJsonFromUrl(
+                "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetItems\", \"params\": { \"properties\": [\"title\", \"album\", \"artist\", \"duration\", \"thumbnail\",\"file\"], \"playlistid\": 0 }, \"id\": 1}\u200B",
+                ipAddress+"?GetPLItemsAudio");
+        Log.v("samba", "refresh");
+
+        albumList.clear();
+        JSONArray items=null;
+        items=playlist.getJSONArray("items");
+        String prevAlbum="";
+        tracksPlaylist.clear();
+        for (int i=0;i<items.length();i++){
+            String trackid ="";
+            JSONObject o = items.getJSONObject(i);
+            trackid = getTrackId(o.getString("file"));
+            Track t = getTrack(trackid);
+            tracksPlaylist.add(t);
+            Log.v("samba", t.name);
+            //ArrayList<String> ids=new ArrayList<String>();
+            String extra="";
+            try {
+            String name = t.album.name;
+            if (!prevAlbum.startsWith(name)){
+                extra=String.format("(%s-%s)",t.artists.get(0).name, name);
+                prevAlbum= name;
+            }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            albumList.add(t.name + extra + String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue())));
+        }
+        //spotifyStartPosition=0;
+        albumAdapter.notifyDataSetChanged();
+        Utils.setDynamicHeight(albumsListview, 0);
+        albumsListview.setOnItemClickListener(selectOnPlaylist);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setArtistText(final String beatles, Image image) {
-        final TextView artistTitleTextView = (TextView)findViewById(R.id.artist_title);
 
         artistTitleTextView.setText(beatles);
 
@@ -440,9 +853,10 @@ public class SpotifyActivity extends AppCompatActivity {
         int leftMargin= scale + 10 ;
 
         //Set the icon in R.id.icon
-        ImageView icon =(ImageView)findViewById(R.id.icon2 ) ;
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scale,scale);
         icon.setLayoutParams(layoutParams);
+
+
         try {
             ImageView i = (ImageView)findViewById(R.id.image);
             Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(image.url).getContent());
@@ -454,7 +868,6 @@ public class SpotifyActivity extends AppCompatActivity {
         }
 
 
-        MessageView = ( TextView ) findViewById ( R.id.artist_content ) ;        //Expose the indent for the first three rows
         SS.setSpan(new MyLeadingMarginSpan2(scale/50,leftMargin),0,SS.length(),0);
         MessageView.setText(SS ) ;
     }
@@ -543,10 +956,18 @@ public class SpotifyActivity extends AppCompatActivity {
 
     };
 
+    private Runnable startPlaylistThread = new Runnable() {
+
+        public void run() {
+            refreshPlaylistFromSpotify(albumAdapter, albumsListview);
+        }
+
+    };
     public void updateSongInfo() {
         try{
             String s=getJsonStringFromUrl("[{\"jsonrpc\":\"2.0\",\"method\":\"Application.GetProperties\",\"id\":1,\"params\":[[\"muted\"]]},{\"jsonrpc\":\"2.0\",\"method\":\"Player.GetProperties\",\"id\":2,\"params\":[0,[\"time\", \"totaltime\", \"percentage\", \"shuffled\",\"repeat\",\"speed\"]]}," +
-                    "{ \"jsonrpc\": \"2.0\", \"method\": \"Player.GetItem\", \"params\": { \"playerid\": 0, \"properties\": [ \"title\", \"showtitle\", \"artist\", \"thumbnail\", \"streamdetails\", \"file\", \"season\", \"episode\"] }, \"id\": 3 }]", "http://192.168.2.3:8080/jsonrpc?GetRemoteInfos");//
+                    "{ \"jsonrpc\": \"2.0\", \"method\": \"Player.GetItem\", \"params\": { \"playerid\": 0, \"properties\": [ \"title\", \"showtitle\", \"artist\", \"thumbnail\", \"streamdetails\", \"file\", \"season\", \"episode\"] }, \"id\": 3 }]",
+                    ipAddress+"?GetRemoteInfos");//
             //result:[{"id":1,"jsonrpc":"2.0","result":{"muted":false}},{"id":2,"jsonrpc":"2.0","result":{"percentage":85.810699462890625,"repeat":"off","shuffled":false,"speed":1,"time":{"hours":0,"milliseconds":493,"minutes":3,"seconds":4},"totaltime":{"hours":0,"milliseconds":0,"minutes":3,"seconds":35}}},{"id":3,"jsonrpc":"2.0","result":{"item":{"artist":[],"file":"http://127.0.0.1:8081/track/4btX6FOX75h0D40m8eQPAe.wav|X-Spotify-Token=d46cdae3fb885e0c3bd450a053c95916028f9790&User-Agent=Spotlight+1.0","label":"4btX6FOX75h0D40m8eQPAe.wav","thumbnail":"image://DefaultAlbumCover.png/","title":"4btX6FOX75h0D40m8eQPAe.wav","type":"song"}}}]
             //speed=0:paused or not playing
             JSONArray jsonRootObject=null;
@@ -555,24 +976,25 @@ public class SpotifyActivity extends AppCompatActivity {
                 Double speed=jsonRootObject.getJSONObject(1).getJSONObject("result").getDouble("speed");
                 if (speed.doubleValue()>0) {
                     String fname = jsonRootObject.getJSONObject(2).getJSONObject("result").getJSONObject("item").getString("file");
-                    int startIndex = fname.indexOf("track/") + 6;
-                    int endIndex = fname.indexOf(".wav");
-                    final String trackid = fname.substring(startIndex, endIndex);
+                    String trid = getTrackId(fname);
+                    //currentTrack=0;
+                    for (int i=0;i<tracksPlaylist.size();i++){
+                        if (tracksPlaylist.get(i).id.equals(trid)){
+                            if (currentTrack!=i)albumsListview.setItemChecked(currentTrack,false);
+                            currentTrack=i;
+                            Log.v("samba","current track:"+i+","+tracksPlaylist.get(i).name);
+                        }
+                    }
 
-                    Track t = (Track) hm.get(trackid);
-                    if (t == null) {
-                        Track nt = new Track();
-                        JSONObject o = new JSONObject(getStringFromUrl("https://api.spotify.com/v1/tracks/" + trackid));
-                        nt.id = trackid;
-                        List<ArtistSimple> a = new ArrayList();
-                        Artist art = new Artist();
-                        art.name = o.getJSONArray("artists").getJSONObject(0).getString("name");
-                        a.add(art);
-                        nt.artists = a;
-                        nt.name = o.getString("name");
-                        hm.put(nt.id, nt);
-                    } else if ((previousTrack == null) || !(t.id == previousTrack.id)) {
-                        Log.v("samba", trackid);
+                    albumsListview.setItemChecked(currentTrack,true);
+                    albumAdapter.setCurrentItem(currentTrack);
+                    albumAdapter.notifyDataSetChanged();
+                    final String trackid = trid;
+
+                    Track t = getTrack(trackid);
+                    if (t!=null)
+                    if ((previousTrack == null) || !(t.id == previousTrack.id)) {
+                        //Log.v("samba", trackid);
                         previousTrack = t;
                         try {
                             String urlString = "https://api.spotify.com/v1/tracks/" + trackid;
@@ -608,11 +1030,80 @@ public class SpotifyActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+    public class PlanetAdapter extends ArrayAdapter<String> {
+        int currentItem=-1;
+
+        public void setCurrentItem(int i){
+            this.currentItem=i;
+        }
+
+        private List<String> planetList;
+        private Context context;
+
+        public PlanetAdapter(List<String> planetList, Context ctx) {
+            super(ctx, R.layout.spotifylist, planetList);
+            this.planetList = planetList;
+            this.context = ctx;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+// First let's verify the convertView is not null
+            if (convertView == null) {
+// This a new view we inflate the new layout
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.spotifylist, parent, false);
+            }
+// Now we can fill the layout with the right values
+            TextView tv = (TextView) convertView.findViewById(R.id.name);
+            String p = planetList.get(position);
+            if (position==currentItem){
+            tv.setTextColor(Color.BLUE);}
+            else tv.setTextColor(Color.WHITE);
+
+            tv.setText(p);
+
+            return convertView;
+        }
+    }
+
+    public Track getTrack(String trackid){
+        Track nt = (Track) hm.get(trackid);
+        try{
+        if (nt == null) {
+            nt = new Track();
+            JSONObject o = new JSONObject(getStringFromUrl("https://api.spotify.com/v1/tracks/" + trackid));
+            nt.id = trackid;
+            List<ArtistSimple> a = new ArrayList();
+            Artist art = new Artist();
+            art.name = o.getJSONArray("artists").getJSONObject(0).getString("name");
+            a.add(art);
+            nt.artists = a;
+            Album alb=new Album();
+            alb.name=o.getJSONObject("album").getString("name");
+            nt.name = o.getString("name");//duration_ms
+            nt.duration_ms=o.optLong("duration_ms");//
+            nt.album=alb;
+            hm.put(nt.id, nt);
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return nt;
+    }
+
+
+    @NonNull
+    public static String getTrackId(String fname) {
+        int startIndex = fname.indexOf("track/") + 6;
+        int endIndex = fname.indexOf(".wav");
+        return fname.substring(startIndex, endIndex);
+    }
 
     @NonNull
     public String getStringFromUrl(String urlString){
         try{
-            Log.v("samba", urlString);
+            //Log.v("samba", urlString);
             StringBuilder sb = new StringBuilder();
             InputStream is = new URL(urlString).openStream();
 

@@ -7,6 +7,7 @@ package examples.quickprogrammingtips.com.tablayout.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,19 @@ import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
 public class FileListAdapter extends BaseAdapter {
+    public static boolean isInteger(String s) {
+        return isInteger(s,10);
+    }    public static boolean isInteger(String s, int radix) {
+        if(s.isEmpty()) return false;
+        for(int i = 0; i < s.length(); i++) {
+            if(i == 0 && s.charAt(i) == '-') {
+                if(s.length() == 1) return false;
+                else continue;
+            }
+            if(Character.digit(s.charAt(i),radix) < 0) return false;
+        }
+        return true;
+    }
 
     private static ArrayList<File> fileArrayList;
     private LayoutInflater mInflater;
@@ -132,6 +146,15 @@ public class FileListAdapter extends BaseAdapter {
                                         });
                                         return true;
                                     }
+                                    Log.v("samba", "p:" + title);
+                                    if (title.equals("Spotify")){
+                                        final MainActivity context = MainActivity.getThis;
+                                        Log.v("samba", "l:" + fname);
+                                        String[] s1 = fname.split("-");
+                                        String art=s1[0].trim();
+                                        if (isInteger(art)) art=s1[1].trim();
+                                        context.callSpotify(art.replace("/",""));
+                                    } else
 
                                     if (!(fileArrayList.get(position) instanceof Mp3File)) {
                                         caller.newSambaCall(path + fname, title);
@@ -166,7 +189,7 @@ public class FileListAdapter extends BaseAdapter {
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {
                                     String title = item.getTitle().toString();
-                                    //Log.v("samba", "title:"+title);
+                                   //Log.v("samba", "title:"+title);
                                     if (!(title.equals(context.getString(R.string.addsong_filelist)))) {
                                         caller.newSambaCall(path, title);
                                     } else
@@ -197,6 +220,7 @@ public class FileListAdapter extends BaseAdapter {
         menu.getMenu().add(context.getString(R.string.replaceandplay_filelist));
         menu.getMenu().add(R.string.addtofavorites_filelist);
         menu.getMenu().add("Download");
+        menu.getMenu().add("Spotify");
         return menu;
     }
 

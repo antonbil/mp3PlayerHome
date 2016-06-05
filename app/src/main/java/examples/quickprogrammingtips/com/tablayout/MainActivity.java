@@ -261,12 +261,31 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
     }
 
+    public void startPlaylistSpotify() {
+        try{
+            Intent intent = new Intent(MainActivity.getThis, SpotifyActivity.class);
+            intent.putExtra("artist", "nosearch");
+
+            MainActivity.getThis.startActivity(intent);
+            Log.v("samba", "Spotify");
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+            //e.printStackTrace();
+        }
+    }
+
     public void callSpotify(String currentArtist) {
+        try{
         Intent intent = new Intent(getThis, SpotifyActivity.class);
         intent.putExtra("artist", currentArtist);
 
         getThis.startActivityForResult(intent, 4);
+    } catch (Exception e) {
+        Log.v("samba", Log.getStackTraceString(e));
+        //e.printStackTrace();
     }
+
+}
 
     public void playPause() {
         if (logic.getPaused()) {
@@ -362,6 +381,9 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         }
         if (id==R.id.set_volume){
             setVolume();
+        }
+        if (id==R.id.spotify_playlist){
+            startPlaylistSpotify();
         }
         //noinspection SimplifiableIfStatement
         if (id == R.id.display_footer) {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     >
@@ -11,11 +11,13 @@
         android:text="Beatles"
         android:background="#4A9C67" />
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/spotifyscrollviewtop"
         android:layout_width="fill_parent"
         android:layout_height="150dp"
         android:fillViewport="true" >
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/spotifylayouttop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="5dp">
@@ -51,6 +53,7 @@
         android:padding="10dip" >
 
         <TextView
+            android:id="@+id/relatedartists_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dip"
@@ -65,6 +68,7 @@
             android:background="#4A9C67" >
         </ListView>
         <TextView
+            android:id="@+id/albumsartist_listview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -101,6 +105,18 @@
             style="@style/ToolBarButtonStyle"
             android:id="@+id/clearspotifyButton"
             android:src="@drawable/delete"
+            android:layout_width="61dp"
+            android:layout_height="59dp" />
+        <ImageButton
+            style="@style/ToolBarButtonStyle"
+            android:id="@+id/refreshspotifyButton"
+            android:src="@drawable/ic_refresh_white"
+            android:layout_width="61dp"
+            android:layout_height="59dp" />
+        <ImageButton
+            style="@style/ToolBarButtonStyle"
+            android:id="@+id/removeupspotifyButton"
+            android:src="@drawable/removeup"
             android:layout_width="61dp"
             android:layout_height="59dp" />
 
