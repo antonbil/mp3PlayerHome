@@ -38,19 +38,24 @@ import examples.quickprogrammingtips.com.tablayout.tools.Utils;
 public class SelectFragment extends Fragment implements FavoritesInterface{
     static final int STATIC_RESULT=2; //positive > 0 integer.
     private Logic logic;
-    ArrayList<Favorite> favorites;
-    ListView favoriteListView;
-    FavoriteListAdapter favoriteListAdapter;
+    //ArrayList<Favorite> favorites;
+    //ListView favoriteListView;
+    //FavoriteListAdapter favoriteListAdapter;
     ArrayList<FavoritesListItem>favoritesListItemArray=new ArrayList<>();
 
     private ArrayList<Server>servers=Server.servers;//Server.servers.get(Server.getServer(getActivity())).url;
-    private boolean regularFavoritesVisible=true;
+    //private boolean regularFavoritesVisible=false;
+    //private ListView favoritespotifyListView;
+    private FavoriteListAdapter favoritespotifyListAdapter;
+    //private ArrayList<Favorite> spotifyfavorites;
+    //private boolean regularspotifyFavoritesVisible=true;
 
     @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             servers.toArray();
-            favorites = new ArrayList<>();
+            //favorites = new ArrayList<>();
+        //spotifyfavorites = new ArrayList<>();
 
             //test records to db
             /*FavoriteRecord fv=new FavoriteRecord("abc", "abcpath", "2nd edition");
@@ -61,6 +66,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             // Inflate the layout for this fragment
             logic =((MainActivity)getActivity()).getLogic();
             View view = inflater.inflate(R.layout.fragment_select, container, false);
+        try{
             final SharedPreferences app_preferences =
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
 
@@ -92,56 +98,91 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
             });
 
-            TextView tv=(TextView)view.findViewById(R.id.favoriteTextlistView);
+            /*TextView tv=(TextView)view.findViewById(R.id.favoriteTextlistView);
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     regularFavoritesVisible = !regularFavoritesVisible;
                     getFavorites();
                 }
-            });
-            favoriteListView = (android.widget.ListView) view.findViewById(R.id.selectlistView);
+            });*/
+        /*TextView tv2=(TextView)view.findViewById(R.id.favoritespotifyTextlistView);
+        tv2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                regularspotifyFavoritesVisible = !regularspotifyFavoritesVisible;
+                getFavorites();
+            }
+        });*/
+            /*favoriteListView = (android.widget.ListView) view.findViewById(R.id.selectlistView);
             favoriteListAdapter = new FavoriteListAdapter(getActivity(), this, false,favorites);
-            favoriteListView.setAdapter(favoriteListAdapter);
+            favoriteListView.setAdapter(favoriteListAdapter);*/
+        /*favoritespotifyListView = (android.widget.ListView) view.findViewById(R.id.selectspotifylistView);
+        favoritespotifyListAdapter = new FavoriteListAdapter(getActivity(), this, false,spotifyfavorites);
+        favoritespotifyListView.setAdapter(favoriteListAdapter);*/
 
+            //FavoritesListItem favoritesSpotifyListItem = new FavoritesListItem(this, view, "spotify", "sp");
+            favoritesListItemArray.add(new FavoritesListItem(this, view, "favorites", "fvrites",false));
+            favoritesListItemArray.add(new FavoritesListItem(this, view, "spotify", "sp"));
             for (int i=0;i<Favorite.categoryIds.size();i++) {
                 final FavoritesListItem favoritesListItem = new FavoritesListItem(this, view, Favorite.getCategory(i), Favorite.categoryIds.get(i));
-                favoritesListItem.favoriteTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        favoritesListItem.toggleVisible();
-                        getFavorites();
-                    }
-                });
                 favoritesListItemArray.add(favoritesListItem);
             }
 
+            for (final FavoritesListItem item: favoritesListItemArray) {
+                item.favoriteTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        item.toggleVisible();
+                        getFavorites();
+                    }
+                });
+                //favoritesListItemArray.add(favoritesListItem);
+            }
             getFavorites();
+    } catch (Exception e) {
+        Log.v("samba", Log.getStackTraceString(e));
+        //Log.v("samba", Log.getStackTraceString(e));
+    }
 
             return view;
         }
 
     public void getFavorites() {
 
-        favorites.clear();
+        //favorites.clear();
+        //spotifyfavorites.clear();
         //https://open.spotify.com/user/koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF
-        favorites.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "Spotify"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
-        favorites.add(new Favorite("spotify://redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "Spotify"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
-        favorites.add(new Favorite("https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB", "nltop40", "Spotify"));
-        favorites.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "Spotify"));
-        favorites.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/1WCuVrwkQbZZw6qmgockjv", "oor rockt", "Spotify"));
-        favorites.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF", "oor danst", "Spotify"));
-        favorites.add(new Favorite("00tags/favorites", "favorites", ""));
-        favorites.add(new Favorite("00tags/newest", "newest", ""));
-        favorites.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2014/", "2014", ""));
-        favorites.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2015/", "2015", ""));
-        favorites.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2016/", "2016", ""));
-        favorites.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/", "years", ""));
-        favorites.add(new Favorite("smb://192.168.2.8/FamilyLibrary/Soul/", "Soul", ""));
+        /*spotifyfavorites.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "Spotify"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
+        spotifyfavorites.add(new Favorite("spotify://redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "Spotify"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
+        spotifyfavorites.add(new Favorite("https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB", "nltop40", "Spotify"));
+        spotifyfavorites.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "Spotify"));
+        spotifyfavorites.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/1WCuVrwkQbZZw6qmgockjv", "oor rockt", "Spotify"));
+        spotifyfavorites.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF", "oor danst", "Spotify"));*/
 
         List<FavoriteRecord> favoritesDisk = FavoriteRecord.listAll(FavoriteRecord.class);
         for (FavoritesListItem fi:favoritesListItemArray)
         fi.favoritesAdded.clear();
+        ArrayList<Favorite> favoritesSpotifyListItem = favoritesListItemArray.get(0).favoritesAdded;
+        favoritesSpotifyListItem.add(new Favorite("00tags/favorites", "favorites", ""));
+        favoritesSpotifyListItem.add(new Favorite("00tags/newest", "newest", ""));
+        favoritesSpotifyListItem.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2014/", "2014", ""));
+        favoritesSpotifyListItem.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2015/", "2015", ""));
+        favoritesSpotifyListItem.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2016/", "2016", ""));
+        favoritesSpotifyListItem.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/", "years", ""));
+        favoritesSpotifyListItem.add(new Favorite("smb://192.168.2.8/FamilyLibrary/Soul/", "Soul", ""));
+        favoritesSpotifyListItem = favoritesListItemArray.get(1).favoritesAdded;
+        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "Spotify"));;
+        favoritesSpotifyListItem.add(new Favorite("spotify://redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "Spotify"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
+        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB", "nltop40", "Spotify"));
+        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "Spotify"));
+        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/1WCuVrwkQbZZw6qmgockjv", "oor rockt", "Spotify"));
+        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF", "oor danst", "Spotify"));
+        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/122978137/playlist/3dixZSVLSak9apekDzw8r5", "ambient1", "Spotify"));
+        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/1249149618/playlist/5r977N6ZbHTM3Pm5CpzXzJ", "ambient2", "Spotify"));
+        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E", "ambient3", "Spotify"));
+        //https://open.spotify.com/user/spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E
+
         for (FavoriteRecord fav:favoritesDisk){
             Favorite favnew=new Favorite(fav.url,fav.description,fav.category);
             favnew.setRecord(fav);
@@ -157,11 +198,16 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (regularFavoritesVisible)
+                /*if (regularFavoritesVisible)
                     Utils.setDynamicHeight(favoriteListView, 0);
                     //setHeightListView(favoriteListAdapter, favoriteListView,favorites);
                     else
-                    setListViewHeight(favoriteListView, 0);
+                    setListViewHeight(favoriteListView, 0);*/
+                /*if (regularspotifyFavoritesVisible)
+                    Utils.setDynamicHeight(favoritespotifyListView, 0);
+                    //setHeightListView(favoriteListAdapter, favoriteListView,favorites);
+                else
+                    setListViewHeight(favoritespotifyListView, 0);*/
                 for (FavoritesListItem fi:favoritesListItemArray) {
                     Collections.sort(fi.favoritesAdded, new Comparator() {
                         public int compare(Object o1, Object o2) {
@@ -209,7 +255,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     @Override
     public void favoritesCall(Favorite favorite, String id) {
-        Log.v("samba",favorite.getUri());
+        Log.v("samba", favorite.getUri());
         //spotify://
         if (favorite.getUri().startsWith("spotify://")){
             try {
@@ -222,7 +268,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 }.run();
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
-                //e.printStackTrace();
+                //Log.v("samba", Log.getStackTraceString(e));
             }
 
         }
@@ -238,7 +284,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 }.run();
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
-                //e.printStackTrace();
+                //Log.v("samba", Log.getStackTraceString(e));
             }
 
         }
@@ -293,7 +339,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             if (resultCode == Activity.RESULT_OK)
             {
                 // this is successful mission, do with it.
-                favorites.clear();
+                //favorites.clear();
                 getFavorites();
 
 
@@ -306,14 +352,18 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     }
 
     private class FavoritesListItem {
+        /*
+        generates an item that consists of textview above, listview and listadapter.
+        a click on the textview hides the listview, or makes it visible.
+        The listview contains favorites
+         */
         private boolean visible=true;
         public  String selectlistViewcode;
         public  ListView favoritesAddedListView;
         public  FavoriteListAdapter favoritesAddedListAdapter;
         public ArrayList<Favorite> favoritesAdded;
         public TextView favoriteTextView;
-
-        public FavoritesListItem(SelectFragment selectFragment, View parentView, String listDescription, String selectlistViewcode) {
+        public FavoritesListItem(SelectFragment selectFragment, View parentView, String listDescription, String selectlistViewcode,boolean visible) {
             this.selectlistViewcode=selectlistViewcode;
 
             LinearLayout LL = new LinearLayout(selectFragment.getActivity());
@@ -344,6 +394,12 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             LL.addView(this.favoritesAddedListView);
             LinearLayout rl=((LinearLayout) parentView.findViewById(R.id.favoritesLinearLayout));
             rl.addView(LL);
+            this.visible=visible;
+
+        }
+
+        public FavoritesListItem(SelectFragment selectFragment, View parentView, String listDescription, String selectlistViewcode) {
+            this( selectFragment,  parentView,  listDescription,  selectlistViewcode,true);
         }
         public void toggleVisible(){
             visible=!visible;

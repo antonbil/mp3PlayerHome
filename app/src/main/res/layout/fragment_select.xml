@@ -54,6 +54,19 @@
                 android:orientation="vertical"
                 android:id="@+id/favoritesLinearLayout"
                 android:padding="10dip" >
+                <!--<TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dip"
+                    android:gravity="center_vertical"
+                    android:id="@+id/favoritespotifyTextlistView"
+                    android:text="spotify"
+                    android:background="#4A9C67"
+                    android:minHeight="40dp" />
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/selectspotifylistView" />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -66,7 +79,7 @@
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/selectlistView" />
+            android:id="@+id/selectlistView" />-->
 
             </LinearLayout>
         </ScrollView>

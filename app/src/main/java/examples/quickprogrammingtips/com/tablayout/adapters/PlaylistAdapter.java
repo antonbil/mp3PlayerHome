@@ -150,6 +150,7 @@ public class PlaylistAdapter extends BaseAdapter {
                                 public boolean onMenuItemClick(MenuItem item) {
                                     if (item.getTitle().toString().equals("spotify")) {
                                         MainActivity.getThis.callSpotify(mp3File.getArtist());
+
                                     } else
                                     if (item.getTitle().toString().equals("transfer->")) {
                                         //submenu
