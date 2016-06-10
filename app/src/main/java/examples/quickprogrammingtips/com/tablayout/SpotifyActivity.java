@@ -632,7 +632,7 @@ try{
         getAlbumtracksFromSpotify(s,albumList.get(position));
     }
 
-    public void getAlbumtracksFromSpotify(String albumid, final String albumname) {
+    public void getAlbumtracksFromSpotify(final String albumid, final String albumname) {
         //int position = ;
         spotify.getAlbumTracks(albumid, new Callback<Pager<Track>>() {
 
@@ -644,6 +644,7 @@ try{
                     try{
                         Album alb=new Album();
                         alb.name=albumname;
+                        alb.id=albumid;
                         t.album=alb;
                         Artist art=new Artist();
                         art.name= beatles;
@@ -1270,6 +1271,7 @@ try{
             nt.artists = a;
             Album alb=new Album();
             alb.name=o.getJSONObject("album").getString("name");
+            alb.id=o.getJSONObject("album").getString("id");
             nt.name = o.getString("name");//duration_ms
             nt.duration_ms=o.optLong("duration_ms");//
             nt.album=alb;
