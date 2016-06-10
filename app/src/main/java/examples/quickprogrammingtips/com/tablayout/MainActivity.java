@@ -3,6 +3,7 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +26,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -136,7 +138,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
             @Override
             public boolean onLongClick(View v) {
-                displayLargeImage();
+                displayLargeImage(MainActivity.this,MainActivity.this.albumBitmap);
                 return true;
             }
         });
@@ -508,15 +510,15 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         alert.show();
     }
 
-    public void displayLargeImage() {
-        final AlertDialog alert = new AlertDialog.Builder(this).create();
+    public static void displayLargeImage(Context context,Bitmap bitmap) {
+        final AlertDialog alert = new AlertDialog.Builder(context).create();
 
-        LinearLayout linear=new LinearLayout(this);
+        LinearLayout linear=new LinearLayout(context);
 
         linear.setOrientation(LinearLayout.VERTICAL);
-        ImageView image = new ImageView(MainActivity.this);
+        ImageView image = new ImageView(context);
         //get width of screen
-        Display display = getWindowManager().getDefaultDisplay();
+        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
@@ -524,7 +526,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
         //fit image to width of screen, keep aspect ratio
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width-140, width-140);
         image.setLayoutParams(layoutParams);
-        image.setImageBitmap(this.albumBitmap);
+        image.setImageBitmap(bitmap);
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
