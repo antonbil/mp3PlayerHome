@@ -115,12 +115,12 @@
             android:src="@drawable/ic_refresh_white"
             android:layout_width="61dp"
             android:layout_height="59dp" />
-        <ImageButton
+        <!--<ImageButton
             style="@style/ToolBarButtonStyle"
             android:id="@+id/removeupspotifyButton"
             android:src="@drawable/removeup"
             android:layout_width="61dp"
-            android:layout_height="59dp" />
+            android:layout_height="59dp" />-->
 
 
     </LinearLayout>

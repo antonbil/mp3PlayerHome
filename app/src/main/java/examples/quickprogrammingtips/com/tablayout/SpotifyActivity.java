@@ -3,6 +3,7 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,8 +15,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.text.InputType;
 import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
@@ -26,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,7 +54,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -87,6 +90,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
     private ArrayList<String> artistList = new ArrayList<>();
     private ArrayList<String> albumIds = new ArrayList<>();
     private ArrayList<String> albumList = new ArrayList<>();
+    private ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
     private TextView MessageView;
     private static SpotifyActivity getThis;
     //private ListView albumsListview, relatedArtistsListView;
@@ -109,9 +113,9 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
     private boolean nosearch = false;
     private TextView artistTitleTextView;
     private ImageView icon;
-    private ArrayList<Track> tracksPlaylist;
+    private ArrayList<Track> tracksPlaylist=new ArrayList<>();
     private int currentTrack;
-    private String beatles;
+    private String artistName;
     private ArrayAdapter<String> relatedArtistsAdapter;
     private ListView relatedArtistsListView;
     private SpotifyApi api;
@@ -196,7 +200,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
             jsonRootObject = new JSONObject(sb);
             return jsonRootObject.getJSONObject("result");
         } catch (JSONException e) {
-            Log.v("samba", Log.getStackTraceString(e));
+           // Log.v("samba", Log.getStackTraceString(e));
         }
         return jsonRootObject;
     }
@@ -329,13 +333,13 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         String temp = extras.getString("artist");
         nosearch = (temp.startsWith("nosearch"));
         if (nosearch) temp = "The Beatles";
-        beatles = temp;
+        artistName = temp;
 
         Log.v("samba", "nosearch2");
 
         albumsListview = (ListView) findViewById(R.id.albums_listview);
         albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        albumAdapter = new PlanetAdapter(albumList, this) {
+        albumAdapter = new PlanetAdapter(albumList, this,albumTracks) {
             @Override
             public void removeUp(int counter) {
                 removeUplist(counter);
@@ -343,8 +347,13 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
             @Override
             public void onClickFunc(int counter) {
+                currentTrack=counter;
                 if (albumVisible)
+                    try{
                     getAlbumtracksFromSpotify(counter);
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+            }
                 else
                     playlistGotoPosition(counter);
             }
@@ -379,12 +388,25 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
             }
 
             @Override
+            public void replaceAndPlayAlbum(int counter) {
+                removeUplist(counter);
+                addAlbum( 0);
+            }
+
+            @Override
+            public void addAndPlayAlbum(int counter) {
+
+                addAlbum( counter);
+            }
+
+            @Override
             public void addAlbum(int counter) {
-                beatles = tracksPlaylist.get(counter).artists.get(0).name;
+                artistName = tracksPlaylist.get(counter).artists.get(0).name;
                 getAlbumtracksFromSpotify(tracksPlaylist.get(counter).album.id, tracksPlaylist.get(counter).album.name);
             }
         };
         albumAdapter.setDisplayCurrentTrack(false);
+        //albumAdapter.setDisplayCurrentTrack(true);
         albumsListview.setAdapter(albumAdapter);
             /*final AdapterView.OnItemClickListener cl=   new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view,
@@ -444,8 +466,12 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
+                try{
                 String s = artistList.get(position);
                 listAlbumsForArtist(s);
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+            }
             }
         });
         Log.v("samba", "nosearch5");
@@ -503,6 +529,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
             @Override
             public void onClick(View arg0) {
+                //MainActivity.displayLargeImage(getThis, bitmap);
                 Log.v("samba", "clicked!");
                 // Toast.makeText(getApplicationContext(), "Clicked Image",
                 //         Toast.LENGTH_SHORT).show();
@@ -514,6 +541,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                 //{"jsonrpc":"2.0","method":"Files.GetDirectory","id":1,"params":["plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%…A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D","music",["title","file","thumbnail", "art","duration"]]
                 //menu.getMenu().add("oor11");
                 menu.getMenu().add("hide/show");
+                menu.getMenu().add("search");
                 menu.getMenu().add("enlarge cover");
                 menu.show();
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -526,6 +554,37 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                         if ((title.equals("enlarge cover"))) {
                             MainActivity.displayLargeImage(getThis, bitmap);
                         }
+
+                        if ((title.equals("search"))){
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
+                            builder.setTitle("Search artist");
+
+// Set up the input
+                            final EditText input = new EditText(getThis);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                            input.setInputType(InputType.TYPE_CLASS_TEXT );
+                            builder.setView(input);
+
+// Set up the buttons
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String artist = input.getText().toString();
+                                    setVisibility(View.VISIBLE);
+                                    listAlbumsForArtist(artist);
+
+                                }
+                            });
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                            builder.show();
+                        }
+
                         if ((title.equals("oor11"))) {
                                 /*
                                 spotify lijsten
@@ -573,7 +632,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
             );
 
-            Log.v("samba","nosearch8");
+            /*Log.v("samba","nosearch8");
             ImageButton removeUpButton = (ImageButton) findViewById(R.id.removeupspotifyButton);
             removeUpButton.setOnClickListener(new View.OnClickListener()
 
@@ -586,7 +645,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
             }
             }
 
-            );;
+            );;*/
             ImageButton refreshButton = (ImageButton) findViewById(R.id.refreshspotifyButton);
             refreshButton.setOnClickListener(new View.OnClickListener()
 
@@ -619,7 +678,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
             if(!nosearch)
 
             {
-                initArtistlist(beatles);
+                initArtistlist(artistName);
             }
 
             else
@@ -697,9 +756,21 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                         Album alb = new Album();
                         alb.name = albumname;
                         alb.id = albumid;
+                        final Image im=new Image();
+                        im.url="";
+                        new DownLoadImageUrlTask() {
+                            @Override
+                            public void setUrl(String logo) {
+                                im.url=logo;
+                            }
+                        }.execute(albumid);
+
+                        List<Image> l = new ArrayList();
+                        l.add(im);
+                        alb.images=l;
                         t.album = alb;
                         Artist art = new Artist();
-                        art.name = beatles;
+                        art.name = artistName;
                         List<ArtistSimple> a = new ArrayList();
                         a.add(art);
                         t.artists = a;
@@ -735,7 +806,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
     public void listAlbumsForArtist(String s) {
         albumsListview.setOnItemClickListener(cl);
-        beatles = s;
+        artistName = s;
         listAlbumsForArtist(api, spotify, s, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
     }
 
@@ -965,16 +1036,19 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
             Log.v("samba", "refresh");
 
             albumList.clear();
+            albumTracks.clear();
             JSONArray items = null;
             items = playlist.getJSONArray("items");
             String prevAlbum = "";
             tracksPlaylist.clear();
             for (int i = 0; i < items.length(); i++) {
+                final PlaylistItem pi=new PlaylistItem();
+                pi.pictureVisible=false;
                 String trackid = "";
                 JSONObject o = items.getJSONObject(i);
                 trackid = getTrackId(o.getString("file"));
                 Track t = getTrack(trackid);
-                tracksPlaylist.add(t);
+                //tracksPlaylist.add(t);
                 Log.v("samba", t.name);
                 //ArrayList<String> ids=new ArrayList<String>();
                 String extra = "";
@@ -984,10 +1058,23 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                         extra = String.format("(%s-%s)", t.artists.get(0).name, name);
                         prevAlbum = name;
                     }
+                    pi.pictureVisible=true;
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
-                albumList.add(t.name + extra + String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue())));
+                pi.text=t.name + extra + String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue()));
+                new DownLoadImageUrlTask() {
+                    @Override
+                    public void setUrl(String logo) {
+                        pi.url=logo;
+                    }
+                }.execute(t.album.id);
+
+
+                pi.url=t.album.images.get(0).url;
+                albumList.add(pi.text);
+                albumTracks.add(pi);
+                tracksPlaylist.add(t);
             }
             //spotifyStartPosition=0;
             albumAdapter.setDisplayCurrentTrack(true);
@@ -999,14 +1086,14 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         }
     }
 
-    private void setArtistText(final String beatles, Image image) {
+    private void setArtistText(final String artistName, Image image) {
 
-        artistTitleTextView.setText(beatles);
+        artistTitleTextView.setText(artistName);
 
         String artistText = "";
 
         try {
-            JSONObject artist = (new JSONObject(LastFMArtist(beatles))).getJSONObject("artist");
+            JSONObject artist = (new JSONObject(LastFMArtist(artistName))).getJSONObject("artist");
 
             artistText = artist.getJSONObject("bio").getString("content");
         } catch (JSONException e) {
@@ -1023,13 +1110,12 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
 
         try {
+            //sometimes no album-image available
             ImageView i = (ImageView) findViewById(R.id.image);
             Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(image.url).getContent());
             Log.v("samba", "image loaded");
             icon.setImageBitmap(bitmap);
-        } catch (MalformedURLException e) {
-            Log.v("samba", Log.getStackTraceString(e));
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
 
@@ -1039,6 +1125,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
     }
 
     private void listAlbumsForArtist(final SpotifyApi api, SpotifyService spotify, final String beatles, final ListView albumsListview, final ListView relatedArtistsListView, final PlanetAdapter albumAdapter, final ArrayAdapter<String> relatedArtistsAdapter) {
+        this.artistName =beatles;
         albumVisible = true;
         spotify.searchArtists(beatles, new Callback<ArtistsPager>() {
 
@@ -1054,7 +1141,11 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
                         if (name.length() < max) {
                             id = artist.id;
+                            try{
                             image = artist.images.get(0);
+                        } catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+                        }
                             max = name.length();
                         }
                     }
@@ -1069,17 +1160,25 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                     @Override
                     public void success(Pager<Album> albumPager, Response response) {
                         albumList.clear();
+                        albumTracks.clear();
                         albumIds.clear();
+                        //albumTracks.clear();
                         String previous = "";
                         for (Album album : albumPager.items)
                             if (!album.name.equals(previous)) {
+                                PlaylistItem pi=new PlaylistItem();
+                                pi.pictureVisible=true;
+                                pi.url=album.images.get(0).url;
+                                pi.text=album.name;
 
                                 albumList.add(album.name);
                                 albumIds.add(album.id);
+                                albumTracks.add(pi);
                                 previous = album.name;
 
                             }
                         albumAdapter.setDisplayCurrentTrack(false);
+                        //albumAdapter.setDisplayCurrentTrack(true);
                         albumAdapter.notifyDataSetChanged();
                         Utils.setDynamicHeight(albumsListview, 0);
 
@@ -1153,7 +1252,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                             if (currentTrack != i)
                                 albumsListview.setItemChecked(currentTrack, false);
                             currentTrack = i;
-                            Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
+                            //Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
                             break;
                         }
                     }
@@ -1169,10 +1268,20 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                             //Log.v("samba", trackid);
                             previousTrack = t;
                             try {
-                                String urlString = "https://api.spotify.com/v1/tracks/" + trackid;
-                                String getResult = getStringFromUrl(urlString);
-                                String imageurl = new JSONObject(getResult).getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
-                                new DownLoadImageTask(image).execute(imageurl);
+                                String imageurl=t.album.images.get(0).url;
+                                if (imageurl=="") {
+                                    String urlString = "https://api.spotify.com/v1/tracks/" + trackid;
+                                    String getResult = getStringFromUrl(urlString);
+                                    imageurl = new JSONObject(getResult).getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                                }
+
+                                new DownLoadImageTask() {
+                                    @Override
+                                    public void setImage(Bitmap logo) {
+                                        image.setImageBitmap(logo);
+                                        getThis.bitmap = logo;
+                                    }
+                                }.execute(imageurl);
                             } catch (Exception e) {
                                 Log.v("samba", Log.getStackTraceString(e));
                             }
@@ -1203,15 +1312,18 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         }
     }
 
+
     public abstract class PlanetAdapter extends ArrayAdapter<String> {
-        private boolean displayCurrentTrack = false;
+        //String previousAlbum="";
+        private final ArrayList<PlaylistItem> tracksPlaylist;
+        private boolean displayCurrentTrack = true;
         int currentItem = -1;
 
         public void setCurrentItem(int i) {
             this.currentItem = i;
         }
 
-        private List<String> planetList;
+        //private List<String> planetList;
         private Context context;
 
         public abstract void removeUp(int counter);//onClickFunc
@@ -1226,16 +1338,19 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
         public abstract void displayArtist(int counter);
 
+        public abstract void replaceAndPlayAlbum(int counter);
+        public abstract void addAndPlayAlbum(int counter);
         public abstract void addAlbum(int counter);
 
-        public PlanetAdapter(List<String> planetList, Context ctx) {
+        public PlanetAdapter(List<String> planetList, Context ctx, ArrayList<PlaylistItem> tracksPlaylist) {
             super(ctx, R.layout.spotifylist, planetList);
-            this.planetList = planetList;
+           // this.planetList = planetList;
+            this.tracksPlaylist=tracksPlaylist;
             this.context = ctx;
         }
 
         public View getView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
+            final ViewHolder holder;
 
 // First let's verify the convertView is not null
             if (convertView == null) {
@@ -1246,18 +1361,49 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 // Now we can fill the layout with the right values
             holder = new ViewHolder();
             holder.pos = (TextView) convertView.findViewById(R.id.number);
+            holder.image = (ImageView) convertView.findViewById(R.id.spotifylistimageView);
             holder.name = (TextView) convertView.findViewById(R.id.name);
             //TextView tv = (TextView) convertView.findViewById(R.id.name);
             convertView.setTag(holder);
-            String p = planetList.get(position);
+            //String p = planetList.get(position);
             //if (position==currentItem){
             //tv.setTextColor(Color.BLUE);}
             // else tv.setTextColor(Color.WHITE);
-            holder.name.setText(p);
+            //holder.name.setText(p);
             //TextView nr = (TextView) convertView.findViewById(R.id.number);
             //if (position==currentItem){
             //    nr.setTextColor(Color.BLUE);}
             //else nr.setTextColor(Color.WHITE);
+            holder.pos.setVisibility(View.VISIBLE);
+            //if (displayCurrentTrack)
+                try {
+                    PlaylistItem t = tracksPlaylist.get(position);
+                    holder.name.setText(t.text);
+                    if(t.pictureVisible) {
+                            holder.image.setVisibility(View.VISIBLE);
+                            holder.pos.setVisibility(View.GONE);
+
+                            //Log.v("samba", "look for:" + t.url);
+                            new DownLoadImageTask() {
+                                @Override
+                                public void setImage(final Bitmap logo) {
+                                    holder.image.setImageBitmap(logo);
+                                    holder.image.setOnClickListener(new View.OnClickListener() {
+
+                                        @Override
+                                        public void onClick(View arg0) {
+                                            MainActivity.displayLargeImage(getThis, logo);
+                                        }
+                                        });
+                                }
+                            }.execute(t.url);
+                    } else
+                          holder.image.setVisibility(View.GONE);
+                } catch (Exception e) {
+                    holder.image.setVisibility(View.GONE);
+                }
+            //else
+            //    holder.image.setVisibility(View.GONE);
             if (displayCurrentTrack && (position == currentItem))
                 convertView.setBackgroundColor(Color.rgb(40, 40, 40));//
             else if ((position & 1) == 0) {
@@ -1269,10 +1415,10 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
                                                    @Override
                                                    public boolean onLongClick(final View v) {
+                                                       PopupMenu menu = new PopupMenu(v.getContext(), v);
                                                        if (!albumVisible) {
 
                                                            //Toast.makeText(v.getContext(), "click:" + (String) fileArrayList.get(pos2).getName(), Toast.LENGTH_LONG).show();
-                                                           PopupMenu menu = new PopupMenu(v.getContext(), v);
                                                            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
                                                                @Override
@@ -1301,8 +1447,29 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                                                            menu.getMenu().add("remove album");//submenu
                                                            menu.getMenu().add("add album");//submenu
                                                            menu.getMenu().add("display artist");//submenu
-                                                           menu.show();
+                                                       } else {
+                                                           menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                                                               @Override
+                                                               public boolean onMenuItemClick(MenuItem item) {
+                                                                   if (item.getTitle().toString().equals("replace and play")) {
+                                                                       replaceAndPlayAlbum(position);
+                                                                   } else if (item.getTitle().toString().equals("add and play")) {
+                                                                       addAndPlayAlbum(position);
+                                                                   } else if (item.getTitle().toString().equals("add")) {
+                                                                       addAlbum(position);
+                                                                   }
+
+                                                                   return true;
+                                                               }
+                                                           });
+
+                                                           menu.getMenu().add("replace and play");//submenu
+                                                           menu.getMenu().add("add and play");//submenu
+                                                           menu.getMenu().add("add");//submenu
+
                                                        }
+                                                       menu.show();
                                                        return true;
                                                    }
                                                }
@@ -1329,7 +1496,13 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
         class ViewHolder {
             TextView pos, name;
+            public ImageView image;
         }
+    }
+    class PlaylistItem {
+        public boolean pictureVisible;
+        public String url;
+        public String text;
     }
 
     public Track getTrack(String trackid) {
@@ -1348,6 +1521,14 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                 alb.name = o.getJSONObject("album").getString("name");
                 alb.id = o.getJSONObject("album").getString("id");
                 nt.name = o.getString("name");//duration_ms
+                alb.images=new ArrayList<Image>();
+                Image im=new Image();
+                try{
+                    im.url= o.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                } catch (Exception e) {
+                    im.url="";
+                }
+                alb.images.add(im);
                 nt.duration_ms = o.optLong("duration_ms");//
                 nt.album = alb;
                 hm.put(nt.id, nt);
@@ -1367,7 +1548,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
     }
 
     @NonNull
-    public String getStringFromUrl(String urlString) {
+    public static  String getStringFromUrl(String urlString) {
         try {
             //Log.v("samba", urlString);
             StringBuilder sb = new StringBuilder();
@@ -1385,12 +1566,14 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         return "";
     }
 
-    private class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView imageView;
+    private static abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
+        private static HashMap<String, Bitmap>albumPictures=new HashMap<>();
 
-        public DownLoadImageTask(ImageView imageView) {
-            this.imageView = imageView;
+
+        public DownLoadImageTask() {
         }
+
+        public abstract void setImage(Bitmap logo);
 
         /*
             doInBackground(Params... params)
@@ -1399,14 +1582,33 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         protected Bitmap doInBackground(String... urls) {
             String urlOfImage = urls[0];
             Bitmap logo = null;
-            try {
+            if (albumPictures.containsKey(urlOfImage)) {
+                //if (albumPictures.get(niceAlbumName) != null)
+
+                try {
+                    int n=0;
+                    while ((albumPictures.get(urlOfImage) == null)&&(n<30)) {
+                        Log.v("samba","wait....."+n+" iteration");
+                        Thread.sleep(1000);
+                        n++;
+                    }
+                    return(albumPictures.get(urlOfImage));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                //setBitmap(albumPictures.get(niceAlbumName));
+
+            } else             try {
                 InputStream is = new URL(urlOfImage).openStream();
                 /*
                     decodeStream(InputStream is)
                         Decode an input stream into a bitmap.
                  */
                 logo = BitmapFactory.decodeStream(is);
-                getThis.bitmap = logo;
+                albumPictures.put(urlOfImage, logo);//so image is loaded only once
+                //setImage(logo);
+                //getThis.bitmap = logo;
             } catch (Exception e) { // Catch the download exception
                 Log.v("samba", Log.getStackTraceString(e));
             }
@@ -1418,10 +1620,72 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                 Runs on the UI thread after doInBackground(Params...).
          */
         protected void onPostExecute(Bitmap result) {
-            imageView.setImageBitmap(result);
+            setImage(result);
+            //imageView.setImageBitmap(result);
         }
     }
+/*
+                                new DownLoadImageUrlTask() {
+                                    @Override
+                                    public void setUrl(Bitmap logo) {
+                                        image.setImageBitmap(logo);
+                                        getThis.bitmap = logo;
+                                    }
+                                }.execute(albumId);
 
+ */
+    private static abstract class DownLoadImageUrlTask extends AsyncTask<String, Void, String> {
+        private static HashMap<String, String>albumPictures=new HashMap<>();
+
+
+        public DownLoadImageUrlTask() {
+        }
+
+        public abstract void setUrl(String logo);
+
+        /*
+            doInBackground(Params... params)
+                Override this method to perform a computation on a background thread.
+         */
+        protected String doInBackground(String... urls) {
+            String albumId = urls[0];
+            String imageUrl = null;
+            if (albumPictures.containsKey(albumId)) {
+                //if (albumPictures.get(niceAlbumName) != null)
+
+                try {
+                    int n=0;
+                    while ((albumPictures.get(albumId) == null)&&(n<30)) {
+                        Log.v("samba","wait....."+n+" iteration");
+                        Thread.sleep(1000);
+                        n++;
+                    }
+                    return(albumPictures.get(albumId));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                //setBitmap(albumPictures.get(niceAlbumName));
+
+            } else             try {
+                String urlString = "https://api.spotify.com/v1/albums/" + albumId;
+                String getResult = getStringFromUrl(urlString);
+                imageUrl = new JSONObject(getResult).getJSONArray("images").getJSONObject(0).getString("url");
+                albumPictures.put(albumId, imageUrl);//so image is loaded only once
+            } catch (Exception e) { // Catch the download exception
+                Log.v("samba", Log.getStackTraceString(e));
+            }
+            return imageUrl;
+        }
+
+        /*
+            onPostExecute(Result result)
+                Runs on the UI thread after doInBackground(Params...).
+         */
+        protected void onPostExecute(String result) {
+            setUrl(result);
+        }
+    }
     class MyLeadingMarginSpan2 implements LeadingMarginSpan.LeadingMarginSpan2 {
         private int margin;
         private int lines;
@@ -1460,6 +1724,5 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
     }
 
     ;
-
 
 }
