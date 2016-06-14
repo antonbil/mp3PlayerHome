@@ -32,7 +32,11 @@
 
         <activity
             android:name=".SpotifyActivity"
-            android:label="Spotify" />
+            android:label="Spotify" >
+            </activity>
+        <activity
+            android:name="com.spotify.sdk.android.authentication.LoginActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />

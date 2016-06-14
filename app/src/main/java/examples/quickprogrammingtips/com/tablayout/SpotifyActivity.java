@@ -37,8 +37,12 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
+import com.spotify.sdk.android.player.ConnectionStateCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,7 +89,12 @@ working example:https://developer.spotify.com/technologies/spotify-android-sdk/t
 and:https://github.com/kaaes/spotify-web-api-android/blob/master/sample-search/src/main/java/kaaes/spotify/webapi/samplesearch/LoginActivity.java
 Detailed information how to use it can be found in the Spotify Android SDK Authentication Guide.
  */
-public class SpotifyActivity extends AppCompatActivity {//AlertDialog
+public class SpotifyActivity extends AppCompatActivity implements
+        ConnectionStateCallback{//AlertDialog
+    // TODO: Replace with your client ID
+    private static final String CLIENT_ID = "89f945f1696e4f389aaed419e51beaad";
+    // TODO: Replace with your redirect URI
+    private static final String REDIRECT_URI = "pgplayprotocol://callback";
     private static ArrayList<String> mainids;
     private ArrayList<String> artistList = new ArrayList<>();
     private ArrayList<String> albumIds = new ArrayList<>();
@@ -131,7 +140,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
      */
     private GoogleApiClient client;
 
-    private static String GetSpotifyToken() {
+    private static void GetSpotifyTokenSync(){
         checkAddress();
         //Log.v("samba", "ask starred:");
         String data = "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
@@ -146,6 +155,33 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
+    }
+
+    private static String GetSpotifyToken() {
+
+                new AsyncTask<String, Void, String>(){
+
+            @Override
+            protected String doInBackground(String... params) {
+                GetSpotifyTokenSync();
+                return null;
+            }
+        }.execute();
+
+
+        //Log.v("samba", "ask starred:");
+        /*String data = "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
+        String urlString = ipAddress + "?OpenAddon_plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D";
+        try {
+            String fname = GetJsonFromUrl(data, urlString).optJSONArray("files").getJSONObject(0).optString("file");
+            //Log.v("samba", "filenambooleane:"+fname);
+            int startIndex = fname.indexOf("Token=") + 6;
+            int endIndex = fname.indexOf("&User");
+            //Log.v("samba", fname.substring(startIndex, endIndex)); //is your string. do what you want
+            spotifyToken = fname.substring(startIndex, endIndex);
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }*/
 
         return "";
     }
@@ -211,6 +247,8 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         try {
             URL url = new URL(urlString);
             URLConnection uc = url.openConnection();
+            //uc.setConnectTimeout(1000);//
+
             uc.setDoOutput(true);// Triggers POST.
 
             uc.setRequestProperty("User-Agent", "@IT java-tips URLConnection");
@@ -299,9 +337,23 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         }
         return "";
     }
+    // Spotify:Request code that will be used to verify if the result comes from correct activity
+// Can be any integer
+    private static final int REQUEST_CODE = 1337;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
+                AuthenticationResponse.Type.TOKEN,
+                REDIRECT_URI);
+        builder.setScopes(new String[]{"user-read-private", "playlist-read-private"});
+        AuthenticationRequest request = builder.build();
+
+        //AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        //Intent intent = AuthenticationClient.createLoginActivityIntent(this, request);
+       // startActivityForResult(intent, REQUEST_CODE);
+
+
         tracksPlaylist = new ArrayList<Track>();
 
         RelativeLayout mainLayout = (RelativeLayout) this.findViewById(R.id.spotifylayouttop);
@@ -347,6 +399,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
             @Override
             public void onClickFunc(int counter) {
+                Log.v("samba","spotifyToken:"+spotifyToken);
                 currentTrack=counter;
                 if (albumVisible)
                     try{
@@ -389,14 +442,15 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
             @Override
             public void replaceAndPlayAlbum(int counter) {
-                removeUplist(counter);
-                addAlbum( 0);
+                clearSpotifyPlaylist();
+                Log.v("samba","end removing");
+                getAlbumtracksFromSpotify(counter);
             }
 
             @Override
             public void addAndPlayAlbum(int counter) {
 
-                addAlbum( counter);
+                getAlbumtracksFromSpotify(counter);
             }
 
             @Override
@@ -705,6 +759,13 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
             customHandler.postDelayed(updateTimerThread,0);
         }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        Log.v("samba","callback");
+
+        Log.v("samba","ja maar!");
+    }
     private void initArtistlist(final String atistName) {
         artistInitiated = true;
         Utils.setDynamicHeight(albumsListview, 0);
@@ -830,6 +891,36 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
             removeTrackSpotify(0);
         spotifyStartPosition = 0;
         refreshPlaylistFromSpotify(albumAdapter, albumsListview);
+    }
+
+    @Override
+    public void onLoggedIn() {
+        Log.d("MainActivity", "User logged in");        Toast.makeText(getApplicationContext(), "User logged in",
+                Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onLoggedOut() {
+
+    }
+
+    @Override
+    public void onLoginFailed(Throwable throwable) {
+
+        Toast.makeText(getApplicationContext(), "User login failed",
+                         Toast.LENGTH_SHORT).show();
+        Log.d("MainActivity", "User login failed");
+    }
+
+    @Override
+    public void onTemporaryError() {
+
+    }
+
+    @Override
+    public void onConnectionMessage(String s) {
+
     }
 
     public static class getEntirePlaylistFromSpotify {
@@ -973,7 +1064,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
                 //mainids=ids;
                 if (mainids.size() > 0)
-                    if (spotifyToken.length() == 0) GetSpotifyToken();
+                    if (spotifyToken.length() == 0) GetSpotifyTokenSync();
                 dialog1 = new ProgressDialog(getThis);
                 dialog1.setTitle("spotify-playlist");
                 dialog1.setMessage("Adding to list");
@@ -1028,6 +1119,13 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
     }
 
     public void refreshPlaylistFromSpotify(PlanetAdapter albumAdapter, ListView albumsListview) {
+        ProgressDialog progressDialog;
+        progressDialog = new ProgressDialog(getThis);
+        progressDialog.setCancelable(true);
+        progressDialog.setMessage("Get playlist...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+        progressDialog.show();
         albumVisible = false;
         try {
             JSONObject playlist = GetJsonFromUrl(
@@ -1084,6 +1182,8 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
+        progressDialog.dismiss();
+
     }
 
     private void setArtistText(final String artistName, Image image) {
@@ -1109,7 +1209,15 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         icon.setLayoutParams(layoutParams);
 
 
-        try {
+        new DownLoadImageTask() {
+            @Override
+            public void setImage(Bitmap logo) {
+                ImageView i = (ImageView) findViewById(R.id.image);
+                Log.v("samba", "image loaded");
+                icon.setImageBitmap(logo);
+            }
+        }.execute(image.url);
+/*        try {
             //sometimes no album-image available
             ImageView i = (ImageView) findViewById(R.id.image);
             Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(image.url).getContent());
@@ -1117,7 +1225,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
             icon.setImageBitmap(bitmap);
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
-        }
+        }*/
 
 
         SS.setSpan(new MyLeadingMarginSpan2(scale / 50, leftMargin), 0, SS.length(), 0);
@@ -1275,6 +1383,7 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                                     imageurl = new JSONObject(getResult).getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
                                 }
 
+                                DownLoadImageUrlTask.setAlbumPicture(t.album.id,imageurl);
                                 new DownLoadImageTask() {
                                     @Override
                                     public void setImage(Bitmap logo) {
@@ -1457,7 +1566,10 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
                                                                    } else if (item.getTitle().toString().equals("add and play")) {
                                                                        addAndPlayAlbum(position);
                                                                    } else if (item.getTitle().toString().equals("add")) {
-                                                                       addAlbum(position);
+                                                                       Toast.makeText(getApplicationContext(), "Not implemented yet",
+                                                                               Toast.LENGTH_SHORT).show();
+
+                                                                       //addAlbum(position);
                                                                    }
 
                                                                    return true;
@@ -1635,6 +1747,12 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
 
  */
     private static abstract class DownLoadImageUrlTask extends AsyncTask<String, Void, String> {
+    public static void setAlbumPicture(String key, String value) {
+        DownLoadImageUrlTask.albumPictures.put(key,value);
+    }
+
+    //String input of doInBackground, void input of onProgressUpdate, String input of onPostExecute (and this return value of doInBackground)
+    //onPreExecute() is called on the UI thread, before the Non-UI work starts
         private static HashMap<String, String>albumPictures=new HashMap<>();
 
 
@@ -1723,6 +1841,31 @@ public class SpotifyActivity extends AppCompatActivity {//AlertDialog
         }
     }
 
+    public abstract class WaitClass extends AsyncTask<String,Void,String>{
+        private final String message;
+        private Context context;
+        private ProgressDialog progressDialog;
+        public WaitClass(Context context, String message){
+            this.message=message;
+            this.context=context;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setCancelable(true);
+            progressDialog.setMessage(message+"...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setProgress(0);
+            progressDialog.show();
+        }
+
+        protected void onPostExecute(ArrayList<HashMap<String, String>> result) {
+            progressDialog.dismiss();
+        }
+
+
+        }
     ;
 
 }
