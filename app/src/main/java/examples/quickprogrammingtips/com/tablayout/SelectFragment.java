@@ -194,7 +194,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             } catch (Exception e){
 
             }
-            Favorite favnew=new Favorite(fav.url,fav.description,description,sortkey);
+            Favorite favnew=new Favorite(fav.url,description,description,sortkey);
             favnew.setRecord(fav);
             for (FavoritesListItem favItem:favoritesListItemArray){
                 //Log.v("samba", favItem.selectlistViewcode + " vs " + fav.category);
@@ -223,7 +223,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         public int compare(Object o1, Object o2) {
                             Favorite mp1 = (Favorite) o1;
                             Favorite mp2 = (Favorite) o2;
-                            return (mp1.getSortkey()+mp1.getDescription()).compareTo((mp2.getSortkey()+mp2.getDescription()));
+                            return (mp1.getSortkey()+mp1.getDescription()).toLowerCase().compareTo((mp2.getSortkey()+mp2.getDescription().toLowerCase()));
                         }
                     });
                     if (fi.isVisible())

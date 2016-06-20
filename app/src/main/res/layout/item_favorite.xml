@@ -24,6 +24,13 @@
         android:layout_height="60dp" >
 
 
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_gravity="start"
+            android:layout_height="20dp"
+            android:id="@+id/favoritelistimageView"
+            android:gravity="center_vertical"
+            android:src="@drawable/mpd" />
 
 
     <TextView         android:layout_width="wrap_content"
@@ -36,7 +43,8 @@
         android:maxLines = "2"
         android:id="@+id/textView_favoritedescription"
         android:minWidth="100dp"
-        android:gravity="center_vertical" />
+        android:gravity="center_vertical"
+        android:layout_marginLeft="10dp" />
     </TableRow>
 
 </TableLayout>

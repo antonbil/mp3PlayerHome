@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -69,6 +70,14 @@ public class FavoriteListAdapter extends BaseAdapter {
 
         //holder.url.setText(favoritesList.get(position).getUri());
         holder.description.setText(favoritesList.get(position).getDescription());
+        holder.image = (ImageView) convertView.findViewById(R.id.favoritelistimageView);
+        Integer i;
+        String uri = favoritesList.get(position).getUri();
+        if (uri.startsWith("https://")||uri.startsWith("spotify://")||uri.startsWith("spotifyalbum://"))i=R.drawable.spf;
+        else
+        if (uri.startsWith("smb://"))i=R.drawable.smb;
+        else i=R.drawable.mpd;
+        holder.image.setImageResource(i);
         final int pos2=position;
 
         final String description = favoritesList.get(position).getDescription();
@@ -119,6 +128,7 @@ public class FavoriteListAdapter extends BaseAdapter {
 
     static class ViewHolder{
         TextView description;
+        public ImageView image;
     }
 
 

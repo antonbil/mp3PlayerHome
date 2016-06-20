@@ -186,6 +186,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("category5"));
             bindPreferenceSummaryToValue(findPreference("category6"));
             bindPreferenceSummaryToValue(findPreference("category7"));
+            bindPreferenceSummaryToValue(findPreference("category8"));
+            bindPreferenceSummaryToValue(findPreference("category9"));
+            bindPreferenceSummaryToValue(findPreference("category10"));
             //bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 
