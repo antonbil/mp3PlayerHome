@@ -25,6 +25,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
     // UI references.
     private EditText url;
+    private EditText sortkey;
     private EditText description;
     //private EditText category;
     ViewGroup vwgroup;
@@ -36,6 +37,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
         setContentView(R.layout.activity_edit_favorite);
         // Set up the login form.
         url = (EditText) findViewById(R.id.url);
+        sortkey = (EditText) findViewById(R.id.sortkey);
 
         description = (EditText) findViewById(R.id.search);
         //category = (EditText) findViewById(R.id.category);
@@ -49,6 +51,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
         String   urlString= extras.getString("url");
         String    descriptionString= extras.getString("description");
         String    categoryString= extras.getString("category");
+        String    sortkeyString= extras.getString("sortkey");
         vwgroup=((ViewGroup)findViewById(R.id.favorite_radiogroup));
 
         RadioGroup.LayoutParams rprms;
@@ -69,6 +72,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
         final int    idString= extras.getInt("id");
 
+        sortkey.setText(sortkeyString);
         url.setText(urlString);
         description.setText(descriptionString);
         //category.setText(categoryString);
@@ -80,8 +84,9 @@ public class EditFavoriteActivity extends AppCompatActivity{
             public void onClick(View v) {
                 try {
                     FavoriteRecord book = FavoriteRecord.findById(FavoriteRecord.class, idString);
+                    //book.sortkey = sortkey.getText().toString();
                     book.url = url.getText().toString();
-                    book.description = description.getText().toString();
+                    book.description = description.getText().toString()+";;"+sortkey.getText().toString();
                     //book.category = category.getText().toString();
                     for (int i=0;i<radioButtons.size();i++)
                         if (radioButtons.get(i).isChecked())

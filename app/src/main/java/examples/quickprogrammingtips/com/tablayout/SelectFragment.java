@@ -184,7 +184,17 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         //https://open.spotify.com/user/spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E
 
         for (FavoriteRecord fav:favoritesDisk){
-            Favorite favnew=new Favorite(fav.url,fav.description,fav.category);
+            //split hier description voor aparte elementen. scheidingsteken: ;;
+            String[] parts=fav.description.split(";;");
+            String sortkey="";
+            String description=parts[0];
+            try{
+                sortkey=parts[1];
+
+            } catch (Exception e){
+
+            }
+            Favorite favnew=new Favorite(fav.url,fav.description,description,sortkey);
             favnew.setRecord(fav);
             for (FavoritesListItem favItem:favoritesListItemArray){
                 //Log.v("samba", favItem.selectlistViewcode + " vs " + fav.category);
@@ -213,7 +223,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         public int compare(Object o1, Object o2) {
                             Favorite mp1 = (Favorite) o1;
                             Favorite mp2 = (Favorite) o2;
-                            return mp1.getDescription().compareTo(mp2.getDescription());
+                            return (mp1.getSortkey()+mp1.getDescription()).compareTo((mp2.getSortkey()+mp2.getDescription()));
                         }
                     });
                     if (fi.isVisible())
@@ -296,6 +306,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     intent.putExtra("url", favorite.getRecord().url);
                     intent.putExtra("description", favorite.getDescription());
                     intent.putExtra("category", favorite.getCategory());
+                    intent.putExtra("sortkey", favorite.getSortkey());
                     startActivityForResult(intent, STATIC_RESULT);
                 }
 
@@ -308,7 +319,27 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     getFavorites();
                 }
 
-            } else {
+            }
+            else
+            if (favorite.getUri().startsWith("spotifyalbum://")){
+                try {
+                    SpotifyActivity.clearSpotifyPlaylist();
+                    String[] a = favorite.getDescription().split("-");
+                    //SpotifyActivity.artistName=a[0];
+                    new SpotifyActivity.addAlbumWithIdToSpotify(favorite.getUri().replace("spotifyalbum://",""),a[0],a[1],MainActivity.getThis){
+                        @Override
+                        public void atLast() {
+                            MainActivity.getThis.startPlaylistSpotify();
+
+                        }
+                    }.run();
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                    //Log.v("samba", Log.getStackTraceString(e));
+                }
+
+            }
+            else {
                 String uri = favorite.getUri();
                 if (uri.startsWith("smb://")) {
                     if (!id.equals("add to playlist")) {//todo add item add to playlist

@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import examples.quickprogrammingtips.com.tablayout.tools.Utils;
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -104,7 +105,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static SpotifyActivity getThis;
     //private ListView albumsListview, relatedArtistsListView;
     private static int spotifyStartPosition = 0;
-    private static String spotifyToken = "";
+    private static HashMap<String, String> spotifyToken = new HashMap<>();
     private static HashMap hm = new HashMap();
     private Track previousTrack = null;
     private Handler customHandler = new Handler();
@@ -124,7 +125,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private ImageView icon;
     private ArrayList<Track> tracksPlaylist=new ArrayList<>();
     private int currentTrack;
-    private String artistName;
+    public static String artistName;
     private ArrayAdapter<String> relatedArtistsAdapter;
     private ListView relatedArtistsListView;
     private SpotifyApi api;
@@ -143,15 +144,19 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static void GetSpotifyTokenSync(){
         checkAddress();
         //Log.v("samba", "ask starred:");
-        String data = "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
-        String urlString = ipAddress + "?OpenAddon_plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D";
+        String urlString = ipAddress + "?OpenAddon_plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Arockin.billy%3Aplaylist%3A03cHQWb5epbCJQsgjwv2dK%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D";
+        String data = "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Arockin.billy%3Aplaylist%3A03cHQWb5epbCJQsgjwv2dK%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
+        //String data = "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
+        //String urlString = ipAddress + "?OpenAddon_plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D";
+        Log.v("samba", urlString);
+
         try {
             String fname = GetJsonFromUrl(data, urlString).optJSONArray("files").getJSONObject(0).optString("file");
             //Log.v("samba", "filenambooleane:"+fname);
             int startIndex = fname.indexOf("Token=") + 6;
             int endIndex = fname.indexOf("&User");
             //Log.v("samba", fname.substring(startIndex, endIndex)); //is your string. do what you want
-            spotifyToken = fname.substring(startIndex, endIndex);
+            spotifyToken.put(ipAddress,fname.substring(startIndex, endIndex));//checkAddress
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
@@ -195,7 +200,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         try {
             if (pos < ids.size()) {
                 dialog1.incrementProgressBy(1);
-                String data = String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Add\", \"params\": { \"playlistid\" : 0 , \"item\" : {\"file\" : \"http://127.0.0.1:8081/track/%s.wav|X-Spotify-Token=%s&User-Agent=Spotlight+1.0\"}}, \"id\": 1}", ids.get(pos), spotifyToken);
+                String data = String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Add\", \"params\": { \"playlistid\" : 0 , \"item\" : {\"file\" : \"http://127.0.0.1:8081/track/%s.wav|X-Spotify-Token=%s&User-Agent=Spotlight+1.0\"}}, \"id\": 1}", ids.get(pos), spotifyToken.get(ipAddress));
                 String urlString = ipAddress + "?PlaylistAdd";
                 GetJsonFromUrl(data, urlString);
                 AddSpotifyTrack(getThis, ids, pos + 1);
@@ -232,6 +237,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         JSONObject jsonRootObject = null;
 
         String sb = getJsonStringFromUrl(data, urlString);
+        Log.v("samba", sb);
         try {
             jsonRootObject = new JSONObject(sb);
             return jsonRootObject.getJSONObject("result");
@@ -428,6 +434,26 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
 
             @Override
+            public void addAlbumToFavoritesAlbum(int counter) {
+                FavoriteRecord fv=new FavoriteRecord("spotifyalbum://"+albumIds.get(counter),
+                        artistName+"-"+albumList.get(counter), "2nd edition");
+                fv.save();
+
+            }
+
+            @Override
+            public void addAlbumToFavoritesTrack(int counter) {
+                String url = "spotifyalbum://" + tracksPlaylist.get(counter).album.id;
+                String name = tracksPlaylist.get(counter).artists.get(0).name;
+                String album = tracksPlaylist.get(counter).album.name;
+                Log.v("samba","add "+url+name+"-"+album);
+                FavoriteRecord fv=new FavoriteRecord(url,
+                        name +"-"+ album,"2nd edition");
+                fv.save();
+
+            }
+
+            @Override
             public void removeTrack(int counter) {
                 removeTrackSpotify(counter);
                 refreshPlaylistFromSpotify(albumAdapter, albumsListview);
@@ -597,6 +623,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 menu.getMenu().add("hide/show");
                 menu.getMenu().add("search");
                 menu.getMenu().add("enlarge cover");
+                menu.getMenu().add("refresh token");
                 menu.show();
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
@@ -609,34 +636,42 @@ public class SpotifyActivity extends AppCompatActivity implements
                             MainActivity.displayLargeImage(getThis, bitmap);
                         }
 
+                        if ((title.equals("refresh token"))){
+                            GetSpotifyTokenSync();
+                        }
                         if ((title.equals("search"))){
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
-                            builder.setTitle("Search artist");
+                            try{
 
-// Set up the input
-                            final EditText input = new EditText(getThis);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                            input.setInputType(InputType.TYPE_CLASS_TEXT );
-                            builder.setView(input);
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
+                                builder.setTitle("Search artist");
 
-// Set up the buttons
-                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String artist = input.getText().toString();
-                                    setVisibility(View.VISIBLE);
-                                    listAlbumsForArtist(artist);
+    // Set up the input
+                                final EditText input = new EditText(getThis);
+    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                                input.setInputType(InputType.TYPE_CLASS_TEXT );
+                                builder.setView(input);
 
-                                }
-                            });
-                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
+    // Set up the buttons
+                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String artist = input.getText().toString();
+                                        setVisibility(View.VISIBLE);
+                                        listAlbumsForArtist(artist);
 
-                            builder.show();
+                                    }
+                                });
+                                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                                builder.show();
+                            } catch (Exception e) {
+                                Log.v("samba", Log.getStackTraceString(e));
+                            }
                         }
 
                         if ((title.equals("oor11"))) {
@@ -979,6 +1014,85 @@ public class SpotifyActivity extends AppCompatActivity implements
                 ipAddress + "?PlaylistClear");//
     }
 
+    public abstract static class addAlbumWithIdToSpotify {
+        String id;
+        String artist;
+        String album;
+        Activity getThis;
+
+        public abstract void atLast();
+
+        addAlbumWithIdToSpotify(String id, String artist, String album, Activity getThis) {
+            this.id = id;
+            this.artist = artist;
+            this.album = album;
+            this.getThis = getThis;
+        }
+
+        public void run() {
+            new SpotifyApi().getService().getAlbumTracks(id, new Callback<Pager<Track>>() {
+
+                        @Override
+                        public void success(Pager<Track> trackPager, Response response) {
+                            //albumList.clear();
+                            ArrayList<String> ids = new ArrayList<String>();
+                            for (Track t : trackPager.items) {
+                                try {
+                                    Album alb = new Album();
+                                    alb.name = album;
+                                    alb.id = id;
+                                    final Image im = new Image();
+                                    im.url = "";
+                                    new DownLoadImageUrlTask() {
+                                        @Override
+                                        public void setUrl(String logo) {
+                                            im.url = logo;
+                                        }
+                                    }.execute(id);
+
+                                    List<Image> l = new ArrayList();
+                                    l.add(im);
+                                    alb.images = l;
+                                    t.album = alb;
+                                    Artist art = new Artist();
+                                    art.name = artist;
+                                    List<ArtistSimple> a = new ArrayList();
+                                    a.add(art);
+                                    t.artists = a;
+                                } catch (Exception e) {
+                                    Log.v("samba", Log.getStackTraceString(e));
+                                }
+                                hm.put(t.id, t);
+                                ids.add(t.id);
+                                //albumList.add(t.name+String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue())));
+                            }
+
+                            //albumAdapter.notifyDataSetChanged();
+                            //Utils.setDynamicHeight(albumsListview, 0);
+                            new AddTracksToPlaylist(ids, getThis) {
+                                @Override
+                                public void atEnd() {
+                                    Log.v("samba", "einde taak");
+                                    atLast();
+                                }
+
+                            }.run();
+
+                            //addTracksToPlaylist(ids);
+                        }
+
+
+                        @Override
+                        public void failure(RetrofitError error) {
+
+                        }
+                    }
+            );
+
+
+        }
+    }
+
     public static class addExternalPlaylistToSpotify {
         String url;
         Activity getThis;
@@ -1063,8 +1177,10 @@ public class SpotifyActivity extends AppCompatActivity implements
             try {
 
                 //mainids=ids;
+                //spotifyToken.put(ipAddress,fname.substring(startIndex, endIndex));//checkAddress
+                checkAddress();
                 if (mainids.size() > 0)
-                    if (spotifyToken.length() == 0) GetSpotifyTokenSync();
+                    if (spotifyToken.get(ipAddress) == null) GetSpotifyTokenSync();
                 dialog1 = new ProgressDialog(getThis);
                 dialog1.setTitle("spotify-playlist");
                 dialog1.setMessage("Adding to list");
@@ -1209,14 +1325,18 @@ public class SpotifyActivity extends AppCompatActivity implements
         icon.setLayoutParams(layoutParams);
 
 
-        new DownLoadImageTask() {
-            @Override
-            public void setImage(Bitmap logo) {
-                ImageView i = (ImageView) findViewById(R.id.image);
-                Log.v("samba", "image loaded");
-                icon.setImageBitmap(logo);
-            }
-        }.execute(image.url);
+        try{
+            new DownLoadImageTask() {
+                @Override
+                public void setImage(Bitmap logo) {
+                    ImageView i = (ImageView) findViewById(R.id.image);
+                    Log.v("samba", "image loaded");
+                    icon.setImageBitmap(logo);
+                }
+            }.execute(image.url);
+        } catch (Exception e) {
+        Log.v("samba", Log.getStackTraceString(e));
+    }
 /*        try {
             //sometimes no album-image available
             ImageView i = (ImageView) findViewById(R.id.image);
@@ -1235,7 +1355,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private void listAlbumsForArtist(final SpotifyApi api, SpotifyService spotify, final String beatles, final ListView albumsListview, final ListView relatedArtistsListView, final PlanetAdapter albumAdapter, final ArrayAdapter<String> relatedArtistsAdapter) {
         this.artistName =beatles;
         albumVisible = true;
-        spotify.searchArtists(beatles, new Callback<ArtistsPager>() {
+        spotify.searchArtists(beatles.trim(), new Callback<ArtistsPager>() {
 
             @Override
             public void success(ArtistsPager artistsPager, Response response) {
@@ -1244,9 +1364,12 @@ public class SpotifyActivity extends AppCompatActivity implements
                 Image image = null;
                 for (Artist artist : artistsPager.artists.items) {
                     String name = artist.name;
+                    Log.v("samba","artist found: "+name);
                     if (name.startsWith("The ")) name = name.substring(4);
-                    if (name.toLowerCase().contains(beatles.toLowerCase())) {
+                    if (name.toLowerCase().replace(" ","").contains(beatles.toLowerCase().replace(" ",""))) {
 
+
+                        Log.v("samba","artist found: "+name);
                         if (name.length() < max) {
                             id = artist.id;
                             try{
@@ -1442,6 +1565,8 @@ public class SpotifyActivity extends AppCompatActivity implements
         public abstract void removeDown(int counter);
 
         public abstract void removeAlbum(int counter);
+        public abstract void addAlbumToFavoritesAlbum(int counter);
+        public abstract void addAlbumToFavoritesTrack(int counter);
 
         public abstract void removeTrack(int counter);
 
@@ -1544,7 +1669,9 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                                        removeAlbum(position);
                                                                    } else if (item.getTitle().toString().equals("display artist")) {
                                                                        displayArtist(position);
-                                                                   }
+                                                                   } else if (item.getTitle().toString().equals("add album to favorites")) {
+                                                                       addAlbumToFavoritesTrack(position);
+                                                               }
 
                                                                    return true;
                                                                }
@@ -1555,6 +1682,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                            menu.getMenu().add("remove track");//submenu
                                                            menu.getMenu().add("remove album");//submenu
                                                            menu.getMenu().add("add album");//submenu
+                                                           menu.getMenu().add("add album to favorites");//submenu
                                                            menu.getMenu().add("display artist");//submenu
                                                        } else {
                                                            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -1571,6 +1699,9 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                                                                        //addAlbum(position);
                                                                    }
+                                                               else if (item.getTitle().toString().equals("add album to favorites")) {
+                                                                       addAlbumToFavoritesAlbum(position);
+                                                               }
 
                                                                    return true;
                                                                }
@@ -1579,6 +1710,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                            menu.getMenu().add("replace and play");//submenu
                                                            menu.getMenu().add("add and play");//submenu
                                                            menu.getMenu().add("add");//submenu
+                                                           menu.getMenu().add("add album to favorites");//submenu
 
                                                        }
                                                        menu.show();
