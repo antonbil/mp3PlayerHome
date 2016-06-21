@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     public static MainActivity getThis;
     public ProgressDialog dialog;
     public Bitmap albumBitmap;
+    public static boolean filterSpotify;
 
     public static void panicMessage(final String message){
         //Let this be the code in your n'th level thread from main UI thread
@@ -354,6 +355,9 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem checkable = menu.findItem(R.id.display_footer);
         checkable.setChecked(footerVisible);
+        MenuItem filter_spotify = menu.findItem(R.id.filter_spotify);
+        checkable.setChecked(filterSpotify);
+
         return true;
     }
     @Override

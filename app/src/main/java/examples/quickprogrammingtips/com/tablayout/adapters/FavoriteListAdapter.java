@@ -118,10 +118,10 @@ public class FavoriteListAdapter extends BaseAdapter {
 
                         });
 
-                        return true;
-                    }
+                return true;
+            }
 
-                });
+        });
 
         return convertView;
     }

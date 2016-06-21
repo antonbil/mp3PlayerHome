@@ -196,6 +196,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             }
             Favorite favnew=new Favorite(fav.url,description,description,sortkey);
             favnew.setRecord(fav);
+            if (!MainActivity.filterSpotify||(MainActivity.filterSpotify&&favnew.isSpotifyItem()))
             for (FavoritesListItem favItem:favoritesListItemArray){
                 //Log.v("samba", favItem.selectlistViewcode + " vs " + fav.category);
                 if (favItem.selectlistViewcode.equals(fav.category))
@@ -388,7 +389,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 }
         }
 
-
+else//added on 21-6-2016
         super.onActivityResult(requestCode, resultCode, data);
 
     }
