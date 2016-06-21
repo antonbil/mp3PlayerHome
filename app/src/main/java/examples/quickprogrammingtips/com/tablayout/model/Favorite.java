@@ -11,7 +11,12 @@ import examples.quickprogrammingtips.com.tablayout.MainActivity;
  * Created by anton on 23-1-16.
  */
 public class Favorite {
-    public static ArrayList<String> categoryIds=new ArrayList<>(Arrays.asList("2nd edition","3","4","5","6","7","8","9","10","11"));
+    public static final String SMBPREFIX = "smb://";
+    public static final String SPOTIFYPLAYLISTPREFIX = "https://open.spotify.com/user/";
+    public static final String SPOTIFYALBUM = "spotifyalbum://";
+    public static final String NEWALBUM = "2nd edition";
+    public static final String SPOTIFYPRIVATEPLAYLIST = "spotify://";
+    public static ArrayList<String> categoryIds=new ArrayList<>(Arrays.asList(NEWALBUM,"3","4","5","6","7","8","9","10","11"));
     private static ArrayList<String> categoryDescriptions=new ArrayList<>(Arrays.asList("New Links","Classical","Symphonic Rock","Electronic","Soul","Singer/Songwriter","Alternative","Rock","Ambient","Various"));
     public static String getCategory(int i){
         String r="";
@@ -32,6 +37,13 @@ public class Favorite {
         this.record = record;
     }
 
+    public boolean isSambaItem(){
+        return uri.startsWith(SMBPREFIX);
+    }
+
+    public boolean isSpotifyItem(){
+        return uri.startsWith(SPOTIFYPLAYLISTPREFIX)||uri.startsWith(SPOTIFYPRIVATEPLAYLIST)||uri.startsWith(SPOTIFYALBUM);
+    }
     private FavoriteRecord record;
     public Favorite(String uri, String description, String category){
         this( uri,  description,  category,"");

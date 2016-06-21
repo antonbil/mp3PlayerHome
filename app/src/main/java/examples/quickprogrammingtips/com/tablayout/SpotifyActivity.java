@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import examples.quickprogrammingtips.com.tablayout.tools.Utils;
@@ -435,20 +436,20 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void addAlbumToFavoritesAlbum(int counter) {
-                FavoriteRecord fv=new FavoriteRecord("spotifyalbum://"+albumIds.get(counter),
-                        artistName+"-"+albumList.get(counter), "2nd edition");
+                FavoriteRecord fv=new FavoriteRecord(Favorite.SPOTIFYALBUM+albumIds.get(counter),
+                        artistName+"-"+albumList.get(counter), Favorite.NEWALBUM);
                 fv.save();
 
             }
 
             @Override
             public void addAlbumToFavoritesTrack(int counter) {
-                String url = "spotifyalbum://" + tracksPlaylist.get(counter).album.id;
+                String url = Favorite.SPOTIFYALBUM + tracksPlaylist.get(counter).album.id;
                 String name = tracksPlaylist.get(counter).artists.get(0).name;
                 String album = tracksPlaylist.get(counter).album.name;
                 Log.v("samba","add "+url+name+"-"+album);
                 FavoriteRecord fv=new FavoriteRecord(url,
-                        name +"-"+ album,"2nd edition");
+                        name +"-"+ album,Favorite.NEWALBUM);
                 fv.save();
 
             }

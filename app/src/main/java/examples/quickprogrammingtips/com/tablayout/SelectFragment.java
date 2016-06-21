@@ -122,10 +122,10 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         favoritespotifyListView.setAdapter(favoriteListAdapter);*/
 
             //FavoritesListItem favoritesSpotifyListItem = new FavoritesListItem(this, view, "spotify", "sp");
-            favoritesListItemArray.add(new FavoritesListItem(this, view, "favorites", "fvrites",false));
-            favoritesListItemArray.add(new FavoritesListItem(this, view, "spotify", "sp"));
+            favoritesListItemArray.add(new FavoritesListItem(this, view, "favorites", "1",false));
+            favoritesListItemArray.add(new FavoritesListItem(this, view, "spotify", "2",true));
             for (int i=0;i<Favorite.categoryIds.size();i++) {
-                final FavoritesListItem favoritesListItem = new FavoritesListItem(this, view, Favorite.getCategory(i), Favorite.categoryIds.get(i));
+                final FavoritesListItem favoritesListItem = new FavoritesListItem(this, view, Favorite.getCategory(i), Favorite.categoryIds.get(i),false);
                 favoritesListItemArray.add(favoritesListItem);
             }
 
@@ -164,23 +164,23 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         for (FavoritesListItem fi:favoritesListItemArray)
         fi.favoritesAdded.clear();
         ArrayList<Favorite> favoritesSpotifyListItem = favoritesListItemArray.get(0).favoritesAdded;
-        favoritesSpotifyListItem.add(new Favorite("00tags/favorites", "favorites", ""));
-        favoritesSpotifyListItem.add(new Favorite("00tags/newest", "newest", ""));
-        favoritesSpotifyListItem.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2014/", "2014", ""));
-        favoritesSpotifyListItem.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2015/", "2015", ""));
-        favoritesSpotifyListItem.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/2016/", "2016", ""));
-        favoritesSpotifyListItem.add(new Favorite("smb://192.168.2.8/FamilyLibrary/years/", "years", ""));
-        favoritesSpotifyListItem.add(new Favorite("smb://192.168.2.8/FamilyLibrary/Soul/", "Soul", ""));
+        favoritesSpotifyListItem.add(new Favorite("00tags/favorites", "favorites", "1"));
+        favoritesSpotifyListItem.add(new Favorite("00tags/newest", "newest", "1"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/2014/", "2014", "1"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/2015/", "2015", "1"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/2016/", "2016", "1"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/", "years", "1"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/Soul/", "Soul", "1"));
         favoritesSpotifyListItem = favoritesListItemArray.get(1).favoritesAdded;
-        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "Spotify"));;
-        favoritesSpotifyListItem.add(new Favorite("spotify://redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "Spotify"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
-        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB", "nltop40", "Spotify"));
-        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "Spotify"));
-        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/1WCuVrwkQbZZw6qmgockjv", "oor rockt", "Spotify"));
-        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF", "oor danst", "Spotify"));
-        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/122978137/playlist/3dixZSVLSak9apekDzw8r5", "ambient1", "Spotify"));
-        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/1249149618/playlist/5r977N6ZbHTM3Pm5CpzXzJ", "ambient2", "Spotify"));
-        favoritesSpotifyListItem.add(new Favorite("https://open.spotify.com/user/spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E", "ambient3", "Spotify"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "2"));;
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB", "nltop40", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"redactie_oor/playlist/47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"koenpoolman/playlist/1WCuVrwkQbZZw6qmgockjv", "oor rockt", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF", "oor danst", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"122978137/playlist/3dixZSVLSak9apekDzw8r5", "ambient1", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"1249149618/playlist/5r977N6ZbHTM3Pm5CpzXzJ", "ambient2", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E", "ambient3", "2"));
         //https://open.spotify.com/user/spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E
 
         for (FavoriteRecord fav:favoritesDisk){
@@ -223,7 +223,9 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         public int compare(Object o1, Object o2) {
                             Favorite mp1 = (Favorite) o1;
                             Favorite mp2 = (Favorite) o2;
-                            return (mp1.getSortkey()+mp1.getDescription()).toLowerCase().compareTo((mp2.getSortkey()+mp2.getDescription().toLowerCase()));
+                            String s1 = (mp1.getSortkey() + mp1.getDescription()).toLowerCase();
+                            String s2 = (mp2.getSortkey() + mp2.getDescription()).toLowerCase();
+                            return s1.compareTo(s2);
                         }
                     });
                     if (fi.isVisible())
@@ -231,10 +233,19 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     Utils.setDynamicHeight(fi.favoritesAddedListView, 0);
                     else setListViewHeight(fi.favoritesAddedListView, 0);
                 }
+                /*Collections.sort(favoritesListItemArray, new Comparator() {
+                    public int compare(Object o1, Object o2) {
+                        FavoritesListItem mp1 = (FavoritesListItem) o1;
+                        FavoritesListItem mp2 = (FavoritesListItem) o2;
+                        //String a = mp1.selectlistViewcode;
+                        return (mp1.selectlistViewcode.compareTo((mp2.selectlistViewcode)));
+                    }
+                });*/
 
 
             }
         });
+
 
     }
 
@@ -267,10 +278,10 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     public void favoritesCall(Favorite favorite, String id) {
         Log.v("samba", favorite.getUri());
         //spotify://
-        if (favorite.getUri().startsWith("spotify://")){
+        if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)){
             try {
                 SpotifyActivity.clearSpotifyPlaylist();
-                new SpotifyActivity.getEntirePlaylistFromSpotify(favorite.getUri().replace("spotify://",""),MainActivity.getThis){
+                new SpotifyActivity.getEntirePlaylistFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST,""),MainActivity.getThis){
                     @Override
                     public void atLast() {
                         MainActivity.getThis.startPlaylistSpotify();
@@ -283,7 +294,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
         }
         else
-        if (favorite.getUri().startsWith("https://")){
+        if (favorite.getUri().startsWith(Favorite.SPOTIFYPLAYLISTPREFIX)){
             try {
                 SpotifyActivity.clearSpotifyPlaylist();
                 new SpotifyActivity.addExternalPlaylistToSpotify(favorite.getUri(),MainActivity.getThis){
@@ -321,12 +332,12 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
             }
             else
-            if (favorite.getUri().startsWith("spotifyalbum://")){
+            if (favorite.getUri().startsWith(Favorite.SPOTIFYALBUM)){
                 try {
                     SpotifyActivity.clearSpotifyPlaylist();
                     String[] a = favorite.getDescription().split("-");
                     //SpotifyActivity.artistName=a[0];
-                    new SpotifyActivity.addAlbumWithIdToSpotify(favorite.getUri().replace("spotifyalbum://",""),a[0],a[1],MainActivity.getThis){
+                    new SpotifyActivity.addAlbumWithIdToSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM,""),a[0],a[1],MainActivity.getThis){
                         @Override
                         public void atLast() {
                             MainActivity.getThis.startPlaylistSpotify();
@@ -341,7 +352,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             }
             else {
                 String uri = favorite.getUri();
-                if (uri.startsWith("smb://")) {
+                if (uri.startsWith(Favorite.SMBPREFIX)) {
                     if (!id.equals("add to playlist")) {//todo add item add to playlist
                         Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
                         logic.getHistory().add(new HistoryListview(uri, 0));

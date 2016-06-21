@@ -73,9 +73,9 @@ public class FavoriteListAdapter extends BaseAdapter {
         holder.image = (ImageView) convertView.findViewById(R.id.favoritelistimageView);
         Integer i;
         String uri = favoritesList.get(position).getUri();
-        if (uri.startsWith("https://")||uri.startsWith("spotify://")||uri.startsWith("spotifyalbum://"))i=R.drawable.spf;
+        if (favoritesList.get(position).isSpotifyItem())i=R.drawable.spf;
         else
-        if (uri.startsWith("smb://"))i=R.drawable.smb;
+        if (favoritesList.get(position).isSambaItem())i=R.drawable.smb;
         else i=R.drawable.mpd;
         holder.image.setImageResource(i);
         final int pos2=position;
