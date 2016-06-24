@@ -36,7 +36,8 @@ import examples.quickprogrammingtips.com.tablayout.tools.Utils;
 
 
 public class SelectFragment extends Fragment implements FavoritesInterface{
-    static final int STATIC_RESULT=2; //positive > 0 integer.
+    public static SelectFragment getThis;
+    static final int STATIC_RESULT_SELECT =3; //positive > 0 integer.
     private Logic logic;
     //ArrayList<Favorite> favorites;
     //ListView favoriteListView;
@@ -53,6 +54,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+        getThis=this;
             servers.toArray();
             //favorites = new ArrayList<>();
         //spotifyfavorites = new ArrayList<>();
@@ -172,9 +174,11 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/", "years", "1"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/Soul/", "Soul", "1"));
         favoritesSpotifyListItem = favoritesListItemArray.get(1).favoritesAdded;
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "2"));;
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "2"));
+        //https://open.spotify.com/user/spotify/playlist/3Yrvm5lBgnhzTYTXx2l55x
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB", "nltop40", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/3Yrvm5lBgnhzTYTXx2l55x", "new releases", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"redactie_oor/playlist/47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "2"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"koenpoolman/playlist/1WCuVrwkQbZZw6qmgockjv", "oor rockt", "2"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF", "oor danst", "2"));
@@ -319,7 +323,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     intent.putExtra("description", favorite.getDescription());
                     intent.putExtra("category", favorite.getCategory());
                     intent.putExtra("sortkey", favorite.getSortkey());
-                    startActivityForResult(intent, STATIC_RESULT);
+                    startActivityForResult(intent, STATIC_RESULT_SELECT);
                 }
 
 
@@ -366,6 +370,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         logic.getMpc().enqueCommands(new ArrayList<>(Collections.singletonList(command)));
                     } else {
                         logic.getHistoryMpd().add(new HistoryListview(uri, 0));
+                        Log.v("samba",uri);
                         ((MainActivity) getActivity()).selectTab(2);
                     }
                 }
@@ -377,7 +382,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == STATIC_RESULT) //check if the request code is the one you've sent
+        Log.v("samba","in fragment");
+        if (requestCode == STATIC_RESULT_SELECT) //check if the request code is the one you've sent
         {
             if (resultCode == Activity.RESULT_OK)
             {

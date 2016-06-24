@@ -32,8 +32,31 @@
 
         <activity
             android:name=".SpotifyActivity"
-            android:label="Spotify" >
-            </activity>
+            android:label="Spotify">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:host="open.spotify.com" android:scheme="http"/>
+                <data android:host="open.spotify.com" android:scheme="https"/>
+                <data android:host="play.spotify.com" android:scheme="http"/>
+                <data android:host="play.spotify.com" android:scheme="https"/>
+                <data android:scheme="spotify"/>
+            </intent-filter>
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="callback"
+                    android:scheme="testschema" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
@@ -46,11 +69,41 @@
         <activity
             android:name=".WikipediaActivity"
             android:label="@string/title_activity_wikpedia"
-            android:theme="@style/AppTheme"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+            android:theme="@style/AppTheme" />
+        <!--
+ ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
+        <!--
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW"/>
+            <category android:name="android.intent.category.DEFAULT"/>
+            <category android:name="android.intent.category.BROWSABLE"/>
+            <data android:host="open.spotify.com" android:scheme="http"/>
+            <data android:host="open.spotify.com" android:scheme="https"/>
+            <data android:host="play.spotify.com" android:scheme="http"/>
+            <data android:host="play.spotify.com" android:scheme="https"/>
+            <data android:scheme="spotify"/>
+        </intent-filter>
+        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".NewAlbumsActivity"
+            android:label="@string/title_activity_new_albums"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".NewAlbumsActivityElectronic"
+            android:label="@string/title_activity_new_albums_activity_electronic"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

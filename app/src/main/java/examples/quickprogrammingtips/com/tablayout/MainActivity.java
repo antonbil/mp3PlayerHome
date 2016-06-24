@@ -67,6 +67,7 @@ import mpc.MPCStatus;
 public class MainActivity extends AppCompatActivity  implements MpdInterface,MPCListener , MPCDatabaseListener , OnTaskCompleted{
 
     static final int STATIC_RESULT=3; //positive > 0 integer.
+    static final int NEWALBUMS_RESULT=15;
     private boolean footerVisible=false;
     private int tabSelected=0;
     private ListFragment listFragment;
@@ -99,6 +100,17 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final Intent intent = getIntent();
+        final String action = intent.getAction();
+
+        if (Intent.ACTION_VIEW.equals(action)) {
+            final List<String> segments = intent.getData().getPathSegments();
+            if (segments.size() > 1) {
+                Log.d("MainActivity", "Text:"+segments.get(1));        Toast.makeText(getApplicationContext(), "Text:"+segments.get(1),
+                        Toast.LENGTH_SHORT).show();
+            }
+                //mUsername = segments.get(1);
+            }
 
         SugarContext.init(this);//init db
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -398,6 +410,18 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
             setFooterVisibility();
             return true;
         }
+        if (id == R.id.filter_spotify) {
+            boolean filter_spotify = !item.isChecked();
+            item.setChecked(filter_spotify);
+            filterSpotify=!filterSpotify;
+            try{
+            SelectFragment.getThis.getFavorites();
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+            //setFooterVisibility();
+            return true;
+        }
         if ((id == R.id.search_option)) {//playlists_option
                 searchTerm();
                 return true;
@@ -545,7 +569,19 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
-        //if (requestCode == STATIC_RESULT) //check if the request code is the one you've sent
+        if (resultCode==441){
+            Bundle extras = data.getExtras();
+
+
+            String   urlString= extras.getString("url");
+            Log.v("samba","return:"+urlString);
+            Toast.makeText(MainActivity.this, "return:"+urlString, Toast.LENGTH_SHORT).show();
+
+        }
+        Log.v("samba","in hoofd-activity");
+        Log.v("samba","requestcode:"+resultCode);
+        if (resultCode == 23) return;
+        Log.v("samba","in hoofd-activity erna");
         {
             if (resultCode == Activity.RESULT_OK)
             {

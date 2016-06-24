@@ -1,6 +1,5 @@
 package examples.quickprogrammingtips.com.tablayout;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -96,7 +95,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
                     book.save();
                     Intent i = getIntent(); //get the intent that has been called, i.e you did called with startActivityForResult();
                     //i.putExtras(b);//put some data, in a bundle
-                    setResult(Activity.RESULT_OK, i);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
+                    setResult(23, i);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
                     finish(); //finish the startNewOne activity
                 } catch (Exception e) {
                     Toast.makeText(getBaseContext(), "Error!", Toast.LENGTH_SHORT).show();

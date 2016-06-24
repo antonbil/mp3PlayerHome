@@ -10,6 +10,16 @@
         android:layout_height="match_parent"
         android:layout_gravity="left|top">
 
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+
+            android:fillViewport="true" >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dip" >
         <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -42,11 +52,6 @@
                 android:id="@+id/selectxbmc" />
         </RadioGroup>
 
-        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-
-            android:fillViewport="true" >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -81,6 +86,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/selectlistView" />-->
 
+            </LinearLayout>
             </LinearLayout>
         </ScrollView>
 

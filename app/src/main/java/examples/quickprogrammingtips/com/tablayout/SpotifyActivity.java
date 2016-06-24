@@ -40,8 +40,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.ConnectionStateCallback;
 
 import org.json.JSONArray;
@@ -91,19 +89,24 @@ working example:https://developer.spotify.com/technologies/spotify-android-sdk/t
 and:https://github.com/kaaes/spotify-web-api-android/blob/master/sample-search/src/main/java/kaaes/spotify/webapi/samplesearch/LoginActivity.java
 Detailed information how to use it can be found in the Spotify Android SDK Authentication Guide.
  */
+/*
+get a lot of playlists on:https://open.spotify.com/user/spotify
+new album releases:https://open.spotify.com/user/spotify/playlist/3Yrvm5lBgnhzTYTXx2l55x
+new album releases: http://everynoise.com/spotify_new_albums.html
+ */
 public class SpotifyActivity extends AppCompatActivity implements
         ConnectionStateCallback{//AlertDialog
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "89f945f1696e4f389aaed419e51beaad";
     // TODO: Replace with your redirect URI
-    private static final String REDIRECT_URI = "pgplayprotocol://callback";
+    private static final String REDIRECT_URI = "testschema://callback";
     private static ArrayList<String> mainids;
     private ArrayList<String> artistList = new ArrayList<>();
     private ArrayList<String> albumIds = new ArrayList<>();
     private ArrayList<String> albumList = new ArrayList<>();
     private ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
     private TextView MessageView;
-    private static SpotifyActivity getThis;
+    public static SpotifyActivity getThis;
     //private ListView albumsListview, relatedArtistsListView;
     private static int spotifyStartPosition = 0;
     private static HashMap<String, String> spotifyToken = new HashMap<>();
@@ -149,7 +152,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         String data = "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Arockin.billy%3Aplaylist%3A03cHQWb5epbCJQsgjwv2dK%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
         //String data = "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
         //String urlString = ipAddress + "?OpenAddon_plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D";
-        Log.v("samba", urlString);
+        //Log.v("samba", urlString);
 
         try {
             String fname = GetJsonFromUrl(data, urlString).optJSONArray("files").getJSONObject(0).optString("file");
@@ -238,7 +241,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         JSONObject jsonRootObject = null;
 
         String sb = getJsonStringFromUrl(data, urlString);
-        Log.v("samba", sb);
+        //Log.v("samba", sb);
         try {
             jsonRootObject = new JSONObject(sb);
             return jsonRootObject.getJSONObject("result");
@@ -346,19 +349,36 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
     // Spotify:Request code that will be used to verify if the result comes from correct activity
 // Can be any integer
-    private static final int REQUEST_CODE = 1337;
+    //private static final int REQUEST_CODE = 1337;
 
-    @Override
+    class NewAlbumsActivityTotal extends NewAlbumsActivity{
+
+
+        @Override
+        public void processAlbum(NewAlbum album) {
+
+        }
+        @Override
+        public void generateList(ArrayList<NewAlbum> newAlbums){
+        }
+
+    }
+    class NewAlbumsActivityProgressiveRock extends NewAlbumsActivityElectronic {
+
+        @Override
+        public void setUrl() {
+            url = "http://www.spotifynewmusic.com/tagwall3.php?ans=Progressive+rock";
+        }
+    }
+        @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
-                AuthenticationResponse.Type.TOKEN,
-                REDIRECT_URI);
-        builder.setScopes(new String[]{"user-read-private", "playlist-read-private"});
-        AuthenticationRequest request = builder.build();
+        // Code called from an activity
+        /*final AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
+                .setScopes(new String[]{"user-read-private", "playlist-read", "playlist-read-private"})
+                .build();
 
-        //AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
-        //Intent intent = AuthenticationClient.createLoginActivityIntent(this, request);
-       // startActivityForResult(intent, REQUEST_CODE);
+        AuthenticationClient.openLoginInBrowser(this, request);*/
+
 
 
         tracksPlaylist = new ArrayList<Track>();
@@ -367,7 +387,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         String ip = MainActivity.getThis.getLogic().getMpc().getAddress();
         ipAddress = String.format("http://%s:8080/jsonrpc", ip);
 
-        Log.v("samba", "ip:" + ip);
+        //Log.v("samba", "ip:" + ip);
             /*selectOnPlaylist = new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
@@ -382,7 +402,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         getThis = this;
         setContentView(R.layout.activity_spotify);
-        Log.v("samba", "nosearch1");
+        //Log.v("samba", "nosearch1");
         api = new SpotifyApi();
         spotify = api.getService();
         GetSpotifyToken();
@@ -394,7 +414,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         if (nosearch) temp = "The Beatles";
         artistName = temp;
 
-        Log.v("samba", "nosearch2");
+        //Log.v("samba", "nosearch2");
 
         albumsListview = (ListView) findViewById(R.id.albums_listview);
         albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -447,7 +467,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 String url = Favorite.SPOTIFYALBUM + tracksPlaylist.get(counter).album.id;
                 String name = tracksPlaylist.get(counter).artists.get(0).name;
                 String album = tracksPlaylist.get(counter).album.name;
-                Log.v("samba","add "+url+name+"-"+album);
+                //Log.v("samba","add "+url+name+"-"+album);
                 FavoriteRecord fv=new FavoriteRecord(url,
                         name +"-"+ album,Favorite.NEWALBUM);
                 fv.save();
@@ -470,7 +490,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             @Override
             public void replaceAndPlayAlbum(int counter) {
                 clearSpotifyPlaylist();
-                Log.v("samba","end removing");
+                //Log.v("samba","end removing");
                 getAlbumtracksFromSpotify(counter);
             }
 
@@ -499,7 +519,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             };*/
         albumsListview.setOnItemClickListener(cl);
         relatedArtistsListView = (ListView) findViewById(R.id.relatedartists_listview);
-        Log.v("samba", "nosearch3");
+        //Log.v("samba", "nosearch3");
 
         relatedArtistsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, artistList);
         relatedArtistsListView.setAdapter(relatedArtistsAdapter);
@@ -542,7 +562,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 return true;
             }
         });
-        Log.v("samba", "nosearch4");
+        //Log.v("samba", "nosearch4");
         relatedArtistsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
@@ -555,7 +575,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
             }
         });
-        Log.v("samba", "nosearch5");
+        //Log.v("samba", "nosearch5");
         ImageButton stopButton = (ImageButton) findViewById(R.id.stopspotifyButton);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -570,7 +590,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
         });
         //jsonrpc /jsonrpc?PlaylistClear {"jsonrpc": "2.0", "id": 0, "method": "Playlist.Clear", "params": {"playlistid": 0}}
-        Log.v("samba", "nosearch6");
+        //Log.v("samba", "nosearch6");
         ImageButton clearButton = (ImageButton) findViewById(R.id.clearspotifyButton);
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -599,7 +619,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 }
             }
         });
-        Log.v("samba", "nosearch7");
+        //Log.v("samba", "nosearch7");
         tvName = (TextView) findViewById(R.id.title_top);
         time = (TextView) findViewById(R.id.time_top);
         totaltime = (TextView) findViewById(R.id.totaltime_top);
@@ -611,7 +631,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             @Override
             public void onClick(View arg0) {
                 //MainActivity.displayLargeImage(getThis, bitmap);
-                Log.v("samba", "clicked!");
+                //Log.v("samba", "clicked!");
                 // Toast.makeText(getApplicationContext(), "Clicked Image",
                 //         Toast.LENGTH_SHORT).show();
                 PopupMenu menu = new PopupMenu(image.getContext(), image);
@@ -625,14 +645,47 @@ public class SpotifyActivity extends AppCompatActivity implements
                 menu.getMenu().add("search");
                 menu.getMenu().add("enlarge cover");
                 menu.getMenu().add("refresh token");
+                menu.getMenu().add("new albums");
+                menu.getMenu().add("new albums electronic");
+                menu.getMenu().add("new albums progressive");
+
                 menu.show();
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-
                         String title = item.getTitle().toString();
-                        //displayLargeImage(Context context,Bitmap bitmap)
+                        try{
+
+                        if ((title.equals("new albums"))) {
+                            Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivity.class);
+                            startActivity(intent);
+                        }                        } catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+                        }
+
+
+                    try {
+                        if ((title.equals("new albums electronic"))) {
+                            Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                            intent.putExtra("url", "http://www.spotifynewmusic.com/tagwall3.php?ans=electronic");
+
+                            startActivity(intent);
+                        }
+                    }
+                    catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+                        try{
+                        if ((title.equals("new albums progressive"))) {
+                            Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                            intent.putExtra("url",  "http://www.spotifynewmusic.com/tagwall3.php?ans=Progressive+rock");
+                            startActivity(intent);
+                        }
+                    }
+                    catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
                         if ((title.equals("enlarge cover"))) {
                             MainActivity.displayLargeImage(getThis, bitmap);
                         }
@@ -764,7 +817,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             findViewById(R.id.fab);
 
-            Log.v("samba","nosearch9");
+            //Log.v("samba","nosearch9");
             if(!nosearch)
 
             {
@@ -774,7 +827,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             else
 
             {
-                Log.v("samba", "nosearch");
+                //Log.v("samba", "nosearch");
 
 
                 try {
@@ -797,10 +850,15 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.v("samba","return:");
+        if (resultCode==441){
+        }
+
         super.onActivityResult(requestCode, resultCode, intent);
         Log.v("samba","callback");
+        Log.v("samba","callback2");
 
-        Log.v("samba","ja maar!");
+        //Log.v("samba","ja maar!");
     }
     private void initArtistlist(final String atistName) {
         artistInitiated = true;
@@ -883,7 +941,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 new AddTracksToPlaylist(ids, getThis) {
                     @Override
                     public void atEnd() {
-                        Log.v("samba", "einde taak");
+                        //Log.v("samba", "einde taak");
                         refreshPlaylistFromSpotify(albumAdapter, albumsListview);
                     }
 
@@ -909,7 +967,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public void removeDownlist(int counter) {
         for (int i = counter; i < tracksPlaylist.size(); i++) {
-            Log.v("samba", "remove " + i);
+            //Log.v("samba", "remove " + i);
             removeTrackSpotify(counter);
         }
         spotifyStartPosition = 0;
@@ -974,7 +1032,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                     ipAddress + "?OpenAddon_plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3A" + playlistid + "%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D");
 
             //line read:{"id":1,"jsonrpc":"2.0","result":{"files":[{"art":{"thumb":"image://http%3a%2f%2f127.0.0.1%3a8081%2fimage%2fae346f2c03ddf26e39ee5111b068c6b1e41543f0.jpg/"},"duration":247,"file":"http://127.0.0.1:8081
-            Log.v("samba", "clicked3!");
+            //Log.v("samba", "clicked3!");
             JSONArray items = null;
             try {
                 items = playlist.getJSONArray("files");
@@ -984,7 +1042,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                     JSONObject o = items.getJSONObject(i);
                     file = o.getString("file");
                     String fileid = getTrackId(file);
-                    Log.v("samba", fileid);
+                    //Log.v("samba", fileid);
                     ids.add(fileid);
                 }
                 new AddTracksToPlaylist(ids, getThis) {
@@ -1073,7 +1131,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                             new AddTracksToPlaylist(ids, getThis) {
                                 @Override
                                 public void atEnd() {
-                                    Log.v("samba", "einde taak");
+                                    //Log.v("samba", "einde taak");
                                     atLast();
                                 }
 
@@ -1121,7 +1179,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 int startIndex = s.indexOf("track/") + 6;
                 ids.add(element.attr("content").substring(startIndex));
 
-                Log.v("samba", element.attr("content").substring(startIndex));
+                //Log.v("samba", element.attr("content").substring(startIndex));
             }
             new AddTracksToPlaylist(ids, getThis) {
                 @Override
@@ -1193,7 +1251,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                 new Thread(new Task(mainids, getThis) {
                     public void atEnd2() {
-                        Log.v("samba", "einde taak");
+                        //Log.v("samba", "einde taak");
                         MainActivity.getThis.runOnUiThread(new Runnable() {
                             public void run() {
 
@@ -1224,7 +1282,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             new AddTracksToPlaylist(ids, getThis) {
                 @Override
                 public void atEnd() {
-                    Log.v("samba", "einde taak");
+                    //Log.v("samba", "einde taak");
                 }
 
             }.run();
@@ -1248,7 +1306,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             JSONObject playlist = GetJsonFromUrl(
                     "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetItems\", \"params\": { \"properties\": [\"title\", \"album\", \"artist\", \"duration\", \"thumbnail\",\"file\"], \"playlistid\": 0 }, \"id\": 1}\u200B",
                     ipAddress + "?GetPLItemsAudio");
-            Log.v("samba", "refresh");
+            //Log.v("samba", "refresh");
 
             albumList.clear();
             albumTracks.clear();
@@ -1264,7 +1322,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 trackid = getTrackId(o.getString("file"));
                 Track t = getTrack(trackid);
                 //tracksPlaylist.add(t);
-                Log.v("samba", t.name);
+                //Log.v("samba", t.name);
                 //ArrayList<String> ids=new ArrayList<String>();
                 String extra = "";
                 try {
@@ -1331,7 +1389,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 @Override
                 public void setImage(Bitmap logo) {
                     ImageView i = (ImageView) findViewById(R.id.image);
-                    Log.v("samba", "image loaded");
+                    //Log.v("samba", "image loaded");
                     icon.setImageBitmap(logo);
                 }
             }.execute(image.url);
@@ -1365,12 +1423,12 @@ public class SpotifyActivity extends AppCompatActivity implements
                 Image image = null;
                 for (Artist artist : artistsPager.artists.items) {
                     String name = artist.name;
-                    Log.v("samba","artist found: "+name);
+                    //Log.v("samba","artist found: "+name);
                     if (name.startsWith("The ")) name = name.substring(4);
                     if (name.toLowerCase().replace(" ","").contains(beatles.toLowerCase().replace(" ",""))) {
 
 
-                        Log.v("samba","artist found: "+name);
+                        //Log.v("samba","artist found: "+name);
                         if (name.length() < max) {
                             id = artist.id;
                             try{
@@ -1833,7 +1891,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 try {
                     int n=0;
                     while ((albumPictures.get(urlOfImage) == null)&&(n<30)) {
-                        Log.v("samba","wait....."+n+" iteration");
+                        //Log.v("samba","wait....."+n+" iteration");
                         Thread.sleep(1000);
                         n++;
                     }
@@ -1907,7 +1965,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 try {
                     int n=0;
                     while ((albumPictures.get(albumId) == null)&&(n<30)) {
-                        Log.v("samba","wait....."+n+" iteration");
+                        //Log.v("samba","wait....."+n+" iteration");
                         Thread.sleep(1000);
                         n++;
                     }
@@ -2000,5 +2058,6 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         }
     ;
+
 
 }
