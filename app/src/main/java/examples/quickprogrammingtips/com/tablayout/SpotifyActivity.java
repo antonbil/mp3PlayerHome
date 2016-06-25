@@ -141,12 +141,34 @@ public class SpotifyActivity extends AppCompatActivity implements
     private boolean albumVisible = true;
     private Bitmap bitmap;
     private boolean artistInitiated = false;
+    private final float CHECK_MEMORY_FREQ_SECONDS = 3.0f;
+    private final float LOW_MEMORY_THRESHOLD_PERCENT = 5.0f; // Available %
+    private Handler memoryHandler_;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
 
+    public void checkAppMemory(){
+        // Get app memory info
+        long available = Runtime.getRuntime().maxMemory();
+        long used = Runtime.getRuntime().totalMemory();
+
+        // Check for & and handle low memory state
+        float percentAvailable = 100f * (1f - ((float) used / available ));
+        if( percentAvailable <= LOW_MEMORY_THRESHOLD_PERCENT )
+            handleLowMemory();
+
+        // Repeat after a delay
+        memoryHandler_.postDelayed( new Runnable(){ public void run() {
+            checkAppMemory();
+        }}, (int)(CHECK_MEMORY_FREQ_SECONDS * 1000) );
+    }
+
+    public void handleLowMemory(){
+        DownLoadImageTask.albumPictures.clear();
+    }
     private static void GetSpotifyTokenSync(){
         checkAddress();
         //Log.v("samba", "ask starred:");
@@ -362,6 +384,8 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         AuthenticationClient.openLoginInBrowser(this, request);*/
 
+            memoryHandler_ = new Handler();
+            checkAppMemory();
 
 
         tracksPlaylist = new ArrayList<Track>();
@@ -465,9 +489,13 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void displayArtist(int counter) {
-                String s = tracksPlaylist.get(counter).artists.get(0).name;
-                setVisibility(View.VISIBLE);
-                listAlbumsForArtist(s);
+                try{
+                    String s = tracksPlaylist.get(counter).artists.get(0).name;
+                    setVisibility(View.VISIBLE);
+                    listAlbumsForArtist(s);
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
             }
 
             @Override
@@ -521,20 +549,24 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        try{
 
-                        String title = item.getTitle().toString();
-                        if ((title.equals("search"))) {
-                                /*MainActivity.getThis.selectTab(2);
-                                try{ Thread.sleep(1000); MainActivity.getThis.searchTerm(selectedItem);}catch(InterruptedException e){ }
-                                */
-                            final Intent intent = getThis.getIntent();
-                            intent.putExtra("artist", selectedItem);
-                            setResult(Activity.RESULT_OK, intent);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
-                            getThis.finish(); //finish the activity
+                            String title = item.getTitle().toString();
+                            if ((title.equals("search"))) {
+                                    /*MainActivity.getThis.selectTab(2);
+                                    try{ Thread.sleep(1000); MainActivity.getThis.searchTerm(selectedItem);}catch(InterruptedException e){ }
+                                    */
+                                final Intent intent = getThis.getIntent();
+                                intent.putExtra("artist", selectedItem);
+                                setResult(Activity.RESULT_OK, intent);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
+                                getThis.finish(); //finish the activity
 
-                        }
-                        if ((title.equals("wikipedia"))) {
-                            MainActivity.getThis.startWikipediaPage(selectedItem);
+                            }
+                            if ((title.equals("wikipedia"))) {
+                                MainActivity.getThis.startWikipediaPage(selectedItem);
+                            }
+                        } catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
                         }
 
                         return true;
@@ -977,11 +1009,13 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     private void setVisibility(int visibility) {
+        int opposite=View.GONE;
+        if (visibility==opposite)opposite=View.VISIBLE;
         relatedArtistsListView.setVisibility(visibility);
 
         artistTitleTextView.setVisibility(visibility);
         icon.setVisibility(visibility);
-        fab.setVisibility(View.GONE);//spotifyscrollviewtop
+        fab.setVisibility(opposite);//spotifyscrollviewtop
         ((TextView) findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
         ((TextView) findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
 
@@ -1971,7 +2005,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public static abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-        private static HashMap<String, Bitmap>albumPictures=new HashMap<>();
+        public static HashMap<String, Bitmap>albumPictures=new HashMap<>();
 
 
         public DownLoadImageTask() {
@@ -2014,6 +2048,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 //setImage(logo);
                 //getThis.bitmap = logo;
             } catch (Exception e) { // Catch the download exception
+                albumPictures.clear();
                 Log.v("samba", Log.getStackTraceString(e));
             }
             return logo;
