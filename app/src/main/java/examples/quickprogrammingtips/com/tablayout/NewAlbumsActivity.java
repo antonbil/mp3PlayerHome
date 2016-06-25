@@ -1,16 +1,16 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,25 +29,35 @@ public class NewAlbumsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_albums);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
+
+        final ListAdapter customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
+        final ProgressDialog loadingdialog;
+        loadingdialog = ProgressDialog.show(this,
+                "","Loading, please wait",true);
+        Thread task = new Thread()
+        {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+            public void run()
+            {
+                generateList(newAlbums);
+                runOnUiThread(new Runnable() {
 
-        generateList(newAlbums);
-        ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
+                    @Override
+                    public void run() {
+                        loadingdialog.dismiss();
+                        yourListView.setAdapter(customAdapter);
+                        customAdapter.notifyDataSetChanged();
 
-        ListAdapter customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
+                    }
+                });            }
+        };
 
-        yourListView.setAdapter(customAdapter);
-        customAdapter.notifyDataSetChanged();
+        task.start();
+
 
     }
     public void generateList(ArrayList<NewAlbum> newAlbums){
@@ -70,30 +80,7 @@ public class NewAlbumsActivity extends AppCompatActivity {
             newAlbums.add(new NewAlbum(s,artist,album));
         }
     };
-    class NewAlbum {
-        private String image;
-        public String url,artist,album;
-        public NewAlbum(String url,String artist,String album){
-            this(url,artist,album,"");
-
-        }
-
-        public NewAlbum(String url, String artist, String album, String image) {
-            this.url=url;
-            this.artist=artist;
-            this.album=album;
-            this.setImage(image);
-        }
-
-        public String getImage() {
-            return image;
-        }
-
-        public void setImage(String image) {
-            this.image = image;
-        }
-    }
-    public class ListAdapter extends ArrayAdapter<NewAlbum> {
+     public class ListAdapter extends ArrayAdapter<NewAlbum> {
         private Context context;
         ArrayList<NewAlbum> items;
 
@@ -117,6 +104,7 @@ public class NewAlbumsActivity extends AppCompatActivity {
             if (p != null) {
                 TextView tt1 = (TextView) rowView.findViewById(R.id.artistname);
                 TextView tt2 = (TextView) rowView.findViewById(R.id.albumname);
+                final ImageView image = (ImageView) rowView.findViewById(R.id.spotifylistimageView1);
 
                 if (tt1 != null) {
                     tt1.setText(p.artist);
@@ -125,6 +113,20 @@ public class NewAlbumsActivity extends AppCompatActivity {
                 if (tt2 != null) {
                     tt2.setText(p.album);
                 }
+                if (p.getImage().length()>0)
+                new SpotifyActivity.DownLoadImageTask() {
+                    @Override
+                    public void setImage(final Bitmap logo) {
+                        image.setImageBitmap(logo);
+                        image.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View arg0) {
+                                MainActivity.displayLargeImage(SpotifyActivity.getThis, logo);
+                            }
+                        });
+                    }
+                }.execute(p.getImage());
 
             }
 
@@ -148,7 +150,7 @@ public class NewAlbumsActivity extends AppCompatActivity {
     public void processAlbum(NewAlbum album){
         SpotifyActivity.getThis.artistName=album.artist;
         //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""); Toast.LENGTH_SHORT).show();
-        SpotifyActivity.getThis.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album);
+        SpotifyActivity.getThis.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this);
 
     };
 }

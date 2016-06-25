@@ -174,6 +174,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/", "years", "1"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/Soul/", "Soul", "1"));
         favoritesSpotifyListItem = favoritesListItemArray.get(1).favoritesAdded;
+        //https://open.spotify.com/user/1218062195/playlist/2AxpY5WlA9JAn4Vcpx8GSV
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "2"));
         //https://open.spotify.com/user/spotify/playlist/3Yrvm5lBgnhzTYTXx2l55x
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
@@ -185,6 +186,10 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"122978137/playlist/3dixZSVLSak9apekDzw8r5", "ambient1", "2"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"1249149618/playlist/5r977N6ZbHTM3Pm5CpzXzJ", "ambient2", "2"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E", "ambient3", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"1218062195/playlist/2AxpY5WlA9JAn4Vcpx8GSV", "classical", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/024GOC1aaJzcF0YrTGdeSu", "Composer weekly", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases", "2"));
+        //https://open.spotify.com/user/spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE
         //https://open.spotify.com/user/spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E
 
         for (FavoriteRecord fav:favoritesDisk){

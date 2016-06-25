@@ -59,6 +59,7 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -101,6 +102,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "testschema://callback";
     private static ArrayList<String> mainids;
+    public FillListviewWithValues fillListviewWithValues;
     private ArrayList<String> artistList = new ArrayList<>();
     private ArrayList<String> albumIds = new ArrayList<>();
     private ArrayList<String> albumList = new ArrayList<>();
@@ -351,25 +353,6 @@ public class SpotifyActivity extends AppCompatActivity implements
 // Can be any integer
     //private static final int REQUEST_CODE = 1337;
 
-    class NewAlbumsActivityTotal extends NewAlbumsActivity{
-
-
-        @Override
-        public void processAlbum(NewAlbum album) {
-
-        }
-        @Override
-        public void generateList(ArrayList<NewAlbum> newAlbums){
-        }
-
-    }
-    class NewAlbumsActivityProgressiveRock extends NewAlbumsActivityElectronic {
-
-        @Override
-        public void setUrl() {
-            url = "http://www.spotifynewmusic.com/tagwall3.php?ans=Progressive+rock";
-        }
-    }
         @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Code called from an activity
@@ -503,7 +486,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             @Override
             public void addAlbum(int counter) {
                 artistName = tracksPlaylist.get(counter).artists.get(0).name;
-                getAlbumtracksFromSpotify(tracksPlaylist.get(counter).album.id, tracksPlaylist.get(counter).album.name);
+                getAlbumtracksFromSpotify(tracksPlaylist.get(counter).album.id, tracksPlaylist.get(counter).album.name,getThis);
             }
         };
         albumAdapter.setDisplayCurrentTrack(false);
@@ -646,15 +629,100 @@ public class SpotifyActivity extends AppCompatActivity implements
                 menu.getMenu().add("enlarge cover");
                 menu.getMenu().add("refresh token");
                 menu.getMenu().add("new albums");
-                menu.getMenu().add("new albums electronic");
-                menu.getMenu().add("new albums progressive");
+                menu.getMenu().add("new albums categories");
 
                 menu.show();
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
-                    @Override
+                    @Override/*
+                    rnb
+                    soul
+                    singer-songwriter
+                    */
                     public boolean onMenuItemClick(MenuItem item) {
                         String title = item.getTitle().toString();
+                        if ((title.equals("new albums categories"))) {
+                            PopupMenu menu = new PopupMenu(image.getContext(), image);;
+                            ArrayList<String> categoryIds=new ArrayList<>(Arrays.asList("electronic","progressive","alternative","rnb","soul","singer-songwriter",
+                                    "acoustic","ambient","americana","blues","country","techno","shoegaze","Hip-Hop","funk","jazz","rock","folk"));
+                            for (String cat:categoryIds){
+                                menu.getMenu().add(cat);
+                            }
+                            menu.show();
+                            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    String title = item.getTitle().toString();
+                                    try {
+                                        //if (title.startsWith("new albums ")) {
+                                            final String cat = title.replace("new albums ", "");
+                                            fillListviewWithValues=new FillListviewWithValues(){
+
+                                                @Override
+                                                public void generateList(ArrayList<NewAlbum> newAlbums) {
+                                                    //Bundle extras = getIntent().getExtras();
+
+
+                                                    String url= "http://www.spotifynewmusic.com/tagwall3.php?ans="+cat;
+                                                    //String act = getIntent().getStringExtra("from");
+
+                                                    //try {
+                                                    //    Class callerClass = Class.forName(act);
+                                                    //} catch (ClassNotFoundException e) {
+                                                    //    e.printStackTrace();
+                                                    //}
+                                                    Document doc = null;
+                                                    try {
+                                                        doc = Jsoup.connect(url).get();
+                                                        String temp = doc.html().replace("<br>", "$$$").replace("<br />", "$$$"); //$$$ instead <br>
+                                                        doc = Jsoup.parse(temp); //Parse again
+                                                    } catch (IOException e) {
+                                                        Log.v("samba", Log.getStackTraceString(e));
+                                                    }
+
+                                                    Elements trackelements = doc.getElementsByClass("album");
+                                                    //;
+                                                    //ArrayList<String> ids = new ArrayList<String>();
+                                                    for (Element element : trackelements) {
+                                                        String image="http://www.spotifynewmusic.com/"+element.select("img").attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
+                                                        Elements links = element.getElementsByClass("play").select("a[href]"); // a with href
+                                                        String s = links.get(0).attr("href");
+                                                        Log.v("samba",s);
+
+                                                        String div = element.children().get(1).text();
+                                                        Log.v("samba",div);
+                                                        try{
+                                                            String[] list = div.replace("$$$",";").split(";");
+                                                            String artist = list[0];
+                                                            String album = "";
+                                                            if (list.length>1)
+                                                                album = list[1];
+                                                            //ids.add(artist + "-" + album);
+                                                            newAlbums.add(new NewAlbum(s, artist, album,image));
+                                                        } catch (Exception e) {
+                                                            Log.v("samba", Log.getStackTraceString(e));
+                                                        }
+                                                    }
+                                                }
+                                            };
+
+
+                                            {
+                                                Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                                                //intent.putExtra("url", "http://www.spotifynewmusic.com/tagwall3.php?ans="+cat);
+                                                //intent.putExtra("from" , "spotifyActivity");
+
+                                                startActivity(intent);
+                                            }
+                                       // }
+                                    }
+                                    catch (Exception e) {
+                                        Log.v("samba", Log.getStackTraceString(e));
+                                    }                                return true;}
+                            });
+
+                        }
                         try{
 
                         if ((title.equals("new albums"))) {
@@ -665,6 +733,28 @@ public class SpotifyActivity extends AppCompatActivity implements
                         }
 
 
+
+                        /*try {
+                            if ((title.equals("new albums soul"))) {
+                                Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                                intent.putExtra("url", "http://www.spotifynewmusic.com/tagwall3.php?ans=soul");
+                                startActivity(intent);
+                            }
+                        }
+                        catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+                        }
+                        try {
+                            if ((title.equals("new albums singer-songwriter"))) {
+                                Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                                intent.putExtra("url", "http://www.spotifynewmusic.com/tagwall3.php?ans=singer-songwriter");
+
+                                startActivity(intent);
+                            }
+                        }
+                        catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+                        }
                     try {
                         if ((title.equals("new albums electronic"))) {
                             Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
@@ -676,6 +766,17 @@ public class SpotifyActivity extends AppCompatActivity implements
                     catch (Exception e) {
                         Log.v("samba", Log.getStackTraceString(e));
                     }
+                        try {
+                            if ((title.equals("new albums alternative"))) {
+                                Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                                intent.putExtra("url", "http://www.spotifynewmusic.com/tagwall3.php?ans=alternative");
+
+                                startActivity(intent);
+                            }
+                        }
+                        catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+                        }
                         try{
                         if ((title.equals("new albums progressive"))) {
                             Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
@@ -685,7 +786,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                     }
                     catch (Exception e) {
                         Log.v("samba", Log.getStackTraceString(e));
-                    }
+                    }*/
                         if ((title.equals("enlarge cover"))) {
                             MainActivity.displayLargeImage(getThis, bitmap);
                         }
@@ -895,10 +996,10 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public void getAlbumtracksFromSpotify(final int position) {
         String s = albumIds.get(position);
-        getAlbumtracksFromSpotify(s, albumList.get(position));
+        getAlbumtracksFromSpotify(s, albumList.get(position),getThis);
     }
 
-    public void getAlbumtracksFromSpotify(final String albumid, final String albumname) {
+    public void getAlbumtracksFromSpotify(final String albumid, final String albumname, final AppCompatActivity getThis) {
         //int position = ;
         spotify.getAlbumTracks(albumid, new Callback<Pager<Track>>() {
 
@@ -1869,7 +1970,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         return "";
     }
 
-    private static abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
+    public static abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
         private static HashMap<String, Bitmap>albumPictures=new HashMap<>();
 
 
