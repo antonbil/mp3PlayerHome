@@ -7,4 +7,5 @@ import java.util.ArrayList;
  */
 public abstract class FillListviewWithValues {
     public abstract void  generateList(ArrayList<NewAlbum> newAlbums);
+    public abstract  void addToFavorites(NewAlbum newAlbum);
 }

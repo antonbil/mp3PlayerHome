@@ -5,10 +5,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -24,10 +27,12 @@ import java.util.ArrayList;
 
 public class NewAlbumsActivity extends AppCompatActivity {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
+    AppCompatActivity getThis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getThis=this;
         setContentView(R.layout.activity_new_albums);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
@@ -101,7 +106,7 @@ public class NewAlbumsActivity extends AppCompatActivity {
             View rowView = inflater.inflate(R.layout.item_newalbum, parent, false);
             NewAlbum p = items.get(position);
 
-            if (p != null) {
+            //if (p != null) {
                 TextView tt1 = (TextView) rowView.findViewById(R.id.artistname);
                 TextView tt2 = (TextView) rowView.findViewById(R.id.albumname);
                 final ImageView image = (ImageView) rowView.findViewById(R.id.spotifylistimageView1);
@@ -119,33 +124,89 @@ public class NewAlbumsActivity extends AppCompatActivity {
                     public void setImage(final Bitmap logo) {
                         image.setImageBitmap(logo);
                         image.setOnClickListener(new View.OnClickListener() {
-
                             @Override
-                            public void onClick(View arg0) {
-                                MainActivity.displayLargeImage(SpotifyActivity.getThis, logo);
+                            public void onClick(View v) {
+                                PopupMenu menu = new PopupMenu(v.getContext(), v);
+
+                                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                                    @Override
+                                    public boolean onMenuItemClick(MenuItem item) {
+                                        if (item.getTitle().toString().equals("add album to favorites")) {
+                                            SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+
+                                        }
+                                        if (item.getTitle().toString().equals("large image")) {
+                                            MainActivity.displayLargeImage(getThis, logo);
+
+                                        }
+                                        return true;
+                                    }
+                                });
+
+                                menu.getMenu().add("add album to favorites");//submenu
+                                menu.getMenu().add("large image");//submenu
+                                menu.show();
                             }
                         });
                     }
                 }.execute(p.getImage());
 
-            }
+            //}
 
             rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     processAlbum(items.get(position));
 
-                    /*String url=items.get(position).url;
-                    Intent i = getIntent(); //get the intent that has been called, i.e you did called with startActivityForResult();
-                    i.putExtra("artist",items.get(position).artist);
-                    i.putExtra("album",items.get(position).album);
-                    i.putExtra("url",url);
-                    //i.putExtras(b);//put some data, in a bundle
-                    setResult(441, i);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
-                    finish(); //finish the startNewOne activity*/
                 }
             });
-            return rowView;
+            image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu menu = new PopupMenu(v.getContext(), v);
+
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if (item.getTitle().toString().equals("add album to favorites")) {
+                                SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+
+                            }
+                            return true;
+                        }
+                    });
+
+                    menu.getMenu().add("add album to favorites");//submenu
+                    menu.show();
+                }
+            });
+            rowView.setOnLongClickListener(new AdapterView.OnLongClickListener() {
+
+                @Override
+                public boolean onLongClick(final View v) {
+                    PopupMenu menu = new PopupMenu(v.getContext(), v);
+
+                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                if (item.getTitle().toString().equals("add album to favorites")) {
+                                    SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+
+                                }
+                                return true;
+                            }
+                        });
+
+                        menu.getMenu().add("add album to favorites");//submenu
+                    menu.show();
+                    return true;
+                }
+                                           }
+            );
+                    return rowView;
         }    }
     public void processAlbum(NewAlbum album){
         SpotifyActivity.getThis.artistName=album.artist;

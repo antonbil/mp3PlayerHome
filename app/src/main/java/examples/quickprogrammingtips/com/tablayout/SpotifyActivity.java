@@ -737,6 +737,13 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                         }
                                                     }
                                                 }
+
+                                                @Override
+                                                public void addToFavorites(NewAlbum newAlbum) {
+                                                    FavoriteRecord fv=new FavoriteRecord(Favorite.SPOTIFYALBUM+newAlbum.url.replace("spotify:album:",""),
+                                                    newAlbum.artist+"-"+newAlbum.album, Favorite.NEWALBUM);
+                                                    fv.save();                                                }
+
                                             };
 
 
@@ -1873,11 +1880,11 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                                                            menu.getMenu().add("remove top");//submenu
                                                            menu.getMenu().add("remove bottom");//submenu
-                                                           menu.getMenu().add("remove track");//submenu
-                                                           menu.getMenu().add("remove album");//submenu
                                                            menu.getMenu().add("add album");//submenu
                                                            menu.getMenu().add("add album to favorites");//submenu
                                                            menu.getMenu().add("display artist");//submenu
+                                                           menu.getMenu().add("remove track");//submenu
+                                                           menu.getMenu().add("remove album");//submenu
                                                        } else {
                                                            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 

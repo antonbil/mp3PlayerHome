@@ -1,12 +1,14 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
@@ -288,12 +290,17 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     public void favoritesCall(Favorite favorite, String id) {
         Log.v("samba", favorite.getUri());
         //spotify://
+        FragmentActivity activity = this.getActivity();
         if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)){
             try {
+                final ProgressDialog loadingdialog;
+                loadingdialog = ProgressDialog.show(activity,
+                        "","Loading, please wait",true);
                 SpotifyActivity.clearSpotifyPlaylist();
                 new SpotifyActivity.getEntirePlaylistFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST,""),MainActivity.getThis){
                     @Override
                     public void atLast() {
+                        loadingdialog.dismiss();
                         MainActivity.getThis.startPlaylistSpotify();
                     }
                 }.run();
@@ -306,10 +313,14 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         else
         if (favorite.getUri().startsWith(Favorite.SPOTIFYPLAYLISTPREFIX)){
             try {
+                final ProgressDialog loadingdialog;
+                loadingdialog = ProgressDialog.show(activity,
+                        "","Loading, please wait",true);
                 SpotifyActivity.clearSpotifyPlaylist();
                 new SpotifyActivity.addExternalPlaylistToSpotify(favorite.getUri(),MainActivity.getThis){
                     @Override
                     public void atLast() {
+                        loadingdialog.dismiss();
                         MainActivity.getThis.startPlaylistSpotify();
                     }
                 }.run();
@@ -344,12 +355,17 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             else
             if (favorite.getUri().startsWith(Favorite.SPOTIFYALBUM)){
                 try {
+                    final ProgressDialog loadingdialog;
+                    loadingdialog = ProgressDialog.show(activity,
+                            "","Loading, please wait",true);
                     SpotifyActivity.clearSpotifyPlaylist();
                     String[] a = favorite.getDescription().split("-");
                     //SpotifyActivity.artistName=a[0];
                     new SpotifyActivity.addAlbumWithIdToSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM,""),a[0],a[1],MainActivity.getThis){
                         @Override
                         public void atLast() {
+                            loadingdialog.dismiss();
+
                             MainActivity.getThis.startPlaylistSpotify();
 
                         }
