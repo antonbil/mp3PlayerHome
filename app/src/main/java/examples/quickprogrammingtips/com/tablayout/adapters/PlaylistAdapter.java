@@ -278,6 +278,7 @@ public class PlaylistAdapter extends BaseAdapter {
                     return true;
                 }
                     });
+
                 final String fname = mp3File.getFname();
                 final String path= mp3File.getFile();
                 //Log.v("test", fname);
