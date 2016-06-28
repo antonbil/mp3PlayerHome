@@ -289,6 +289,7 @@ public class PlaylistAdapter extends BaseAdapter {
                             //mp.getMpcSong()
                             //Toast t = Toast.makeText(v.getContext(), "play:"+mp.getTitle(), Toast.LENGTH_SHORT);
                         caller.newMpdCall(mp3File, position, selectFragmentContext.getString(R.string.command_play));
+                        MainActivity.getThis.getLogic().getMpc().play();
                             //t.show();
                     }
                 });

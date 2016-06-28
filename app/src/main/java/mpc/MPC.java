@@ -1,8 +1,16 @@
 package mpc;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.os.Handler;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import examples.quickprogrammingtips.com.tablayout.MainActivity;
+import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
 /**
@@ -55,6 +63,39 @@ public class MPC {
 	 */
 	public void play(){
 		sendSingleMessage("play");
+		final Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (!MainActivity.getThis.getLogic().mpcStatus.playing) {
+					Log.v("samba","not playing");
+					new AlertDialog.Builder(MainActivity.getThis)
+							.setMessage("Not playing. End spotify playing?")
+							.setCancelable(false)
+							.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int id) {
+									final ProgressDialog loadingdialog;
+									loadingdialog = ProgressDialog.show(MainActivity.getThis,
+											"","Stop playing, please wait",true);
+									SpotifyActivity.stopSpotifyPlaying();
+									final Handler handler = new Handler();
+									handler.postDelayed(new Runnable() {
+										@Override
+										public void run() {
+											play();
+											loadingdialog.dismiss();
+										}
+									}, 12000);
+
+								}
+							})
+							.setNegativeButton("No", null)
+							.show();
+
+				}
+				//Do something after 100ms
+			}
+		}, 2000);
 	}
 	public void clearPlaylist(){
 		sendSingleMessage("clear");

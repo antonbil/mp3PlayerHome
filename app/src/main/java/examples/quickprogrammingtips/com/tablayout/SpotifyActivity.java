@@ -596,12 +596,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
-                try {
-                    GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.stop\", \"params\": { \"playerid\": 0 }, \"id\": 1}",
-                            ipAddress + "?StopPause");//?StopPause
-                } catch (Exception e) {
-                    Log.v("samba", Log.getStackTraceString(e));
-                }
+                stopSpotifyPlaying();
             }
         });
         //jsonrpc /jsonrpc?PlaylistClear {"jsonrpc": "2.0", "id": 0, "method": "Playlist.Clear", "params": {"playlistid": 0}}
@@ -987,6 +982,15 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             customHandler.postDelayed(updateTimerThread,0);
         }
+
+    public static void stopSpotifyPlaying() {
+        try {
+            GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.stop\", \"params\": { \"playerid\": 0 }, \"id\": 1}",
+                    ipAddress + "?StopPause");//?StopPause
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
