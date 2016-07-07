@@ -659,7 +659,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 //{"jsonrpc":"2.0","method":"Files.GetDirectory","id":1,"params":["plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%…A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D","music",["title","file","thumbnail", "art","duration"]]
                 //menu.getMenu().add("oor11");
                 menu.getMenu().add("hide/show");
-                menu.getMenu().add("search");
+                menu.getMenu().add("search artist");
                 menu.getMenu().add("search album");
                 menu.getMenu().add("enlarge cover");
                 menu.getMenu().add("refresh token");
@@ -811,6 +811,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                             si.artist=name;
                                                             si.title="";
                                                             si.id=album.id;
+                                                            si.imageid=album.images.get(0).url;
                                                             newAlbums.add(si);
                                                         }
 
@@ -847,7 +848,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                                 Log.v("samba", Log.getStackTraceString(e));
                             }
                         }
-                        if ((title.equals("search"))){
+                        if ((title.equals("search artist"))){
                             try{
 
                                 AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
@@ -885,6 +886,9 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                             si.artist=name;
                                                             si.title="";
                                                             si.id=artist.id;
+                                                            if (artist.images.size()>0)
+                                                            si.imageid=artist.images.get(0).url; else
+                                                                si.imageid="";
                                                             newAlbums.add(si);
 
 

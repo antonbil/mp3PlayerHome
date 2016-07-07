@@ -2,6 +2,7 @@ package examples.quickprogrammingtips.com.tablayout;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -103,7 +104,7 @@ public class SearchActivity extends AppCompatActivity {
                 if (tt2 != null) {
                     tt2.setText(p.title);
                 }
-                /*if (p.getImage().length()>0)
+                if (p.imageid.length()>0)
                 new SpotifyActivity.DownLoadImageTask() {
                     @Override
                     public void setImage(final Bitmap logo) {
@@ -111,7 +112,8 @@ public class SearchActivity extends AppCompatActivity {
                         image.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                PopupMenu menu = new PopupMenu(v.getContext(), v);
+                                MainActivity.displayLargeImage(getThis, logo);
+                                /*PopupMenu menu = new PopupMenu(v.getContext(), v);
 
                                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
@@ -131,11 +133,11 @@ public class SearchActivity extends AppCompatActivity {
 
                                 menu.getMenu().add("add album to favorites");//submenu
                                 menu.getMenu().add("large image");//submenu
-                                menu.show();
+                                menu.show();*/
                             }
                         });
                     }
-                }.execute(p.getImage());*/
+                }.execute(p.imageid);
 
             //}
 
