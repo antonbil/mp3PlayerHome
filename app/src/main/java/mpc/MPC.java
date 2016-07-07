@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class MPC {
 	 */
 	public void play(int index){
 		sendSingleMessage("play " + index);
+		checkIfPlaying(true);
 	}
 
 	/**
@@ -63,40 +65,73 @@ public class MPC {
 	 */
 	public void play(){
 		sendSingleMessage("play");
-		final Handler handler = new Handler();
+		checkIfPlaying(true);
+	}
+
+	public void play(boolean first){
+		sendSingleMessage("play");
+		checkIfPlaying(first);
+	}
+
+	private void checkIfPlaying(final boolean first) {
+		Log.v("samba","not playing before");
+		final MainActivity mainObject = MainActivity.getThis;
+		final Handler handler = new Handler(Looper.getMainLooper());
 		handler.postDelayed(new Runnable() {
+			private void delay12() {
+				final ProgressDialog loadingdialog;
+				loadingdialog = ProgressDialog.show(mainObject,
+						"", "Stop playing, please wait", true);
+				SpotifyActivity.stopSpotifyPlaying(SpotifyActivity.checkAddress());
+				final Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						play(false);
+						loadingdialog.dismiss();
+					}
+				}, 12000);
+			}
 			@Override
 			public void run() {
-				if (!MainActivity.getThis.getLogic().mpcStatus.playing) {
-					Log.v("samba","not playing");
-					new AlertDialog.Builder(MainActivity.getThis)
-							.setMessage("Not playing. End spotify playing?")
-							.setCancelable(false)
-							.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int id) {
-									final ProgressDialog loadingdialog;
-									loadingdialog = ProgressDialog.show(MainActivity.getThis,
-											"","Stop playing, please wait",true);
-									SpotifyActivity.stopSpotifyPlaying();
-									final Handler handler = new Handler();
-									handler.postDelayed(new Runnable() {
-										@Override
-										public void run() {
-											play();
-											loadingdialog.dismiss();
-										}
-									}, 12000);
+				MPCStatus s=mainObject.getLogic().getMpc().getStatusSynch();
+				if (!s.playing) {
+					Log.v("samba","not playing 2");
+					if (!first) {
+						try {
+							mainObject.runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									// remove the retrieving of data from this method and let it just build the views
+									Log.v("samba", "not playing");
+									new AlertDialog.Builder(mainObject)
+											.setMessage("Not playing. End spotify playing?")
+											.setCancelable(false)
+											.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+												public void onClick(DialogInterface dialog, int id) {
+													delay12();
 
+												}
+											})
+											.setNegativeButton("No", null)
+											.show();
 								}
-							})
-							.setNegativeButton("No", null)
-							.show();
 
-				}
+							});
+						} catch (Exception e) {
+							Log.v("samba", Log.getStackTraceString(e));
+						}
+					} else {
+						delay12();
+
+					}
+
+				} else Log.v("samba","playing after");
 				//Do something after 100ms
 			}
 		}, 2000);
 	}
+
 	public void clearPlaylist(){
 		sendSingleMessage("clear");
 	}
