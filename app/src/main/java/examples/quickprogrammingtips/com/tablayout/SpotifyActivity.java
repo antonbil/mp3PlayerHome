@@ -125,8 +125,8 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static String ipAddress = "";
     private PlanetAdapter albumAdapter;
     private ListView albumsListview;
-    private static ProgressDialog dialog1 = MainActivity.getThis.dialog;
-    private static Handler updateBarHandler = MainActivity.getThis.updateBarHandler;
+    private static ProgressDialog dialog1;//
+    private static Handler updateBarHandler;
     //AdapterView.OnItemClickListener selectOnPlaylist;
     private boolean nosearch = false;
     private TextView artistTitleTextView;
@@ -378,6 +378,8 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         @Override
     protected void onCreate(Bundle savedInstanceState) {
+            dialog1=new ProgressDialog(this);
+            updateBarHandler = MainActivity.getThis.updateBarHandler;
         // Code called from an activity
         /*final AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
                 .setScopes(new String[]{"user-read-private", "playlist-read", "playlist-read-private"})
@@ -814,6 +816,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                             si.imageid=album.images.get(0).url;
                                                             newAlbums.add(si);
                                                         }
+                                                        SearchActivity.getThis.notifyChange();
 
                                                     }
 
@@ -893,7 +896,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
                                                         }
-
+                                                        SearchActivity.getThis.notifyChange();
                                                     }
 
                                                     @Override
@@ -904,8 +907,12 @@ public class SpotifyActivity extends AppCompatActivity implements
                                             };
 
                                             public void processAlbum(SearchItem album){
-                                                listAlbumsForArtist(album.artist);
-                                                //listAlbumsForArtistId(album.id, null, album.artist, new SpotifyApi());
+                                                //listAlbumsForArtist(album.artist);
+                                                Image im=new Image();
+                                                try {
+                                                    im.url = album.images.get(0).url;
+                                                } catch(Exception e){}
+                                                listAlbumsForArtistId(album.id, im, album.artist, new SpotifyApi());
                                             };
                                         };
 
@@ -928,14 +935,6 @@ public class SpotifyActivity extends AppCompatActivity implements
                         }
 
                         if ((title.equals("oor11"))) {
-                                /*
-                                spotify lijsten
-                                https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB
-                                wordt:nederlandse_top_40%3Aplaylist%3A5lH9NjOeJvctAO92ZrKQNB
-                                https://open.spotify.com/user/redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY​
-                                wordt:                     redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY​
-                                %22%3A+%22spotify%3Auser%3Aredactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22
-                                 */
                             String playlistid = "redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY";
                             new getEntirePlaylistFromSpotify(playlistid, getThis) {
                                 @Override
@@ -1170,8 +1169,6 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public void listAlbumsForArtist(String s) {
-        albumsListview.setOnItemClickListener(cl);
-        artistName = s;
         listAlbumsForArtist(api, spotify, s, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
     }
 
@@ -1626,8 +1623,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public void listAlbumsForArtist(final SpotifyApi api, SpotifyService spotify, final String beatles, final ListView albumsListview, final ListView relatedArtistsListView, final PlanetAdapter albumAdapter, final ArrayAdapter<String> relatedArtistsAdapter) {
-        this.artistName =beatles;
-        albumVisible = true;
+        initArtistLook(beatles);
         spotify.searchArtists(beatles.trim(), new Callback<ArtistsPager>() {
 
             @Override
@@ -1667,8 +1663,16 @@ public class SpotifyActivity extends AppCompatActivity implements
         });
     }
 
+    public void initArtistLook(String beatles) {
+        albumsListview.setOnItemClickListener(cl);
+        //artistName = s;
+        this.artistName =beatles;
+        albumVisible = true;
+    }
+
     public void listAlbumsForArtistId(String id, Image image, String beatles, SpotifyApi api) {
-        artistName = beatles;
+        initArtistLook(beatles);
+
         setArtistText(beatles, image);
         SpotifyService spotify = api.getService();
         spotify.getArtistAlbums(id, new Callback<Pager<Album>>() {

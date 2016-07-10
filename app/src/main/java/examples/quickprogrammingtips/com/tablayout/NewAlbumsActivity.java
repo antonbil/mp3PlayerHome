@@ -48,17 +48,23 @@ public class NewAlbumsActivity extends AppCompatActivity {
             @Override
             public void run()
             {
+                yourListView.setAdapter(customAdapter);
+                try{
                 generateList(newAlbums);
-                runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        loadingdialog.dismiss();
-                        yourListView.setAdapter(customAdapter);
-                        customAdapter.notifyDataSetChanged();
+                        @Override
+                        public void run() {
+                            loadingdialog.dismiss();
+                            customAdapter.notifyDataSetChanged();
 
-                    }
-                });            }
+                        }
+                    });
+                }catch(Exception e){
+                    loadingdialog.dismiss();
+
+                    Log.v("samba", Log.getStackTraceString(e));}
+            }
         };
 
         task.start();

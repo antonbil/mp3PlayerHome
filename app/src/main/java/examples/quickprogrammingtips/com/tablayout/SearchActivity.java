@@ -22,8 +22,10 @@ import kaaes.spotify.webapi.android.SpotifyService;
 public class SearchActivity extends AppCompatActivity {
     //public static String artistName="Abba";
     ArrayList<SearchItem> newAlbums=new ArrayList<>();
-    AppCompatActivity getThis;
+    public static SearchActivity getThis;
     SpotifyService spotify;
+    private ListAdapter customAdapter;
+    private ProgressDialog loadingdialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,37 +37,41 @@ public class SearchActivity extends AppCompatActivity {
 
         final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
 
-        final ListAdapter customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
+        customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         yourListView.setAdapter(customAdapter);
-        final ProgressDialog loadingdialog;
         loadingdialog = ProgressDialog.show(this,
                 "","Loading, please wait",true);
         final Handler handler = new Handler();
         generateList(newAlbums);
-        handler.postDelayed(new Runnable() {
+        /*handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Thread task = new Thread()
-                {
-                    @Override
-                    public void run()
-                    {
-                        runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                loadingdialog.dismiss();
-                                customAdapter.notifyDataSetChanged();
-
-                            }
-                        });            }
-                };
-
-                task.start();
+                notifyChange();
             }
-        }, 1000);
+        }, 1000);*/
 
     }
+
+    public void notifyChange() {
+       Thread task = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        loadingdialog.dismiss();
+                        customAdapter.notifyDataSetChanged();
+
+                    }
+                });            }
+        };
+
+        task.start();
+    }
+
     public void generateList(ArrayList<SearchItem> newAlbums) {
         SpotifyActivity.getThis.fillListviewWithValues.generateListSearch(newAlbums);
 

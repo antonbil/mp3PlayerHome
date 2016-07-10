@@ -26,8 +26,18 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view=super.onCreateView(inflater,container,savedInstanceState);
+        Thread task = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                displayContents(logic.getHistoryMpd().get(logic.getHistoryMpd().size() - 1).path);//chdb
+            }
+        };
 
-        displayContents(logic.getHistoryMpd().get(logic.getHistoryMpd().size() - 1).path);//chdb
+        task.start();
+
+        //displayContents(logic.getHistoryMpd().get(logic.getHistoryMpd().size() - 1).path);//chdb
         return view;
     }
 
