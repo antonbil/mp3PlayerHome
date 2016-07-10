@@ -710,6 +710,7 @@ public class MainActivity extends AppCompatActivity  implements MpdInterface,MPC
                                             }
                                             connection.disconnect();
                                         } catch (Exception e) {
+
                                             albumPictures.remove(niceAlbumName);
                                             Log.v("samba", "error connect " + Logic.getUrlFromSongpath(f));
                                             e.printStackTrace();
