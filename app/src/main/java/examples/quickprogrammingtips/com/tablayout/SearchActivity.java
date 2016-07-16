@@ -111,7 +111,7 @@ public class SearchActivity extends AppCompatActivity {
                     tt2.setText(p.title);
                 }
                 if (p.imageid.length()>0)
-                new SpotifyActivity.DownLoadImageTask() {
+                new DownLoadImageTask() {
                     @Override
                     public void setImage(final Bitmap logo) {
                         image.setImageBitmap(logo);

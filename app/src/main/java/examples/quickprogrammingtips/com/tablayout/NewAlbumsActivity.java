@@ -125,7 +125,7 @@ public class NewAlbumsActivity extends AppCompatActivity {
                     tt2.setText(p.album);
                 }
                 if (p.getImage().length()>0)
-                new SpotifyActivity.DownLoadImageTask() {
+                new DownLoadImageTask() {
                     @Override
                     public void setImage(final Bitmap logo) {
                         image.setImageBitmap(logo);
