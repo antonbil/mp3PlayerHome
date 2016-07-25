@@ -217,7 +217,7 @@ public class NewAlbumsActivity extends AppCompatActivity {
     public void processAlbum(NewAlbum album){
         SpotifyActivity.getThis.artistName=album.artist;
         //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""); Toast.LENGTH_SHORT).show();
-        SpotifyActivity.getThis.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this);
+        SpotifyActivity.getThis.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this, null, null);
 
     };
 }

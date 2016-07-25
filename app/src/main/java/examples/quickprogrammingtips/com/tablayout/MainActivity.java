@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
         setContentView(R.layout.activity_main);
         DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        //mDrawerLayout.closeDrawers();
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,
@@ -160,10 +161,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             public void onDrawerOpened(View drawerView) {
                 //Snackbar.make(drawerView, "opened", Snackbar.LENGTH_SHORT).show();
                 //SongItems songItems = new SongItems(getThis);
+                ListView albumsListview = (ListView) findViewById(R.id.drawer_list);
                 PlanetAdapter albumAdapter = new PlanetAdapter(SpotifyActivity.albumList, getThis,SpotifyActivity.albumTracks) {
                     @Override
                     public void removeUp(int counter) {
 
+                        SpotifyActivity.removeUplist(this, albumsListview,counter, getThis);
                     }
 
                     @Override
@@ -174,11 +177,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     @Override
                     public void removeDown(int counter) {
+                        SpotifyActivity.removeDownlist(this, albumsListview,counter,getThis);
 
                     }
 
                     @Override
                     public void removeAlbum(int counter) {
+                        SpotifyActivity.removeAlbum(this, counter, albumsListview,getThis);
 
                     }
 
@@ -189,16 +194,20 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     @Override
                     public void addAlbumToFavoritesTrack(int counter) {
+                        SpotifyActivity.addAlbumToFavoritesTrackwise(counter);
 
                     }
 
                     @Override
                     public void removeTrack(int counter) {
+                        SpotifyActivity.removeTrackSpotify(counter);
 
                     }
 
                     @Override
                     public void displayArtist(int counter) {
+                        getThis.callSpotify(SpotifyActivity.tracksPlaylist.get(counter).artists.get(0).name);
+                        mDrawerLayout.closeDrawers();
 
                     }
 
@@ -214,18 +223,26 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     @Override
                     public void addAlbum(int counter) {
+                        SpotifyActivity.getAlbumtracksFromSpotify(SpotifyActivity.tracksPlaylist.get(counter).album.id, SpotifyActivity.tracksPlaylist.get(counter).artists.get(0).name
+                                , getThis, this, albumsListview);
 
                     }
                 };
-                ListView albumsListview = (ListView) findViewById(R.id.drawer_list);
                 albumsListview.setAdapter(albumAdapter);
                 SpotifyActivity.checkAddress();
                 SpotifyActivity.refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+                //song_display2
+                ((LinearLayout) findViewById(R.id.song_display2)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startPlaylistSpotify();mDrawerLayout.closeDrawers();
+                    }
+                });
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top2);
                 viewById.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startPlaylistSpotify();
+                        startPlaylistSpotify();mDrawerLayout.closeDrawers();
                     }
                 });
                 updateTimerThread = new Runnable() {

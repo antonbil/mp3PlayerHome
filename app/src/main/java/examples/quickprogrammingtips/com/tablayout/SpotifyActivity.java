@@ -122,7 +122,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     //AdapterView.OnItemClickListener selectOnPlaylist;
     private boolean nosearch = false;
     private static TextView artistTitleTextView;
-    private static ArrayList<Track> tracksPlaylist=new ArrayList<>();
+    public static ArrayList<Track> tracksPlaylist=new ArrayList<>();
     private static int currentTrack;
     public static String artistName;
     private ArrayAdapter<String> relatedArtistsAdapter;
@@ -423,7 +423,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         albumAdapter = new PlanetAdapter(albumList, this,albumTracks) {
             @Override
             public void removeUp(int counter) {
-                removeUplist(counter);
+                removeUplist(albumAdapter, albumsListview,counter,getThis);
             }
 
             @Override
@@ -444,37 +444,23 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void removeDown(int counter) {
-                removeDownlist(counter);
+                removeDownlist(albumAdapter, albumsListview,counter, getThis);
             }
 
             @Override
             public void removeAlbum(int counter) {
-                String albumid = tracksPlaylist.get(counter).album.id;
-                for (int i = tracksPlaylist.size() - 1; i >= 0; i--) {
-                    if (tracksPlaylist.get(i).album.id == albumid) removeTrackSpotify(i);
-                    //Log.v("samba","remove "+i);
-                    //removeTrackSpotify(counter);
-                }
-                refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+                SpotifyActivity.removeAlbum(albumAdapter, counter, albumsListview,getThis);
             }
 
             @Override
             public void addAlbumToFavoritesAlbum(int counter) {
-                FavoriteRecord fv=new FavoriteRecord(Favorite.SPOTIFYALBUM+albumIds.get(counter),
-                        artistName+"-"+albumList.get(counter), Favorite.NEWALBUM);
-                fv.save();
+                addAlbumToFavorites(Favorite.SPOTIFYALBUM + albumIds.get(counter), artistName + "-" + albumList.get(counter));
 
             }
 
             @Override
             public void addAlbumToFavoritesTrack(int counter) {
-                String url = Favorite.SPOTIFYALBUM + tracksPlaylist.get(counter).album.id;
-                String name = tracksPlaylist.get(counter).artists.get(0).name;
-                String album = tracksPlaylist.get(counter).album.name;
-                //Log.v("samba","add "+url+name+"-"+album);
-                FavoriteRecord fv=new FavoriteRecord(url,
-                        name +"-"+ album,Favorite.NEWALBUM);
-                fv.save();
+                addAlbumToFavoritesTrackwise(counter);
 
             }
 
@@ -510,8 +496,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void addAlbum(int counter) {
-                artistName = tracksPlaylist.get(counter).artists.get(0).name;
-                getAlbumtracksFromSpotify(tracksPlaylist.get(counter).album.id, tracksPlaylist.get(counter).album.name,getThis);
+                addAlbumStatic(counter,albumAdapter, albumsListview);
             }
         };
         albumAdapter.setDisplayCurrentTrack(false);
@@ -825,7 +810,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                                                                                 @Override
                                                                                 public void processAlbum(SearchItem album) {
-                                                                                    getAlbumtracksFromSpotify(album.id, album.artist, getThis);
+                                                                                    getAlbumtracksFromSpotify(album.id, album.artist, getThis, albumAdapter, albumsListview);
                                                                                 }
 
                                                                                 ;
@@ -1016,6 +1001,37 @@ public class SpotifyActivity extends AppCompatActivity implements
             customHandler.postDelayed(updateTimerThread,0);
         }
 
+    public static void addAlbumStatic(int counter, PlanetAdapter albumAdapter, ListView albumsListview) {
+        artistName = tracksPlaylist.get(counter).artists.get(0).name;
+        getAlbumtracksFromSpotify(tracksPlaylist.get(counter).album.id, tracksPlaylist.get(counter).album.name,getThis,albumAdapter, albumsListview);
+    }
+
+    public static void addAlbumToFavoritesTrackwise(int counter) {
+        String url = Favorite.SPOTIFYALBUM + tracksPlaylist.get(counter).album.id;
+        String name = tracksPlaylist.get(counter).artists.get(0).name;
+        String album = tracksPlaylist.get(counter).album.name;
+        //Log.v("samba","add "+url+name+"-"+album);
+        FavoriteRecord fv=new FavoriteRecord(url,
+                name +"-"+ album,Favorite.NEWALBUM);
+        fv.save();
+    }
+
+    public static void addAlbumToFavorites(String url, String description) {
+        FavoriteRecord fv = new FavoriteRecord(url,
+                description, Favorite.NEWALBUM);
+        fv.save();
+    }
+
+    public static void removeAlbum(PlanetAdapter albumAdapter, int counter, ListView albumsListview, AppCompatActivity getThis) {
+        String albumid = tracksPlaylist.get(counter).album.id;
+        for (int i = tracksPlaylist.size() - 1; i >= 0; i--) {
+            if (tracksPlaylist.get(i).album.id == albumid) removeTrackSpotify(i);
+            //Log.v("samba","remove "+i);
+            //removeTrackSpotify(counter);
+        }
+        refreshPlaylistFromSpotify(albumAdapter, albumsListview, getThis);
+    }
+
 
     public static void stopSpotifyPlaying(String ipAddress) {
         try {
@@ -1075,10 +1091,15 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public void getAlbumtracksFromSpotify(final int position) {
         String s = albumIds.get(position);
-        getAlbumtracksFromSpotify(s, albumList.get(position),getThis);
+        getAlbumtracksFromSpotify(s, albumList.get(position),getThis, albumAdapter, albumsListview);
     }
 
-    public void getAlbumtracksFromSpotify(final String albumid, final String albumname, final AppCompatActivity getThis) {
+    public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final AppCompatActivity getThis1, PlanetAdapter albumAdapter, ListView albumsListview) {
+        if (albumAdapter==null)albumAdapter=SpotifyActivity.getThis.albumAdapter;
+        if (albumsListview==null)albumsListview=SpotifyActivity.getThis.albumsListview;
+        final PlanetAdapter albumAdapter1=albumAdapter;
+        final ListView albumsListview1=albumsListview;
+        AppCompatActivity getThis=getThis1;
         //int position = ;
         new SpotifyApi().getService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
 
@@ -1122,7 +1143,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                     @Override
                     public void atEnd() {
                         //Log.v("samba", "einde taak");
-                        refreshPlaylistFromSpotify(albumAdapter, albumsListview,SpotifyActivity.getThis);
+                        refreshPlaylistFromSpotify(albumAdapter1, albumsListview1,getThis1);
                     }
 
                 }.run();
@@ -1143,26 +1164,26 @@ public class SpotifyActivity extends AppCompatActivity implements
         listAlbumsForArtist(api, spotify, s, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
     }
 
-    public void removeDownlist(int counter) {
+    public static void removeDownlist(PlanetAdapter albumAdapter, ListView albumsListview, int counter, AppCompatActivity getThis) {
         for (int i = counter; i < tracksPlaylist.size(); i++) {
             //Log.v("samba", "remove " + i);
             removeTrackSpotify(counter);
         }
         spotifyStartPosition = 0;
-        refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+        refreshPlaylistFromSpotify(albumAdapter, albumsListview, getThis);
     }
 
-    public void removeTrackSpotify(int counter) {
+    public static void removeTrackSpotify(int counter) {
         GetJsonFromUrl(
                 "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Remove\", \"params\": { \"playlistid\": 0, \"position\": " + counter + "}, \"id\": 1}",
                 ipAddress + "?PlayerRemove");
     }
 
-    public void removeUplist(int counter) {
+    public static void removeUplist(PlanetAdapter albumAdapter, ListView albumsListview, int counter, AppCompatActivity getThis) {
         for (int i = 0; i < counter + 1; i++)
             removeTrackSpotify(0);
         spotifyStartPosition = 0;
-        refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+        refreshPlaylistFromSpotify(albumAdapter, albumsListview, getThis);
     }
 
     @Override
