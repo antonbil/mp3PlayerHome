@@ -93,6 +93,23 @@ get a lot of playlists on:https://open.spotify.com/user/spotify
 new album releases:https://open.spotify.com/user/spotify/playlist/3Yrvm5lBgnhzTYTXx2l55x
 new album releases: http://everynoise.com/spotify_new_albums.html
  */
+/*
+Een api-call doen op poort 6680:
+
+curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.tracklist.add", "params": {"uris":["spotify:track:7gbHxCG82lvHla9q3nMXtQ","spotify:track:5kJQpjwBeWXzQQmKnrQa5L"]}}' http://192.168.2.12:6680/mopidy/rpc
+curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.playback.play"}' http://192.168.2.12:6680/mopidy/rpc tl_track
+TracklistController.clear()
+wordt dus: core.tracklist.clear
+TracklistController.get_tl_tracks()
+PlaybackController.play(tl_track=None, tlid=None)
+PlaybackController.next()
+PlaybackController.previous()
+PlaybackController.stop() etc.
+PlaybackController.get_current_tl_track()
+PlaybackController.get_time_position()
+PlaybackController.get_state()
+
+ */
 public class SpotifyActivity extends AppCompatActivity implements
         ConnectionStateCallback {//AlertDialog
     // TODO: Replace with your client ID
@@ -165,7 +182,8 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
     private static void GetSpotifyTokenSync(){
         checkAddress();
-        //Log.v("samba", "ask starred:");
+        spotifyToken.put(ipAddress,"something");
+        /*
         String urlString = ipAddress + "?OpenAddon_plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Arockin.billy%3Aplaylist%3A03cHQWb5epbCJQsgjwv2dK%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D";
         String data = "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Arockin.billy%3Aplaylist%3A03cHQWb5epbCJQsgjwv2dK%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
         //String data = "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=starred&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}";
@@ -181,7 +199,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             spotifyToken.put(ipAddress,fname.substring(startIndex, endIndex));//checkAddress
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
-        }
+        }*/
     }
 
     private static String GetSpotifyToken() {
@@ -215,7 +233,8 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public static String checkAddress() {
         String ip = MainActivity.getThis.getLogic().getMpc().getAddress();
-        ipAddress = String.format("http://%s:8080/jsonrpc", ip);
+        ipAddress = //String.format("http://%s:8080/jsonrpc", ip);
+                String.format("http://%s:6680/mopidy/rpc", ip);
         return ipAddress;
     }
 
@@ -223,22 +242,30 @@ public class SpotifyActivity extends AppCompatActivity implements
         try {
             if (pos < ids.size()) {
                 dialog1.incrementProgressBy(1);
-                String data = String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Add\", \"params\": { \"playlistid\" : 0 , \"item\" : {\"file\" : \"http://127.0.0.1:8081/track/%s.wav|X-Spotify-Token=%s&User-Agent=Spotlight+1.0\"}}, \"id\": 1}", ids.get(pos), spotifyToken.get(ipAddress));
-                String urlString = ipAddress + "?PlaylistAdd";
+                //add track to playlist
+                String data = String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.add\", \"params\": {\"uris\":[\"spotify:track:%s\"]}}", ids.get(pos));
+
+                //String data = String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Add\", \"params\": { \"playlistid\" : 0 , \"item\" : {\"file\" : \"http://127.0.0.1:8081/track/%s.wav|X-Spotify-Token=%s&User-Agent=Spotlight+1.0\"}}, \"id\": 1}", ids.get(pos), spotifyToken.get(ipAddress));
+                String urlString = ipAddress;// + "?PlaylistAdd";
                 GetJsonFromUrl(data, urlString);
                 AddSpotifyTrack(getThis, ids, pos + 1);
             } else {
+                //all tracks added
                 stopMpd();
-                //todo:change http://192.168.2.3 to address of current server
-                JSONObject playlist = GetJsonFromUrl(
-                        "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetItems\", \"params\": { \"properties\": [\"title\", \"album\", \"artist\", \"duration\", \"thumbnail\",\"file\"], \"playlistid\": 0 }, \"id\": 1}\u200B",
-                        ipAddress + "?GetPLItemsAudio");
-
-                spotifyStartPosition = playlist.getJSONArray("items").length() - ids.size();
-                GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": " + spotifyStartPosition + " } }, \"id\": 1}",
+                //get playlist from server
+                JSONArray playlist = GetJsonArrayFromUrl(
+                        "{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.get_tl_tracks\", \"id\": 1}",
                         ipAddress);
-                GetJsonFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Player.GoTo\", \"params\": { \"playerid\": 0, \"to\": %s}, \"id\": 1}\u200B", spotifyStartPosition),
-                        ipAddress + "?PlayerGoto");
+
+                spotifyStartPosition = playlist.length() - ids.size();
+                int plid=playlist.getJSONObject(spotifyStartPosition).getInt("tlid");
+                //start playing at spotifyStartPosition
+                //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": " + spotifyStartPosition + " } }, \"id\": 1}",
+                //curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.playback.play"}' http://192.168.2.12:6680/mopidy/rpc tl_track
+                GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.play\", \"params\": { \"tlid\":"  + plid + " } }",
+                        ipAddress);
+                //GetJsonFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Player.GoTo\", \"params\": { \"playerid\": 0, \"to\": %s}, \"id\": 1}\u200B", spotifyStartPosition),
+                //        ipAddress + "?PlayerGoto");
                 getThis.runOnUiThread(new Runnable() {
                     public void run() {
                         if (dialog1.isShowing())
@@ -254,20 +281,34 @@ public class SpotifyActivity extends AppCompatActivity implements
         }
     }
 
-    private static JSONObject GetJsonFromUrl(String data, String urlString) {
+    private static JSONArray GetJsonArrayFromUrl(String data, String urlString) {
         JSONObject jsonRootObject = null;
 
         String sb = getJsonStringFromUrl(data, urlString);
-        //Log.v("samba", sb);
+        Log.v("samba", sb);
+        try {
+            jsonRootObject = new JSONObject(sb);
+            return jsonRootObject.getJSONArray("result");
+        } catch (JSONException e) {
+           // Log.v("samba", Log.getStackTraceString(e));
+        }
+        return null;
+    }
+
+    private static JSONObject GetJsonFromUrl(String data, String urlString) {
+        JSONObject jsonRootObject = null;
+
+        Log.v("samba", data);
+        String sb = getJsonStringFromUrl(data, urlString);
+        Log.v("samba", sb);
         try {
             jsonRootObject = new JSONObject(sb);
             return jsonRootObject.getJSONObject("result");
         } catch (JSONException e) {
-           // Log.v("samba", Log.getStackTraceString(e));
+            // Log.v("samba", Log.getStackTraceString(e));
         }
         return jsonRootObject;
     }
-
     @NonNull
     private static String getJsonStringFromUrl(String data, String urlString) {
         StringBuilder sb = new StringBuilder();
@@ -608,8 +649,9 @@ public class SpotifyActivity extends AppCompatActivity implements
                     //yarc.js:906 jsonrpc /jsonrpc?GetRemoteInfos [{"jsonrpc":"2.0","method":"Application.GetProperties","id":1,"params":[["muted"]]},{"jsonrpc":"2.0","method":"Player.GetProperties","id":2,"params":[0,["time", "totaltime", "percentage", "shuffled","repeat"]]},{ "jsonrpc": "2.0", "method": "Player.GetItem", "params": { "playerid": 0, "properties": [ "title", "showtitle", "artist", "thumbnail", "streamdetails", "file", "season", "episode"] }, "id": 3 }
                     // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
                     stopMpd();
-                    GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}",
-                            ipAddress + "?StopPause");//
+                    playlistGotoPosition(1);
+                    //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}",
+                    //        ipAddress + "?StopPause");//
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
@@ -1035,8 +1077,9 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public static void stopSpotifyPlaying(String ipAddress) {
         try {
-            GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.stop\", \"params\": { \"playerid\": 0 }, \"id\": 1}",
-                    ipAddress + "?StopPause");//?StopPause
+            //PlaybackController.stop()
+            GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.stop\"}",
+                    ipAddress);//?StopPause
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
@@ -1085,8 +1128,11 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public static void playlistGotoPosition(int position) {
-        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": " + (/*spotifyStartPosition + */position) + " } }, \"id\": 1}",
-                ipAddress + "?PlayerOpen");
+        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.play\", \"params\": { \"tlid\":"  + position + " } }",
+                ipAddress);
+
+        //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": " + (/*spotifyStartPosition + */position) + " } }, \"id\": 1}",
+        //        ipAddress + "?PlayerOpen");
     }
 
     public void getAlbumtracksFromSpotify(final int position) {
@@ -1268,9 +1314,10 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public static void clearSpotifyPlaylist() {
+        //curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.tracklist.clear"}TracklistController.clear()
         checkAddress();
-        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"Playlist.Clear\", \"params\": {\"playlistid\": 0}}",
-                ipAddress + "?PlaylistClear");//
+        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 0, \"method\": \"core.tracklist.clear\"}",
+                ipAddress);//
     }
 
     public abstract static class addAlbumWithIdToSpotify {
@@ -1508,15 +1555,18 @@ public class SpotifyActivity extends AppCompatActivity implements
         albumVisible = false;
         albumAdapter.setAlbumVisible(false);
         try {
-            JSONObject playlist = GetJsonFromUrl(
-                    "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetItems\", \"params\": { \"properties\": [\"title\", \"album\", \"artist\", \"duration\", \"thumbnail\",\"file\"], \"playlistid\": 0 }, \"id\": 1}\u200B",
-                    ipAddress + "?GetPLItemsAudio");
+            //JSONObject playlist = GetJsonFromUrl(
+             //       "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetItems\", \"params\": { \"properties\": [\"title\", \"album\", \"artist\", \"duration\", \"thumbnail\",\"file\"], \"playlistid\": 0 }, \"id\": 1}\u200B",
+             //       ipAddress + "?GetPLItemsAudio");
             //Log.v("samba", "refresh");
+            JSONArray playlist = GetJsonArrayFromUrl(
+                    "{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.get_tl_tracks\", \"id\": 1}",
+                    ipAddress);
 
             albumList.clear();
             albumTracks.clear();
             JSONArray items = null;
-            items = playlist.getJSONArray("items");
+            items = playlist;
             String prevAlbum = "";
             tracksPlaylist.clear();
             for (int i = 0; i < items.length(); i++) {
@@ -1524,7 +1574,8 @@ public class SpotifyActivity extends AppCompatActivity implements
                 pi.pictureVisible=false;
                 String trackid = "";
                 JSONObject o = items.getJSONObject(i);
-                trackid = getTrackId(o.getString("file"));
+                //trackid = getTrackId(o.getString("file"));
+                trackid=o.getJSONObject("track").getString("uri").replace("spotify:track:","");
                 if (trackid.length()>0) {
                     Track t = getTrack(trackid);
                     //tracksPlaylist.add(t);
@@ -1700,6 +1751,8 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public static void updateSongInfo(TextView time,TextView totaltime,TextView tvName,TextView artist,
                                       ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, AppCompatActivity getThis,final SpotifyInterface getSpotifyInterface) {
+        boolean b=true;
+if (b) return;
         try {
             String s = getJsonStringFromUrl("[{\"jsonrpc\":\"2.0\",\"method\":\"Application.GetProperties\",\"id\":1,\"params\":[[\"muted\"]]},{\"jsonrpc\":\"2.0\",\"method\":\"Player.GetProperties\",\"id\":2,\"params\":[0,[\"time\", \"totaltime\", \"percentage\", \"shuffled\",\"repeat\",\"speed\"]]}," +
                             "{ \"jsonrpc\": \"2.0\", \"method\": \"Player.GetItem\", \"params\": { \"playerid\": 0, \"properties\": [ \"title\", \"showtitle\", \"artist\", \"thumbnail\", \"streamdetails\", \"file\", \"season\", \"episode\"] }, \"id\": 3 }]",
