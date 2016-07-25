@@ -115,7 +115,7 @@ public class FileListAdapter extends BaseAdapter {
                                     if (title.equals("info-->")){
                                         PopupMenu menu = new PopupMenu(v.getContext(), v);
 
-                                        menu.getMenu().add("spotify");
+                                        menu.getMenu().add("spotify");//just a change
                                         menu.getMenu().add("artist-wikipedia");
                                         menu.getMenu().add("album-wikipedia");
                                         menu.show();
