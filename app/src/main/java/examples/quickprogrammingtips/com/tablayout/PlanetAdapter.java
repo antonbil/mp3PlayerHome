@@ -46,9 +46,11 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void removeTrack(int counter);
 
     public abstract void displayArtist(int counter);
+    public abstract void displayArtistWikipedia(int counter);
 
     public abstract void replaceAndPlayAlbum(int counter);
     public abstract void addAndPlayAlbum(int counter);
+    public abstract void albumArtistWikipedia(int counter);
     public abstract void addAlbum(int counter);
 
     public PlanetAdapter(List<String> planetList, AppCompatActivity ctx, ArrayList<PlaylistItem> tracksPlaylist) {
@@ -145,6 +147,8 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                                                                    removeAlbum(position);
                                                                } else if (item.getTitle().toString().equals("display artist")) {
                                                                    displayArtist(position);
+                                                               } else if (item.getTitle().toString().equals("wikipedia")) {
+                                                                   displayArtistWikipedia(position);
                                                                } else if (item.getTitle().toString().equals("add album to favorites")) {
                                                                    addAlbumToFavoritesTrack(position);
                                                                }
@@ -158,6 +162,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                                                        menu.getMenu().add("add album");//submenu
                                                        menu.getMenu().add("add album to favorites");//submenu
                                                        menu.getMenu().add("display artist");//submenu
+                                                       menu.getMenu().add("wikipedia");//submenu
                                                        menu.getMenu().add("remove track");//submenu
                                                        menu.getMenu().add("remove album");//submenu
                                                    } else {
@@ -169,6 +174,8 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                                                                    replaceAndPlayAlbum(position);
                                                                } else if (item.getTitle().toString().equals("add and play")) {
                                                                    addAndPlayAlbum(position);
+                                                               } else if (item.getTitle().toString().equals("wikipedia artist")) {
+                                                                   albumArtistWikipedia(position);
                                                                } else if (item.getTitle().toString().equals("add")) {
                                                                    Toast.makeText(getThis.getApplicationContext(), "Not implemented yet",
                                                                            Toast.LENGTH_SHORT).show();
@@ -186,6 +193,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                                                        menu.getMenu().add("replace and play");//submenu
                                                        menu.getMenu().add("add and play");//submenu
                                                        menu.getMenu().add("add");//submenu
+                                                       menu.getMenu().add("wikipedia artist");//submenu
                                                        menu.getMenu().add("add album to favorites");//submenu
 
                                                    }

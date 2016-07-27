@@ -212,12 +212,23 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     }
 
                     @Override
+                    public void displayArtistWikipedia(int counter) {
+                        String s = SpotifyActivity.tracksPlaylist.get(counter).artists.get(0).name;
+                        MainActivity.startWikipediaPage(s);
+                    }
+
+                    @Override
                     public void replaceAndPlayAlbum(int counter) {
 
                     }
 
                     @Override
                     public void addAndPlayAlbum(int counter) {
+
+                    }
+
+                    @Override
+                    public void albumArtistWikipedia(int counter) {
 
                     }
 
@@ -613,11 +624,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         return super.onOptionsItemSelected(item);
     }
 
-    public void startWikipediaPage(String outsiders) {
-        Intent myIntent = new Intent(MainActivity.this,
+    public static void startWikipediaPage(String outsiders) {
+        Intent myIntent = new Intent(getThis,//MainActivity.this,
                 WikipediaActivity.class);
         myIntent.putExtra("searchitem", outsiders);
-        startActivity(myIntent);
+        getThis.startActivity(myIntent);
     }
 
     public void searchTerm() {

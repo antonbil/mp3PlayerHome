@@ -559,6 +559,12 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
 
             @Override
+            public void displayArtistWikipedia(int counter) {
+                    String s = tracksPlaylist.get(counter).artists.get(0).name;
+                    MainActivity.startWikipediaPage(s);
+            }
+
+            @Override
             public void replaceAndPlayAlbum(int counter) {
                 clearSpotifyPlaylist();
                 //Log.v("samba","end removing");
@@ -569,6 +575,11 @@ public class SpotifyActivity extends AppCompatActivity implements
             public void addAndPlayAlbum(int counter) {
 
                 getAlbumtracksFromSpotify(counter);
+            }
+
+            @Override
+            public void albumArtistWikipedia(int counter) {
+                    MainActivity.startWikipediaPage(artistName);
             }
 
             @Override
