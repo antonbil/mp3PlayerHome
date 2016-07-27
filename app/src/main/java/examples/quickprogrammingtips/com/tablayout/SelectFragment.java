@@ -301,7 +301,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     @Override
                     public void atLast() {
                         loadingdialog.dismiss();
-                        SpotifyActivity.playAtPosition(0);
+                        SpotifyActivity.playSpotify();
                         MainActivity.getThis.startPlaylistSpotify();
                     }
                 }.run();

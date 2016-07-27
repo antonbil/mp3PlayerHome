@@ -45,6 +45,11 @@
                 android:layout_height="wrap_content"
                 android:text="Studeerkamer"
                 android:id="@+id/selectstudeer" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Studeerkamer2"
+                android:id="@+id/selectstudeer2" />
 
         </RadioGroup>
 

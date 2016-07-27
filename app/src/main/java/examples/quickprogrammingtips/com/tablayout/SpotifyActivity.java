@@ -238,6 +238,18 @@ public class SpotifyActivity extends AppCompatActivity implements
         return ipAddress;
     }
 
+    public static void playSpotify(){
+        try {
+            GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.play\" }",
+                    ipAddress);
+            GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.set_repeat\", \"params\": {\"value\":true} }",
+                    ipAddress);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static void playAtPosition(int position){
         JSONArray playlist = getPlaylist();
         try {
@@ -673,7 +685,8 @@ public class SpotifyActivity extends AppCompatActivity implements
                     //yarc.js:906 jsonrpc /jsonrpc?GetRemoteInfos [{"jsonrpc":"2.0","method":"Application.GetProperties","id":1,"params":[["muted"]]},{"jsonrpc":"2.0","method":"Player.GetProperties","id":2,"params":[0,["time", "totaltime", "percentage", "shuffled","repeat"]]},{ "jsonrpc": "2.0", "method": "Player.GetItem", "params": { "playerid": 0, "properties": [ "title", "showtitle", "artist", "thumbnail", "streamdetails", "file", "season", "episode"] }, "id": 3 }
                     // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
                     stopMpd();
-                    playlistGotoPosition(1);
+                    playSpotify();
+                    //playlistGotoPosition(1);
                     //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}",
                     //        ipAddress + "?StopPause");//
                 } catch (Exception e) {

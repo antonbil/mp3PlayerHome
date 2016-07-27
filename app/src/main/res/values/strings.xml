@@ -111,8 +111,8 @@
     <string name="pref_header_server">Server</string>
     <string name="sambaserver">192.168.2.8/FamilyLibrary</string>
     <string name="title_activity_wikpedia">WikpediaActivity</string>
-    <string name="xbmcip">192.168.2.3</string>
-    <string name="xbmcdesc">xbmc-rpi</string>
+    <string name="studeerkamerip">192.168.2.3</string>
+    <string name="studeerkamerdesc">xbmc-rpi</string>
     <string name="title_activity_new_albums">NewAlbumsActivity</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"

@@ -92,7 +92,7 @@
         android:title="fourth description" />
     <EditTextPreference
         android:capitalize="words"
-        android:defaultValue="@string/xbmcip"
+        android:defaultValue="@string/studeerkamerip"
         android:inputType="textCapWords"
         android:key="ipserver5"
         android:maxLines="1"
@@ -101,7 +101,7 @@
         android:title="fourth ip" />
     <EditTextPreference
         android:capitalize="words"
-        android:defaultValue="@string/xbmcdesc"
+        android:defaultValue="@string/studeerkamerdesc"
         android:inputType="textCapWords"
         android:key="nameserver5"
         android:maxLines="1"
