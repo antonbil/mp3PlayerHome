@@ -1104,7 +1104,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     public static void removeAlbum(PlanetAdapter albumAdapter, int counter, ListView albumsListview, AppCompatActivity getThis) {
         String albumid = tracksPlaylist.get(counter).album.id;
         for (int i = tracksPlaylist.size() - 1; i >= 0; i--) {
-            if (tracksPlaylist.get(i).album.id == albumid) removeTrackSpotify(i);
+            if (tracksPlaylist.get(i).album.id.equals(albumid)) removeTrackSpotify(i);
             //Log.v("samba","remove "+i);
             //removeTrackSpotify(counter);
         }
@@ -1264,9 +1264,9 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public static void removeDownlist(PlanetAdapter albumAdapter, ListView albumsListview, int counter, AppCompatActivity getThis) {
-        for (int i = counter; i < tracksPlaylist.size(); i++) {
+        for (int i = tracksPlaylist.size()-1;i>= counter;i--) {
             //Log.v("samba", "remove " + i);
-            removeTrackSpotify(counter);
+            removeTrackSpotify(i);
         }
         spotifyStartPosition = 0;
         refreshPlaylistFromSpotify(albumAdapter, albumsListview, getThis);
@@ -1276,14 +1276,16 @@ public class SpotifyActivity extends AppCompatActivity implements
         ;
         //curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.tracklist.remove", "params": {"criteria":{"uri":["spotify:track:%s"]}}}' http://192.168.2.12:6680/mopidy/rpc
         //curl -d '{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.remove\", \"params\": {\"criteria\":{\"uri\":\["spotify:track:%s\"]}}}' http://192.168.2.12:6680/mopidy/rpc
+        String id="spotify:track:"+albumTracks.get(counter).id;
+        //Log.v("samba","remove:"+id);
         GetJsonFromUrl(
-                String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.remove\", \"params\": {\"criteria\":{\"uri\":[\"spotify:track:%s\"]}}}",albumTracks.get(counter).id),
+                "{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.remove\", \"params\": {\"criteria\":{\"uri\":[\""+id+"\"]}}}",
                 ipAddress);
     }
 
     public static void removeUplist(PlanetAdapter albumAdapter, ListView albumsListview, int counter, AppCompatActivity getThis) {
-        for (int i = 0; i < counter + 1; i++)
-            removeTrackSpotify(0);
+        for (int i = counter; i >=0; i--)
+            removeTrackSpotify(i);
         spotifyStartPosition = 0;
         refreshPlaylistFromSpotify(albumAdapter, albumsListview, getThis);
     }
@@ -1636,7 +1638,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 if (trackid.length()>0) {
                     Track t = getTrack(trackid);
                     //tracksPlaylist.add(t);
-                    Log.v("samba", t.name);
+                    //Log.v("samba", t.name);
                     //ArrayList<String> ids=new ArrayList<String>();
                     String extra = "";
                     try {
