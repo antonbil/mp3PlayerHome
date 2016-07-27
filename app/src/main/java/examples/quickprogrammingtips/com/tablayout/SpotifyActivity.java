@@ -238,12 +238,27 @@ public class SpotifyActivity extends AppCompatActivity implements
         return ipAddress;
     }
 
+    public static void playAtPosition(int position){
+        JSONArray playlist = getPlaylist();
+        try {
+            int plid=playlist.getJSONObject(position).getInt("tlid");
+            GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.play\", \"params\": { \"tlid\":"  + plid + " } }",
+                    ipAddress);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private static void AddSpotifyTrack(Activity getThis, ArrayList<String> ids, final int pos) {
         try {
             if (pos < ids.size()) {
                 dialog1.incrementProgressBy(1);
                 //add track to playlist
-                String data = String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.add\", \"params\": {\"uris\":[\"spotify:track:%s\"]}}", ids.get(pos));
+                String prefix="spotify:track:";
+                String uri=ids.get(pos);
+                if (uri.startsWith("spotify"))prefix="";
+                String data = String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.add\", \"params\": {\"uris\":[\"%s%s\"]}}", prefix,uri);
 
                 //String data = String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Add\", \"params\": { \"playlistid\" : 0 , \"item\" : {\"file\" : \"http://127.0.0.1:8081/track/%s.wav|X-Spotify-Token=%s&User-Agent=Spotlight+1.0\"}}, \"id\": 1}", ids.get(pos), spotifyToken.get(ipAddress));
                 String urlString = ipAddress;// + "?PlaylistAdd";
@@ -253,17 +268,16 @@ public class SpotifyActivity extends AppCompatActivity implements
                 //all tracks added
                 stopMpd();
                 //get playlist from server
-                JSONArray playlist = GetJsonArrayFromUrl(
-                        "{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.get_tl_tracks\", \"id\": 1}",
-                        ipAddress);
+                JSONArray playlist = getPlaylist();
 
                 spotifyStartPosition = playlist.length() - ids.size();
-                int plid=playlist.getJSONObject(spotifyStartPosition).getInt("tlid");
+                playAtPosition(spotifyStartPosition);
+                //int plid=playlist.getJSONObject(spotifyStartPosition).getInt("tlid");
                 //start playing at spotifyStartPosition
                 //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": " + spotifyStartPosition + " } }, \"id\": 1}",
                 //curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.playback.play"}' http://192.168.2.12:6680/mopidy/rpc tl_track
-                GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.play\", \"params\": { \"tlid\":"  + plid + " } }",
-                        ipAddress);
+                //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.play\", \"params\": { \"tlid\":"  + plid + " } }",
+                //        ipAddress);
                 //GetJsonFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Player.GoTo\", \"params\": { \"playerid\": 0, \"to\": %s}, \"id\": 1}\u200B", spotifyStartPosition),
                 //        ipAddress + "?PlayerGoto");
                 getThis.runOnUiThread(new Runnable() {
@@ -279,6 +293,12 @@ public class SpotifyActivity extends AppCompatActivity implements
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
+    }
+
+    private static JSONArray getPlaylist() {
+        return GetJsonArrayFromUrl(
+                            "{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.get_tl_tracks\", \"id\": 1}",
+                            ipAddress);
     }
 
     private static JSONArray GetJsonArrayFromUrl(String data, String urlString) {
@@ -311,6 +331,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
     @NonNull
     private static String getJsonStringFromUrl(String data, String urlString) {
+        Log.v("samba", "command:" + data);
         StringBuilder sb = new StringBuilder();
         try {
             URL url = new URL(urlString);
@@ -336,7 +357,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             String line;
             try {
                 while ((line = reader.readLine()) != null) {
-                    //Log.v("samba", "line read:" + line);
+                    Log.v("samba", "line read:" + line);
                     sb.append(line).append("\n");
                 }
             } catch (Exception e) {
@@ -479,7 +500,8 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
                 else {
                     stopMpd();
-                    playlistGotoPosition(counter);
+                    //playlistGotoPosition(counter);
+                    playAtPosition(counter);
                 }
             }
 
@@ -1128,8 +1150,9 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public static void playlistGotoPosition(int position) {
-        GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.play\", \"params\": { \"tlid\":"  + position + " } }",
-                ipAddress);
+        playAtPosition(position);
+        //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.play\", \"params\": { \"tlid\":"  + position + " } }",
+         //       ipAddress);
 
         //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": " + (/*spotifyStartPosition + */position) + " } }, \"id\": 1}",
         //        ipAddress + "?PlayerOpen");
@@ -1220,9 +1243,12 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public static void removeTrackSpotify(int counter) {
+        ;
+        //curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.tracklist.remove", "params": {"criteria":{"uri":["spotify:track:%s"]}}}' http://192.168.2.12:6680/mopidy/rpc
+        //curl -d '{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.remove\", \"params\": {\"criteria\":{\"uri\":\["spotify:track:%s\"]}}}' http://192.168.2.12:6680/mopidy/rpc
         GetJsonFromUrl(
-                "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Remove\", \"params\": { \"playlistid\": 0, \"position\": " + counter + "}, \"id\": 1}",
-                ipAddress + "?PlayerRemove");
+                String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.remove\", \"params\": {\"criteria\":{\"uri\":[\"spotify:track:%s\"]}}}",albumTracks.get(counter).id),
+                ipAddress);
     }
 
     public static void removeUplist(PlanetAdapter albumAdapter, ListView albumsListview, int counter, AppCompatActivity getThis) {
@@ -1272,17 +1298,17 @@ public class SpotifyActivity extends AppCompatActivity implements
         }
 
         public void run() {
-            JSONObject playlist = GetJsonFromUrl(
-                    "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3A" + playlistid + "%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}",
-                    ipAddress + "?OpenAddon_plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3A" + playlistid + "%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D");
+            //JSONObject playlist = GetJsonFromUrl(
+            //        "{\"jsonrpc\":\"2.0\",\"method\":\"Files.GetDirectory\",\"id\":1,\"params\":[\"plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3A" + playlistid + "%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D\",\"music\",[\"title\",\"file\",\"thumbnail\", \"art\",\"duration\"]]}",
+            //        ipAddress + "?OpenAddon_plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3A" + playlistid + "%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D");
 
             //line read:{"id":1,"jsonrpc":"2.0","result":{"files":[{"art":{"thumb":"image://http%3a%2f%2f127.0.0.1%3a8081%2fimage%2fae346f2c03ddf26e39ee5111b068c6b1e41543f0.jpg/"},"duration":247,"file":"http://127.0.0.1:8081
             //Log.v("samba", "clicked3!");
             JSONArray items = null;
             try {
-                items = playlist.getJSONArray("files");
+                //items = playlist.getJSONArray("files");
                 ArrayList<String> ids = new ArrayList<String>();
-                for (int i = 0; i < items.length(); i++) {
+                /*for (int i = 0; i < items.length(); i++) {
                     String file = "";
                     JSONObject o = items.getJSONObject(i);
                     file = o.getString("file");
@@ -1290,7 +1316,8 @@ public class SpotifyActivity extends AppCompatActivity implements
                     //Log.v("samba", fileid);
                     if (fileid.length()>0)
                     ids.add(fileid);
-                }
+                }*/
+                ids.add("spotify:user:"+playlistid);
                 new AddTracksToPlaylist(ids, getThis) {
                     @Override
                     public void atEnd() {
@@ -1559,9 +1586,7 @@ public class SpotifyActivity extends AppCompatActivity implements
              //       "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetItems\", \"params\": { \"properties\": [\"title\", \"album\", \"artist\", \"duration\", \"thumbnail\",\"file\"], \"playlistid\": 0 }, \"id\": 1}\u200B",
              //       ipAddress + "?GetPLItemsAudio");
             //Log.v("samba", "refresh");
-            JSONArray playlist = GetJsonArrayFromUrl(
-                    "{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.get_tl_tracks\", \"id\": 1}",
-                    ipAddress);
+            JSONArray playlist = getPlaylist();
 
             albumList.clear();
             albumTracks.clear();
@@ -1602,6 +1627,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
                     pi.url = t.album.images.get(0).url;
+                    pi.id=t.id;
                     albumList.add(pi.text);
                     albumTracks.add(pi);
                     tracksPlaylist.add(t);
@@ -1749,23 +1775,52 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     };
 
+    public static int getTime(){
+        String s=getJsonStringFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.get_time_position\"}",ipAddress);
+        Log.v("samba",s);
+        try {
+            int t= new JSONObject(s).getInt("result");
+            return t/1000;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static boolean isPlaying(){
+        String s=getJsonStringFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.get_state\"}",ipAddress);
+        Log.v("samba","char:"+ipAddress);
+        Log.v("samba","char:"+s);
+        try {
+            String s1=new JSONObject(s).getString("result");
+            Log.v("samba",s1);
+            return s1.equals("playing");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static String[] getCurrentTrack(){
+        JSONObject o=GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.get_current_tl_track\"}",ipAddress);
+        try {
+            final String[] a= {o.getJSONObject("track").getString("uri").replace("spotify:track:",""), ""+o.getJSONObject("track").getInt("length")};
+            return a;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
     public static void updateSongInfo(TextView time,TextView totaltime,TextView tvName,TextView artist,
                                       ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, AppCompatActivity getThis,final SpotifyInterface getSpotifyInterface) {
-        boolean b=true;
-if (b) return;
         try {
-            String s = getJsonStringFromUrl("[{\"jsonrpc\":\"2.0\",\"method\":\"Application.GetProperties\",\"id\":1,\"params\":[[\"muted\"]]},{\"jsonrpc\":\"2.0\",\"method\":\"Player.GetProperties\",\"id\":2,\"params\":[0,[\"time\", \"totaltime\", \"percentage\", \"shuffled\",\"repeat\",\"speed\"]]}," +
-                            "{ \"jsonrpc\": \"2.0\", \"method\": \"Player.GetItem\", \"params\": { \"playerid\": 0, \"properties\": [ \"title\", \"showtitle\", \"artist\", \"thumbnail\", \"streamdetails\", \"file\", \"season\", \"episode\"] }, \"id\": 3 }]",
-                    ipAddress + "?GetRemoteInfos");//
-            //result:[{"id":1,"jsonrpc":"2.0","result":{"muted":false}},{"id":2,"jsonrpc":"2.0","result":{"percentage":85.810699462890625,"repeat":"off","shuffled":false,"speed":1,"time":{"hours":0,"milliseconds":493,"minutes":3,"seconds":4},"totaltime":{"hours":0,"milliseconds":0,"minutes":3,"seconds":35}}},{"id":3,"jsonrpc":"2.0","result":{"item":{"artist":[],"file":"http://127.0.0.1:8081/track/4btX6FOX75h0D40m8eQPAe.wav|X-Spotify-Token=d46cdae3fb885e0c3bd450a053c95916028f9790&User-Agent=Spotlight+1.0","label":"4btX6FOX75h0D40m8eQPAe.wav","thumbnail":"image://DefaultAlbumCover.png/","title":"4btX6FOX75h0D40m8eQPAe.wav","type":"song"}}}]
-            //speed=0:paused or not playing
-            JSONArray jsonRootObject = null;
             try {
-                jsonRootObject = new JSONArray(s);
-                Double speed = jsonRootObject.getJSONObject(1).getJSONObject("result").getDouble("speed");
-                if (speed.doubleValue() > 0) {
-                    String fname = jsonRootObject.getJSONObject(2).getJSONObject("result").getJSONObject("item").getString("file");
-                    String trid = getTrackId(fname);
+                if (isPlaying()) {//(speed.doubleValue() > 0) {
+                     String[] trid1 = getCurrentTrack();//
+                    String trid=trid1[0];
+                    final int totalTime=Integer.parseInt(trid1[1])/1000;
                     if (trid.length() > 0) {
                         //currentTrack=0;
                         for (int i = 0; i < tracksPlaylist.size(); i++) {
@@ -1778,7 +1833,6 @@ if (b) return;
                             }
                         }
 
-                        //albumsListview.setItemChecked(currentTrack,true);
                         albumAdapter.setCurrentItem(currentTrack);
                         albumAdapter.notifyDataSetChanged();
                         final String trackid = trid;
@@ -1813,20 +1867,11 @@ if (b) return;
                                 }
                             }
 
-                        Double d = jsonRootObject.getJSONObject(1).getJSONObject("result").getDouble("percentage");
-                        JSONObject timeObject = jsonRootObject.getJSONObject(1).getJSONObject("result").getJSONObject("time");
-                        int hours = timeObject.getInt("hours");
-                        int mins = timeObject.getInt("minutes");
-                        int secs = timeObject.getInt("seconds");
-                        JSONObject ttimeObject = jsonRootObject.getJSONObject(1).getJSONObject("result").getJSONObject("totaltime");
-                        int thours = ttimeObject.getInt("hours");
-                        int tmins = ttimeObject.getInt("minutes");
-                        int tsecs = ttimeObject.getInt("seconds");
-                        int timeint = hours * 60 * 60 + mins * 60 + secs;
+                        final int timeint = getTime();//hours * 60 * 60 + mins * 60 + secs;
                         getThis.runOnUiThread(new Runnable() {
                             public void run() {
                                 time.setText(niceTime(timeint));
-                                int ttimeint = thours * 60 * 60 + tmins * 60 + tsecs;
+                                int ttimeint = totalTime;// thours * 60 * 60 + tmins * 60 + tsecs;
                                 totaltime.setText(niceTime(ttimeint));
                                 tvName.setText(t.name);
                                 artist.setText(t.artists.get(0).name);
@@ -2014,6 +2059,7 @@ class PlaylistItem {
     public boolean pictureVisible;
     public String url;
     public String text;
+    public String id;
 }
 
 class SpotifyHeader {

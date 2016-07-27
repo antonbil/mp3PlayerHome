@@ -179,18 +179,18 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         //https://open.spotify.com/user/1218062195/playlist/2AxpY5WlA9JAn4Vcpx8GSV
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "2"));
         //https://open.spotify.com/user/spotify/playlist/3Yrvm5lBgnhzTYTXx2l55x
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB", "nltop40", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/3Yrvm5lBgnhzTYTXx2l55x", "new releases", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"redactie_oor/playlist/47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"koenpoolman/playlist/1WCuVrwkQbZZw6qmgockjv", "oor rockt", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF", "oor danst", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"122978137/playlist/3dixZSVLSak9apekDzw8r5", "ambient1", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"1249149618/playlist/5r977N6ZbHTM3Pm5CpzXzJ", "ambient2", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E", "ambient3", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"1218062195/playlist/2AxpY5WlA9JAn4Vcpx8GSV", "classical", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/024GOC1aaJzcF0YrTGdeSu", "Composer weekly", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"redactie_oor:playlist:3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"nederlandse_top_40:playlist:5lH9NjOeJvctAO92ZrKQNB", "nltop40", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:3Yrvm5lBgnhzTYTXx2l55x", "new releases", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"redactie_oor:playlist:47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"koenpoolman:playlist:1WCuVrwkQbZZw6qmgockjv", "oor rockt", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"koenpoolman:playlist:0ucT4Y07hYtIcJrvunGstF", "oor danst", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"122978137:playlist:3dixZSVLSak9apekDzw8r5", "ambient1", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"1249149618:playlist:5r977N6ZbHTM3Pm5CpzXzJ", "ambient2", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:0lBxkSj5VzRfcy8gxFUB5E", "ambient3", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"1218062195:playlist:2AxpY5WlA9JAn4Vcpx8GSV", "classical", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:024GOC1aaJzcF0YrTGdeSu", "Composer weekly", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases", "2"));
         //https://open.spotify.com/user/spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE
         //https://open.spotify.com/user/spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E
 
@@ -301,6 +301,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     @Override
                     public void atLast() {
                         loadingdialog.dismiss();
+                        SpotifyActivity.playAtPosition(0);
                         MainActivity.getThis.startPlaylistSpotify();
                     }
                 }.run();
