@@ -238,6 +238,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         startPlaylistSpotify();mDrawerLayout.closeDrawers();
                     }
                 });
+                (findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
+                (findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top2);
                 viewById.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -451,6 +453,33 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     }
 
+    public void callSpotifyPlaylist(String currentArtist) {
+        /*
+        does not work; libspotify does not support spotify readio-stations
+         */
+        String id=SpotifyActivity.searchSpotifyArtist(currentArtist);
+        if (id.length()>0)
+        try {
+            id="spotify:station:artist:"+id;
+            final ProgressDialog loadingdialog;
+            loadingdialog = ProgressDialog.show(getThis,
+                    "","Loading, please wait",true);
+            SpotifyActivity.clearSpotifyPlaylist();
+            new SpotifyActivity.getEntirePlaylistFromSpotify(id,MainActivity.getThis){
+                @Override
+                public void atLast() {
+                    loadingdialog.dismiss();
+                    SpotifyActivity.playAtPosition(0);
+                    MainActivity.getThis.startPlaylistSpotify();
+                }
+            }.run();
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+            //Log.v("samba", Log.getStackTraceString(e));
+        }
+
+
+    }
     public void playPause() {
         if (logic.getPaused()) {
             logic.getMpc().play();

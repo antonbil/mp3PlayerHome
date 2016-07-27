@@ -244,6 +244,8 @@ public class SpotifyActivity extends AppCompatActivity implements
             int plid=playlist.getJSONObject(position).getInt("tlid");
             GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.play\", \"params\": { \"tlid\":"  + plid + " } }",
                     ipAddress);
+            GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.set_repeat\", \"params\": {\"value\":true} }",
+                    ipAddress);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -305,7 +307,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         JSONObject jsonRootObject = null;
 
         String sb = getJsonStringFromUrl(data, urlString);
-        Log.v("samba", sb);
+        //Log.v("samba", sb);
         try {
             jsonRootObject = new JSONObject(sb);
             return jsonRootObject.getJSONArray("result");
@@ -318,9 +320,9 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static JSONObject GetJsonFromUrl(String data, String urlString) {
         JSONObject jsonRootObject = null;
 
-        Log.v("samba", data);
+        //Log.v("samba", data);
         String sb = getJsonStringFromUrl(data, urlString);
-        Log.v("samba", sb);
+        //Log.v("samba", sb);
         try {
             jsonRootObject = new JSONObject(sb);
             return jsonRootObject.getJSONObject("result");
@@ -331,7 +333,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
     @NonNull
     private static String getJsonStringFromUrl(String data, String urlString) {
-        Log.v("samba", "command:" + data);
+        //Log.v("samba", "command:" + data);
         StringBuilder sb = new StringBuilder();
         try {
             URL url = new URL(urlString);
@@ -357,7 +359,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             String line;
             try {
                 while ((line = reader.readLine()) != null) {
-                    Log.v("samba", "line read:" + line);
+                    //Log.v("samba", "line read:" + line);
                     sb.append(line).append("\n");
                 }
             } catch (Exception e) {
@@ -644,7 +646,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
-                stopSpotifyPlaying(ipAddress);
+                playPauseSpotify(ipAddress);
             }
         });
         //jsonrpc /jsonrpc?PlaylistClear {"jsonrpc": "2.0", "id": 0, "method": "Playlist.Clear", "params": {"playlistid": 0}}
@@ -1107,6 +1109,21 @@ public class SpotifyActivity extends AppCompatActivity implements
         }
     }
 
+    public static void playPauseSpotify() {playPauseSpotify(ipAddress);}
+    public static void playPauseSpotify(String ipAddress) {
+        try {
+            //PlaybackController.stop()
+            if (getState().equals("playing"))
+            GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.pause\"}",
+                    ipAddress);//?StopPause
+            else
+                GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.resume\"}",
+                        ipAddress);//?StopPause
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         Log.v("samba","return:");
@@ -1317,7 +1334,9 @@ public class SpotifyActivity extends AppCompatActivity implements
                     if (fileid.length()>0)
                     ids.add(fileid);
                 }*/
-                ids.add("spotify:user:"+playlistid);
+                String prefix="spotify:user:";
+                if (playlistid.startsWith("spotify"))prefix="";
+                ids.add(prefix+playlistid);
                 new AddTracksToPlaylist(ids, getThis) {
                     @Override
                     public void atEnd() {
@@ -1650,6 +1669,35 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     }
 
+    public static String searchSpotifyArtist(String artist){
+        SpotifyApi api=new SpotifyApi();
+        SpotifyService spotify = api.getService();
+        //final String[] artistid = new String[1];
+        String artistid1 = "";
+        ArtistsPager artistsPager = spotify.searchArtists(artist.trim());
+        for (Artist artist1 : artistsPager.artists.items) {
+            artistid1 = artist1.id;
+            break;
+        }
+        /*spotify.searchArtists(artist.trim(), new Callback<ArtistsPager>() {
+            @Override
+            public void success(ArtistsPager artistsPager, Response response) {
+                for (Artist artist : artistsPager.artists.items) {
+                    artistid[0] = artist.id;
+                    break;
+                }
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });*/
+        return artistid1;
+
+    }
+
 
     public void listAlbumsForArtist(final SpotifyApi api, SpotifyService spotify, final String beatles, final ListView albumsListview, final ListView relatedArtistsListView, final PlanetAdapter albumAdapter, final ArrayAdapter<String> relatedArtistsAdapter) {
         initArtistLook(beatles);
@@ -1777,7 +1825,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public static int getTime(){
         String s=getJsonStringFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.get_time_position\"}",ipAddress);
-        Log.v("samba",s);
+        //Log.v("samba",s);
         try {
             int t= new JSONObject(s).getInt("result");
             return t/1000;
@@ -1787,18 +1835,24 @@ public class SpotifyActivity extends AppCompatActivity implements
         return 0;
     }
 
-    public static boolean isPlaying(){
-        String s=getJsonStringFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.get_state\"}",ipAddress);
-        Log.v("samba","char:"+ipAddress);
-        Log.v("samba","char:"+s);
+    public static String getState(){
+        String s = getState("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.get_state\"}", ipAddress);
         try {
             String s1=new JSONObject(s).getString("result");
-            Log.v("samba",s1);
-            return s1.equals("playing");
+            return s1;
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return false;
+        return "stopped";
+    }
+
+    public static boolean isPlaying(){
+        return getState().equals("playing");
+    }
+
+    @NonNull
+    public static String getState(String data, String ipAddress) {
+        return getJsonStringFromUrl(data, ipAddress);
     }
 
     public static String[] getCurrentTrack(){

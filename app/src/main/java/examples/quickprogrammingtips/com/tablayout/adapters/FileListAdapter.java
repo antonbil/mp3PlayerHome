@@ -115,7 +115,8 @@ public class FileListAdapter extends BaseAdapter {
                                     if (title.equals("info-->")){
                                         PopupMenu menu = new PopupMenu(v.getContext(), v);
 
-                                        menu.getMenu().add("spotify");//just a change
+                                        menu.getMenu().add("spotify");
+                                        menu.getMenu().add("spotify-playlist");
                                         menu.getMenu().add("artist-wikipedia");
                                         menu.getMenu().add("album-wikipedia");
                                         menu.show();
@@ -127,9 +128,9 @@ public class FileListAdapter extends BaseAdapter {
                                                 final MainActivity context = MainActivity.getThis;
                                                 if (item.getTitle().toString().equals("spotify")) {
                                                     context.callSpotify(mp3File.getArtist());
-                                                    /*Intent intent = new Intent(context, SpotifyActivity.class);
-                                                    intent.putExtra("artist", mp3File.getArtist());
-                                                    context.startActivity(intent);*/
+                                                }else
+                                                if (item.getTitle().toString().equals("spotify-playlist")) {
+                                                    context.callSpotifyPlaylist(mp3File.getArtist());
                                                 }else
                                                 if (item.getTitle().toString().equals("artist-wikipedia")) {
                                                     context.startWikipediaPage(mp3File.getArtist());

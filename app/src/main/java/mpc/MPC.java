@@ -90,7 +90,7 @@ public class MPC {
 						play(false);
 						loadingdialog.dismiss();
 					}
-				}, 12000);
+				}, 2000);
 			}
 			@Override
 			public void run() {
