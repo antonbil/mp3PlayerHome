@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -38,6 +39,15 @@ public class NewAlbumsActivity extends AppCompatActivity {
         //setSupportActionBar(toolbar);
 
         final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
+        final FloatingActionButton fab = (FloatingActionButton)
+
+                findViewById(R.id.fabspotifylist);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SpotifyActivity.showPlayMenu(fab);
+            }
+        });
 
         final ListAdapter customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;

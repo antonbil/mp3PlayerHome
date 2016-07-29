@@ -1,11 +1,11 @@
 package examples.quickprogrammingtips.com.tablayout.model;
 
-import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import examples.quickprogrammingtips.com.tablayout.MainActivity;
+import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
 
 /**
  * Created by anton on 23-1-16.
@@ -14,16 +14,46 @@ public class Favorite {
     public static final String SMBPREFIX = "smb://";
     public static final String SPOTIFYPLAYLISTPREFIX = "https://open.spotify.com/user/";
     public static final String SPOTIFYALBUM = "spotifyalbum://";
-    public static final String NEWALBUM = "2nd edition";
+    public static  String NEWALBUM = "2nd edition";
     public static final String SPOTIFYPRIVATEPLAYLIST = "spotify://";
-    public static ArrayList<String> categoryIds=new ArrayList<>(Arrays.asList(NEWALBUM,"3","4","5","6","7","8","9","10","11"));
-    private static ArrayList<String> categoryDescriptions=new ArrayList<>(Arrays.asList("New Links","Classical","Symphonic Rock","Electronic","Soul","Singer/Songwriter","Alternative","Rock","Ambient","Various"));
-    public static String getCategory(int i){
+    private static ArrayList<String> categoryIds=new ArrayList<>(Arrays.asList(NEWALBUM,"3","4","5","6","7","8","9","10","11"));
+    private static ArrayList<String> categoryDescriptions;//=new ArrayList<>(Arrays.asList("New Links","Classical","Symphonic Rock","Electronic","Soul","Singer/Songwriter","Alternative","Rock","Ambient","Various"));
+    public static String getCategoryDescription(int i){
+        generateLists();
         String r="";
-        r = PreferenceManager.getDefaultSharedPreferences(MainActivity.getThis).getString("category"+(i+1), categoryDescriptions.get(i));
+        r=categoryDescriptions.get(i);
+        //r = PreferenceManager.getDefaultSharedPreferences(MainActivity.getThis).getString("category"+(i+1), categoryDescriptions.get(i));
 
         return r;
     }
+
+    public static int categoryIdssize(){
+        generateLists();
+        return categoryIds.size();
+    }
+
+    public static String categoryIdsget(int i){
+        generateLists();
+        return categoryIds.get(i);
+    }
+
+    public static String getCategoryId(String desc) {//
+        generateLists();
+        String ret="";
+        for (int i = 0; i < Favorite.categoryDescriptions.size(); i++)
+            if (desc.equals(Favorite.categoryDescriptions.get(i))) {
+                ret = Favorite.categoryIds.get(i);
+                Log.v("samba", "add" + Favorite.NEWALBUM);
+            }
+        return ret;
+    }
+
+    public static void generateLists() {
+        Favorite.categoryDescriptions=new ArrayList<>(Arrays.asList("New Links"));//categoryIds
+        for (int j=0;j<SpotifyActivity.CATEGORY_IDS.size();j++)Favorite.categoryDescriptions.add(SpotifyActivity.CATEGORY_IDS.get(j));
+        for (int j = Favorite.categoryIds.size(); j< Favorite.categoryDescriptions.size(); j++)Favorite.categoryIds.add("2"+j);
+    }
+
     private String uri;
     private String description;
     private String category;
@@ -72,7 +102,7 @@ public class Favorite {
         this.description = description;
     }
 
-    public String getCategory() {
+    public String getCategoryField() {
         return category;
     }
 

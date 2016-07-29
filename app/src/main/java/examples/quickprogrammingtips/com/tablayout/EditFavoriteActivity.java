@@ -56,10 +56,13 @@ public class EditFavoriteActivity extends AppCompatActivity{
         RadioGroup.LayoutParams rprms;
 
         //LinearLayout ll= new LinearLayout(this);
-        for (int i=0;i< Favorite.categoryIds.size();i++){
+        /*Favorite.categoryDescriptions=new ArrayList<>(Arrays.asList("New Links"));//categoryIds
+        for (int i=Favorite.categoryIds.size();i<SpotifyActivity.CATEGORY_IDS.size()-1;i++)Favorite.categoryIds.add("2"+i);
+        for (int i=0;i<SpotifyActivity.CATEGORY_IDS.size();i++)Favorite.categoryDescriptions.add(SpotifyActivity.CATEGORY_IDS.get(i));*/
+        for (int i=0;i< Favorite.categoryIdssize();i++){
             RadioButton radioButton = new RadioButton(this);
-            radioButton.setText(Favorite.getCategory(i));
-            if (categoryString.equals(Favorite.categoryIds.get(i)))
+            radioButton.setText(Favorite.getCategoryDescription(i));
+            if (categoryString.equals(Favorite.categoryIdsget(i)))
                 radioButton.setChecked(true);
             radioButtons.add(radioButton);
             radioButton.setId(i);
@@ -91,7 +94,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
                         if (radioButtons.get(i).isChecked())
                         {
                             //Log.v("samba", "set category to:" + Favorite.categoryIds.get(i));
-                            book.category =Favorite.categoryIds.get(i);}
+                            book.category =Favorite.categoryIdsget(i);}
                     book.save();
                     Intent i = getIntent(); //get the intent that has been called, i.e you did called with startActivityForResult();
                     //i.putExtras(b);//put some data, in a bundle

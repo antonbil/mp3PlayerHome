@@ -128,8 +128,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             //FavoritesListItem favoritesSpotifyListItem = new FavoritesListItem(this, view, "spotify", "sp");
             favoritesListItemArray.add(new FavoritesListItem(this, view, "favorites", "1",false));
             favoritesListItemArray.add(new FavoritesListItem(this, view, "spotify", "2",true));
-            for (int i=0;i<Favorite.categoryIds.size();i++) {
-                final FavoritesListItem favoritesListItem = new FavoritesListItem(this, view, Favorite.getCategory(i), Favorite.categoryIds.get(i),false);
+            for (int i=0;i<Favorite.categoryIdssize();i++) {
+                final FavoritesListItem favoritesListItem = new FavoritesListItem(this, view, Favorite.getCategoryDescription(i), Favorite.categoryIdsget(i),false);
                 favoritesListItemArray.add(favoritesListItem);
             }
 
@@ -164,7 +164,12 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         spotifyfavorites.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/1WCuVrwkQbZZw6qmgockjv", "oor rockt", "Spotify"));
         spotifyfavorites.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF", "oor danst", "Spotify"));*/
 
-        List<FavoriteRecord> favoritesDisk = FavoriteRecord.listAll(FavoriteRecord.class);
+        //FavoriteRecord book = new FavoriteRecord("", "","");
+        //book.save();
+        List<FavoriteRecord> favoritesDisk = new ArrayList<FavoriteRecord>();
+        try {
+            favoritesDisk = FavoriteRecord.listAll(FavoriteRecord.class);
+        } catch (Exception e){}
         for (FavoritesListItem fi:favoritesListItemArray)
         fi.favoritesAdded.clear();
         ArrayList<Favorite> favoritesSpotifyListItem = favoritesListItemArray.get(0).favoritesAdded;
@@ -338,7 +343,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     intent.putExtra("id", (int) (favorite.getRecord().getId() + 0));
                     intent.putExtra("url", favorite.getRecord().url);
                     intent.putExtra("description", favorite.getDescription());
-                    intent.putExtra("category", favorite.getCategory());
+                    intent.putExtra("category", favorite.getCategoryField());
                     intent.putExtra("sortkey", favorite.getSortkey());
                     startActivityForResult(intent, STATIC_RESULT_SELECT);
                 }

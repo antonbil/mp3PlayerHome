@@ -23,6 +23,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -243,10 +244,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 SpotifyActivity.checkAddress();
                 SpotifyActivity.refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
                 //song_display2
-                ((LinearLayout) findViewById(R.id.song_display2)).setOnClickListener(new View.OnClickListener() {
+                LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
+                viewHeader.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startPlaylistSpotify();mDrawerLayout.closeDrawers();
+                        spotifyPopupMenu(viewHeader, mDrawerLayout);
+
+
+
                     }
                 });
                 (findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
@@ -255,7 +260,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 viewById.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startPlaylistSpotify();mDrawerLayout.closeDrawers();
+                        spotifyPopupMenu(viewHeader, mDrawerLayout);
+                        //startPlaylistSpotify();mDrawerLayout.closeDrawers();
                     }
                 });
                 updateTimerThread = new Runnable() {
@@ -436,6 +442,28 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    public void spotifyPopupMenu(final LinearLayout viewHeader, final DrawerLayout mDrawerLayout) {
+        PopupMenu playMenu = new PopupMenu(viewHeader.getContext(), viewHeader);
+
+        playMenu.getMenu().add("Spotify Playlist");
+        playMenu.getMenu().add("Play");
+        playMenu.show();
+        playMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                String title = item.getTitle().toString();
+                //nextSpotifyPlaying,previousSpotifyPlaying,stopSpotifyPlaying,playPauseSpotify,playSpotify()
+                if ((title.equals("Spotify Playlist"))) {
+                    startPlaylistSpotify();mDrawerLayout.closeDrawers();
+                }else
+                if ((title.equals("Play"))) {
+                    SpotifyActivity.showPlayMenu(viewHeader);
+                }
+                return true;
+            }
+        });
     }
 
     public void startPlaylistSpotify() {

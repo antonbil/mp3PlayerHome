@@ -14,7 +14,9 @@ public class FavoriteRecord extends SugarRecord {
     public FavoriteRecord(){
 
     }
-    public FavoriteRecord(String url,String description,String category){
+
+
+        public FavoriteRecord(String url,String description,String category){
         this.url=url;
         this.description=description;
         this.category=category;

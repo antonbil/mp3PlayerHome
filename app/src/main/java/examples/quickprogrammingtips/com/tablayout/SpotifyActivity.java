@@ -79,6 +79,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
+import static examples.quickprogrammingtips.com.tablayout.model.Favorite.generateLists;
 import static examples.quickprogrammingtips.com.tablayout.model.Mp3File.niceTime;
 
 /*
@@ -111,7 +112,7 @@ PlaybackController.get_state()
 
  */
 public class SpotifyActivity extends AppCompatActivity implements
-        ConnectionStateCallback {//AlertDialog
+        ConnectionStateCallback {
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "89f945f1696e4f389aaed419e51beaad";
     // TODO: Replace with your redirect URI
@@ -160,6 +161,8 @@ public class SpotifyActivity extends AppCompatActivity implements
      */
     private GoogleApiClient client;
     private SongItems songItems;
+    public static final ArrayList<String> CATEGORY_IDS = new ArrayList<>(Arrays.asList("electronic", "progressive", "alternative", "rnb", "soul", "singer-songwriter",
+            "classical","acoustic", "ambient", "americana", "blues", "country", "techno", "shoegaze", "Hip-Hop", "funk", "jazz", "rock", "folk"));
 
     public void checkAppMemory(){
         // Get app memory info
@@ -718,7 +721,8 @@ public class SpotifyActivity extends AppCompatActivity implements
                     //Log.v("samba", "clicked!");
                     // Toast.makeText(getApplicationContext(), "Clicked Image",
                     //         Toast.LENGTH_SHORT).show();
-                    PopupMenu menu = new PopupMenu(songItems.image.getContext(), songItems.image);
+                    View image = songItems.image;
+                    PopupMenu menu = new PopupMenu(songItems.image.getContext(), image);
                     //jsonrpc /jsonrpc?OpenAddon_plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Aredactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D
                     // {"jsonrpc":"2.0","method":"Files.GetDirectory","id":1,"params":["plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Aredactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D","music",["title","file","thumbnail", "art","duration"]]}
 
@@ -726,6 +730,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                     //{"jsonrpc":"2.0","method":"Files.GetDirectory","id":1,"params":["plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%…A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D","music",["title","file","thumbnail", "art","duration"]]
                     //menu.getMenu().add("oor11");
                     menu.getMenu().add("hide/show");
+                    menu.getMenu().add("play");
                     menu.getMenu().add("search artist");
                     menu.getMenu().add("search album");
                     menu.getMenu().add("enlarge cover");
@@ -743,20 +748,23 @@ public class SpotifyActivity extends AppCompatActivity implements
                     */
                                                         public boolean onMenuItemClick(MenuItem item) {
                                                             String title = item.getTitle().toString();
+                                                            if ((title.equals("play"))) {
+                                                                SpotifyActivity.showPlayMenu(songItems.image);
+                                                            } else
                                                             if ((title.equals("new albums categories"))) {
                                                                 PopupMenu menu = new PopupMenu(songItems.image.getContext(), songItems.image);
                                                                 ;
-                                                                ArrayList<String> categoryIds = new ArrayList<>(Arrays.asList("electronic", "progressive", "alternative", "rnb", "soul", "singer-songwriter",
-                                                                        "acoustic", "ambient", "americana", "blues", "country", "techno", "shoegaze", "Hip-Hop", "funk", "jazz", "rock", "folk"));
-                                                                for (String cat : categoryIds) {
+                                                                for (String cat : CATEGORY_IDS) {
                                                                     menu.getMenu().add(cat);
                                                                 }
                                                                 menu.show();
+                                                                generateLists();
                                                                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
                                                                     @Override
                                                                     public boolean onMenuItemClick(MenuItem item) {
                                                                         String title = item.getTitle().toString();
+
                                                                         try {
                                                                             //if (title.startsWith("new albums ")) {
                                                                             final String cat = title.replace("new albums ", "");
@@ -766,8 +774,11 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                                                 public void generateList(ArrayList<NewAlbum> newAlbums) {
                                                                                     //Bundle extras = getIntent().getExtras();
 
-
                                                                                     String url = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
+
+                                                                                    Favorite.NEWALBUM=Favorite.getCategoryId(cat);
+
+
                                                                                     //String act = getIntent().getStringExtra("from");
 
                                                                                     //try {
@@ -1122,6 +1133,61 @@ public class SpotifyActivity extends AppCompatActivity implements
         refreshPlaylistFromSpotify(albumAdapter, albumsListview, getThis);
     }
 
+    public static int getVolumeSpotify(String ipAddress) {
+        int vol=0;
+        try {
+            String sb = getJsonStringFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.mixer.get_volume\"}",
+                    ipAddress);
+            Log.v("samba","return:"+sb);
+            vol = new JSONObject(sb).getInt("result");
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+        Log.v("samba","old volume:"+vol);
+
+        return vol;
+    }
+
+    public static void incVolumeSpotify(String ipAddress) {
+        int vol=getVolumeSpotify(ipAddress)+10;
+        try {
+            getJsonStringFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.mixer.set_volume\", \"params\": {\"volume\":%s}}",vol),
+                    ipAddress);
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
+
+    public static void decVolumeSpotify(String ipAddress) {
+        int vol=getVolumeSpotify(ipAddress)-10;
+        Log.v("samba","new volume:"+vol);
+        try {
+            getJsonStringFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"method\": \"core.mixer.set_volume\", \"params\": {\"volume\":%s}}",vol),
+                    ipAddress);
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
+
+    public static void nextSpotifyPlaying(String ipAddress) {
+        try {
+            //PlaybackController.stop()
+            GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.next\"}",
+                    ipAddress);//?StopPause
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
+
+    public static void previousSpotifyPlaying(String ipAddress) {
+        try {
+            //PlaybackController.stop()
+            GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.previous\"}",
+                    ipAddress);//?StopPause
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
 
     public static void stopSpotifyPlaying(String ipAddress) {
         try {
@@ -1182,7 +1248,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         artistTitleTextView.setVisibility(visibility);
         spotifyHeader.icon.setVisibility(visibility);
-        fab.setVisibility(opposite);//spotifyscrollviewtop
+        //fab.setVisibility(opposite);//spotifyscrollviewtop
         ((TextView) findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
         ((TextView) findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
 
@@ -2132,6 +2198,70 @@ public class SpotifyActivity extends AppCompatActivity implements
         }
     ;
 
+    public static PopupMenu showPlayMenu(View view) {
+        /*
+        menu.add(groupId, MENU_VIEW, Menu.NONE, getText(R.string.menu_view));
+menu.add(groupId, MENU_EDIT, Menu.NONE, getText(R.string.menu_edit));
+SubMenu sub=menu.addSubMenu(groupId, MENU_SORT, Menu.NONE, getText(R.string.menu_sort));
+sub.add(groupId, MENU_SORT_BY_NAME, Menu.NONE, getText(R.string.menu_sort_by_name));
+sub.add(groupId, MENU_SORT_BY_ADDRESS, Menu.NONE, getText(R.string.menu_sort_by_address));
+:
+:
+         */
+        PopupMenu playMenu = new PopupMenu(view.getContext(), view);
+
+        playMenu.getMenu().add("Play");
+        playMenu.getMenu().add("Stop");
+        playMenu.getMenu().add("Pause/Play");
+        playMenu.getMenu().add("Previous");
+        playMenu.getMenu().add("Next");
+        playMenu.getMenu().add("Vol-");
+        playMenu.getMenu().add("Vol+");
+        playMenu.getMenu().add("Vol--");
+        playMenu.getMenu().add("Vol++");
+        playMenu.show();
+        playMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                String title = item.getTitle().toString();
+                //nextSpotifyPlaying,previousSpotifyPlaying,stopSpotifyPlaying,playPauseSpotify,playSpotify()
+                //incVolumeSpotify,decVolumeSpotify
+                if ((title.equals("Play"))) {
+                    playSpotify();
+                }else
+                if ((title.equals("Stop"))) {
+                    stopSpotifyPlaying(ipAddress);
+                }else
+                if ((title.equals("Pause/Play"))) {
+                    playPauseSpotify(ipAddress);
+                }else
+                if ((title.equals("Previous"))) {
+                    previousSpotifyPlaying(ipAddress);
+                }else
+                if ((title.equals("Vol-"))) {
+                    decVolumeSpotify(ipAddress);
+                }else
+                if ((title.equals("Vol+"))) {
+                    incVolumeSpotify(ipAddress);
+                }else
+                if ((title.equals("Vol--"))) {
+                    for (int i=0;i<4;i++)
+                    decVolumeSpotify(ipAddress);
+                }else
+                if ((title.equals("Vol++"))) {
+                    for (int i=0;i<4;i++)
+                    incVolumeSpotify(ipAddress);
+                }else
+                if ((title.equals("Next"))) {
+                    nextSpotifyPlaying(ipAddress);
+                }
+                return true;
+            }
+        });
+        return playMenu;
+    }
 
 }
 
