@@ -32,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -749,7 +750,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                         public boolean onMenuItemClick(MenuItem item) {
                                                             String title = item.getTitle().toString();
                                                             if ((title.equals("play"))) {
-                                                                SpotifyActivity.showPlayMenu(songItems.image);
+                                                                SpotifyActivity.showPlayMenu(getThis,songItems.image);
                                                             } else
                                                             if ((title.equals("new albums categories"))) {
                                                                 PopupMenu menu = new PopupMenu(songItems.image.getContext(), songItems.image);
@@ -1169,6 +1170,16 @@ public class SpotifyActivity extends AppCompatActivity implements
         }
     }
 
+    public static void setVolumeSpotify(String ipAddress, int vol) {
+        //int vol=getVolumeSpotify(ipAddress)-10;
+        Log.v("samba","new volume:"+vol);
+        try {
+            getJsonStringFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"method\": \"core.mixer.set_volume\", \"params\": {\"volume\":%s}}",vol),
+                    ipAddress);
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
     public static void nextSpotifyPlaying(String ipAddress) {
         try {
             //PlaybackController.stop()
@@ -2197,8 +2208,57 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         }
     ;
+    public static void setVolume(AppCompatActivity getThis) {
+        final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(getThis);
 
-    public static PopupMenu showPlayMenu(View view) {
+        alert.setTitle("Volume");
+
+        LinearLayout linear = new LinearLayout(getThis);
+
+        linear.setOrientation(LinearLayout.VERTICAL);
+        final TextView text = new TextView(getThis);
+        text.setPadding(10, 10, 10, 10);
+
+        //setVolumeSpotify(String ipAddress, int vol) {
+            //int vol=getVolumeSpotify(ipAddress)-10;
+        Integer volume = getVolumeSpotify(ipAddress);
+        text.setText("" + volume);
+        SeekBar seek = new SeekBar(getThis);
+
+        seek.setProgress(volume);
+        seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                text.setText("" + progress);
+                setVolumeSpotify(ipAddress,progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        linear.addView(seek);
+        linear.addView(text);
+
+        alert.setView(linear);
+
+
+        alert.setPositiveButton("Ok", (dialog, id) -> {
+            dialog.dismiss();
+        });
+
+        alert.show();
+    }
+
+
+    public static PopupMenu showPlayMenu(final AppCompatActivity getThis1,View view) {
         /*
         menu.add(groupId, MENU_VIEW, Menu.NONE, getText(R.string.menu_view));
 menu.add(groupId, MENU_EDIT, Menu.NONE, getText(R.string.menu_edit));
@@ -2215,10 +2275,11 @@ sub.add(groupId, MENU_SORT_BY_ADDRESS, Menu.NONE, getText(R.string.menu_sort_by_
         playMenu.getMenu().add("Pause/Play");
         playMenu.getMenu().add("Previous");
         playMenu.getMenu().add("Next");
-        playMenu.getMenu().add("Vol-");
+        playMenu.getMenu().add("Volume");
+        /*playMenu.getMenu().add("Vol-");
         playMenu.getMenu().add("Vol+");
         playMenu.getMenu().add("Vol--");
-        playMenu.getMenu().add("Vol++");
+        playMenu.getMenu().add("Vol++");*/
         playMenu.show();
         playMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
@@ -2239,6 +2300,9 @@ sub.add(groupId, MENU_SORT_BY_ADDRESS, Menu.NONE, getText(R.string.menu_sort_by_
                 }else
                 if ((title.equals("Previous"))) {
                     previousSpotifyPlaying(ipAddress);
+                }else
+                if ((title.equals("Volume"))) {
+                    setVolume(getThis1);
                 }else
                 if ((title.equals("Vol-"))) {
                     decVolumeSpotify(ipAddress);

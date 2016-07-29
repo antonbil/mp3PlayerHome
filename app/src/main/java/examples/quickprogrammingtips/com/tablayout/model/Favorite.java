@@ -16,6 +16,12 @@ public class Favorite {
     public static final String SPOTIFYALBUM = "spotifyalbum://";
     public static  String NEWALBUM = "2nd edition";
     public static final String SPOTIFYPRIVATEPLAYLIST = "spotify://";
+    /*
+    two arraylists for managing genres of albums.
+    categoryDescriptions: contains the genre-descriptions
+    categoryIds: contains the ids for the genre-description that are stored
+    todo: clumsy programming. lists are generated again and again. Can be turned into singleton to generate lists only once.
+     */
     private static ArrayList<String> categoryIds=new ArrayList<>(Arrays.asList(NEWALBUM,"3","4","5","6","7","8","9","10","11"));
     private static ArrayList<String> categoryDescriptions;//=new ArrayList<>(Arrays.asList("New Links","Classical","Symphonic Rock","Electronic","Soul","Singer/Songwriter","Alternative","Rock","Ambient","Various"));
     public static String getCategoryDescription(int i){

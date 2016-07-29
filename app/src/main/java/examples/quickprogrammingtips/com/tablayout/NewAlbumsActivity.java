@@ -45,7 +45,7 @@ public class NewAlbumsActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SpotifyActivity.showPlayMenu(fab);
+                SpotifyActivity.showPlayMenu(getThis,fab);
             }
         });
 

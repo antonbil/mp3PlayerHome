@@ -254,13 +254,22 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     }
                 });
+                final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        spotifyPopupMenu(fab, mDrawerLayout);
+                    }
+                });
+
                 (findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 (findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top2);
                 viewById.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        spotifyPopupMenu(viewHeader, mDrawerLayout);
+                        SpotifyActivity.setVolume(getThis);
+                        //spotifyPopupMenu(viewHeader, mDrawerLayout);
                         //startPlaylistSpotify();mDrawerLayout.closeDrawers();
                     }
                 });
@@ -444,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    public void spotifyPopupMenu(final LinearLayout viewHeader, final DrawerLayout mDrawerLayout) {
+    public void spotifyPopupMenu(final View viewHeader, final DrawerLayout mDrawerLayout) {
         PopupMenu playMenu = new PopupMenu(viewHeader.getContext(), viewHeader);
 
         playMenu.getMenu().add("Spotify Playlist");
@@ -459,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     startPlaylistSpotify();mDrawerLayout.closeDrawers();
                 }else
                 if ((title.equals("Play"))) {
-                    SpotifyActivity.showPlayMenu(viewHeader);
+                    SpotifyActivity.showPlayMenu(getThis,viewHeader);
                 }
                 return true;
             }
