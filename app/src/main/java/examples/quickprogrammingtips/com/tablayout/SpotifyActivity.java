@@ -122,7 +122,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private SpotifyHeader spotifyHeader;
     public FillListviewWithValues fillListviewWithValues;
     private ArrayList<String> artistList = new ArrayList<>();
-    private ArrayList<String> albumIds = new ArrayList<>();
+    public static  ArrayList<String> albumIds = new ArrayList<>();
     public static ArrayList<String> albumList = new ArrayList<>();
     public static ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
     public static SpotifyActivity getThis;
@@ -276,11 +276,11 @@ public class SpotifyActivity extends AppCompatActivity implements
                 String prefix="spotify:track:";
                 String uri=ids.get(pos);
                 if (uri.startsWith("spotify"))prefix="";
-                String data = String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.add\", \"params\": {\"uris\":[\"%s%s\"]}}", prefix,uri);
+                AddSpotifyItemToPlaylist(prefix, uri);
 
                 //String data = String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Add\", \"params\": { \"playlistid\" : 0 , \"item\" : {\"file\" : \"http://127.0.0.1:8081/track/%s.wav|X-Spotify-Token=%s&User-Agent=Spotlight+1.0\"}}, \"id\": 1}", ids.get(pos), spotifyToken.get(ipAddress));
-                String urlString = ipAddress;// + "?PlaylistAdd";
-                GetJsonFromUrl(data, urlString);
+                //String urlString = ipAddress;// + "?PlaylistAdd";
+                //GetJsonFromUrl(data, urlString);
                 AddSpotifyTrack(getThis, ids, pos + 1);
             } else {
                 //all tracks added
@@ -311,6 +311,13 @@ public class SpotifyActivity extends AppCompatActivity implements
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
+    }
+
+    public static JSONObject AddSpotifyItemToPlaylist(String prefix, String uri) {
+        String data= String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.add\", \"params\": {\"uris\":[\"%s%s\"]}}", prefix,uri);
+        String urlString = ipAddress;// + "?PlaylistAdd";
+        return GetJsonFromUrl(data, urlString);
+
     }
 
     private static JSONArray getPlaylist() {
@@ -590,6 +597,15 @@ public class SpotifyActivity extends AppCompatActivity implements
             public void addAlbum(int counter) {
                 addAlbumStatic(counter,albumAdapter, albumsListview);
             }
+
+            @Override
+            public void addAlbumNoplay(int counter) {
+                String uri = albumIds.get(counter);
+                Log.v("samba","add"+uri);
+                String prefix="spotify:album:";
+                AddSpotifyItemToPlaylist(prefix, uri);
+                //refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+            }
         };
         albumAdapter.setDisplayCurrentTrack(false);
         //albumAdapter.setDisplayCurrentTrack(true);
@@ -667,7 +683,15 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
             }
         });
-        //Log.v("samba", "nosearch5");
+        //refreshspotifyButton
+            ImageButton refreshspotifyButton = (ImageButton) findViewById(R.id.refreshspotifyButton);
+            refreshspotifyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
+                    refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+                }
+            });
         ImageButton stopButton = (ImageButton) findViewById(R.id.stopspotifyButton);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -735,7 +759,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                     menu.getMenu().add("search artist");
                     menu.getMenu().add("search album");
                     menu.getMenu().add("enlarge cover");
-                    menu.getMenu().add("refresh token");
+                    menu.getMenu().add("refresh");
                     menu.getMenu().add("new albums");
                     menu.getMenu().add("new albums categories");
 
@@ -858,8 +882,8 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                                 MainActivity.displayLargeImage(getThis, bitmap);
                                                             }
 
-                                                            if ((title.equals("refresh token"))) {
-                                                                GetSpotifyTokenSync();
+                                                            if ((title.equals("refresh"))) {
+                                                                refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
                                                             }
                                                             if ((title.equals("search album"))) {
                                                                 try {
@@ -1708,53 +1732,7 @@ public class SpotifyActivity extends AppCompatActivity implements
              //       "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetItems\", \"params\": { \"properties\": [\"title\", \"album\", \"artist\", \"duration\", \"thumbnail\",\"file\"], \"playlistid\": 0 }, \"id\": 1}\u200B",
              //       ipAddress + "?GetPLItemsAudio");
             //Log.v("samba", "refresh");
-            JSONArray playlist = getPlaylist();
-
-            albumList.clear();
-            albumTracks.clear();
-            JSONArray items = null;
-            items = playlist;
-            String prevAlbum = "";
-            tracksPlaylist.clear();
-            for (int i = 0; i < items.length(); i++) {
-                final PlaylistItem pi=new PlaylistItem();
-                pi.pictureVisible=false;
-                String trackid = "";
-                JSONObject o = items.getJSONObject(i);
-                //trackid = getTrackId(o.getString("file"));
-                trackid=o.getJSONObject("track").getString("uri").replace("spotify:track:","");
-                if (trackid.length()>0) {
-                    Track t = getTrack(trackid);
-                    //tracksPlaylist.add(t);
-                    //Log.v("samba", t.name);
-                    //ArrayList<String> ids=new ArrayList<String>();
-                    String extra = "";
-                    try {
-                        String name = t.album.name;
-                        if (!prevAlbum.startsWith(name)) {
-                            extra = String.format("(%s-%s)", t.artists.get(0).name, name);
-                            prevAlbum = name;
-                        }
-                        pi.pictureVisible = true;
-                    } catch (Exception e) {
-                        Log.v("samba", Log.getStackTraceString(e));
-                    }
-                    pi.text = t.name + extra + String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue()));
-                    new DownLoadImageUrlTask() {
-                        @Override
-                        public void setUrl(String logo) {
-                            pi.url = logo;
-                        }
-                    }.execute(t.album.id);
-
-
-                    pi.url = t.album.images.get(0).url;
-                    pi.id=t.id;
-                    albumList.add(pi.text);
-                    albumTracks.add(pi);
-                    tracksPlaylist.add(t);
-                }
-            }
+            refreshPlaylistFromSpotify();
             //spotifyStartPosition=0;
             albumAdapter.setDisplayCurrentTrack(true);
             albumAdapter.notifyDataSetChanged();
@@ -1770,6 +1748,60 @@ public class SpotifyActivity extends AppCompatActivity implements
         }
         progressDialog.dismiss();
 
+    }
+
+    public static void refreshPlaylistFromSpotify() {
+        try{
+        JSONArray playlist = getPlaylist();
+
+        albumList.clear();
+        albumTracks.clear();
+        JSONArray items = null;
+        items = playlist;
+        String prevAlbum = "";
+        tracksPlaylist.clear();
+        for (int i = 0; i < items.length(); i++) {
+            final PlaylistItem pi=new PlaylistItem();
+            pi.pictureVisible=false;
+            String trackid = "";
+            JSONObject o = items.getJSONObject(i);
+            //trackid = getTrackId(o.getString("file"));
+            trackid=o.getJSONObject("track").getString("uri").replace("spotify:track:","");
+            if (trackid.length()>0) {
+                Track t = getTrack(trackid);
+                //tracksPlaylist.add(t);
+                //Log.v("samba", t.name);
+                //ArrayList<String> ids=new ArrayList<String>();
+                String extra = "";
+                try {
+                    String name = t.album.name;
+                    if (!prevAlbum.startsWith(name)) {
+                        extra = String.format("(%s-%s)", t.artists.get(0).name, name);
+                        prevAlbum = name;
+                    }
+                    pi.pictureVisible = true;
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
+                pi.text = t.name + extra + String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue()));
+                new DownLoadImageUrlTask() {
+                    @Override
+                    public void setUrl(String logo) {
+                        pi.url = logo;
+                    }
+                }.execute(t.album.id);
+
+
+                pi.url = t.album.images.get(0).url;
+                pi.id=t.id;
+                albumList.add(pi.text);
+                albumTracks.add(pi);
+                tracksPlaylist.add(t);
+            }
+        }
+    } catch (Exception e) {
+        Log.v("samba", Log.getStackTraceString(e));
+    }
     }
 
     public static String searchSpotifyArtist(String artist){

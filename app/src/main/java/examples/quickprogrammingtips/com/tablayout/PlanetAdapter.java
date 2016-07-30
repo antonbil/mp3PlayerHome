@@ -13,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +51,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void addAndPlayAlbum(int counter);
     public abstract void albumArtistWikipedia(int counter);
     public abstract void addAlbum(int counter);
+    public abstract void addAlbumNoplay(int counter);
 
     public PlanetAdapter(List<String> planetList, AppCompatActivity ctx, ArrayList<PlaylistItem> tracksPlaylist) {
         super(ctx, R.layout.spotifylist, planetList);
@@ -177,8 +177,9 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                                                                } else if (item.getTitle().toString().equals("wikipedia artist")) {
                                                                    albumArtistWikipedia(position);
                                                                } else if (item.getTitle().toString().equals("add")) {
-                                                                   Toast.makeText(getThis.getApplicationContext(), "Not implemented yet",
-                                                                           Toast.LENGTH_SHORT).show();
+                                                                   //Toast.makeText(getThis.getApplicationContext(), "Not implemented yet",
+                                                                   //        Toast.LENGTH_SHORT).show();
+                                                                   addAlbumNoplay(position);
 
                                                                    //addAlbum(position);
                                                                }

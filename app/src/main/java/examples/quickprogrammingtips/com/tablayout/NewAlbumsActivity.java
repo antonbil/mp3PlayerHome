@@ -151,7 +151,10 @@ public class NewAlbumsActivity extends AppCompatActivity {
                                         if (item.getTitle().toString().equals("add album to favorites")) {
                                             SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
 
-                                        }
+                                        }else
+                                        if (item.getTitle().toString().equals("add album")) {
+                                            AddAlbumToPlaylist(position);
+                                        }else
                                         if (item.getTitle().toString().equals("large image")) {
                                             MainActivity.displayLargeImage(getThis, logo);
 
@@ -161,6 +164,7 @@ public class NewAlbumsActivity extends AppCompatActivity {
                                 });
 
                                 menu.getMenu().add("add album to favorites");//submenu
+                                menu.getMenu().add("add album");//submenu
                                 menu.getMenu().add("large image");//submenu
                                 menu.show();
                             }
@@ -186,6 +190,9 @@ public class NewAlbumsActivity extends AppCompatActivity {
 
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
+                            if (item.getTitle().toString().equals("add album")) {
+                                AddAlbumToPlaylist(position);
+                            }else
                             if (item.getTitle().toString().equals("add album to favorites")) {
                                 SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
 
@@ -195,6 +202,7 @@ public class NewAlbumsActivity extends AppCompatActivity {
                     });
 
                     menu.getMenu().add("add album to favorites");//submenu
+                    menu.getMenu().add("add album");//submenu
                     menu.show();
                 }
             });
@@ -204,26 +212,38 @@ public class NewAlbumsActivity extends AppCompatActivity {
                 public boolean onLongClick(final View v) {
                     PopupMenu menu = new PopupMenu(v.getContext(), v);
 
-                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getTitle().toString().equals("add album to favorites")) {
-                                    SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if (item.getTitle().toString().equals("add album")) {
+                                AddAlbumToPlaylist(position);
+                            }else
+                            if (item.getTitle().toString().equals("add album to favorites")) {
+                                SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
 
-                                }
-                                return true;
                             }
-                        });
+                            return true;
+                        }
+                    });
 
-                        menu.getMenu().add("add album to favorites");//submenu
+                    menu.getMenu().add("add album to favorites");//submenu
+                    menu.getMenu().add("add album");//submenu
                     menu.show();
                     return true;
                 }
                                            }
             );
                     return rowView;
-        }    }
+        }
+
+         public void AddAlbumToPlaylist(int position) {
+             String uri = items.get(position).url.replace("spotify:album:", "");//SpotifyActivity.albumIds.get(counter);
+             String prefix="spotify:album:";
+             SpotifyActivity.AddSpotifyItemToPlaylist(prefix, uri);
+             SpotifyActivity.refreshPlaylistFromSpotify();
+         }
+     }
     public void processAlbum(NewAlbum album){
         SpotifyActivity.getThis.artistName=album.artist;
         //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""); Toast.LENGTH_SHORT).show();

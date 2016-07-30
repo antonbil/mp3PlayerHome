@@ -239,6 +239,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                 , getThis, this, albumsListview);
 
                     }
+
+                    @Override
+                    public void addAlbumNoplay(int counter) {
+                    }
                 };
                 albumsListview.setAdapter(albumAdapter);
                 SpotifyActivity.checkAddress();
