@@ -134,6 +134,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     private Handler customHandler = new Handler();
     private static String ipAddress = "";
+    public static String nextCommand="";
     private PlanetAdapter albumAdapter;
     private ListView albumsListview;
     private static ProgressDialog dialog1;//
@@ -164,7 +165,8 @@ public class SpotifyActivity extends AppCompatActivity implements
     private SongItems songItems;
     public static final ArrayList<String> CATEGORY_IDS = new ArrayList<>(Arrays.asList("electronic", "progressive", "alternative", "rnb", "soul", "singer-songwriter",
             "classical","acoustic", "ambient", "americana", "blues", "country", "techno", "shoegaze", "Hip-Hop", "funk", "jazz", "rock", "folk"));
-    private String searchString="";
+    private static String searchArtistString ="";
+    private static String searchAlbumString ="";
 
     public void checkAppMemory(){
         // Get app memory info
@@ -885,164 +887,10 @@ public class SpotifyActivity extends AppCompatActivity implements
                                                                 refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
                                                             }
                                                             if ((title.equals("search album"))) {
-                                                                try {
-
-                                                                    AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
-                                                                    builder.setTitle("Search album");
-
-                                                                    // Set up the input
-                                                                    final EditText input = new EditText(getThis);
-                                                                    input.setText(searchString);
-                                                                    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                                                                    input.setInputType(InputType.TYPE_CLASS_TEXT);
-                                                                    builder.setView(input);
-
-                                                                    // Set up the buttons
-                                                                    builder.setPositiveButton("OK", (dialog, which) -> {
-                                                                        searchString = input.getText().toString();
-                                                                        //SearchActivity.artistName=artist;
-                                                                        fillListviewWithValues = new FillListviewWithValues() {
-
-                                                                            @Override
-                                                                            public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
-                                                                                spotify.searchAlbums(searchString.trim(), new Callback<AlbumsPager>() {
-
-                                                                                    @Override
-                                                                                    public void success(AlbumsPager albumsPager, Response response) {
-                                                                                        for (AlbumSimple album : albumsPager.albums.items) {
-                                                                                            String name = album.name;
-
-                                                                                            SearchItem si = new SearchItem();
-                                                                                            si.artist = name;
-                                                                                            si.title = "";
-                                                                                            si.id = album.id;
-                                                                                            si.imageid = album.images.get(0).url;
-                                                                                            newAlbums.add(si);
-                                                                                        }
-                                                                                        SearchActivity.getThis.notifyChange();
-
-                                                                                    }
-
-                                                                                    @Override
-                                                                                    public void failure(RetrofitError error) {
-
-                                                                                    }
-                                                                                });
-                                                                            }
-
-                                                                            ;
-
-                                                                            @Override
-                                                                            public void processAlbum(SearchItem album) {
-                                                                                getAlbumtracksFromSpotify(album.id, album.artist, getThis, albumAdapter, albumsListview);
-                                                                            }
-
-                                                                            ;
-
-                                                                        };
-
-                                                                        Intent intent = new Intent(MainActivity.getThis, SearchActivity.class);
-                                                                        startActivity(intent);
-
-                                                                    });
-                                                                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            dialog.cancel();
-                                                                        }
-                                                                    });
-
-                                                                    builder.show();
-                                                                } catch (Exception e) {
-                                                                    Log.v("samba", Log.getStackTraceString(e));
-                                                                }
+                                                                searchAlbum();
                                                             }
                                                             if ((title.equals("search artist"))) {
-                                                                try {
-
-                                                                    AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
-                                                                    builder.setTitle("Search artist");
-
-                                                                    // Set up the input
-                                                                    final EditText input = new EditText(getThis);
-                                                                    input.setText(searchString);
-                                                                    // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                                                                    input.setInputType(InputType.TYPE_CLASS_TEXT);
-                                                                    builder.setView(input);
-
-                                                                    // Set up the buttons
-                                                                    builder.setPositiveButton("OK", (dialog, which) -> {
-                                                                        searchString = input.getText().toString();
-                                                                        //SearchActivity.artistName=artist;
-                                                                        fillListviewWithValues = new FillListviewWithValues() {
-
-                                                                            @Override
-                                                                            public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
-                                                                                spotify.searchArtists(searchString.trim(), new Callback<ArtistsPager>() {
-
-                                                                                    @Override
-                                                                                    public void success(ArtistsPager artistsPager, Response response) {
-                                                                                        String id = "";
-                                                                                        int max = 10000;
-                                                                                        Image image1 = null;
-                                                                                        for (Artist artist : artistsPager.artists.items) {
-                                                                                            String name = artist.name;
-                                                                                            Log.v("samba", "artist found: " + name);
-                                                                                            if (name.startsWith("The "))
-                                                                                                name = name.substring(4);
-
-                                                                                            SearchItem si = new SearchItem();
-                                                                                            si.artist = name;
-                                                                                            si.title = "";
-                                                                                            si.id = artist.id;
-                                                                                            if (artist.images.size() > 0)
-                                                                                                si.imageid = artist.images.get(0).url;
-                                                                                            else
-                                                                                                si.imageid = "";
-                                                                                            newAlbums.add(si);
-
-
-                                                                                        }
-                                                                                        SearchActivity.getThis.notifyChange();
-                                                                                    }
-
-                                                                                    @Override
-                                                                                    public void failure(RetrofitError error) {
-
-                                                                                    }
-                                                                                });
-                                                                            }
-
-                                                                            ;
-
-                                                                            public void processAlbum(SearchItem album) {
-                                                                                //listAlbumsForArtist(album.artist);
-                                                                                Image im = new Image();
-                                                                                try {
-                                                                                    im.url = album.images.get(0).url;
-                                                                                } catch (Exception e) {
-                                                                                }
-                                                                                listAlbumsForArtistId(album.id, im, album.artist, new SpotifyApi());
-                                                                            }
-
-                                                                            ;
-                                                                        };
-
-                                                                        Intent intent = new Intent(MainActivity.getThis, SearchActivity.class);
-                                                                        startActivity(intent);
-
-                                                                    });
-                                                                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            dialog.cancel();
-                                                                        }
-                                                                    });
-
-                                                                    builder.show();
-                                                                } catch (Exception e) {
-                                                                    Log.v("samba", Log.getStackTraceString(e));
-                                                                }
+                                                                searchArtist();
                                                             }
 
                                                             if ((title.equals("oor11"))) {
@@ -1120,7 +968,177 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
 
             customHandler.postDelayed(updateTimerThread,0);
+            if (nextCommand.equals("search album")){
+                    searchAlbum();
+
+            }
+            if ((nextCommand.equals("search artist"))) {
+                searchArtist();
+            }
+            nextCommand="";
         }
+
+    public void searchArtist() {
+        try {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
+            builder.setTitle("Search artist");
+
+            // Set up the input
+            final EditText input = new EditText(getThis);
+            input.setText(searchArtistString);
+            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
+
+            // Set up the buttons
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                searchArtistString = input.getText().toString();
+                //SearchActivity.artistName=artist;
+                fillListviewWithValues = new FillListviewWithValues() {
+
+                    @Override
+                    public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
+                        spotify.searchArtists(searchArtistString.trim(), new Callback<ArtistsPager>() {
+
+                            @Override
+                            public void success(ArtistsPager artistsPager, Response response) {
+                                String id = "";
+                                int max = 10000;
+                                Image image1 = null;
+                                for (Artist artist : artistsPager.artists.items) {
+                                    String name = artist.name;
+                                    Log.v("samba", "artist found: " + name);
+                                    if (name.startsWith("The "))
+                                        name = name.substring(4);
+
+                                    SearchItem si = new SearchItem();
+                                    si.artist = name;
+                                    si.title = "";
+                                    si.id = artist.id;
+                                    if (artist.images.size() > 0)
+                                        si.imageid = artist.images.get(0).url;
+                                    else
+                                        si.imageid = "";
+                                    newAlbums.add(si);
+
+
+                                }
+                                SearchActivity.getThis.notifyChange();
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+
+                            }
+                        });
+                    }
+
+                    ;
+
+                    public void processAlbum(SearchItem album) {
+                        //listAlbumsForArtist(album.artist);
+                        Image im = new Image();
+                        try {
+                            im.url = album.images.get(0).url;
+                        } catch (Exception e) {
+                        }
+                        listAlbumsForArtistId(album.id, im, album.artist, new SpotifyApi());
+                    }
+
+                    ;
+                };
+
+                Intent intent = new Intent(MainActivity.getThis, SearchActivity.class);
+                startActivity(intent);
+
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
+
+    public void searchAlbum() {
+        try {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
+            builder.setTitle("Search album");
+
+            // Set up the input
+            final EditText input = new EditText(getThis);
+            input.setText(searchAlbumString);
+            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
+
+            // Set up the buttons
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                searchAlbumString = input.getText().toString();
+                //SearchActivity.artistName=artist;
+                fillListviewWithValues = new FillListviewWithValues() {
+
+                    @Override
+                    public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
+                        spotify.searchAlbums(searchAlbumString.trim(), new Callback<AlbumsPager>() {
+
+                            @Override
+                            public void success(AlbumsPager albumsPager, Response response) {
+                                for (AlbumSimple album : albumsPager.albums.items) {
+                                    String name = album.name;
+
+                                    SearchItem si = new SearchItem();
+                                    si.artist = name;
+                                    si.title = "";
+                                    si.id = album.id;
+                                    si.imageid = album.images.get(0).url;
+                                    newAlbums.add(si);
+                                }
+                                SearchActivity.getThis.notifyChange();
+
+                            }
+
+                            @Override
+                            public void failure(RetrofitError error) {
+
+                            }
+                        });
+                    }
+
+                    ;
+
+                    @Override
+                    public void processAlbum(SearchItem album) {
+                        getAlbumtracksFromSpotify(album.id, album.artist, getThis, albumAdapter, albumsListview);
+                    }
+
+                    ;
+
+                };
+
+                Intent intent = new Intent(MainActivity.getThis, SearchActivity.class);
+                startActivity(intent);
+
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
 
     public static void addAlbumStatic(int counter, PlanetAdapter albumAdapter, ListView albumsListview) {
         artistName = tracksPlaylist.get(counter).artists.get(0).name;

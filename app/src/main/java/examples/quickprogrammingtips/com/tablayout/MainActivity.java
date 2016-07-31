@@ -461,6 +461,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         PopupMenu playMenu = new PopupMenu(viewHeader.getContext(), viewHeader);
 
         playMenu.getMenu().add("Spotify Playlist");
+        playMenu.getMenu().add("Search artist");
+        playMenu.getMenu().add("Search album");
         playMenu.getMenu().add("Play");
         playMenu.show();
         playMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -468,7 +470,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             public boolean onMenuItemClick(MenuItem item) {
                 String title = item.getTitle().toString();
                 //nextSpotifyPlaying,previousSpotifyPlaying,stopSpotifyPlaying,playPauseSpotify,playSpotify()
+                if ((title.equals("Search artist"))) {
+                    SpotifyActivity.nextCommand="search artist";
+                    startPlaylistSpotify();mDrawerLayout.closeDrawers();
+                }else
                 if ((title.equals("Spotify Playlist"))) {
+                    startPlaylistSpotify();mDrawerLayout.closeDrawers();
+                }else
+                if ((title.equals("Search album"))) {
+                    SpotifyActivity.nextCommand="search album";
                     startPlaylistSpotify();mDrawerLayout.closeDrawers();
                 }else
                 if ((title.equals("Play"))) {
@@ -816,7 +826,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         }
         Log.v("samba", "in hoofd-activity");
         Log.v("samba", "requestcode:" + resultCode);
-        if (resultCode == 23) return;
+        if (resultCode == 23) {Log.v("samba", "get favorites");
+            SelectFragment.getThis.getFavorites();return;}
         Log.v("samba", "in hoofd-activity erna");
         {
             if (resultCode == Activity.RESULT_OK) {

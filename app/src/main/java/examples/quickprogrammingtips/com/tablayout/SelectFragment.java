@@ -262,6 +262,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
             }
         });
+        if (!(favoritespotifyListAdapter==null))
+        favoritespotifyListAdapter.notifyDataSetChanged();
 
 
     }
@@ -339,8 +341,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         else {
             if (id.equals("edit")) {
                 EditFavoriteActivity.editFavorite(getActivity(),favorite);
-
-
+                //getFavorites();
             } else if (id.equals("delete")) {
                 if (favorite.getRecord() != null) {
 
@@ -405,6 +406,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         Log.v("samba","in fragment");
         if (requestCode == STATIC_RESULT_SELECT) //check if the request code is the one you've sent
         {
+            Log.v("samba","result ok");
             if (resultCode == Activity.RESULT_OK)
             {
                 // this is successful mission, do with it.

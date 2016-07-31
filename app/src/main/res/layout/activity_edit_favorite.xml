@@ -8,14 +8,24 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".EditFavoriteActivity">
+    tools:context=".EditFavoriteActivity"
+    android:weightSum="1">
 
     <!-- Login progress -->
+    <Button
+        android:id="@+id/save_button"
+        style="?android:textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Save"
+        android:textStyle="bold" />
 
     <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="418dp"
+        android:layout_weight="0.67">
 
         <LinearLayout
             android:id="@+id/edit_favorite"
@@ -70,14 +80,6 @@
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"></RadioGroup>
-            <Button
-                android:id="@+id/save_button"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Save"
-                android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>

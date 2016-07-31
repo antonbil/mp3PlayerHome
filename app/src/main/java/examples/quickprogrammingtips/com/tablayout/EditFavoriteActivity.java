@@ -37,6 +37,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_favorite);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         // Set up the login form.
         url = (EditText) findViewById(R.id.url);
         sortkey = (EditText) findViewById(R.id.sortkey);
@@ -102,6 +103,9 @@ public class EditFavoriteActivity extends AppCompatActivity{
                     Intent i = getIntent(); //get the intent that has been called, i.e you did called with startActivityForResult();
                     //i.putExtras(b);//put some data, in a bundle
                     setResult(23, i);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
+                    try{
+                        SelectFragment.getThis.getFavorites();
+                    }catch (Exception e){}
                     finish(); //finish the startNewOne activity
                 } catch (Exception e) {
                     Toast.makeText(getBaseContext(), "Error!", Toast.LENGTH_SHORT).show();
