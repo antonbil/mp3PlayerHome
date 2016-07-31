@@ -164,6 +164,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private SongItems songItems;
     public static final ArrayList<String> CATEGORY_IDS = new ArrayList<>(Arrays.asList("electronic", "progressive", "alternative", "rnb", "soul", "singer-songwriter",
             "classical","acoustic", "ambient", "americana", "blues", "country", "techno", "shoegaze", "Hip-Hop", "funk", "jazz", "rock", "folk"));
+    private String searchString="";
 
     public void checkAppMemory(){
         // Get app memory info
@@ -847,9 +848,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                                                                                 @Override
                                                                                 public void addToFavorites(NewAlbum newAlbum) {
-                                                                                    FavoriteRecord fv = new FavoriteRecord(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""),
-                                                                                            newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
-                                                                                    fv.save();
+                                                                                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
                                                                                 }
 
                                                                             };
@@ -893,60 +892,58 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                                                                     // Set up the input
                                                                     final EditText input = new EditText(getThis);
+                                                                    input.setText(searchString);
                                                                     // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                                                                     input.setInputType(InputType.TYPE_CLASS_TEXT);
                                                                     builder.setView(input);
 
                                                                     // Set up the buttons
-                                                                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            final String artist = input.getText().toString();
-                                                                            //SearchActivity.artistName=artist;
-                                                                            fillListviewWithValues = new FillListviewWithValues() {
+                                                                    builder.setPositiveButton("OK", (dialog, which) -> {
+                                                                        searchString = input.getText().toString();
+                                                                        //SearchActivity.artistName=artist;
+                                                                        fillListviewWithValues = new FillListviewWithValues() {
 
-                                                                                @Override
-                                                                                public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
-                                                                                    spotify.searchAlbums(artist.trim(), new Callback<AlbumsPager>() {
+                                                                            @Override
+                                                                            public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
+                                                                                spotify.searchAlbums(searchString.trim(), new Callback<AlbumsPager>() {
 
-                                                                                        @Override
-                                                                                        public void success(AlbumsPager albumsPager, Response response) {
-                                                                                            for (AlbumSimple album : albumsPager.albums.items) {
-                                                                                                String name = album.name;
+                                                                                    @Override
+                                                                                    public void success(AlbumsPager albumsPager, Response response) {
+                                                                                        for (AlbumSimple album : albumsPager.albums.items) {
+                                                                                            String name = album.name;
 
-                                                                                                SearchItem si = new SearchItem();
-                                                                                                si.artist = name;
-                                                                                                si.title = "";
-                                                                                                si.id = album.id;
-                                                                                                si.imageid = album.images.get(0).url;
-                                                                                                newAlbums.add(si);
-                                                                                            }
-                                                                                            SearchActivity.getThis.notifyChange();
-
+                                                                                            SearchItem si = new SearchItem();
+                                                                                            si.artist = name;
+                                                                                            si.title = "";
+                                                                                            si.id = album.id;
+                                                                                            si.imageid = album.images.get(0).url;
+                                                                                            newAlbums.add(si);
                                                                                         }
+                                                                                        SearchActivity.getThis.notifyChange();
 
-                                                                                        @Override
-                                                                                        public void failure(RetrofitError error) {
+                                                                                    }
 
-                                                                                        }
-                                                                                    });
-                                                                                }
+                                                                                    @Override
+                                                                                    public void failure(RetrofitError error) {
 
-                                                                                ;
+                                                                                    }
+                                                                                });
+                                                                            }
 
-                                                                                @Override
-                                                                                public void processAlbum(SearchItem album) {
-                                                                                    getAlbumtracksFromSpotify(album.id, album.artist, getThis, albumAdapter, albumsListview);
-                                                                                }
+                                                                            ;
 
-                                                                                ;
+                                                                            @Override
+                                                                            public void processAlbum(SearchItem album) {
+                                                                                getAlbumtracksFromSpotify(album.id, album.artist, getThis, albumAdapter, albumsListview);
+                                                                            }
 
-                                                                            };
+                                                                            ;
 
-                                                                            Intent intent = new Intent(MainActivity.getThis, SearchActivity.class);
-                                                                            startActivity(intent);
+                                                                        };
 
-                                                                        }
+                                                                        Intent intent = new Intent(MainActivity.getThis, SearchActivity.class);
+                                                                        startActivity(intent);
+
                                                                     });
                                                                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                                                         @Override
@@ -968,74 +965,72 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                                                                     // Set up the input
                                                                     final EditText input = new EditText(getThis);
+                                                                    input.setText(searchString);
                                                                     // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                                                                     input.setInputType(InputType.TYPE_CLASS_TEXT);
                                                                     builder.setView(input);
 
                                                                     // Set up the buttons
-                                                                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                                        @Override
-                                                                        public void onClick(DialogInterface dialog, int which) {
-                                                                            final String artist = input.getText().toString();
-                                                                            //SearchActivity.artistName=artist;
-                                                                            fillListviewWithValues = new FillListviewWithValues() {
+                                                                    builder.setPositiveButton("OK", (dialog, which) -> {
+                                                                        searchString = input.getText().toString();
+                                                                        //SearchActivity.artistName=artist;
+                                                                        fillListviewWithValues = new FillListviewWithValues() {
 
-                                                                                @Override
-                                                                                public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
-                                                                                    spotify.searchArtists(artist.trim(), new Callback<ArtistsPager>() {
+                                                                            @Override
+                                                                            public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
+                                                                                spotify.searchArtists(searchString.trim(), new Callback<ArtistsPager>() {
 
-                                                                                        @Override
-                                                                                        public void success(ArtistsPager artistsPager, Response response) {
-                                                                                            String id = "";
-                                                                                            int max = 10000;
-                                                                                            Image image = null;
-                                                                                            for (Artist artist : artistsPager.artists.items) {
-                                                                                                String name = artist.name;
-                                                                                                Log.v("samba", "artist found: " + name);
-                                                                                                if (name.startsWith("The "))
-                                                                                                    name = name.substring(4);
+                                                                                    @Override
+                                                                                    public void success(ArtistsPager artistsPager, Response response) {
+                                                                                        String id = "";
+                                                                                        int max = 10000;
+                                                                                        Image image1 = null;
+                                                                                        for (Artist artist : artistsPager.artists.items) {
+                                                                                            String name = artist.name;
+                                                                                            Log.v("samba", "artist found: " + name);
+                                                                                            if (name.startsWith("The "))
+                                                                                                name = name.substring(4);
 
-                                                                                                SearchItem si = new SearchItem();
-                                                                                                si.artist = name;
-                                                                                                si.title = "";
-                                                                                                si.id = artist.id;
-                                                                                                if (artist.images.size() > 0)
-                                                                                                    si.imageid = artist.images.get(0).url;
-                                                                                                else
-                                                                                                    si.imageid = "";
-                                                                                                newAlbums.add(si);
+                                                                                            SearchItem si = new SearchItem();
+                                                                                            si.artist = name;
+                                                                                            si.title = "";
+                                                                                            si.id = artist.id;
+                                                                                            if (artist.images.size() > 0)
+                                                                                                si.imageid = artist.images.get(0).url;
+                                                                                            else
+                                                                                                si.imageid = "";
+                                                                                            newAlbums.add(si);
 
-
-                                                                                            }
-                                                                                            SearchActivity.getThis.notifyChange();
-                                                                                        }
-
-                                                                                        @Override
-                                                                                        public void failure(RetrofitError error) {
 
                                                                                         }
-                                                                                    });
-                                                                                }
-
-                                                                                ;
-
-                                                                                public void processAlbum(SearchItem album) {
-                                                                                    //listAlbumsForArtist(album.artist);
-                                                                                    Image im = new Image();
-                                                                                    try {
-                                                                                        im.url = album.images.get(0).url;
-                                                                                    } catch (Exception e) {
+                                                                                        SearchActivity.getThis.notifyChange();
                                                                                     }
-                                                                                    listAlbumsForArtistId(album.id, im, album.artist, new SpotifyApi());
+
+                                                                                    @Override
+                                                                                    public void failure(RetrofitError error) {
+
+                                                                                    }
+                                                                                });
+                                                                            }
+
+                                                                            ;
+
+                                                                            public void processAlbum(SearchItem album) {
+                                                                                //listAlbumsForArtist(album.artist);
+                                                                                Image im = new Image();
+                                                                                try {
+                                                                                    im.url = album.images.get(0).url;
+                                                                                } catch (Exception e) {
                                                                                 }
+                                                                                listAlbumsForArtistId(album.id, im, album.artist, new SpotifyApi());
+                                                                            }
 
-                                                                                ;
-                                                                            };
+                                                                            ;
+                                                                        };
 
-                                                                            Intent intent = new Intent(MainActivity.getThis, SearchActivity.class);
-                                                                            startActivity(intent);
+                                                                        Intent intent = new Intent(MainActivity.getThis, SearchActivity.class);
+                                                                        startActivity(intent);
 
-                                                                        }
                                                                     });
                                                                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                                                         @Override
@@ -1137,15 +1132,21 @@ public class SpotifyActivity extends AppCompatActivity implements
         String name = tracksPlaylist.get(counter).artists.get(0).name;
         String album = tracksPlaylist.get(counter).album.name;
         //Log.v("samba","add "+url+name+"-"+album);
+        String description = name + "-" + album;
+        String newalbum = Favorite.NEWALBUM;
+        newFavorite(url, description, newalbum);
+    }
+
+    public static void newFavorite(String url, String description, String newalbum) {
         FavoriteRecord fv=new FavoriteRecord(url,
-                name +"-"+ album,Favorite.NEWALBUM);
-        fv.save();
+                description, newalbum);
+        long a = fv.save();
+        Log.v("samba","added to favorites."+description);
+        EditFavoriteActivity.editFavorite(MainActivity.getThis, new Favorite(fv.url,description,description,""),a);
     }
 
     public static void addAlbumToFavorites(String url, String description) {
-        FavoriteRecord fv = new FavoriteRecord(url,
-                description, Favorite.NEWALBUM);
-        fv.save();
+        newFavorite(url, description, Favorite.NEWALBUM);
     }
 
     public static void removeAlbum(PlanetAdapter albumAdapter, int counter, ListView albumsListview, AppCompatActivity getThis) {

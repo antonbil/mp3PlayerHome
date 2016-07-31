@@ -13,7 +13,7 @@ import java.util.Collections;
 
 import examples.quickprogrammingtips.com.tablayout.adapters.FileListAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.CustomComparator;
-import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
+import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.HistoryListview;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
@@ -163,8 +163,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
             }
             else  if (id==getString(R.string.addtofavorites_filelist)){
                 String[] paths=path.split("/");
-                FavoriteRecord fv=new FavoriteRecord(path, paths[paths.length-1], "2nd edition");
-                fv.save();
+                SpotifyActivity.newFavorite(path, paths[paths.length-1], Favorite.NEWALBUM);
             }else {
 
                 if (path.contains("FamilyLibrary"))

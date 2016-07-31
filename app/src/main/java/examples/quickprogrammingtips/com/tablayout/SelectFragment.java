@@ -338,15 +338,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         }
         else {
             if (id.equals("edit")) {
-                if (favorite.getRecord() != null) {
-                    Intent intent = new Intent(getActivity(), EditFavoriteActivity.class);
-                    intent.putExtra("id", (int) (favorite.getRecord().getId() + 0));
-                    intent.putExtra("url", favorite.getRecord().url);
-                    intent.putExtra("description", favorite.getDescription());
-                    intent.putExtra("category", favorite.getCategoryField());
-                    intent.putExtra("sortkey", favorite.getSortkey());
-                    startActivityForResult(intent, STATIC_RESULT_SELECT);
-                }
+                EditFavoriteActivity.editFavorite(getActivity(),favorite);
 
 
             } else if (id.equals("delete")) {
@@ -405,6 +397,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         }
 
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

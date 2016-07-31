@@ -1,8 +1,10 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -26,6 +28,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
     private EditText url;
     private EditText sortkey;
     private EditText description;
+    static final int STATIC_RESULT_SELECT =3; //positive > 0 integer.
     //private EditText category;
     ViewGroup vwgroup;
     private ArrayList<RadioButton> radioButtons=new ArrayList<>();
@@ -111,6 +114,23 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
 
     }
+    public static void editFavorite(Activity a, Favorite favorite) {
 
+        if (favorite.getRecord() != null) {
+            editFavorite(a,favorite,favorite.getRecord().getId() + 0);
+        } else {
+            Log.v("samba","getRecord not found");
+        }
+    }
+
+    public static void editFavorite(Activity a, Favorite favorite, long l) {
+        Intent intent = new Intent(a, EditFavoriteActivity.class);
+        intent.putExtra("id", (int) (l));
+        intent.putExtra("url", favorite.getUri());
+        intent.putExtra("description", favorite.getDescription());
+        intent.putExtra("category", favorite.getCategoryField());
+        intent.putExtra("sortkey", favorite.getSortkey());
+        a.startActivityForResult(intent, STATIC_RESULT_SELECT);
+    }
 }
 
