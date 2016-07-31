@@ -59,18 +59,6 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                             if (s.toLowerCase().contains(firstLetterString)) suggestions.add(s);
                         }
                         String start=(""+ firstLetter).toLowerCase();
-                        Collections.sort(suggestions, (s1, s2) -> {
-                            s1=s1.toLowerCase();s2=s2.toLowerCase();
-                            try {//if does not start with letter, remove first name
-                                if (!s1.startsWith(start))
-                                    s1 = s1.split(" ")[1];
-                                if (!s2.startsWith(start))
-                                    s2 = s2.split(" ")[1];
-                                return s1.compareTo(s2);
-                            } catch (Exception e){
-                                return s1.compareTo(s2);
-                            }
-                        });
                         filterResults.values = suggestions;
                         filterResults.count = suggestions.size();
                     }
@@ -116,6 +104,19 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
         } catch (Exception e) {
             e.printStackTrace();
         }
+        String start=firstLetter;
+        Collections.sort(ar, (s1, s2) -> {
+            s1=s1.toLowerCase();s2=s2.toLowerCase();
+            try {//if does not start with letter, remove first name
+                if (!s1.startsWith(start))
+                    s1 = s1.split(" ")[1];
+                if (!s2.startsWith(start))
+                    s2 = s2.split(" ")[1];
+                return s1.compareTo(s2);
+            } catch (Exception e){
+                return s1.compareTo(s2);
+            }
+        });
         return ar;
     }
 
