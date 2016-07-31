@@ -60,6 +60,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAdapter;
+import examples.quickprogrammingtips.com.tablayout.adapters.InstantAutoComplete;
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
@@ -165,7 +167,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private SongItems songItems;
     public static final ArrayList<String> CATEGORY_IDS = new ArrayList<>(Arrays.asList("electronic", "progressive", "alternative", "rnb", "soul", "singer-songwriter",
             "classical","acoustic", "ambient", "americana", "blues", "country", "techno", "shoegaze", "Hip-Hop", "funk", "jazz", "rock", "folk"));
-    private static String searchArtistString ="";
+    public static ArrayList<String> searchArtistString =new ArrayList<>();
     private static String searchAlbumString ="";
 
     public void checkAppMemory(){
@@ -985,21 +987,30 @@ public class SpotifyActivity extends AppCompatActivity implements
             builder.setTitle("Search artist");
 
             // Set up the input
-            final EditText input = new EditText(getThis);
-            input.setText(searchArtistString);
+            ArtistAutoCompleteAdapter adapter = new ArtistAutoCompleteAdapter(this,
+                    android.R.layout.simple_dropdown_item_1line);
+            final InstantAutoComplete input = new InstantAutoComplete(getThis);
+            //input.setText(searchArtistString);
+            input.setAdapter(adapter);
+            input.setThreshold(0);
+            input.setDropDownHeight(400);
             // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
             input.setInputType(InputType.TYPE_CLASS_TEXT);
             builder.setView(input);
 
             // Set up the buttons
             builder.setPositiveButton("OK", (dialog, which) -> {
-                searchArtistString = input.getText().toString();
-                //SearchActivity.artistName=artist;
+                String artistString = input.getText().toString();
+                boolean add=true;
+                for (String s:searchArtistString)
+                    if (s.equals(artistString))add=false;
+                if (add)
+                    searchArtistString.add(artistString);
                 fillListviewWithValues = new FillListviewWithValues() {
 
                     @Override
                     public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
-                        spotify.searchArtists(searchArtistString.trim(), new Callback<ArtistsPager>() {
+                        spotify.searchArtists(artistString.trim(), new Callback<ArtistsPager>() {
 
                             @Override
                             public void success(ArtistsPager artistsPager, Response response) {
