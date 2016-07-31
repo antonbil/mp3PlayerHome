@@ -7,6 +7,8 @@ import android.widget.Filter;
 import android.widget.Filterable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
 import examples.quickprogrammingtips.com.tablayout.tools.NetworkShare;
@@ -44,7 +46,7 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                     FilterResults filterResults = new FilterResults();
                     Log.v("samba","constraint:"+constraint);
                     if ((constraint != null)&&(constraint.length()>0)) {
-                        String cs=constraint.toString();
+                        String cs=constraint.toString().toLowerCase();
                         if (constraint.charAt(0)!=c) {
                             Log.v("samba","get array"+constraint.charAt(0));
                             // Retrieve the autocomplete results.
@@ -57,6 +59,22 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                         for (String s:resultList){
                             if (s.toLowerCase().contains(cs))temp.add(s);
                         }
+                        String start=(""+c).toLowerCase();
+                        Collections.sort(temp, new Comparator<String>() {
+                            @Override
+                            public int compare(String s1, String s2) {
+                                s1=s1.toLowerCase();s2=s2.toLowerCase();
+                                try {
+                                    if (!s1.startsWith(start))
+                                        s1 = s1.split(" ")[1];
+                                    if (!s2.startsWith(start))
+                                        s2 = s2.split(" ")[1];
+                                    return s1.compareToIgnoreCase(s2);
+                                } catch (Exception e){
+                                    return s1.compareToIgnoreCase(s2);
+                                }
+                            }
+                        });
                         filterResults.values = temp;
                         filterResults.count = temp.size();
                     }
@@ -94,7 +112,7 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                 h=h.replace("/","");
                 boolean add=true;
                 for (String s1:ar)
-                if (s1.equals(h)) add=false;
+                if (s1.equals(h) || h.startsWith(".")) add=false;
                 if (add)
                     ar.add(h);
             }
