@@ -1,14 +1,12 @@
 package examples.quickprogrammingtips.com.tablayout.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
 import examples.quickprogrammingtips.com.tablayout.tools.NetworkShare;
@@ -16,12 +14,14 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 
 /**
+ * ArtistAutoCompleteAdapter returns artist-list retrieved from samba-share
  * Created by anton on 31-7-16.
  */
 public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
-        private ArrayList<String> resultList;
-    ArrayList<String> temp=new ArrayList<>();
-    private char c=' ';
+    public static final String FAMILYMUSIC = "smb://192.168.2.8/FamilyLibrary/FamilyMusic/";
+    private ArrayList<String> artistList;
+    private ArrayList<String> suggestions =new ArrayList<>();
+    private char firstLetter =' ';
 
         public ArtistAutoCompleteAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
@@ -29,64 +29,57 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
 
         @Override
         public int getCount() {
-            return temp.size();
+            return suggestions.size();
         }
 
         @Override
         public String getItem(int index) {
-            return temp.get(index);
+            return suggestions.get(index);
         }
 
         @Override
         public Filter getFilter() {
-            Filter filter = new Filter() {
+            return new Filter() {
                 @Override
 
                 protected FilterResults performFiltering(CharSequence constraint) {
                     FilterResults filterResults = new FilterResults();
-                    Log.v("samba","constraint:"+constraint);
                     if ((constraint != null)&&(constraint.length()>0)) {
-                        String cs=constraint.toString().toLowerCase();
-                        if (constraint.charAt(0)!=c) {
-                            Log.v("samba","get array"+constraint.charAt(0));
-                            // Retrieve the autocomplete results.
-                            resultList = autocomplete(cs);
-                            c=constraint.charAt(0);
+                        String firstLetterString=constraint.toString().toLowerCase();
+                        //if first letter changes, retrieve results
+                        if (constraint.charAt(0)!= firstLetter) {
+                            // Retrieve the  results.
+                            artistList = retrieveFromSambaShare(firstLetterString);
+                            firstLetter =constraint.charAt(0);
                         }
 
                         // Assign the data to the FilterResults
-                        temp=new ArrayList<>();
-                        for (String s:resultList){
-                            if (s.toLowerCase().contains(cs))temp.add(s);
+                        suggestions =new ArrayList<>();
+                        for (String s: artistList){
+                            if (s.toLowerCase().contains(firstLetterString)) suggestions.add(s);
                         }
-                        String start=(""+c).toLowerCase();
-                        Collections.sort(temp, new Comparator<String>() {
-                            @Override
-                            public int compare(String s1, String s2) {
-                                s1=s1.toLowerCase();s2=s2.toLowerCase();
-                                try {
-                                    if (!s1.startsWith(start))
-                                        s1 = s1.split(" ")[1];
-                                    if (!s2.startsWith(start))
-                                        s2 = s2.split(" ")[1];
-                                    return s1.compareToIgnoreCase(s2);
-                                } catch (Exception e){
-                                    return s1.compareToIgnoreCase(s2);
-                                }
+                        String start=(""+ firstLetter).toLowerCase();
+                        Collections.sort(suggestions, (s1, s2) -> {
+                            s1=s1.toLowerCase();s2=s2.toLowerCase();
+                            try {//if does not start with letter, remove first name
+                                if (!s1.startsWith(start))
+                                    s1 = s1.split(" ")[1];
+                                if (!s2.startsWith(start))
+                                    s2 = s2.split(" ")[1];
+                                return s1.compareTo(s2);
+                            } catch (Exception e){
+                                return s1.compareTo(s2);
                             }
                         });
-                        filterResults.values = temp;
-                        filterResults.count = temp.size();
+                        filterResults.values = suggestions;
+                        filterResults.count = suggestions.size();
                     }
                     else {
-                        Log.v("samba","default:");
-                        temp= SpotifyActivity.searchArtistString;
-                        if (temp.size()>0)Log.v("samba","default:"+temp.get(0));
-                        filterResults.values = temp;
-                        filterResults.count = temp.size();
+                        suggestions = SpotifyActivity.searchArtistString;
+                        filterResults.values = suggestions;
+                        filterResults.count = suggestions.size();
 
                     }
-                    //searchArtistString
                     return filterResults;
                 }
 
@@ -99,31 +92,31 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                         notifyDataSetInvalidated();
                     }
                 }};
-            return filter;
         }
 
-    ArrayList<String> autocomplete(String s){
+    ArrayList<String> retrieveFromSambaShare(String firstLetter){
+        firstLetter=firstLetter.toLowerCase().substring(0,1);
+        //authentication
         NtlmPasswordAuthentication auth = NetworkShare.getNtlmPasswordAuthentication();
         ArrayList<String>ar=new ArrayList<>();
         try {
-            SmbFile dir = new SmbFile("smb://192.168.2.8/FamilyLibrary/FamilyMusic/"+s.toLowerCase().substring(0,1)+"/", auth);
+            //retrieve artist-list from samba-share
+            SmbFile dir = new SmbFile(FAMILYMUSIC +firstLetter+"/", auth);
             for (SmbFile f : dir.listFiles()) {
-                String h=f.getName().split("-")[0];
-                h=h.replace("/","");
+                String h=f.getName().split("-")[0];//if album: artist is first part before -
+                h=h.replace("/","");//remove trailing /
+                //only add if not already in list
                 boolean add=true;
                 for (String s1:ar)
-                if (s1.equals(h) || h.startsWith(".")) add=false;
+                    if (s1.equals(h) || h.startsWith(".")) add=false;
                 if (add)
                     ar.add(h);
             }
 
-            } catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return ar;
-        /*return new ArrayList<String>(
-                Arrays.asList(
-                "Abbea", "King Crimson", "Beatles", "Rolling Stones", "Radiohead"));*/
     }
 
 }
