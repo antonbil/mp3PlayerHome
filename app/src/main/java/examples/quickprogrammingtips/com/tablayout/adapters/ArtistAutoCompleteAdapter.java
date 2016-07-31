@@ -58,7 +58,6 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                         for (String s: artistList){
                             if (s.toLowerCase().contains(firstLetterString)) suggestions.add(s);
                         }
-                        String start=(""+ firstLetter).toLowerCase();
                         filterResults.values = suggestions;
                         filterResults.count = suggestions.size();
                     }
@@ -86,7 +85,7 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
         firstLetter=firstLetter.toLowerCase().substring(0,1);
         //authentication
         NtlmPasswordAuthentication auth = NetworkShare.getNtlmPasswordAuthentication();
-        ArrayList<String>ar=new ArrayList<>();
+        ArrayList<String>artists=new ArrayList<>();
         try {
             //retrieve artist-list from samba-share
             SmbFile dir = new SmbFile(FAMILYMUSIC +firstLetter+"/", auth);
@@ -95,17 +94,18 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                 h=h.replace("/","");//remove trailing /
                 //only add if not already in list
                 boolean add=true;
-                for (String s1:ar)
+                for (String s1:artists)
                     if (s1.equals(h) || h.startsWith(".")) add=false;
                 if (add)
-                    ar.add(h);
+                    artists.add(h);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //sort the artist-list
         String start=firstLetter;
-        Collections.sort(ar, (s1, s2) -> {
+        Collections.sort(artists, (s1, s2) -> {
             s1=s1.toLowerCase();s2=s2.toLowerCase();
             try {//if does not start with letter, remove first name
                 if (!s1.startsWith(start))
@@ -117,7 +117,7 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                 return s1.compareTo(s2);
             }
         });
-        return ar;
+        return artists;
     }
 
 }
