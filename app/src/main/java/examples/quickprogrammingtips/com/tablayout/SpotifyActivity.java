@@ -169,6 +169,8 @@ public class SpotifyActivity extends AppCompatActivity implements
             "classical","acoustic", "ambient", "americana", "blues", "country", "techno", "shoegaze", "Hip-Hop", "funk", "jazz", "rock", "folk"));
     public static ArrayList<String> searchArtistString =new ArrayList<>();
     private static String searchAlbumString ="";
+    private static int totalTime;
+    private static int currentTime;
 
     public void checkAppMemory(){
         // Get app memory info
@@ -1223,10 +1225,19 @@ public class SpotifyActivity extends AppCompatActivity implements
             Log.v("samba", Log.getStackTraceString(e));
         }
     }
-
+//
+    public static void seekPositionSpotify(String ipAddress, int position) {
+        //Log.v("samba","new position:"+position);
+        try {
+            getJsonStringFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.seek\", \"params\": {\"time_position\":%s}}",position),
+                    ipAddress);
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
     public static void setVolumeSpotify(String ipAddress, int vol) {
         //int vol=getVolumeSpotify(ipAddress)-10;
-        Log.v("samba","new volume:"+vol);
+        //Log.v("samba","new volume:"+vol);
         try {
             getJsonStringFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"method\": \"core.mixer.set_volume\", \"params\": {\"volume\":%s}}",vol),
                     ipAddress);
@@ -2039,7 +2050,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 if (isPlaying()) {//(speed.doubleValue() > 0) {
                      String[] trid1 = getCurrentTrack();//
                     String trid=trid1[0];
-                    final int totalTime=Integer.parseInt(trid1[1])/1000;
+                    totalTime = Integer.parseInt(trid1[1])/1000;
                     if (trid.length() > 0) {
                         //currentTrack=0;
                         for (int i = 0; i < tracksPlaylist.size(); i++) {
@@ -2086,10 +2097,11 @@ public class SpotifyActivity extends AppCompatActivity implements
                                 }
                             }
 
-                        final int timeint = getTime();//hours * 60 * 60 + mins * 60 + secs;
+                        //hours * 60 * 60 + mins * 60 + secs;
+                        currentTime = getTime();
                         getThis.runOnUiThread(new Runnable() {
                             public void run() {
-                                time.setText(niceTime(timeint));
+                                time.setText(niceTime(currentTime));
                                 int ttimeint = totalTime;// thours * 60 * 60 + tmins * 60 + tsecs;
                                 totaltime.setText(niceTime(ttimeint));
                                 tvName.setText(t.name);
@@ -2269,6 +2281,53 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
         }
+    public static void seekPlay(AppCompatActivity getThis) {
+        final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(getThis);
+
+        alert.setTitle("Seek");
+
+        LinearLayout linear = new LinearLayout(getThis);
+
+        linear.setOrientation(LinearLayout.VERTICAL);
+        final TextView text = new TextView(getThis);
+        text.setPadding(10, 10, 10, 10);
+
+        Integer position = currentTime;
+        text.setText(niceTime(position));
+        SeekBar seek = new SeekBar(getThis);
+
+        seek.setMax(totalTime);
+        seek.setProgress(position);
+        seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                text.setText(niceTime(progress));
+                seekPositionSpotify(ipAddress,progress*1000);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        linear.addView(seek);
+        linear.addView(text);
+
+        alert.setView(linear);
+
+
+        alert.setPositiveButton("Ok", (dialog, id) -> {
+            dialog.dismiss();
+        });
+
+        alert.show();
+    }
     ;
     public static void setVolume(AppCompatActivity getThis) {
         final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(getThis);
@@ -2338,6 +2397,8 @@ sub.add(groupId, MENU_SORT_BY_ADDRESS, Menu.NONE, getText(R.string.menu_sort_by_
         playMenu.getMenu().add("Previous");
         playMenu.getMenu().add("Next");
         playMenu.getMenu().add("Volume");
+        playMenu.getMenu().add("Position");
+
         /*playMenu.getMenu().add("Vol-");
         playMenu.getMenu().add("Vol+");
         playMenu.getMenu().add("Vol--");
@@ -2362,6 +2423,9 @@ sub.add(groupId, MENU_SORT_BY_ADDRESS, Menu.NONE, getText(R.string.menu_sort_by_
                 }else
                 if ((title.equals("Previous"))) {
                     previousSpotifyPlaying(ipAddress);
+                }else
+                if ((title.equals("Position"))) {
+                    seekPlay(getThis1);
                 }else
                 if ((title.equals("Volume"))) {
                     setVolume(getThis1);
