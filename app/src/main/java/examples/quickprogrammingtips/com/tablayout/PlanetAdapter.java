@@ -74,6 +74,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 // Now we can fill the layout with the right values
         holder = new ViewHolder();
         holder.pos = (TextView) convertView.findViewById(R.id.number);
+
         holder.image = (ImageView) convertView.findViewById(R.id.spotifylistimageView);
         holder.name = (TextView) convertView.findViewById(R.id.name);
         //TextView tv = (TextView) convertView.findViewById(R.id.name);
@@ -122,6 +123,10 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         else if ((position & 1) == 0) {
             convertView.setBackgroundColor(Color.rgb(57, 57, 57));
         } else convertView.setBackgroundColor(Color.rgb(64, 64, 64));
+        if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")&&!displayCurrentTrack){
+            holder.name.setTextColor(Color.YELLOW);
+        } else
+            holder.name.setTextColor(Color.WHITE);
 
         holder.pos.setText("" + (position + 1));
         convertView.setOnLongClickListener(new AdapterView.OnLongClickListener() {

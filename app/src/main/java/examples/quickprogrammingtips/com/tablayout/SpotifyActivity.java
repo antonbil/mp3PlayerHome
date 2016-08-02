@@ -531,27 +531,15 @@ public class SpotifyActivity extends AppCompatActivity implements
                 if (albumVisible)
                     try{
                         String s = albumIds.get(counter);
-                        if (s.startsWith(MPD)){
-                            String path=s.replace(MPD,"");
-                            Log.v("samba","id:"+path);
-                            //new DatabaseCommand(MainActivity.getThis.getLogic().getMpc(),"lsinfo \""+path+"\"",MainActivity.getThis, false).run();
-                            ArrayList<String>commands=new ArrayList<>();
-                            path = Logic.removeSlashAtEnd(path);
-                            String s1 = "add \""+path+"\"";
-                            //Log.v("samba","command:"+s);
-
-                            commands.add(s1);
-                            Logic logic = MainActivity.getThis.getLogic();
-                            String id=getThis.getString(R.string.addandplay_filelist);
-                            int toplay = logic.getToplay(id);
-                            logic.getMpc().enqueCommands(commands);
-                            logic.playWithDelay(id, toplay);
+                        boolean clear=false;
+                        boolean ret=false;
+                        boolean play=true;
+                        ret = playMpdAlbum(s, clear, ret, play);
+                        if (!ret)
+                            getAlbumtracksFromSpotify(counter);
 
 
-                        } else
 
-
-                        getAlbumtracksFromSpotify(counter);
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
             }
@@ -1006,6 +994,31 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
             nextCommand="";
         }
+
+    public boolean playMpdAlbum(String s, boolean clear, boolean ret, boolean play) {
+        if (s.startsWith(MPD)){
+            ret=true;
+            String path=s.replace(MPD,"");
+            Log.v("samba","id:"+path);
+            ArrayList<String> commands=new ArrayList<>();
+            if (clear)
+                commands.add("clear");
+
+            path = Logic.removeSlashAtEnd(path);
+            String s1 = "add \""+path+"\"";
+            //Log.v("samba","command:"+s);
+
+            commands.add(s1);
+            Logic logic = MainActivity.getThis.getLogic();
+            String id=getThis.getString(R.string.addandplay_filelist);
+            logic.getMpc().enqueCommands(commands);
+            if (play) {
+                int toplay = logic.getToplay(id);
+                logic.playWithDelay(id, toplay);
+            }
+       }
+        return ret;
+    }
 
     public void searchArtist() {
         try {
@@ -2113,7 +2126,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         try {
             int t= new JSONObject(s).getInt("result");
             return t/1000;
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
@@ -2124,7 +2137,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         try {
             String s1=new JSONObject(s).getString("result");
             return s1;
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "stopped";
@@ -2144,7 +2157,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         try {
             final String[] a= {o.getJSONObject("track").getString("uri").replace("spotify:track:",""), ""+o.getJSONObject("track").getInt("length")};
             return a;
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
