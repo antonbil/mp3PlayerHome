@@ -64,6 +64,7 @@ import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAd
 import examples.quickprogrammingtips.com.tablayout.adapters.InstantAutoComplete;
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
+import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import examples.quickprogrammingtips.com.tablayout.tools.Utils;
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -78,6 +79,8 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 import kaaes.spotify.webapi.android.models.Image;
 import kaaes.spotify.webapi.android.models.Pager;
 import kaaes.spotify.webapi.android.models.Track;
+import mpc.DatabaseListThread;
+import mpc.MPCDatabaseListListener;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -115,11 +118,12 @@ PlaybackController.get_state()
 
  */
 public class SpotifyActivity extends AppCompatActivity implements
-        ConnectionStateCallback {
+        ConnectionStateCallback, MPCDatabaseListListener {
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "89f945f1696e4f389aaed419e51beaad";
     // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "testschema://callback";
+    public static final String MPD = "mpd://";
     private static ArrayList<String> mainids;
     private SpotifyHeader spotifyHeader;
     public FillListviewWithValues fillListviewWithValues;
@@ -522,11 +526,32 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void onClickFunc(int counter) {
-                Log.v("samba","spotifyToken:"+spotifyToken);
+                Log.v("samba","counter:"+counter);
                 currentTrack=counter;
                 if (albumVisible)
                     try{
-                    getAlbumtracksFromSpotify(counter);
+                        String s = albumIds.get(counter);
+                        if (s.startsWith(MPD)){
+                            String path=s.replace(MPD,"");
+                            Log.v("samba","id:"+path);
+                            //new DatabaseCommand(MainActivity.getThis.getLogic().getMpc(),"lsinfo \""+path+"\"",MainActivity.getThis, false).run();
+                            ArrayList<String>commands=new ArrayList<>();
+                            path = Logic.removeSlashAtEnd(path);
+                            String s1 = "add \""+path+"\"";
+                            //Log.v("samba","command:"+s);
+
+                            commands.add(s1);
+                            Logic logic = MainActivity.getThis.getLogic();
+                            String id=getThis.getString(R.string.addandplay_filelist);
+                            int toplay = logic.getToplay(id);
+                            logic.getMpc().enqueCommands(commands);
+                            logic.playWithDelay(id, toplay);
+
+
+                        } else
+
+
+                        getAlbumtracksFromSpotify(counter);
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
             }
@@ -990,7 +1015,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             // Set up the input
             ArtistAutoCompleteAdapter adapter = new ArtistAutoCompleteAdapter(this,
-                    android.R.layout.simple_dropdown_item_1line);
+                    android.R.layout.simple_spinner_item/*android.R.layout.simple_dropdown_item_1line*/);
             final InstantAutoComplete input = new InstantAutoComplete(getThis);
             //input.setText(searchArtistString);
             input.setAdapter(adapter);
@@ -1473,6 +1498,87 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     }
 
+    @Override
+    public void resultDbCall(ArrayList<String> dblist) {
+        //"http://192.168.2.8:8081/FamilyMusic/"+file.substring(0, file.lastIndexOf("/"))+"/folder.jpg";
+        /*
+                                PlaylistItem pi=new PlaylistItem();
+                        pi.pictureVisible=true;
+                        pi.url=album.images.get(0).url;
+                        pi.text=album.name;
+
+                        albumList.add(album.name);
+                        albumIds.add(album.id);
+                        albumTracks.add(pi);
+                        previous = album.name;
+
+                    }
+                albumAdapter.setDisplayCurrentTrack(false);
+                //albumAdapter.setDisplayCurrentTrack(true);
+                albumAdapter.notifyDataSetChanged();
+
+         */
+        /*
+        //first get contents of dir with all mp3-files.
+        new DatabaseCommand(logic.getMpc(),"lsinfo \""+path+"\"",this, false).run();
+        DBFragment   getContentOfDirAndPlay(String path, String id)
+         */
+        String album="";
+        String file="";
+        String prevFile="";
+        //String s="";
+        int total=0;
+        for (String s1:dblist){
+            if (s1.startsWith("Album: ")) {
+                String album1= s1.replace("Album: ", "");
+                if (!album.equals(album1)){
+                    if ((album.length()>0) &&(total>1)){
+                        Log.v("samba",album+file);
+                        PlaylistItem pi=new PlaylistItem();
+                        pi.pictureVisible=true;
+                        pi.url="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
+                        pi.text=album;
+
+                        albumList.add(album);
+                        albumIds.add(MPD+file);
+                        albumTracks.add(pi);
+                    }
+                    album=album1;
+                    file=prevFile;
+                    total=1;
+                }
+            }
+            if (s1.startsWith("file: ")) {
+                total++;
+                prevFile= s1.replace("file: ", "");
+                int p=prevFile.lastIndexOf("/");
+                prevFile=prevFile.substring(0,p);
+            }
+        }
+        if ((album.length()>0) &&(total>1)){
+            Log.v("samba",album+file);
+            PlaylistItem pi=new PlaylistItem();
+            pi.pictureVisible=true;
+            pi.url="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
+            pi.text=album;
+
+            albumList.add(album);
+            albumIds.add(MPD+file);
+            albumTracks.add(pi);
+        }
+        MainActivity.getThis.runOnUiThread(new Runnable() {
+            public void run() {
+                albumAdapter.setDisplayCurrentTrack(false);
+
+                albumAdapter.notifyDataSetChanged();
+                Utils.setDynamicHeight(albumsListview, 0);
+
+            }
+        });
+
+
+    }
+
     public static class getEntirePlaylistFromSpotify {
         String playlistid;
         Activity getThis;
@@ -1951,10 +2057,12 @@ public class SpotifyActivity extends AppCompatActivity implements
                         previous = album.name;
 
                     }
-                albumAdapter.setDisplayCurrentTrack(false);
-                //albumAdapter.setDisplayCurrentTrack(true);
-                albumAdapter.notifyDataSetChanged();
+                //albumAdapter.setDisplayCurrentTrack(false);
+                //albumAdapter.notifyDataSetChanged();
                 Utils.setDynamicHeight(albumsListview, 0);
+                //DatabaseListThread a=new DatabaseListThread(MainActivity.getThis.getLogic().getMpc(),"list \"file\" artist \"Rolling Stones\" group album",getThis);//"album"
+                DatabaseListThread a=new DatabaseListThread(MainActivity.getThis.getLogic().getMpc(),String.format("find \"artist\" \"%s\"",beatles),getThis);//"album"
+                a.start();
 
             }
 

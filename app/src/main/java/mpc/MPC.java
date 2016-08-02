@@ -95,9 +95,7 @@ public class MPC {
 			@Override
 			public void run() {
 				MPCStatus s=mainObject.getLogic().getMpc().getStatusSynch();
-				String status=SpotifyActivity.getState();
-				if (!status.equals("stopped")){
-				//if (!s.playing) {
+				if (!s.playing) {
 					Log.v("samba","not playing 2");
 					if (!first) {
 						try {

@@ -43,15 +43,13 @@ public abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> 
             //setBitmap(albumPictures.get(niceAlbumName));
 
         } else             try {
-            InputStream is = new URL(urlOfImage).openStream();
+            InputStream is = new URL(urlOfImage.replace(" ","%20")).openStream();
                 /*
                     decodeStream(InputStream is)
                         Decode an input stream into a bitmap.
                  */
             logo = BitmapFactory.decodeStream(is);
             albumPictures.put(urlOfImage, logo);//so image is loaded only once
-            //setImage(logo);
-            //SpotifyActivity.bitmap = logo;
         } catch (Exception e) { // Catch the download exception
             albumPictures.clear();
             Log.v("samba", Log.getStackTraceString(e));
