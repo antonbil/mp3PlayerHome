@@ -3,13 +3,14 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +18,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import examples.quickprogrammingtips.com.tablayout.adapters.OnFlingGestureListener;
 
 public abstract class PlanetAdapter extends ArrayAdapter<String> {
     //String previousAlbum="";
@@ -53,6 +56,8 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void albumArtistWikipedia(int counter);
     public abstract void addAlbum(int counter);
     public abstract void addAlbumNoplay(int counter);
+    float x1,x2;
+    float y1, y2;
 
     public PlanetAdapter(List<String> planetList, AppCompatActivity ctx, ArrayList<PlaylistItem> tracksPlaylist) {
         super(ctx, R.layout.spotifylist, planetList);
@@ -71,6 +76,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.spotifylist, parent, false);
         }
+        final View convertView2=convertView;
 // Now we can fill the layout with the right values
         holder = new ViewHolder();
         holder.pos = (TextView) convertView.findViewById(R.id.number);
@@ -127,104 +133,143 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             holder.name.setTextColor(Color.YELLOW);
         } else
             holder.name.setTextColor(Color.WHITE);
-
-        holder.pos.setText("" + (position + 1));
-        convertView.setOnLongClickListener(new AdapterView.OnLongClickListener() {
-
-                                               @Override
-                                               public boolean onLongClick(final View v) {
-                                                   PopupMenu menu = new PopupMenu(v.getContext(), v);
-                                                   if (!isAlbumVisible()) {
-
-                                                       //Toast.makeText(v.getContext(), "click:" + (String) fileArrayList.get(pos2).getName(), Toast.LENGTH_LONG).show();
-                                                       menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                                                           @Override
-                                                           public boolean onMenuItemClick(MenuItem item) {
-                                                               if (item.getTitle().toString().equals("remove top")) {
-                                                                   removeUp(position);
-                                                               } else if (item.getTitle().toString().equals("remove bottom")) {
-                                                                   removeDown(position);
-                                                               } else if (item.getTitle().toString().equals("remove track")) {
-                                                                   removeTrack(position);
-                                                               } else if (item.getTitle().toString().equals("add album")) {
-                                                                   addAlbum(position);
-                                                               } else if (item.getTitle().toString().equals("remove album")) {
-                                                                   removeAlbum(position);
-                                                               } else if (item.getTitle().toString().equals("display artist")) {
-                                                                   displayArtist(position);
-                                                               } else if (item.getTitle().toString().equals("wikipedia")) {
-                                                                   displayArtistWikipedia(position);
-                                                               } else if (item.getTitle().toString().equals("add album to favorites")) {
-                                                                   addAlbumToFavoritesTrack(position);
-                                                               }
-
-                                                               return true;
-                                                           }
-                                                       });
-
-                                                       menu.getMenu().add("remove top");//submenu
-                                                       menu.getMenu().add("remove bottom");//submenu
-                                                       menu.getMenu().add("add album");//submenu
-                                                       menu.getMenu().add("add album to favorites");//submenu
-                                                       menu.getMenu().add("display artist");//submenu
-                                                       menu.getMenu().add("wikipedia");//submenu
-                                                       menu.getMenu().add("remove track");//submenu
-                                                       menu.getMenu().add("remove album");//submenu
-                                                   } else {
-                                                       menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                                                           @Override
-                                                           public boolean onMenuItemClick(MenuItem item) {
-                                                               if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")){
-                                                                   Toast.makeText(v.getContext(), "not implemented yet", Toast.LENGTH_LONG).show();
-                                                                   return false;
-                                                               }
-
-                                                               if (item.getTitle().toString().equals("replace and play")) {
-                                                                   replaceAndPlayAlbum(position);
-                                                               } else if (item.getTitle().toString().equals("add and play")) {
-                                                                   addAndPlayAlbum(position);
-                                                               } else if (item.getTitle().toString().equals("wikipedia artist")) {
-                                                                   albumArtistWikipedia(position);
-                                                               } else if (item.getTitle().toString().equals("add")) {
-                                                                   //Toast.makeText(getThis.getApplicationContext(), "Not implemented yet",
-                                                                   //        Toast.LENGTH_SHORT).show();
-                                                                   addAlbumNoplay(position);
-
-                                                                   //addAlbum(position);
-                                                               }
-                                                               else if (item.getTitle().toString().equals("add album to favorites")) {
-                                                                   addAlbumToFavoritesAlbum(position);
-                                                               }
-
-                                                               return true;
-                                                           }
-                                                       });
-
-                                                       menu.getMenu().add("replace and play");//submenu
-                                                       menu.getMenu().add("add and play");//submenu
-                                                       menu.getMenu().add("add");//submenu
-                                                       menu.getMenu().add("wikipedia artist");//submenu
-                                                       menu.getMenu().add("add album to favorites");//submenu
-
-                                                   }
-                                                   menu.show();
-                                                   return true;
-                                               }
-                                           }
-        );
-        convertView.setOnClickListener(new View.OnClickListener() {
+        OnFlingGestureListener flingListener;
+        flingListener = new OnFlingGestureListener() {
             @Override
-            public void onClick(View v) {
+            public void onRightToLeft() {
+                //Log.v("samba","righttoleft");
+                //Toast toast = Toast.makeText(context, "righttoleft", Toast.LENGTH_SHORT);
+                //toast.show();
+                SpotifyActivity.getThis.changeScreen();
+            }
 
+            @Override
+            public void onLeftToRight() {
+                //Log.v("samba","lefttoright");
+                //Toast toast = Toast.makeText(context, "lefttoright", Toast.LENGTH_SHORT);
+                //toast.show();
+                SpotifyActivity.getThis.changeScreen();
+            }
+
+
+            @Override
+            public void onTapUp() {
                 onClickFunc(position);
             }
-        });
+
+            @Override
+            public void onLongTapUp() {
+                longclick( position,  convertView2);
+
+            }
+
+        };
+
+        holder.pos.setText("" + (position + 1));
+        convertView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (flingListener.onTouch(v, event)) {
+                    // if gesture detected, ignore other touch events
+                    return true;
+                } //else {
+                    //Log.v("samba","nofling");
+
+                int action = MotionEventCompat.getActionMasked(event);
+                if (action == MotionEvent.ACTION_DOWN) {
+                    // normal touch events
+                    onClickFunc(position);
+                    return false;
+                }
+                return true;
+            }
+
+
+            });
+
 
         return convertView;
     }
 
+    private void longclick(int position, View v){
+        PopupMenu menu = new PopupMenu(v.getContext(), v);
+        if (!isAlbumVisible()) {
+
+            //Toast.makeText(v.getContext(), "click:" + (String) fileArrayList.get(pos2).getName(), Toast.LENGTH_LONG).show();
+            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    if (item.getTitle().toString().equals("remove top")) {
+                        removeUp(position);
+                    } else if (item.getTitle().toString().equals("remove bottom")) {
+                        removeDown(position);
+                    } else if (item.getTitle().toString().equals("remove track")) {
+                        removeTrack(position);
+                    } else if (item.getTitle().toString().equals("add album")) {
+                        addAlbum(position);
+                    } else if (item.getTitle().toString().equals("remove album")) {
+                        removeAlbum(position);
+                    } else if (item.getTitle().toString().equals("display artist")) {
+                        displayArtist(position);
+                    } else if (item.getTitle().toString().equals("wikipedia")) {
+                        displayArtistWikipedia(position);
+                    } else if (item.getTitle().toString().equals("add album to favorites")) {
+                        addAlbumToFavoritesTrack(position);
+                    }
+
+                    return true;
+                }
+            });
+
+            menu.getMenu().add("remove top");//submenu
+            menu.getMenu().add("remove bottom");//submenu
+            menu.getMenu().add("add album");//submenu
+            menu.getMenu().add("add album to favorites");//submenu
+            menu.getMenu().add("display artist");//submenu
+            menu.getMenu().add("wikipedia");//submenu
+            menu.getMenu().add("remove track");//submenu
+            menu.getMenu().add("remove album");//submenu
+        } else {
+            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")){
+                        Toast.makeText(v.getContext(), "not implemented yet", Toast.LENGTH_LONG).show();
+                        return false;
+                    }
+
+                    if (item.getTitle().toString().equals("replace and play")) {
+                        replaceAndPlayAlbum(position);
+                    } else if (item.getTitle().toString().equals("add and play")) {
+                        addAndPlayAlbum(position);
+                    } else if (item.getTitle().toString().equals("wikipedia artist")) {
+                        albumArtistWikipedia(position);
+                    } else if (item.getTitle().toString().equals("add")) {
+                        //Toast.makeText(getThis.getApplicationContext(), "Not implemented yet",
+                        //        Toast.LENGTH_SHORT).show();
+                        addAlbumNoplay(position);
+
+                        //addAlbum(position);
+                    }
+                    else if (item.getTitle().toString().equals("add album to favorites")) {
+                        addAlbumToFavoritesAlbum(position);
+                    }
+
+                    return true;
+                }
+            });
+
+            menu.getMenu().add("replace and play");//submenu
+            menu.getMenu().add("add and play");//submenu
+            menu.getMenu().add("add");//submenu
+            menu.getMenu().add("wikipedia artist");//submenu
+            menu.getMenu().add("add album to favorites");//submenu
+
+        }
+        menu.show();
+    }
     public boolean isDisplayCurrentTrack() {
         return displayCurrentTrack;
     }

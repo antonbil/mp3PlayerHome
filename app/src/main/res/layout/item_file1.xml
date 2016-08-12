@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OLD CODE
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_margin="4dp"
+        android:textColor="@color/perf_name_color"
+        android:id="@+id/textViewPerformer"/>
+
+</LinearLayout>
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_gravity="start"
+        android:text="name die wel eens heel lang kan zijn, dus kijken we of dat bij-effecten heeft."
+        android:layout_margin="4dp"
+        android:id="@+id/textViewPerformer1"
+        android:layout_weight="1"
+        />
+
+
+
+
+    <!-- Right button
+
+    <Button
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:text="()"
+        android:gravity="right"
+        android:id="@+id/optionbutton"
+        android:layout_gravity="right"
+        android:layout_weight="0.2"/>-->
+

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -22,6 +23,7 @@ import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -62,6 +64,8 @@ import java.util.List;
 
 import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAdapter;
 import examples.quickprogrammingtips.com.tablayout.adapters.InstantAutoComplete;
+import examples.quickprogrammingtips.com.tablayout.adapters.OnFlingGestureListener;
+import examples.quickprogrammingtips.com.tablayout.adapters.RelatedArtistAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
@@ -127,7 +131,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static ArrayList<String> mainids;
     private SpotifyHeader spotifyHeader;
     public FillListviewWithValues fillListviewWithValues;
-    private ArrayList<String> artistList = new ArrayList<>();
+    public ArrayList<String> artistList = new ArrayList<>();
     public static  ArrayList<String> albumIds = new ArrayList<>();
     public static ArrayList<String> albumList = new ArrayList<>();
     public static ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
@@ -175,6 +179,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static String searchAlbumString ="";
     private static int totalTime;
     private static int currentTime;
+    OnFlingGestureListener flingListener;
 
     public void checkAppMemory(){
         // Get app memory info
@@ -481,6 +486,29 @@ public class SpotifyActivity extends AppCompatActivity implements
             checkAppMemory();
 
 
+            flingListener = new OnFlingGestureListener() {
+                @Override
+                public void onRightToLeft() {
+                    Log.v("samba","righttoleft");
+                }
+
+                @Override
+                public void onLeftToRight() {
+                    Log.v("samba","lefttoright");
+                }
+
+                @Override
+                public void onTapUp() {
+
+                }
+
+                @Override
+                public void onLongTapUp() {
+
+                }
+
+
+            };
         tracksPlaylist = new ArrayList<Track>();
 
         String ip = MainActivity.getThis.getLogic().getMpc().getAddress();
@@ -630,127 +658,36 @@ public class SpotifyActivity extends AppCompatActivity implements
         albumAdapter.setDisplayCurrentTrack(false);
         //albumAdapter.setDisplayCurrentTrack(true);
         albumsListview.setAdapter(albumAdapter);
-            /*final AdapterView.OnItemClickListener cl=   new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        final int position, long id) {
 
-                    getAlbumtracksFromSpotify(position);
-
-                }
-            };*/
         albumsListview.setOnItemClickListener(cl);
         relatedArtistsListView = (ListView) findViewById(R.id.relatedartists_listview);
         //Log.v("samba", "nosearch3");
 
-        relatedArtistsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, artistList);
+        relatedArtistsAdapter = new RelatedArtistAdapter<String>(this, android.R.layout.simple_list_item_1, artistList);
         relatedArtistsListView.setAdapter(relatedArtistsAdapter);
-        relatedArtistsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                           int pos, long id) {
-                final String selectedItem = artistList.get(pos);
 
-                //Log.v("long clicked", "pos: " + pos + "artist: " + selectedItem);
-                PopupMenu menu = new PopupMenu(arg1.getContext(), arg1);
-                menu.getMenu().add("search");
-                menu.getMenu().add("wikipedia");
-                menu.show();
-                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            ImageButton refreshspotifyButton = (ImageButton) findViewById(R.id.refreshspotifyButton);
+            refreshspotifyButton.setOnClickListener(v -> {
+                refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+            });
+        ImageButton stopButton = (ImageButton) findViewById(R.id.stopspotifyButton);
+        stopButton.setOnClickListener(v -> playPauseSpotify(ipAddress));
 
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        try{
-
-                            String title = item.getTitle().toString();
-                            if ((title.equals("search"))) {
-                                    /*MainActivity.getThis.selectTab(2);
-                                    try{ Thread.sleep(1000); MainActivity.getThis.searchTerm(selectedItem);}catch(InterruptedException e){ }
-                                    */
-                                final Intent intent = getThis.getIntent();
-                                intent.putExtra("artist", selectedItem);
-                                setResult(Activity.RESULT_OK, intent);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
-                                getThis.finish(); //finish the activity
-
-
-
-
-                            }
-                            if ((title.equals("wikipedia"))) {
-                                MainActivity.getThis.startWikipediaPage(selectedItem);
-                            }
-                        } catch (Exception e) {
-                            Log.v("samba", Log.getStackTraceString(e));
-                        }
-
-                        return true;
-                    }
-
-                });
-
-                return true;
-            }
-        });
-        //Log.v("samba", "nosearch4");
-        relatedArtistsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-                try{
-                String s = artistList.get(position);
-                listAlbumsForArtist(s);
+        ImageButton clearButton = (ImageButton) findViewById(R.id.clearspotifyButton);
+        clearButton.setOnClickListener(v -> {
+            try {
+                clearSpotifyPlaylist();
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
             }
-            }
         });
-        //refreshspotifyButton
-            ImageButton refreshspotifyButton = (ImageButton) findViewById(R.id.refreshspotifyButton);
-            refreshspotifyButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
-                    refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
-                }
-            });
-        ImageButton stopButton = (ImageButton) findViewById(R.id.stopspotifyButton);
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
-                playPauseSpotify(ipAddress);
-            }
-        });
-        //jsonrpc /jsonrpc?PlaylistClear {"jsonrpc": "2.0", "id": 0, "method": "Playlist.Clear", "params": {"playlistid": 0}}
-        //Log.v("samba", "nosearch6");
-        ImageButton clearButton = (ImageButton) findViewById(R.id.clearspotifyButton);
-        clearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    //yarc.js:906 jsonrpc /jsonrpc?GetRemoteInfos [{"jsonrpc":"2.0","method":"Application.GetProperties","id":1,"params":[["muted"]]},{"jsonrpc":"2.0","method":"Player.GetProperties","id":2,"params":[0,["time", "totaltime", "percentage", "shuffled","repeat"]]},{ "jsonrpc": "2.0", "method": "Player.GetItem", "params": { "playerid": 0, "properties": [ "title", "showtitle", "artist", "thumbnail", "streamdetails", "file", "season", "episode"] }, "id": 3 }
-                    // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
-                    clearSpotifyPlaylist();
-                } catch (Exception e) {
-                    Log.v("samba", Log.getStackTraceString(e));
-                }
-            }
-        });
-        //jsonrpc /jsonrpc?PlaylistClear {"jsonrpc": "2.0", "id": 0, "method": "Playlist.Clear", "params": {"playlistid": 0}}
         ImageButton playButton = (ImageButton) findViewById(R.id.playspotifyButton);
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    //yarc.js:906 jsonrpc /jsonrpc?GetRemoteInfos [{"jsonrpc":"2.0","method":"Application.GetProperties","id":1,"params":[["muted"]]},{"jsonrpc":"2.0","method":"Player.GetProperties","id":2,"params":[0,["time", "totaltime", "percentage", "shuffled","repeat"]]},{ "jsonrpc": "2.0", "method": "Player.GetItem", "params": { "playerid": 0, "properties": [ "title", "showtitle", "artist", "thumbnail", "streamdetails", "file", "season", "episode"] }, "id": 3 }
-                    // "Player.GoTo", "params": { "playerid": 0, "to": 20}, "id": 1}​
-                    stopMpd();
-                    playSpotify();
-                    //playlistGotoPosition(1);
-                    //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.PlayPause\", \"params\": { \"playerid\": 0 }, \"id\": 1}",
-                    //        ipAddress + "?StopPause");//
-                } catch (Exception e) {
-                    Log.v("samba", Log.getStackTraceString(e));
-                }
+        playButton.setOnClickListener(v -> {
+            try {
+                stopMpd();
+                playSpotify();
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
             }
         });
             artistTitleTextView = (TextView)
@@ -768,12 +705,6 @@ public class SpotifyActivity extends AppCompatActivity implements
                     //         Toast.LENGTH_SHORT).show();
                     View image = songItems.image;
                     PopupMenu menu = new PopupMenu(songItems.image.getContext(), image);
-                    //jsonrpc /jsonrpc?OpenAddon_plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Aredactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D
-                    // {"jsonrpc":"2.0","method":"Files.GetDirectory","id":1,"params":["plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Aredactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D","music",["title","file","thumbnail", "art","duration"]]}
-
-                    //plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%2C+%22identifier%22%3A+%22spotify%3Auser%3Aredactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D
-                    //{"jsonrpc":"2.0","method":"Files.GetDirectory","id":1,"params":["plugin://plugin.audio.spotlight/?path=GetPlaylist&args=%7B%22start%22%3A+0%…A3N9rTO6YG7kjWETJGOEvQY%22%2C+%22max_items%22%3A+0%2C+%22offset%22%3A+0%7D","music",["title","file","thumbnail", "art","duration"]]
-                    //menu.getMenu().add("oor11");
                     menu.getMenu().add("hide/show");
                     menu.getMenu().add("play");
                     menu.getMenu().add("search artist");
@@ -921,20 +852,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                                                             }
                                                             if ((title.equals("hide/show"))) {
-                                                                if (!nosearch) {
-                                                                    refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
-                                                                    setVisibility(View.GONE);
-                                                                } else {
-                                                                    try {
-                                                                        if (!artistInitiated)
-                                                                            initArtistlist(tracksPlaylist.get(0).artists.get(0).name);
-                                                                        setVisibility(View.VISIBLE);
-                                                                    } catch (Exception e) {
-                                                                        Log.v("samba", Log.getStackTraceString(e));
-                                                                        //Log.v("samba", Log.getStackTraceString(e));
-                                                                    }
-                                                                }
-                                                                nosearch = !nosearch;
+                                                                changeScreen();
                                                             }
 
                                                             return true;
@@ -956,7 +874,38 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             findViewById(R.id.fab);
 
-            //Log.v("samba","nosearch9");
+            fab.setOnClickListener(view -> {
+                PopupMenu menu = new PopupMenu(fab.getContext(), fab);
+                menu.getMenu().add("tracklist");
+                menu.getMenu().add("albumlist");
+                menu.getMenu().add("return to main");
+
+                menu.show();
+                menu.setOnMenuItemClickListener(item -> {
+                            String title = item.getTitle().toString();
+                            if ((title.equals("tracklist"))) {
+                                String hartistName=artistName;
+                                refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+                                setVisibility(View.GONE);
+                                artistName=hartistName;
+                            } else
+                            if ((title.equals("albumlist"))) {
+                                displayAlbums();
+                            }else
+                            if ((title.equals("return to main"))) {
+                                getThis.finish();
+
+                            }
+
+                            return true;
+                        }
+
+                );
+
+                //albumsListview.setOnItemClickListener(cl);
+                //listAlbumsForArtist(api, spotify, atistName, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
+            });
+
             if(!nosearch)
 
             {
@@ -974,7 +923,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                     //mainLayout.setVisibility(View.GONE);//spotifyscrollviewtop
                     int visibility = View.GONE;
                     setVisibility(visibility);//
-                    ((LinearLayout) findViewById(R.id.song_display)).setVisibility(View.VISIBLE);
+                    findViewById(R.id.song_display).setVisibility(View.VISIBLE);
                     //startPlaylistThread
                     customHandler.postDelayed(startPlaylistThread, 1000);
                 } catch (Exception e) {
@@ -994,6 +943,29 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
             nextCommand="";
         }
+
+    public void changeScreen() {
+        if (!nosearch) {
+            refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+            setVisibility(View.GONE);
+        } else {
+            displayAlbums();
+        }
+        nosearch = !nosearch;
+    }
+
+    private void displayAlbums() {
+        try {
+            if (artistName.equals("The Beatles"))
+                initArtistlist(tracksPlaylist.get(0).artists.get(0).name);
+            else
+                initArtistlist(artistName);
+            setVisibility(View.VISIBLE);
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+            //Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
 
     public boolean playMpdAlbum(String s, boolean clear, boolean ret, boolean play) {
         if (s.startsWith(MPD)){
@@ -1116,7 +1088,48 @@ public class SpotifyActivity extends AppCompatActivity implements
             Log.v("samba", Log.getStackTraceString(e));
         }
     }
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        //Log.v("samba","righttoleft2");
 
+        int action = MotionEventCompat.getActionMasked(event);
+        if (flingListener.onTouch(this.getCurrentFocus(), event)) {
+            // if gesture detected, ignore other touch events
+            return false;
+        }
+
+        if (action == MotionEvent.ACTION_DOWN) {
+            // normal touch events
+            return true;
+        }
+        return true;
+    }
+    /*@Override
+    public boolean onTouchEvent(MotionEvent event){
+
+        int action = MotionEventCompat.getActionMasked(event);
+
+        switch(action) {
+            case (MotionEvent.ACTION_DOWN) :
+                Log.d("samba","Action was DOWN");
+                return true;
+            case (MotionEvent.ACTION_MOVE) :
+                Log.d("samba","Action was MOVE");
+                return true;
+            case (MotionEvent.ACTION_UP) :
+                Log.d("samba","Action was UP");
+                return true;
+            case (MotionEvent.ACTION_CANCEL) :
+                Log.d("samba","Action was CANCEL");
+                return true;
+            case (MotionEvent.ACTION_OUTSIDE) :
+                Log.d("samba","Movement occurred outside bounds " +
+                        "of current screen element");
+                return true;
+            default :
+                return super.onTouchEvent(event);
+        }
+    }*/
     public void searchAlbum() {
         try {
 
@@ -1346,13 +1359,6 @@ public class SpotifyActivity extends AppCompatActivity implements
         Utils.setDynamicHeight(relatedArtistsListView, 0);
 
         listAlbumsForArtist(api, spotify, atistName, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                albumsListview.setOnItemClickListener(cl);
-                listAlbumsForArtist(api, spotify, atistName, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
-            }
-        });
     }
 
     private void setVisibility(int visibility) {

@@ -259,12 +259,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     }
                 });
                 final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
-                fab.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        spotifyPopupMenu(fab, mDrawerLayout);
-                    }
-                });
+                fab.setOnClickListener(view -> spotifyPopupMenu(fab, mDrawerLayout));
 
                 (findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 (findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
@@ -351,7 +346,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         this.setTitle("");
         final LinearLayout footerView = (LinearLayout) findViewById(R.id.footer);
         footerView.setVisibility(View.GONE);
-        FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton findbutton = (FloatingActionButton) findViewById(R.id.find);
+        findbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SpotifyActivity.nextCommand="search artist";
+                startPlaylistSpotify();
+            }
+        });        FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
         FAB.setOnClickListener(new View.OnClickListener() {
 
             @Override

@@ -40,6 +40,18 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/tabLayout">
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/find"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="80dp"
+            android:layout_marginRight="40dp"
+            android:src="@android:drawable/ic_menu_search"
+            app:borderWidth="0dp"
+            app:fabSize="normal"
+            android:layout_gravity="right|bottom" />
     </FrameLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -52,6 +64,7 @@
         android:src="@drawable/ic_refresh_white"
         app:borderWidth="0dp"
         app:fabSize="normal" />
+
     <LinearLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"
