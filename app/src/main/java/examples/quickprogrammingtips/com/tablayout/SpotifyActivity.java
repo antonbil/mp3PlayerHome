@@ -22,6 +22,7 @@ import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -2506,78 +2507,25 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
 
-    public static PopupMenu showPlayMenu(final AppCompatActivity getThis1,View view) {
-        /*
-        menu.add(groupId, MENU_VIEW, Menu.NONE, getText(R.string.menu_view));
-menu.add(groupId, MENU_EDIT, Menu.NONE, getText(R.string.menu_edit));
-SubMenu sub=menu.addSubMenu(groupId, MENU_SORT, Menu.NONE, getText(R.string.menu_sort));
-sub.add(groupId, MENU_SORT_BY_NAME, Menu.NONE, getText(R.string.menu_sort_by_name));
-sub.add(groupId, MENU_SORT_BY_ADDRESS, Menu.NONE, getText(R.string.menu_sort_by_address));
-:
-:
-         */
-        PopupMenu playMenu = new PopupMenu(view.getContext(), view);
+    public static void showPlayMenu(final AppCompatActivity getThis1,View view) {
 
-        playMenu.getMenu().add("Play");
-        playMenu.getMenu().add("Stop");
-        playMenu.getMenu().add("Pause/Play");
-        playMenu.getMenu().add("Previous");
-        playMenu.getMenu().add("Next");
-        playMenu.getMenu().add("Volume");
-        playMenu.getMenu().add("Position");
+        LayoutInflater inflater = getThis1.getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.play_spotify, null);
+        alertLayout.findViewById(R.id.playspotify).setOnClickListener(v -> playSpotify());
+        alertLayout.findViewById(R.id.stopspotify).setOnClickListener(v -> stopSpotifyPlaying(ipAddress));
+        alertLayout.findViewById(R.id.pausespotify).setOnClickListener(v -> playPauseSpotify(ipAddress));
+        alertLayout.findViewById(R.id.previousspotify).setOnClickListener(v -> previousSpotifyPlaying(ipAddress));
+        alertLayout.findViewById(R.id.nextspotify).setOnClickListener(v -> nextSpotifyPlaying(ipAddress));
+        alertLayout.findViewById(R.id.volumespotify).setOnClickListener(v -> setVolume(getThis1));
+        alertLayout.findViewById(R.id.positionspotify).setOnClickListener(v -> seekPlay(getThis1));
+        AlertDialog.Builder alert = new AlertDialog.Builder(getThis1);
+        alert.setTitle("Spotify Play");
+        // this is set the view from XML inside AlertDialog
+        alert.setView(alertLayout);
 
-        /*playMenu.getMenu().add("Vol-");
-        playMenu.getMenu().add("Vol+");
-        playMenu.getMenu().add("Vol--");
-        playMenu.getMenu().add("Vol++");*/
-        playMenu.show();
-        playMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                String title = item.getTitle().toString();
-                //nextSpotifyPlaying,previousSpotifyPlaying,stopSpotifyPlaying,playPauseSpotify,playSpotify()
-                //incVolumeSpotify,decVolumeSpotify
-                if ((title.equals("Play"))) {
-                    playSpotify();
-                }else
-                if ((title.equals("Stop"))) {
-                    stopSpotifyPlaying(ipAddress);
-                }else
-                if ((title.equals("Pause/Play"))) {
-                    playPauseSpotify(ipAddress);
-                }else
-                if ((title.equals("Previous"))) {
-                    previousSpotifyPlaying(ipAddress);
-                }else
-                if ((title.equals("Position"))) {
-                    seekPlay(getThis1);
-                }else
-                if ((title.equals("Volume"))) {
-                    setVolume(getThis1);
-                }else
-                if ((title.equals("Vol-"))) {
-                    decVolumeSpotify(ipAddress);
-                }else
-                if ((title.equals("Vol+"))) {
-                    incVolumeSpotify(ipAddress);
-                }else
-                if ((title.equals("Vol--"))) {
-                    for (int i=0;i<4;i++)
-                    decVolumeSpotify(ipAddress);
-                }else
-                if ((title.equals("Vol++"))) {
-                    for (int i=0;i<4;i++)
-                    incVolumeSpotify(ipAddress);
-                }else
-                if ((title.equals("Next"))) {
-                    nextSpotifyPlaying(ipAddress);
-                }
-                return true;
-            }
-        });
-        return playMenu;
+        alert.setPositiveButton("OK", (dialog, which) -> {});
+        AlertDialog dialog = alert.create();
+        dialog.show();
     }
 
 }
