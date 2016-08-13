@@ -354,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 startPlaylistSpotify();
             }
         });        FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
+        findbutton.setVisibility(View.GONE);
         FAB.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -363,10 +364,38 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 //Toast.makeText(MainActivity.this, "Hello Worl", Toast.LENGTH_SHORT).show();
                 if (tabSelected == 1 || (tabSelected == 2)) {
                     //Toast.makeText(MainActivity.this, "Back key", Toast.LENGTH_SHORT).show();
-                    if (tabSelected == 1) listFragment.back();
+                    if (tabSelected == 1)
+                    listFragment.back();
                     if (tabSelected == 2) dbFragment.back();
-                } else {
-                    setFooterVisibility();
+                } else {{
+                    PopupMenu menu = new PopupMenu(FAB.getContext(), FAB);
+                    menu.getMenu().add("search artist");
+                    menu.getMenu().add("spotify");
+                    menu.getMenu().add("play on/off");
+
+                    menu.show();
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                                                        @Override
+                                                        public boolean onMenuItemClick(MenuItem item) {
+                                                            String title = item.getTitle().toString();
+                                                            if ((title.equals("search artist"))) {
+                                                                SpotifyActivity.nextCommand="search artist";
+                                                                startPlaylistSpotify();
+                                                            } else if ((title.equals("spotify"))) {
+                                                                startPlaylistSpotify();
+                                                            } else if ((title.equals("play on/off"))) {
+                                                                setFooterVisibility();
+
+                                                            } else {}
+                                                            return true;
+                                                        }
+
+                                                    }
+
+                    );
+                }
+
                 }
 
 
@@ -383,23 +412,31 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             public void onTabSelected(TabLayout.Tab tab) {
                 //playlistThread.interrupt();
                 tabSelected = tab.getPosition();
-                if (tab.getPosition() == 0)
+                if (tab.getPosition() == 0) {
                     displayHome();
+                    findbutton.setVisibility(View.GONE);
+                }
                 if (tabSelected == 1) {
 
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, listFragment).commit();
+                    findbutton.setVisibility(View.VISIBLE);
                 }
                 if (tab.getPosition() == 2) {
                     try {
 
                         getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
+                        findbutton.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                     }
                 }
-                if (tab.getPosition() == 4)
+                if (tab.getPosition() == 4) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new SelectFragment()).commit();
-                if (tab.getPosition() == 3)
+                    findbutton.setVisibility(View.GONE);
+                }
+                if (tab.getPosition() == 3) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new PlaylistsFragment()).commit();
+                    findbutton.setVisibility(View.GONE);
+                }
             }
 
             @Override
