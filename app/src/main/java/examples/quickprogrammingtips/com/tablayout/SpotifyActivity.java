@@ -23,7 +23,6 @@ import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -696,174 +695,122 @@ public class SpotifyActivity extends AppCompatActivity implements
                     findViewById(R.id.artist_title);//relatedartists_text
 
             songItems=new SongItems(this);
-            songItems.setOnClick(new View.OnClickListener() {
+            songItems.setOnClick(arg0 -> {
 
-                @Override
-                public void onClick(View arg0) {
-                    //MainActivity.displayLargeImage(getThis, bitmap);
-                    //Log.v("samba", "clicked!");
-                    // Toast.makeText(getApplicationContext(), "Clicked Image",
-                    //         Toast.LENGTH_SHORT).show();
-                    View image = songItems.image;
-                    PopupMenu menu = new PopupMenu(songItems.image.getContext(), image);
-                    menu.getMenu().add("hide/show");
-                    menu.getMenu().add("play");
-                    menu.getMenu().add("search artist");
-                    menu.getMenu().add("search album");
-                    menu.getMenu().add("enlarge cover");
-                    menu.getMenu().add("refresh");
-                    menu.getMenu().add("new albums");
-                    menu.getMenu().add("new albums categories");
+                View image = songItems.image;
+                PopupMenu menu = new PopupMenu(songItems.image.getContext(), image);
+                menu.getMenu().add("play");
+                menu.getMenu().add("search artist");
+                menu.getMenu().add("search album");
+                menu.getMenu().add("new albums");
+                menu.getMenu().add("new albums categories");
 
-                    menu.show();
-                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                menu.show();
+                menu.setOnMenuItemClickListener(item -> {
+                    String title = item.getTitle().toString();
+                    if ((title.equals("play"))) {
+                        SpotifyActivity.showPlayMenu(getThis,songItems.image);
+                    } else
+                    if ((title.equals("new albums categories"))) {
+                        PopupMenu menu1 = new PopupMenu(songItems.image.getContext(), songItems.image);
+                        ;
+                        for (String cat : CATEGORY_IDS) {
+                            menu1.getMenu().add(cat);
+                        }
+                        menu1.show();
+                        generateLists();
+                        menu1.setOnMenuItemClickListener(item1 -> {
+                            String title1 = item1.getTitle().toString();
 
-                                                        @Override/*
-                    rnb
-                    soul
-                    singer-songwriter
-                    */
-                                                        public boolean onMenuItemClick(MenuItem item) {
-                                                            String title = item.getTitle().toString();
-                                                            if ((title.equals("play"))) {
-                                                                SpotifyActivity.showPlayMenu(getThis,songItems.image);
-                                                            } else
-                                                            if ((title.equals("new albums categories"))) {
-                                                                PopupMenu menu = new PopupMenu(songItems.image.getContext(), songItems.image);
-                                                                ;
-                                                                for (String cat : CATEGORY_IDS) {
-                                                                    menu.getMenu().add(cat);
-                                                                }
-                                                                menu.show();
-                                                                generateLists();
-                                                                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            try {
+                                //if (title.startsWith("new albums ")) {
+                                final String cat = title1.replace("new albums ", "");
+                                fillListviewWithValues = new FillListviewWithValues() {
 
-                                                                    @Override
-                                                                    public boolean onMenuItemClick(MenuItem item) {
-                                                                        String title = item.getTitle().toString();
+                                    @Override
+                                    public void generateList(ArrayList<NewAlbum> newAlbums) {
+                                        //Bundle extras = getIntent().getExtras();
 
-                                                                        try {
-                                                                            //if (title.startsWith("new albums ")) {
-                                                                            final String cat = title.replace("new albums ", "");
-                                                                            fillListviewWithValues = new FillListviewWithValues() {
+                                        String url = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
 
-                                                                                @Override
-                                                                                public void generateList(ArrayList<NewAlbum> newAlbums) {
-                                                                                    //Bundle extras = getIntent().getExtras();
+                                        Favorite.NEWALBUM=Favorite.getCategoryId(cat);
 
-                                                                                    String url = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
+                                        Document doc = null;
+                                        try {
+                                            doc = Jsoup.connect(url).get();
+                                            String temp1 = doc.html().replace("<br>", "$$$").replace("<br />", "$$$"); //$$$ instead <br>
+                                            doc = Jsoup.parse(temp1); //Parse again
+                                        } catch (IOException e) {
+                                            Log.v("samba", Log.getStackTraceString(e));
+                                        }
 
-                                                                                    Favorite.NEWALBUM=Favorite.getCategoryId(cat);
+                                        Elements trackelements = doc.getElementsByClass("album");
+                                        //;
+                                        //ArrayList<String> ids = new ArrayList<String>();
+                                        for (Element element : trackelements) {
+                                            String image1 = "http://www.spotifynewmusic.com/" + element.select("img").attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
+                                            Elements links = element.getElementsByClass("play").select("a[href]"); // a with href
+                                            String s = links.get(0).attr("href");
+                                            Log.v("samba", s);
 
+                                            String div = element.children().get(1).text();
+                                            Log.v("samba", div);
+                                            try {
+                                                String[] list = div.replace("$$$", ";").split(";");
+                                                String artist = list[0];
+                                                String album = "";
+                                                if (list.length > 1)
+                                                    album = list[1];
+                                                //ids.add(artist + "-" + album);
+                                                newAlbums.add(new NewAlbum(s, artist, album, image1));
+                                            } catch (Exception e) {
+                                                Log.v("samba", Log.getStackTraceString(e));
+                                            }
+                                        }
+                                    }
 
-                                                                                    //String act = getIntent().getStringExtra("from");
+                                    @Override
+                                    public void addToFavorites(NewAlbum newAlbum) {
+                                        newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
+                                    }
 
-                                                                                    //try {
-                                                                                    //    Class callerClass = Class.forName(act);
-                                                                                    //} catch (ClassNotFoundException e) {
-                                                                                    //    e.printStackTrace();
-                                                                                    //}
-                                                                                    Document doc = null;
-                                                                                    try {
-                                                                                        doc = Jsoup.connect(url).get();
-                                                                                        String temp = doc.html().replace("<br>", "$$$").replace("<br />", "$$$"); //$$$ instead <br>
-                                                                                        doc = Jsoup.parse(temp); //Parse again
-                                                                                    } catch (IOException e) {
-                                                                                        Log.v("samba", Log.getStackTraceString(e));
-                                                                                    }
-
-                                                                                    Elements trackelements = doc.getElementsByClass("album");
-                                                                                    //;
-                                                                                    //ArrayList<String> ids = new ArrayList<String>();
-                                                                                    for (Element element : trackelements) {
-                                                                                        String image = "http://www.spotifynewmusic.com/" + element.select("img").attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
-                                                                                        Elements links = element.getElementsByClass("play").select("a[href]"); // a with href
-                                                                                        String s = links.get(0).attr("href");
-                                                                                        Log.v("samba", s);
-
-                                                                                        String div = element.children().get(1).text();
-                                                                                        Log.v("samba", div);
-                                                                                        try {
-                                                                                            String[] list = div.replace("$$$", ";").split(";");
-                                                                                            String artist = list[0];
-                                                                                            String album = "";
-                                                                                            if (list.length > 1)
-                                                                                                album = list[1];
-                                                                                            //ids.add(artist + "-" + album);
-                                                                                            newAlbums.add(new NewAlbum(s, artist, album, image));
-                                                                                        } catch (Exception e) {
-                                                                                            Log.v("samba", Log.getStackTraceString(e));
-                                                                                        }
-                                                                                    }
-                                                                                }
-
-                                                                                @Override
-                                                                                public void addToFavorites(NewAlbum newAlbum) {
-                                                                                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
-                                                                                }
-
-                                                                            };
+                                };
 
 
-                                                                            {
-                                                                                Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
-                                                                                startActivity(intent);
-                                                                            }
-                                                                            // }
-                                                                        } catch (Exception e) {
-                                                                            Log.v("samba", Log.getStackTraceString(e));
-                                                                        }
-                                                                        return true;
-                                                                    }
-                                                                });
+                                {
+                                    Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                                    startActivity(intent);
+                                }
+                                // }
+                            } catch (Exception e) {
+                                Log.v("samba", Log.getStackTraceString(e));
+                            }
+                            return true;
+                        });
 
-                                                            }
-                                                            try {
+                    }
+                    try {
 
-                                                                if ((title.equals("new albums"))) {
-                                                                    Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivity.class);
-                                                                    startActivity(intent);
-                                                                }
-                                                            } catch (Exception e) {
-                                                                Log.v("samba", Log.getStackTraceString(e));
-                                                            }
+                        if ((title.equals("new albums"))) {
+                            Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivity.class);
+                            startActivity(intent);
+                        }
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
 
-                                                            if ((title.equals("enlarge cover"))) {
-                                                                MainActivity.displayLargeImage(getThis, bitmap);
-                                                            }
+                    if ((title.equals("search album"))) {
+                        searchAlbum();
+                    }
+                    if ((title.equals("search artist"))) {
+                        searchArtist();
+                    }
 
-                                                            if ((title.equals("refresh"))) {
-                                                                refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
-                                                            }
-                                                            if ((title.equals("search album"))) {
-                                                                searchAlbum();
-                                                            }
-                                                            if ((title.equals("search artist"))) {
-                                                                searchArtist();
-                                                            }
-
-                                                            if ((title.equals("oor11"))) {
-                                                                String playlistid = "redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY";
-                                                                new getEntirePlaylistFromSpotify(playlistid, getThis) {
-                                                                    @Override
-                                                                    public void atLast() {
-                                                                        refreshPlaylistFromSpotify(albumAdapter, albumsListview,SpotifyActivity.getThis);
-                                                                    }
-                                                                }.run();
-
-                                                            }
-                                                            if ((title.equals("hide/show"))) {
-                                                                changeScreen();
-                                                            }
-
-                                                            return true;
-                                                        }
-
-                                                    }
-
-                    );
-
+                    return true;
                 }
+
+                );
+
             });
 
 
@@ -1391,12 +1338,12 @@ public class SpotifyActivity extends AppCompatActivity implements
         getAlbumtracksFromSpotify(s, albumList.get(position),getThis, albumAdapter, albumsListview);
     }
 
-    public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final AppCompatActivity getThis1, PlanetAdapter albumAdapter, ListView albumsListview) {
+    public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1, PlanetAdapter albumAdapter, ListView albumsListview) {
         if (albumAdapter==null)albumAdapter=SpotifyActivity.getThis.albumAdapter;
         if (albumsListview==null)albumsListview=SpotifyActivity.getThis.albumsListview;
         final PlanetAdapter albumAdapter1=albumAdapter;
         final ListView albumsListview1=albumsListview;
-        AppCompatActivity getThis=getThis1;
+        Activity getThis=getThis1;
         //int position = ;
         new SpotifyApi().getService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
 
@@ -1884,7 +1831,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     }
 
-    public static void refreshPlaylistFromSpotify(PlanetAdapter albumAdapter, ListView albumsListview, AppCompatActivity getThis) {
+    public static void refreshPlaylistFromSpotify(PlanetAdapter albumAdapter, ListView albumsListview, Activity getThis) {
         ProgressDialog progressDialog;
         progressDialog = new ProgressDialog(getThis);
         progressDialog.setCancelable(true);
@@ -2409,7 +2356,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
         }
-    public static void seekPlay(AppCompatActivity getThis) {
+    public static void seekPlay(Activity getThis) {
         final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(getThis);
 
         alert.setTitle("Seek");
@@ -2457,7 +2404,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         alert.show();
     }
     ;
-    public static void setVolume(AppCompatActivity getThis) {
+    public static void setVolume(Activity getThis) {
         final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(getThis);
 
         alert.setTitle("Volume");
@@ -2507,7 +2454,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
 
-    public static void showPlayMenu(final AppCompatActivity getThis1,View view) {
+    public static void showPlayMenu(final Activity getThis1,View view) {
 
         LayoutInflater inflater = getThis1.getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.play_spotify, null);

@@ -98,11 +98,13 @@
         <activity
             android:name=".NewAlbumsActivity"
             android:label="@string/title_activity_new_albums"
-            android:theme="@style/AppTheme" />
+            android:windowSoftInputMode="stateAlwaysVisible|adjustPan"
+            android:theme="@style/Theme.AppCompat.Dialog"
+             />
         <activity
             android:name=".NewAlbumsActivityElectronic"
             android:label="@string/title_activity_new_albums_activity_electronic"
-            android:theme="@style/AppTheme">
+            android:theme="@style/Theme.AppCompat.Dialog">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

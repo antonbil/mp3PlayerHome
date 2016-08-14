@@ -200,21 +200,45 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    if (item.getTitle().toString().equals("remove top")) {
-                        removeUp(position);
-                    } else if (item.getTitle().toString().equals("remove bottom")) {
-                        removeDown(position);
-                    } else if (item.getTitle().toString().equals("remove track")) {
-                        removeTrack(position);
-                    } else if (item.getTitle().toString().equals("add album")) {
+                    String title = item.getTitle().toString();
+                    if (title.equals("remove->")) {
+                        //submenu
+                        PopupMenu menu = new PopupMenu(v.getContext(), v);
+                        menu.getMenu().add("remove top");
+                        menu.getMenu().add("remove bottom");
+                        menu.getMenu().add("remove track");
+                        menu.getMenu().add("remove album");
+
+                        menu.show();
+                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                                                            @Override
+                                                            public boolean onMenuItemClick(MenuItem item) {
+                                                                String title = item.getTitle().toString();
+                                                                if (title.equals("remove top")) {
+                                                                    removeUp(position);
+                                                                } else if (title.equals("remove bottom")) {
+                                                                    removeDown(position);
+
+                                                                } else if (title.equals("remove album")) {
+                                                                    removeAlbum(position);
+                                                                } else if (title.equals("remove track")) {
+                                                                    removeTrack(position);
+                                                                }
+                                                                return true;
+                                                            }
+                                                        }
+
+
+
+                        );
+                    }else if (title.equals("add album")) {
                         addAlbum(position);
-                    } else if (item.getTitle().toString().equals("remove album")) {
-                        removeAlbum(position);
-                    } else if (item.getTitle().toString().equals("display artist")) {
+                    } else if (title.equals("display artist")) {
                         displayArtist(position);
-                    } else if (item.getTitle().toString().equals("wikipedia")) {
+                    } else if (title.equals("wikipedia")) {
                         displayArtistWikipedia(position);
-                    } else if (item.getTitle().toString().equals("add album to favorites")) {
+                    } else if (title.equals("add album to favorites")) {
                         addAlbumToFavoritesTrack(position);
                     }
 
@@ -222,14 +246,11 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                 }
             });
 
-            menu.getMenu().add("remove top");//submenu
-            menu.getMenu().add("remove bottom");//submenu
-            menu.getMenu().add("add album");//submenu
-            menu.getMenu().add("add album to favorites");//submenu
-            menu.getMenu().add("display artist");//submenu
-            menu.getMenu().add("wikipedia");//submenu
-            menu.getMenu().add("remove track");//submenu
-            menu.getMenu().add("remove album");//submenu
+            menu.getMenu().add("remove->");
+            menu.getMenu().add("add album");
+            menu.getMenu().add("add album to favorites");
+            menu.getMenu().add("display artist");
+            menu.getMenu().add("wikipedia");
         } else {
             menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 

@@ -1,17 +1,18 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -26,13 +27,21 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class NewAlbumsActivity extends AppCompatActivity {
+public class NewAlbumsActivity extends Activity {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
-    AppCompatActivity getThis;
+    Activity getThis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.x = -100;
+        params.height = 1000;
+        params.width = 800;
+        params.y = -50;
+
+        this.getWindow().setAttributes(params);
+
         getThis=this;
         setContentView(R.layout.activity_new_albums);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
