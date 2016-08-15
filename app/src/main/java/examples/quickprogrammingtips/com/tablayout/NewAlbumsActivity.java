@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -148,100 +147,88 @@ public class NewAlbumsActivity extends Activity {
                     @Override
                     public void setImage(final Bitmap logo) {
                         image.setImageBitmap(logo);
-                        image.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                PopupMenu menu = new PopupMenu(v.getContext(), v);
+                        image.setOnClickListener(v -> {
+                            PopupMenu menu = new PopupMenu(v.getContext(), v);
 
-                                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            menu.setOnMenuItemClickListener(item -> {
+                                if (item.getTitle().toString().equals("add album to favorites")) {
+                                    SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
 
-                                    @Override
-                                    public boolean onMenuItemClick(MenuItem item) {
-                                        if (item.getTitle().toString().equals("add album to favorites")) {
-                                            SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+                                }else
+                                if (item.getTitle().toString().equals("add album")) {
+                                    AddAlbumToPlaylist(position);
+                                }else
+                                if (item.getTitle().toString().equals("large image")) {
+                                    MainActivity.displayLargeImage(getThis, logo);
 
-                                        }else
-                                        if (item.getTitle().toString().equals("add album")) {
-                                            AddAlbumToPlaylist(position);
-                                        }else
-                                        if (item.getTitle().toString().equals("large image")) {
-                                            MainActivity.displayLargeImage(getThis, logo);
+                                }else
+                                if (item.getTitle().toString().equals("wikipedia")) {
+                                    MainActivity.startWikipediaPage(items.get(position).artist);
+                                }
+                                return true;
+                            });
 
-                                        }
-                                        return true;
-                                    }
-                                });
-
-                                menu.getMenu().add("add album to favorites");//submenu
-                                menu.getMenu().add("add album");//submenu
-                                menu.getMenu().add("large image");//submenu
-                                menu.show();
-                            }
+                            menu.getMenu().add("add album to favorites");//submenu
+                            menu.getMenu().add("add album");//submenu
+                            menu.getMenu().add("large image");//submenu
+                            menu.getMenu().add("wikipedia");//submenu
+                            menu.show();
                         });
                     }
                 }.execute(p.getImage());
 
             //}
 
-            rowView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    processAlbum(items.get(position));
+            rowView.setOnClickListener(v -> processAlbum(items.get(position)));
+            image.setOnClickListener(v -> {
+                PopupMenu menu = new PopupMenu(v.getContext(), v);
 
-                }
-            });
-            image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    PopupMenu menu = new PopupMenu(v.getContext(), v);
+                menu.setOnMenuItemClickListener(item -> {
+                    if (item.getTitle().toString().equals("add album")) {
+                        AddAlbumToPlaylist(position);
+                    }else
+                    if (item.getTitle().toString().equals("add album to favorites")) {
+                        SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
 
-                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            if (item.getTitle().toString().equals("add album")) {
-                                AddAlbumToPlaylist(position);
-                            }else
-                            if (item.getTitle().toString().equals("add album to favorites")) {
-                                SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
-
-                            }
-                            return true;
-                        }
-                    });
-
-                    menu.getMenu().add("add album to favorites");//submenu
-                    menu.getMenu().add("add album");//submenu
-                    menu.show();
-                }
-            });
-            rowView.setOnLongClickListener(new AdapterView.OnLongClickListener() {
-
-                @Override
-                public boolean onLongClick(final View v) {
-                    PopupMenu menu = new PopupMenu(v.getContext(), v);
-
-                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            if (item.getTitle().toString().equals("add album")) {
-                                AddAlbumToPlaylist(position);
-                            }else
-                            if (item.getTitle().toString().equals("add album to favorites")) {
-                                SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
-
-                            }
-                            return true;
-                        }
-                    });
-
-                    menu.getMenu().add("add album to favorites");//submenu
-                    menu.getMenu().add("add album");//submenu
-                    menu.show();
+                    }else
+                    if (item.getTitle().toString().equals("wikipedia")) {
+                        MainActivity.startWikipediaPage(items.get(position).artist);
+                    }
                     return true;
-                }
-                                           }
+                });
+
+                menu.getMenu().add("add album to favorites");//submenu
+                menu.getMenu().add("add album");//submenu
+                menu.getMenu().add("wikipedia");//submenu
+                menu.show();
+            });
+            rowView.setOnLongClickListener(v -> {
+                PopupMenu menu = new PopupMenu(v.getContext(), v);
+
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getTitle().toString().equals("add album")) {
+                            AddAlbumToPlaylist(position);
+                        }else
+                        if (item.getTitle().toString().equals("add album to favorites")) {
+                            SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+
+                        }else
+                        if (item.getTitle().toString().equals("wikipedia")) {
+                            MainActivity.startWikipediaPage(items.get(position).artist);
+                        }
+                        return true;
+                    }
+                });
+
+                menu.getMenu().add("add album to favorites");//submenu
+                menu.getMenu().add("add album");//submenu
+                menu.getMenu().add("wikipedia");//submenu
+                menu.show();
+                return true;
+            }
             );
                     return rowView;
         }
