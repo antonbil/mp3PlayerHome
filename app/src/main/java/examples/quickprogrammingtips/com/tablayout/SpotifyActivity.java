@@ -86,6 +86,7 @@ import kaaes.spotify.webapi.android.models.Image;
 import kaaes.spotify.webapi.android.models.Pager;
 import kaaes.spotify.webapi.android.models.Track;
 import mpc.DatabaseListThread;
+import mpc.MPC;
 import mpc.MPCDatabaseListListener;
 import mpc.MPCStatus;
 import retrofit.Callback;
@@ -550,126 +551,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         albumsListview = (ListView) findViewById(R.id.albums_listview);
         albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        albumAdapter = new PlanetAdapter(albumList, this,albumTracks) {
-            @Override
-            public void removeUp(int counter) {
-                removeUplist(albumAdapter, albumsListview,counter,getThis);
-            }
-
-            @Override
-            public void onClickFunc(int counter) {
-                if (displayMpd){
-                    MainActivity mainActivity = MainActivity.getThis;
-                    Mp3File mp3File = mainActivity.getLogic().getPlaylistFiles().get(counter);
-                    mainActivity.getLogic().getMpc().play(counter);
-                    //mainActivity.newMpdCall(mp3File, counter, mainActivity.getString(R.string.command_play));
-                    mainActivity.getLogic().getMpc().play();
-                    return;
-                }
-                Log.v("samba","counter:"+counter);
-                currentTrack=counter;
-                if (albumVisible)
-                    try{
-                        String s = albumIds.get(counter);
-                        boolean clear=false;
-                        boolean ret=false;
-                        boolean play=true;
-                        ret = playMpdAlbum(s, clear, ret, play);
-                        if (!ret)
-                            getAlbumtracksFromSpotify(counter);
-
-
-
-            } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
-                else {
-                    stopMpd();
-                    //playlistGotoPosition(counter);
-                    playAtPosition(counter);
-                }
-            }
-
-            @Override
-            public void removeDown(int counter) {
-                removeDownlist(albumAdapter, albumsListview,counter, getThis);
-            }
-
-            @Override
-            public void removeAlbum(int counter) {
-                SpotifyActivity.removeAlbum(albumAdapter, counter, albumsListview,getThis);
-            }
-
-            @Override
-            public void addAlbumToFavoritesAlbum(int counter) {
-                addAlbumToFavorites(Favorite.SPOTIFYALBUM + albumIds.get(counter), artistName + "-" + albumList.get(counter));
-
-            }
-
-            @Override
-            public void addAlbumToFavoritesTrack(int counter) {
-                addAlbumToFavoritesTrackwise(counter);
-
-            }
-
-            @Override
-            public void removeTrack(int counter) {
-                removeTrackSpotify(counter);
-                refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
-            }
-
-            @Override
-            public void displayArtist(int counter) {
-                try{
-                    String s = tracksPlaylist.get(counter).artists.get(0).name;
-                    setVisibility(View.VISIBLE);
-                    listAlbumsForArtist(s);
-                } catch (Exception e) {
-                    Log.v("samba", Log.getStackTraceString(e));
-                }
-            }
-
-            @Override
-            public void displayArtistWikipedia(int counter) {
-                    String s = tracksPlaylist.get(counter).artists.get(0).name;
-                    MainActivity.startWikipediaPage(s);
-            }
-
-            @Override
-            public void replaceAndPlayAlbum(int counter) {
-                clearSpotifyPlaylist();
-                //Log.v("samba","end removing");
-                getAlbumtracksFromSpotify(counter);
-            }
-
-            @Override
-            public void addAndPlayAlbum(int counter) {
-
-                getAlbumtracksFromSpotify(counter);
-            }
-
-            @Override
-            public void albumArtistWikipedia(int counter) {
-                    MainActivity.startWikipediaPage(artistName);
-            }
-
-            @Override
-            public void addAlbum(int counter) {
-                addAlbumStatic(counter,albumAdapter, albumsListview);
-            }
-
-            @Override
-            public void addAlbumNoplay(int counter) {
-                String uri = albumIds.get(counter);
-                Log.v("samba","add"+uri);
-                String prefix="spotify:album:";
-                AddSpotifyItemToPlaylist(prefix, uri);
-                //refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
-            }
-        };
-        albumAdapter.setDisplayCurrentTrack(false);
-        //albumAdapter.setDisplayCurrentTrack(true);
-        albumsListview.setAdapter(albumAdapter);
+            setAdapterForSpotify();
 
         albumsListview.setOnItemClickListener(cl);
         relatedArtistsListView = (ListView) findViewById(R.id.relatedartists_listview);
@@ -846,13 +728,14 @@ public class SpotifyActivity extends AppCompatActivity implements
                             String title = item.getTitle().toString();
                             if ((title.equals("tracklist"))) {
                                 displayMpd=false;
+                                setAdapterForSpotify();
                                 String hartistName=artistName;
                                 refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
                                 setVisibility(View.GONE);
                                 artistName=hartistName;
                             } else
                             if ((title.equals("mpdlist"))) {
-                                displayMpd(albumAdapter, albumsListview);
+                                displayMpd(albumsListview);
                             }else
                             if ((title.equals("albumlist"))) {
                                 if (displayMpd){
@@ -862,6 +745,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                                             artistName = playlistFiles.get(0).getArtist();
                                     }
                                 }
+                                setAdapterForSpotify();
                                 displayAlbums();
                                 displayMpd=false;
                             }else
@@ -916,9 +800,202 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
             nextCommand="";
         }
+    private void setAdapterForMpd() {
+        albumAdapter = new PlanetAdapter(albumList, this,albumTracks) {
+            @Override
+            public void removeUp(int counter) {
+                String message = "delete 0:" + (counter + 1);
+                //Log.v("samba", message);
+                MainActivity.getThis.getLogic().getMpc().enqueCommands(new ArrayList<String>(Arrays.asList((message))));
+            }
 
-    private void displayMpd(PlanetAdapter albumAdapter, ListView albumsListview) {
+            @Override
+            public void onClickFunc(int counter) {
+                MPC mpc = MainActivity.getThis.getLogic().getMpc();
+                mpc.play(counter);
+                mpc.play();
+            }
+
+            @Override
+            public void removeDown(int counter) {
+
+            }
+
+            @Override
+            public void removeAlbum(int counter) {
+
+            }
+
+            @Override
+            public void addAlbumToFavoritesAlbum(int counter) {
+
+            }
+
+            @Override
+            public void addAlbumToFavoritesTrack(int counter) {
+
+            }
+
+            @Override
+            public void removeTrack(int counter) {
+
+            }
+
+            @Override
+            public void displayArtist(int counter) {
+
+            }
+
+            @Override
+            public void displayArtistWikipedia(int counter) {
+
+            }
+
+            @Override
+            public void replaceAndPlayAlbum(int counter) {
+
+            }
+
+            @Override
+            public void addAndPlayAlbum(int counter) {
+
+            }
+
+            @Override
+            public void albumArtistWikipedia(int counter) {
+
+            }
+
+            @Override
+            public void addAlbum(int counter) {
+
+            }
+
+            @Override
+            public void addAlbumNoplay(int counter) {
+
+            }
+        };
+        albumAdapter.setDisplayCurrentTrack(false);
+        albumsListview.setAdapter(albumAdapter);
+        }
+
+    private void setAdapterForSpotify() {
+        albumAdapter = new PlanetAdapter(albumList, this,albumTracks) {
+            @Override
+            public void removeUp(int counter) {
+                removeUplist(albumAdapter, albumsListview,counter,getThis);
+            }
+
+            @Override
+            public void onClickFunc(int counter) {
+                currentTrack=counter;
+                if (albumVisible)
+                    try{
+                        String s = albumIds.get(counter);
+                        boolean clear=false;
+                        boolean ret=false;
+                        boolean play=true;
+                        ret = playMpdAlbum(s, clear, ret, play);
+                        if (!ret)
+                            getAlbumtracksFromSpotify(counter);
+
+
+
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+            }
+                else {
+                    stopMpd();
+                    //playlistGotoPosition(counter);
+                    playAtPosition(counter);
+                }
+            }
+
+            @Override
+            public void removeDown(int counter) {
+                removeDownlist(albumAdapter, albumsListview,counter, getThis);
+            }
+
+            @Override
+            public void removeAlbum(int counter) {
+                SpotifyActivity.removeAlbum(albumAdapter, counter, albumsListview,getThis);
+            }
+
+            @Override
+            public void addAlbumToFavoritesAlbum(int counter) {
+                addAlbumToFavorites(Favorite.SPOTIFYALBUM + albumIds.get(counter), artistName + "-" + albumList.get(counter));
+
+            }
+
+            @Override
+            public void addAlbumToFavoritesTrack(int counter) {
+                addAlbumToFavoritesTrackwise(counter);
+
+            }
+
+            @Override
+            public void removeTrack(int counter) {
+                removeTrackSpotify(counter);
+                refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+            }
+
+            @Override
+            public void displayArtist(int counter) {
+                try{
+                    String s = tracksPlaylist.get(counter).artists.get(0).name;
+                    setVisibility(View.VISIBLE);
+                    listAlbumsForArtist(s);
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
+            }
+
+            @Override
+            public void displayArtistWikipedia(int counter) {
+                    String s = tracksPlaylist.get(counter).artists.get(0).name;
+                    MainActivity.startWikipediaPage(s);
+            }
+
+            @Override
+            public void replaceAndPlayAlbum(int counter) {
+                clearSpotifyPlaylist();
+                //Log.v("samba","end removing");
+                getAlbumtracksFromSpotify(counter);
+            }
+
+            @Override
+            public void addAndPlayAlbum(int counter) {
+
+                getAlbumtracksFromSpotify(counter);
+            }
+
+            @Override
+            public void albumArtistWikipedia(int counter) {
+                    MainActivity.startWikipediaPage(artistName);
+            }
+
+            @Override
+            public void addAlbum(int counter) {
+                addAlbumStatic(counter,albumAdapter, albumsListview);
+            }
+
+            @Override
+            public void addAlbumNoplay(int counter) {
+                String uri = albumIds.get(counter);
+                Log.v("samba","add"+uri);
+                String prefix="spotify:album:";
+                AddSpotifyItemToPlaylist(prefix, uri);
+                //refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+            }
+        };
+        albumAdapter.setDisplayCurrentTrack(false);
+        albumsListview.setAdapter(albumAdapter);
+    }
+
+    private void displayMpd(ListView albumsListview) {
         displayMpd=true;
+        setAdapterForMpd();
         albumAdapter.setAlbumVisible(false);
             try{
                 albumList.clear();
@@ -2190,6 +2267,9 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
                         }
+                        if (SpotifyActivity.getThis.displayMpd)
+                            if (albumTracks.size()!=logic.getPlaylistFiles().size())
+                                SpotifyActivity.getThis.displayMpd(albumsListview);
                         albumAdapter.notifyDataSetChanged();
 
                     } catch (Exception e) {
