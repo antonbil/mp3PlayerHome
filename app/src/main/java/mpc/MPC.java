@@ -95,7 +95,7 @@ public class MPC {
 			@Override
 			public void run() {
 				MPCStatus s=mainObject.getLogic().getMpc().getStatusSynch();
-				if (!s.playing) {
+				if ((s!=null)&&!s.playing) {
 					Log.v("samba","not playing 2");
 					if (!first) {
 						try {

@@ -22,7 +22,6 @@ import java.util.List;
 import examples.quickprogrammingtips.com.tablayout.adapters.OnFlingGestureListener;
 
 public abstract class PlanetAdapter extends ArrayAdapter<String> {
-    //String previousAlbum="";
     private final ArrayList<PlaylistItem> tracksPlaylist;
     private boolean displayCurrentTrack = true;
     int currentItem = -1;
@@ -32,7 +31,6 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         this.currentItem = i;
     }
 
-    //private List<String> planetList;
     private Context context;
     private AppCompatActivity getThis;
 
@@ -56,12 +54,9 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void albumArtistWikipedia(int counter);
     public abstract void addAlbum(int counter);
     public abstract void addAlbumNoplay(int counter);
-    float x1,x2;
-    float y1, y2;
 
     public PlanetAdapter(List<String> planetList, AppCompatActivity ctx, ArrayList<PlaylistItem> tracksPlaylist) {
         super(ctx, R.layout.spotifylist, planetList);
-        // this.planetList = planetList;
         this.tracksPlaylist=tracksPlaylist;
         this.context = ctx;
         this.getThis=ctx;
@@ -83,19 +78,10 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 
         holder.image = (ImageView) convertView.findViewById(R.id.spotifylistimageView);
         holder.name = (TextView) convertView.findViewById(R.id.name);
-        //TextView tv = (TextView) convertView.findViewById(R.id.name);
+
         convertView.setTag(holder);
-        //String p = planetList.get(position);
-        //if (position==currentItem){
-        //tv.setTextColor(Color.BLUE);}
-        // else tv.setTextColor(Color.WHITE);
-        //holder.name.setText(p);
-        //TextView nr = (TextView) convertView.findViewById(R.id.number);
-        //if (position==currentItem){
-        //    nr.setTextColor(Color.BLUE);}
-        //else nr.setTextColor(Color.WHITE);
+
         holder.pos.setVisibility(View.VISIBLE);
-        //if (displayCurrentTrack)
         try {
             PlaylistItem t = tracksPlaylist.get(position);
             holder.name.setText(t.text);
@@ -108,13 +94,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                     @Override
                     public void setImage(final Bitmap logo) {
                         holder.image.setImageBitmap(logo);
-                        holder.image.setOnClickListener(new View.OnClickListener() {
-
-                            @Override
-                            public void onClick(View arg0) {
-                                MainActivity.displayLargeImage(getThis, logo);
-                            }
-                        });
+                        holder.image.setOnClickListener(arg0 -> MainActivity.displayLargeImage(getThis, logo));
                     }
                 }.execute(t.url);
             } else
@@ -122,8 +102,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         } catch (Exception e) {
             holder.image.setVisibility(View.GONE);
         }
-        //else
-        //    holder.image.setVisibility(View.GONE);
+
         if (displayCurrentTrack && (position == currentItem))
             convertView.setBackgroundColor(Color.rgb(40, 40, 40));//
         else if ((position & 1) == 0) {
@@ -166,26 +145,21 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         };
 
         holder.pos.setText("" + (position + 1));
-        convertView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (flingListener.onTouch(v, event)) {
-                    // if gesture detected, ignore other touch events
-                    return true;
-                } //else {
-                    //Log.v("samba","nofling");
-
-                int action = MotionEventCompat.getActionMasked(event);
-                if (action == MotionEvent.ACTION_DOWN) {
-                    // normal touch events
-                    onClickFunc(position);
-                    return false;
-                }
+        convertView.setOnTouchListener((v, event) -> {
+            if (flingListener.onTouch(v, event)) {
+                // if gesture detected, ignore other touch events
                 return true;
+            } //else {
+                //Log.v("samba","nofling");
+
+            int action = MotionEventCompat.getActionMasked(event);
+            if (action == MotionEvent.ACTION_DOWN) {
+                // normal touch events
+                onClickFunc(position);
+                return false;
             }
-
-
-            });
+            return true;
+        });
 
 
         return convertView;
@@ -210,25 +184,20 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                         menu.getMenu().add("remove album");
 
                         menu.show();
-                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        menu.setOnMenuItemClickListener(item1 -> {
+                            String title1 = item1.getTitle().toString();
+                            if (title1.equals("remove top")) {
+                                removeUp(position);
+                            } else if (title1.equals("remove bottom")) {
+                                removeDown(position);
 
-                                                            @Override
-                                                            public boolean onMenuItemClick(MenuItem item) {
-                                                                String title = item.getTitle().toString();
-                                                                if (title.equals("remove top")) {
-                                                                    removeUp(position);
-                                                                } else if (title.equals("remove bottom")) {
-                                                                    removeDown(position);
-
-                                                                } else if (title.equals("remove album")) {
-                                                                    removeAlbum(position);
-                                                                } else if (title.equals("remove track")) {
-                                                                    removeTrack(position);
-                                                                }
-                                                                return true;
-                                                            }
-                                                        }
-
+                            } else if (title1.equals("remove album")) {
+                                removeAlbum(position);
+                            } else if (title1.equals("remove track")) {
+                                removeTrack(position);
+                            }
+                            return true;
+                        }
 
 
                         );
@@ -252,34 +221,30 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("display artist");
             menu.getMenu().add("wikipedia");
         } else {
-            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")){
-                        Toast.makeText(v.getContext(), "not implemented yet", Toast.LENGTH_LONG).show();
-                        return false;
-                    }
-
-                    if (item.getTitle().toString().equals("replace and play")) {
-                        replaceAndPlayAlbum(position);
-                    } else if (item.getTitle().toString().equals("add and play")) {
-                        addAndPlayAlbum(position);
-                    } else if (item.getTitle().toString().equals("wikipedia artist")) {
-                        albumArtistWikipedia(position);
-                    } else if (item.getTitle().toString().equals("add")) {
-                        //Toast.makeText(getThis.getApplicationContext(), "Not implemented yet",
-                        //        Toast.LENGTH_SHORT).show();
-                        addAlbumNoplay(position);
-
-                        //addAlbum(position);
-                    }
-                    else if (item.getTitle().toString().equals("add album to favorites")) {
-                        addAlbumToFavoritesAlbum(position);
-                    }
-
-                    return true;
+            menu.setOnMenuItemClickListener(item -> {
+                if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")){
+                    Toast.makeText(v.getContext(), "not implemented yet", Toast.LENGTH_LONG).show();
+                    return false;
                 }
+
+                if (item.getTitle().toString().equals("replace and play")) {
+                    replaceAndPlayAlbum(position);
+                } else if (item.getTitle().toString().equals("add and play")) {
+                    addAndPlayAlbum(position);
+                } else if (item.getTitle().toString().equals("wikipedia artist")) {
+                    albumArtistWikipedia(position);
+                } else if (item.getTitle().toString().equals("add")) {
+                    //Toast.makeText(getThis.getApplicationContext(), "Not implemented yet",
+                    //        Toast.LENGTH_SHORT).show();
+                    addAlbumNoplay(position);
+
+                    //addAlbum(position);
+                }
+                else if (item.getTitle().toString().equals("add album to favorites")) {
+                    addAlbumToFavoritesAlbum(position);
+                }
+
+                return true;
             });
 
             menu.getMenu().add("replace and play");//submenu
