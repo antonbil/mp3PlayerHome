@@ -9,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -23,7 +22,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class NewAlbumsActivity extends Activity {
@@ -50,12 +48,7 @@ public class NewAlbumsActivity extends Activity {
         final FloatingActionButton fab = (FloatingActionButton)
 
                 findViewById(R.id.fabspotifylist);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SpotifyActivity.showPlayMenu(getThis,fab);
-            }
-        });
+        fab.setOnClickListener(view -> SpotifyActivity.showPlayMenu(getThis,fab));
 
         final ListAdapter customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
@@ -69,14 +62,10 @@ public class NewAlbumsActivity extends Activity {
                 yourListView.setAdapter(customAdapter);
                 try{
                 generateList(newAlbums);
-                    runOnUiThread(new Runnable() {
+                    runOnUiThread(() -> {
+                        loadingdialog.dismiss();
+                        customAdapter.notifyDataSetChanged();
 
-                        @Override
-                        public void run() {
-                            loadingdialog.dismiss();
-                            customAdapter.notifyDataSetChanged();
-
-                        }
                     });
                 }catch(Exception e){
                     loadingdialog.dismiss();
@@ -90,32 +79,32 @@ public class NewAlbumsActivity extends Activity {
 
     }
     public void generateList(ArrayList<NewAlbum> newAlbums){
-        Document doc = null;
+
         try {
-            doc = Jsoup.connect("http://everynoise.com/spotify_new_albums.html").get();
-        } catch (IOException e) {
+            Document doc = Jsoup.connect("http://everynoise.com/spotify_new_albums.html").get();
+
+            Elements trackelements = doc.getElementsByClass("album");
+            //ArrayList<String> ids = new ArrayList<String>();
+            for (Element element : trackelements) {
+                Elements links = element.select("a[href]"); // a with href
+                String s = links.get(0).attr("href");
+
+                String artist=element.getElementsByClass("creditartist").text();
+                String album=element.getElementsByClass("creditrelease").text().replace("<i>","").replace("</i>","");
+                //ids.add(artist+"-"+album);
+                newAlbums.add(new NewAlbum(s,artist,album));
+            }
+        } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
-
-        Elements trackelements = doc.getElementsByClass("album");;
-        //ArrayList<String> ids = new ArrayList<String>();
-        for (Element element : trackelements) {
-            Elements links = element.select("a[href]"); // a with href
-            String s = links.get(0).attr("href");
-
-            String artist=element.getElementsByClass("creditartist").text();
-            String album=element.getElementsByClass("creditrelease").text().replace("<i>","").replace("</i>","");
-            //ids.add(artist+"-"+album);
-            newAlbums.add(new NewAlbum(s,artist,album));
-        }
-    };
+    }
      public class ListAdapter extends ArrayAdapter<NewAlbum> {
         private Context context;
         ArrayList<NewAlbum> items;
 
-        public ListAdapter(Context context, int textViewResourceId) {
+        /*public ListAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
-        }
+        }*/
 
         public ListAdapter(Context context, int resource, ArrayList<NewAlbum> items) {
             super(context, resource, items);
@@ -168,10 +157,10 @@ public class NewAlbumsActivity extends Activity {
                                 return true;
                             });
 
-                            menu.getMenu().add("add album to favorites");//submenu
-                            menu.getMenu().add("add album");//submenu
-                            menu.getMenu().add("large image");//submenu
-                            menu.getMenu().add("wikipedia");//submenu
+                            menu.getMenu().add("add album to favorites");
+                            menu.getMenu().add("add album");
+                            menu.getMenu().add("large image");
+                            menu.getMenu().add("wikipedia");
                             menu.show();
                         });
                     }
@@ -183,49 +172,13 @@ public class NewAlbumsActivity extends Activity {
             image.setOnClickListener(v -> {
                 PopupMenu menu = new PopupMenu(v.getContext(), v);
 
-                menu.setOnMenuItemClickListener(item -> {
-                    if (item.getTitle().toString().equals("add album")) {
-                        AddAlbumToPlaylist(position);
-                    }else
-                    if (item.getTitle().toString().equals("add album to favorites")) {
-                        SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
-
-                    }else
-                    if (item.getTitle().toString().equals("wikipedia")) {
-                        MainActivity.startWikipediaPage(items.get(position).artist);
-                    }
-                    return true;
-                });
-
-                menu.getMenu().add("add album to favorites");//submenu
-                menu.getMenu().add("add album");//submenu
-                menu.getMenu().add("wikipedia");//submenu
+                basicMenu(position, menu);
                 menu.show();
             });
             rowView.setOnLongClickListener(v -> {
                 PopupMenu menu = new PopupMenu(v.getContext(), v);
 
-                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getTitle().toString().equals("add album")) {
-                            AddAlbumToPlaylist(position);
-                        }else
-                        if (item.getTitle().toString().equals("add album to favorites")) {
-                            SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
-
-                        }else
-                        if (item.getTitle().toString().equals("wikipedia")) {
-                            MainActivity.startWikipediaPage(items.get(position).artist);
-                        }
-                        return true;
-                    }
-                });
-
-                menu.getMenu().add("add album to favorites");//submenu
-                menu.getMenu().add("add album");//submenu
-                menu.getMenu().add("wikipedia");//submenu
+                        basicMenu(position, menu);
                 menu.show();
                 return true;
             }
@@ -233,17 +186,37 @@ public class NewAlbumsActivity extends Activity {
                     return rowView;
         }
 
+         private void basicMenu(int position, PopupMenu menu) {
+             menu.setOnMenuItemClickListener(item -> {
+                 if (item.getTitle().toString().equals("add album")) {
+                     AddAlbumToPlaylist(position);
+                 }else
+                 if (item.getTitle().toString().equals("add album to favorites")) {
+                     SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+
+                 }else
+                 if (item.getTitle().toString().equals("wikipedia")) {
+                     MainActivity.startWikipediaPage(items.get(position).artist);
+                 }
+                 return true;
+             });
+
+             menu.getMenu().add("add album to favorites");
+             menu.getMenu().add("add album");
+             menu.getMenu().add("wikipedia");
+         }
+
          public void AddAlbumToPlaylist(int position) {
-             String uri = items.get(position).url.replace("spotify:album:", "");//SpotifyActivity.albumIds.get(counter);
+             String uri = items.get(position).url.replace("spotify:album:", "");
              String prefix="spotify:album:";
              SpotifyActivity.AddSpotifyItemToPlaylist(prefix, uri);
              SpotifyActivity.refreshPlaylistFromSpotify();
          }
      }
     public void processAlbum(NewAlbum album){
-        SpotifyActivity.getThis.artistName=album.artist;
+        SpotifyActivity.artistName=album.artist;
         //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""); Toast.LENGTH_SHORT).show();
-        SpotifyActivity.getThis.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this, null, null);
+        SpotifyActivity.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this, null, null);
 
-    };
+    }
 }
