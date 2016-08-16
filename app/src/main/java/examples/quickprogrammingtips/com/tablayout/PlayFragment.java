@@ -135,20 +135,12 @@ public class PlayFragment extends Fragment implements MpdInterface {
             enqueueSingleCommand("move " + (position) + " " + (position + 1));
         }
         if (command.equals(getString(R.string.playlist_removeabum))){
-            int top=logic.getPlaylistFiles().size()+1;
-            int bottom=0;
-            for (int i=0;i<logic.getPlaylistFiles().size();i++){
-                if (mp3File.getAlbum().equals(logic.getPlaylistFiles().get(i).getAlbum())&&mp3File.getArtist().equals(logic.getPlaylistFiles().get(i).getArtist())){
-                    if(top>i)top=i;
-                    if (bottom<i)bottom=i;
-                }
-            }
-
-            String message = "delete " + (top) + ":" + (bottom + 1);
-            Log.v("samba", message);
-            enqueueSingleCommand(message);
+            String album = mp3File.getAlbum();
+            String artist = mp3File.getArtist();
+            logic.removeAlbum(album, artist);
         }
     }
+
 
     private void export(int position) {
         //save current playlist Log.v("samba", "export:" + position);

@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -30,6 +31,20 @@ public class Logic  implements SambaInterface {
     public MPCStatus mpcStatus;
     public static boolean isMp3File(String name) {
         return name.endsWith(".mp3")|| name.endsWith(".m4a")|| name.endsWith(".flac")|| name.endsWith(".mpc");
+    }
+    public void removeAlbum(String album, String artist) {
+        int top= getPlaylistFiles().size()+1;
+        int bottom=0;
+        for (int i = 0; i< getPlaylistFiles().size(); i++){
+            if (album.equals(getPlaylistFiles().get(i).getAlbum())&& artist.equals(getPlaylistFiles().get(i).getArtist())){
+                if(top>i)top=i;
+                if (bottom<i)bottom=i;
+            }
+        }
+
+        String message = "delete " + (top) + ":" + (bottom + 1);
+        Log.v("samba", message);
+        getMpc().enqueCommands(new ArrayList<String>(Arrays.asList(message)));
     }
 
     @NonNull

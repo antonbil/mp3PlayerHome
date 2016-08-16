@@ -806,24 +806,33 @@ public class SpotifyActivity extends AppCompatActivity implements
             public void removeUp(int counter) {
                 String message = "delete 0:" + (counter + 1);
                 //Log.v("samba", message);
-                MainActivity.getThis.getLogic().getMpc().enqueCommands(new ArrayList<String>(Arrays.asList((message))));
+                enqueuecommand((message));
             }
 
             @Override
             public void onClickFunc(int counter) {
-                MPC mpc = MainActivity.getThis.getLogic().getMpc();
+                MPC mpc = getLogic().getMpc();
                 mpc.play(counter);
                 mpc.play();
             }
 
+            private Logic getLogic() {
+                return MainActivity.getThis.getLogic();
+            }
+
             @Override
             public void removeDown(int counter) {
+                String message = "delete " + (counter) + ":" + (getLogic().getPlaylistFiles().size() + 1);
+                enqueuecommand((message));
 
             }
 
             @Override
             public void removeAlbum(int counter) {
-
+                Logic logic= getLogic();
+                String album = logic.getPlaylistFiles().get(counter).getAlbum();
+                String artist = logic.getPlaylistFiles().get(counter).getArtist();
+                logic.removeAlbum(album, artist);
             }
 
             @Override
@@ -838,17 +847,30 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void removeTrack(int counter) {
+                String message = "delete " + (counter);
+                enqueuecommand(message);
+            }
 
+            private void enqueuecommand(String message) {
+                getLogic().getMpc().enqueCommands(new ArrayList<String>(Arrays.asList(message)));
             }
 
             @Override
             public void displayArtist(int counter) {
-
+                try{
+                    displayMpd=false;
+                    String s = getLogic().getPlaylistFiles().get(counter).getArtist();
+                    setVisibility(View.VISIBLE);
+                    listAlbumsForArtist(s);
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
             }
 
             @Override
             public void displayArtistWikipedia(int counter) {
-
+                String s = getLogic().getPlaylistFiles().get(counter).getArtist();
+                MainActivity.startWikipediaPage(s);
             }
 
             @Override
@@ -863,7 +885,6 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void albumArtistWikipedia(int counter) {
-
             }
 
             @Override
@@ -2548,15 +2569,32 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         LayoutInflater inflater = getThis1.getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.play_spotify, null);
-        alertLayout.findViewById(R.id.playspotify).setOnClickListener(v -> playSpotify());
-        alertLayout.findViewById(R.id.stopspotify).setOnClickListener(v -> stopSpotifyPlaying(ipAddress));
-        alertLayout.findViewById(R.id.pausespotify).setOnClickListener(v -> playPauseSpotify(ipAddress));
-        alertLayout.findViewById(R.id.previousspotify).setOnClickListener(v -> previousSpotifyPlaying(ipAddress));
-        alertLayout.findViewById(R.id.nextspotify).setOnClickListener(v -> nextSpotifyPlaying(ipAddress));
-        alertLayout.findViewById(R.id.volumespotify).setOnClickListener(v -> setVolume(getThis1));
-        alertLayout.findViewById(R.id.positionspotify).setOnClickListener(v -> seekPlay(getThis1));
+        String title = "Spotify Play";
+        MpcStatus mpcStatus = new MpcStatus().invoke();
+        boolean mpdPlaying = mpcStatus.isMpdPlaying();
+        Logic logic = mpcStatus.getLogic();
+        if (!mpdPlaying) {
+            alertLayout.findViewById(R.id.playspotify).setOnClickListener(v -> playSpotify());
+            alertLayout.findViewById(R.id.stopspotify).setOnClickListener(v -> stopSpotifyPlaying(ipAddress));
+            alertLayout.findViewById(R.id.pausespotify).setOnClickListener(v -> playPauseSpotify(ipAddress));
+            alertLayout.findViewById(R.id.previousspotify).setOnClickListener(v -> previousSpotifyPlaying(ipAddress));
+            alertLayout.findViewById(R.id.nextspotify).setOnClickListener(v -> nextSpotifyPlaying(ipAddress));
+            alertLayout.findViewById(R.id.volumespotify).setOnClickListener(v -> setVolume(getThis1));
+            alertLayout.findViewById(R.id.positionspotify).setOnClickListener(v -> seekPlay(getThis1));
+        } else{
+            title = "Mpd Play";
+            alertLayout.findViewById(R.id.playspotify).setOnClickListener(v -> {logic.getMpc().play();
+                logic.setPaused(false);});
+            alertLayout.findViewById(R.id.stopspotify).setOnClickListener(v -> {logic.getMpc().pause();
+            logic.setPaused(true);});
+            alertLayout.findViewById(R.id.pausespotify).setOnClickListener(v -> MainActivity.getThis.playPause());
+            alertLayout.findViewById(R.id.previousspotify).setOnClickListener(v -> logic.getMpc().previous());
+            alertLayout.findViewById(R.id.nextspotify).setOnClickListener(v -> logic.getMpc().next());
+            alertLayout.findViewById(R.id.volumespotify).setOnClickListener(v -> MainActivity.getThis.setVolume(getThis1));
+            //alertLayout.findViewById(R.id.positionspotify).setOnClickListener(v -> seekPlay(getThis1));
+        }
         AlertDialog.Builder alert = new AlertDialog.Builder(getThis1);
-        alert.setTitle("Spotify Play");
+        alert.setTitle(title);
         // this is set the view from XML inside AlertDialog
         alert.setView(alertLayout);
 
@@ -2565,6 +2603,25 @@ public class SpotifyActivity extends AppCompatActivity implements
         dialog.show();
     }
 
+    private static class MpcStatus {
+        private Logic logic;
+        private boolean mpdPlaying;
+
+        public Logic getLogic() {
+            return logic;
+        }
+
+        public boolean isMpdPlaying() {
+            return mpdPlaying;
+        }
+
+        public MpcStatus invoke() {
+            logic = MainActivity.getThis.getLogic();
+            MPCStatus status = logic.mpcStatus;
+            mpdPlaying = status.playing;
+            return this;
+        }
+    }
 }
 
 class PlaylistItem {

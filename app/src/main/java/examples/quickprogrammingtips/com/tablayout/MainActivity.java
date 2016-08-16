@@ -330,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         im.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setVolume();
+                setVolume(getThis);
             }
         });
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
@@ -683,7 +683,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             return true;
         }
         if (id == R.id.set_volume) {
-            setVolume();
+            setVolume(getThis);
         }
         if (id == R.id.spotify_playlist) {
             startPlaylistSpotify();
@@ -774,8 +774,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         new DatabaseCommand(logic.getMpc(), "find any \"" + searchString + "\"", dbFragment, true).run();
     }
 
-    public void setVolume() {
-        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+    public void setVolume(Activity activity) {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
         alert.setTitle("Volume");
 
