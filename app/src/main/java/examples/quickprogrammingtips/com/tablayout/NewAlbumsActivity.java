@@ -1,11 +1,11 @@
 package examples.quickprogrammingtips.com.tablayout;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,9 +24,9 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-public class NewAlbumsActivity extends Activity {
+public class NewAlbumsActivity extends AppCompatActivity {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
-    Activity getThis;
+    AppCompatActivity getThis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,7 +210,7 @@ public class NewAlbumsActivity extends Activity {
              String uri = items.get(position).url.replace("spotify:album:", "");
              String prefix="spotify:album:";
              SpotifyActivity.AddSpotifyItemToPlaylist(prefix, uri);
-             SpotifyActivity.refreshPlaylistFromSpotify();
+             SpotifyActivity.refreshPlaylistFromSpotify(1);
          }
      }
     public void processAlbum(NewAlbum album){

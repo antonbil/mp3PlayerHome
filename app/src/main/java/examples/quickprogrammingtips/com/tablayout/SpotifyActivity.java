@@ -132,6 +132,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static final String REDIRECT_URI = "testschema://callback";
     public static final String MPD = "mpd://";
     private static ArrayList<String> mainids;
+    private static int playingEngine;
     private SpotifyHeader spotifyHeader;
     public FillListviewWithValues fillListviewWithValues;
     public ArrayList<String> artistList = new ArrayList<>();
@@ -559,14 +560,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         relatedArtistsAdapter = new RelatedArtistAdapter<String>(this, android.R.layout.simple_list_item_1, artistList);
         relatedArtistsListView.setAdapter(relatedArtistsAdapter);
 
-            View playbutton = findViewById(R.id.playspotify);
-            View stopbutton = findViewById(R.id.stopspotify);
-            View playpausebutton = findViewById(R.id.pausespotify);
-            View previousbutton = findViewById(R.id.previousspotify);
-            View nextbutton = findViewById(R.id.nextspotify);
-            View volumebutton = findViewById(R.id.volumespotify);
-            View seekbutton = findViewById(R.id.positionspotify);
-            setListenersForButtons(this, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+            playButtonsAtBottom();
 
             /*ImageButton refreshspotifyButton = (ImageButton) findViewById(R.id.refreshspotifyButton);
             refreshspotifyButton.setOnClickListener(v -> {
@@ -741,9 +735,11 @@ public class SpotifyActivity extends AppCompatActivity implements
                                 refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
                                 setVisibility(View.GONE);
                                 artistName=hartistName;
+                                playButtonsAtBottom();
                             } else
                             if ((title.equals("mpdlist"))) {
                                 displayMpd(albumsListview);
+                                playButtonsAtBottom();
                             }else
                             if ((title.equals("albumlist"))) {
                                 if (displayMpd){
@@ -756,6 +752,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                                 setAdapterForSpotify();
                                 displayAlbums();
                                 displayMpd=false;
+                                playButtonsAtBottom();
                             }else
                             if ((title.equals("return to main"))) {
                                 getThis.finish();
@@ -808,6 +805,18 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
             nextCommand="";
         }
+
+    private void playButtonsAtBottom() {
+        View playbutton = findViewById(R.id.playspotify);
+        View stopbutton = findViewById(R.id.stopspotify);
+        View playpausebutton = findViewById(R.id.pausespotify);
+        View previousbutton = findViewById(R.id.previousspotify);
+        View nextbutton = findViewById(R.id.nextspotify);
+        View volumebutton = findViewById(R.id.volumespotify);
+        View seekbutton = findViewById(R.id.positionspotify);
+        setListenersForButtons(this, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+    }
+
     private void setAdapterForMpd() {
         albumAdapter = new PlanetAdapter(albumList, this,albumTracks) {
             @Override
@@ -1031,23 +1040,24 @@ public class SpotifyActivity extends AppCompatActivity implements
                 albumTracks.clear();
                 JSONArray items = null;
                 tracksPlaylist.clear();
-                String artistalbum="";
+                String prevartist="";
+                String prevalbum="";
                 for (Mp3File s:MainActivity.getThis.getLogic().getPlaylistFiles()){
                     final PlaylistItem pi=new PlaylistItem();
-                    String naa=s.getArtist()+s.getAlbum();
+                    String artist=s.getArtist();
+                    String naalbum=s.getAlbum();
                     String text="";
-                    if (naa.equals(artistalbum)) {
-                        pi.pictureVisible = false;
-                    } else {
-                        pi.pictureVisible = true;
-                        text=String.format("(%s-%s)",s.getArtist(),s.getAlbum());
+                    if (!artist.equals(prevartist)) {
+                        text=String.format("(%s)",s.getArtist());
                     }
-                    artistalbum=naa;
+                    pi.pictureVisible=!naalbum.equals(prevalbum);
+                    prevartist=artist;
+                    prevalbum=naalbum;
                     pi.id=s.getFile();
                     String file=s.getFile();
                     file=file.substring(0,file.lastIndexOf("/"));
                     file="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
-                    Log.v("samba",file);
+                    //Log.v("samba",file);
                     pi.url=file;
                     pi.text=String.format("%s(%s)",s.getTitle()+text,s.getTimeNice());
                     albumList.add(pi.text);
@@ -1925,7 +1935,7 @@ public class SpotifyActivity extends AppCompatActivity implements
              //       "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetItems\", \"params\": { \"properties\": [\"title\", \"album\", \"artist\", \"duration\", \"thumbnail\",\"file\"], \"playlistid\": 0 }, \"id\": 1}\u200B",
              //       ipAddress + "?GetPLItemsAudio");
             //Log.v("samba", "refresh");
-            refreshPlaylistFromSpotify();
+            refreshPlaylistFromSpotify(1);
             //spotifyStartPosition=0;
             albumAdapter.setDisplayCurrentTrack(true);
             albumAdapter.notifyDataSetChanged();
@@ -1943,7 +1953,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     }
 
-    public static void refreshPlaylistFromSpotify() {
+    public static void refreshPlaylistFromSpotify(int nr) {
         try{
         JSONArray playlist = getPlaylist();
 
@@ -1953,6 +1963,11 @@ public class SpotifyActivity extends AppCompatActivity implements
         items = playlist;
         String prevAlbum = "";
         tracksPlaylist.clear();
+            if ((items==null)&&(nr<3)){
+                Handler handler = new Handler();
+                handler.postDelayed(() -> refreshPlaylistFromSpotify(nr+1), 1000);
+            }
+            else
         for (int i = 0; i < items.length(); i++) {
             final PlaylistItem pi=new PlaylistItem();
             pi.pictureVisible=false;
@@ -2161,7 +2176,9 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public static boolean isPlaying(){
-        return getState().equals("playing");
+        try {
+            return getState().equals("playing");
+        } catch (Exception e) {return false;}
     }
 
     @NonNull
@@ -2185,6 +2202,8 @@ public class SpotifyActivity extends AppCompatActivity implements
                                       ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, AppCompatActivity getThis,final SpotifyInterface getSpotifyInterface) {
             try {
                 if (isPlaying()) {//(speed.doubleValue() > 0) {
+                    if (playingEngine==2){SpotifyActivity.getThis.playButtonsAtBottom();}
+                    playingEngine=1;
                      String[] trid1 = getCurrentTrack();//
                     String trid=trid1[0];
                     totalTime = Integer.parseInt(trid1[1])/1000;
@@ -2252,6 +2271,8 @@ public class SpotifyActivity extends AppCompatActivity implements
                         Logic logic = MainActivity.getThis.getLogic();
                         MPCStatus status = logic.mpcStatus;
                         if (!status.playing) return;
+                        if (playingEngine==1){SpotifyActivity.getThis.playButtonsAtBottom();}
+                        playingEngine=2;
                         int songnr = status.song.intValue();
                         Mp3File currentSong = logic.getPlaylistFiles().get(songnr);
                         albumAdapter.setCurrentItem(songnr);
@@ -2475,8 +2496,22 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
         }
-    public static void seekPlay(Activity getThis) {
-        final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(getThis);
+    public static void seekPlay(AppCompatActivity getThis) {
+        if (!isPlaying()){
+            Toast.makeText(getThis, "spotify not playing!",
+                    Toast.LENGTH_SHORT).show();
+            seekPlayMpd(getThis);
+            return;
+        }
+        new Seek(getThis, currentTime, totalTime) {
+            @Override
+            void seekPos(int progress) {
+                seekPositionSpotify(ipAddress,progress*1000);
+            }
+        }.run();
+
+
+        /*final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(getThis);
 
         alert.setTitle("Seek");
 
@@ -2520,9 +2555,24 @@ public class SpotifyActivity extends AppCompatActivity implements
             dialog.dismiss();
         });
 
-        alert.show();
+        alert.show();*/
     }
-    ;
+    public static void seekPlayMpd(AppCompatActivity getThis) {
+        Logic logic = MainActivity.getThis.getLogic();
+        MPCStatus status = logic.mpcStatus;
+        if (!status.playing) return;
+        int songnr = status.song.intValue();
+        int time=status.time.intValue();
+        Mp3File currentSong = logic.getPlaylistFiles().get(songnr);
+        new Seek(getThis, time, currentSong.getTime()) {
+            @Override
+            void seekPos(int progress) {
+                String message = "seekcur " + (progress);
+                MainActivity.getThis.getLogic().getMpc().enqueCommands(new ArrayList<String>(Arrays.asList(message)));
+            }
+        }.run();
+    }
+
     public static void setVolume(Activity getThis) {
         final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(getThis);
 
@@ -2573,7 +2623,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
 
-    public static void showPlayMenu(final Activity getThis1,View view) {
+    public static void showPlayMenu(final AppCompatActivity getThis1,View view) {
 
         LayoutInflater inflater = getThis1.getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.play_spotify, null);
@@ -2596,12 +2646,13 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     @NonNull
-    private static String setListenersForButtons(Activity getThis1, View playbutton, View stopbutton, View playpausebutton, View previousbutton, View nextbutton, View volumebutton, View seekbutton) {
+    private static String setListenersForButtons(AppCompatActivity getThis1, View playbutton, View stopbutton, View playpausebutton, View previousbutton, View nextbutton, View volumebutton, View seekbutton) {
         String title = "Spotify Play";
         MpcStatus mpcStatus = new MpcStatus().invoke();
         boolean mpdPlaying = mpcStatus.isMpdPlaying();
         Logic logic = mpcStatus.getLogic();
-        if (!mpdPlaying) {
+        //isPlaying()
+        if (isPlaying()) {
             playbutton.setOnClickListener(v -> playSpotify());
             stopbutton.setOnClickListener(v -> stopSpotifyPlaying(ipAddress));
             playpausebutton.setOnClickListener(v -> playPauseSpotify(ipAddress));
@@ -2619,6 +2670,8 @@ public class SpotifyActivity extends AppCompatActivity implements
             previousbutton.setOnClickListener(v -> logic.getMpc().previous());
             nextbutton.setOnClickListener(v -> logic.getMpc().next());
             volumebutton.setOnClickListener(v -> MainActivity.getThis.setVolume(getThis1));
+            seekbutton.setOnClickListener(v -> seekPlayMpd(getThis1));
+            //seekPlayMpd(
             //alertLayout.findViewById(R.id.positionspotify).setOnClickListener(v -> seekPlay(getThis1));
         }
         return title;
@@ -2761,4 +2814,73 @@ class MyLeadingMarginSpan2 implements LeadingMarginSpan.LeadingMarginSpan2 {
     public int getLeadingMarginLineCount() {
         return lines;
     }
+}
+abstract class Seek{
+    abstract void seekPos(int progress);
+    AppCompatActivity getThis;
+    int position;
+    int max;
+    public Seek(AppCompatActivity getThis, int position, int max){
+        this.getThis=getThis;
+        this.position=position;
+        this.max=max;
+    }
+    public void run() {
+        Log.v("samba","trying to create alert");
+        /*Logic logic = MainActivity.getThis.getLogic();
+        MPCStatus status = logic.mpcStatus;
+        if (!status.playing) return;
+        int songnr = status.song.intValue();
+        int time=status.time.intValue();
+        Mp3File currentSong = logic.getPlaylistFiles().get(songnr);*/
+        AlertDialog.Builder alert = new AlertDialog.Builder(getThis/*.getSupportActionBar().getThemedContext()*/);
+
+        alert.setTitle("Seek");
+
+        LinearLayout linear = new LinearLayout(getThis);
+
+        linear.setOrientation(LinearLayout.VERTICAL);
+        final TextView text = new TextView(getThis);
+        text.setPadding(10, 10, 10, 10);
+
+        //Integer position = time;
+        text.setText(String.format("%s(%s)",niceTime(position),niceTime(max)));
+        SeekBar seek = new SeekBar(getThis);
+
+        seek.setMax(max);
+        seek.setProgress(position);
+        seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                text.setText(String.format("%s(%s)",niceTime(progress),niceTime(max)));
+                seekPos(progress);
+                //MainActivity.getThis.getLogic().getMpc().enqueCommands(new ArrayList<String>(Arrays.asList(message)));
+
+                //seekPositionSpotify(ipAddress,progress*1000);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        linear.addView(seek);
+        linear.addView(text);
+
+        alert.setView(linear);
+
+
+        alert.setPositiveButton("Ok", (dialog, id) -> {
+            dialog.dismiss();
+        });
+
+        alert.show();
+    }
+
 }

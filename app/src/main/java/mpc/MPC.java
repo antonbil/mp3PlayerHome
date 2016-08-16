@@ -74,6 +74,7 @@ public class MPC {
 	}
 
 	private void checkIfPlaying(final boolean first) {
+		SpotifyActivity.stopSpotifyPlaying(SpotifyActivity.checkAddress());
 		Log.v("samba","not playing before");
 		final MainActivity mainObject = MainActivity.getThis;
 		final Handler handler = new Handler(Looper.getMainLooper());
