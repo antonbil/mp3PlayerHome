@@ -2496,7 +2496,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
         }
-    public static void seekPlay(AppCompatActivity getThis) {
+    public static void seekPlay(Activity getThis) {
         if (!isPlaying()){
             Toast.makeText(getThis, "spotify not playing!",
                     Toast.LENGTH_SHORT).show();
@@ -2557,7 +2557,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         alert.show();*/
     }
-    public static void seekPlayMpd(AppCompatActivity getThis) {
+    public static void seekPlayMpd(Activity getThis) {
         Logic logic = MainActivity.getThis.getLogic();
         MPCStatus status = logic.mpcStatus;
         if (!status.playing) return;
@@ -2623,7 +2623,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
 
-    public static void showPlayMenu(final AppCompatActivity getThis1,View view) {
+    public static void showPlayMenu(final Activity getThis1,View view) {
 
         LayoutInflater inflater = getThis1.getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.play_spotify, null);
@@ -2646,7 +2646,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     @NonNull
-    private static String setListenersForButtons(AppCompatActivity getThis1, View playbutton, View stopbutton, View playpausebutton, View previousbutton, View nextbutton, View volumebutton, View seekbutton) {
+    private static String setListenersForButtons(Activity getThis1, View playbutton, View stopbutton, View playpausebutton, View previousbutton, View nextbutton, View volumebutton, View seekbutton) {
         String title = "Spotify Play";
         MpcStatus mpcStatus = new MpcStatus().invoke();
         boolean mpdPlaying = mpcStatus.isMpdPlaying();
@@ -2817,10 +2817,10 @@ class MyLeadingMarginSpan2 implements LeadingMarginSpan.LeadingMarginSpan2 {
 }
 abstract class Seek{
     abstract void seekPos(int progress);
-    AppCompatActivity getThis;
+    Activity getThis;
     int position;
     int max;
-    public Seek(AppCompatActivity getThis, int position, int max){
+    public Seek(Activity getThis, int position, int max){
         this.getThis=getThis;
         this.position=position;
         this.max=max;

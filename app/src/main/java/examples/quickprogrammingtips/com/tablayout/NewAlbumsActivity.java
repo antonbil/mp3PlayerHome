@@ -1,11 +1,11 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,9 +24,9 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-public class NewAlbumsActivity extends AppCompatActivity {
+public class NewAlbumsActivity extends Activity {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
-    AppCompatActivity getThis;
+    Activity getThis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class NewAlbumsActivity extends AppCompatActivity {
         final FloatingActionButton fab = (FloatingActionButton)
 
                 findViewById(R.id.fabspotifylist);
-        fab.setOnClickListener(view -> SpotifyActivity.showPlayMenu(getThis,fab));
+        fab.setOnClickListener(view -> SpotifyActivity.showPlayMenu(this,fab));
 
         final ListAdapter customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
