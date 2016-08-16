@@ -28,7 +28,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -560,7 +559,16 @@ public class SpotifyActivity extends AppCompatActivity implements
         relatedArtistsAdapter = new RelatedArtistAdapter<String>(this, android.R.layout.simple_list_item_1, artistList);
         relatedArtistsListView.setAdapter(relatedArtistsAdapter);
 
-            ImageButton refreshspotifyButton = (ImageButton) findViewById(R.id.refreshspotifyButton);
+            View playbutton = findViewById(R.id.playspotify);
+            View stopbutton = findViewById(R.id.stopspotify);
+            View playpausebutton = findViewById(R.id.pausespotify);
+            View previousbutton = findViewById(R.id.previousspotify);
+            View nextbutton = findViewById(R.id.nextspotify);
+            View volumebutton = findViewById(R.id.volumespotify);
+            View seekbutton = findViewById(R.id.positionspotify);
+            setListenersForButtons(this, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+
+            /*ImageButton refreshspotifyButton = (ImageButton) findViewById(R.id.refreshspotifyButton);
             refreshspotifyButton.setOnClickListener(v -> {
                 refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
             });
@@ -583,7 +591,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
             }
-        });
+        });*/
             artistTitleTextView = (TextView)
 
                     findViewById(R.id.artist_title);//relatedartists_text
@@ -2569,30 +2577,14 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         LayoutInflater inflater = getThis1.getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.play_spotify, null);
-        String title = "Spotify Play";
-        MpcStatus mpcStatus = new MpcStatus().invoke();
-        boolean mpdPlaying = mpcStatus.isMpdPlaying();
-        Logic logic = mpcStatus.getLogic();
-        if (!mpdPlaying) {
-            alertLayout.findViewById(R.id.playspotify).setOnClickListener(v -> playSpotify());
-            alertLayout.findViewById(R.id.stopspotify).setOnClickListener(v -> stopSpotifyPlaying(ipAddress));
-            alertLayout.findViewById(R.id.pausespotify).setOnClickListener(v -> playPauseSpotify(ipAddress));
-            alertLayout.findViewById(R.id.previousspotify).setOnClickListener(v -> previousSpotifyPlaying(ipAddress));
-            alertLayout.findViewById(R.id.nextspotify).setOnClickListener(v -> nextSpotifyPlaying(ipAddress));
-            alertLayout.findViewById(R.id.volumespotify).setOnClickListener(v -> setVolume(getThis1));
-            alertLayout.findViewById(R.id.positionspotify).setOnClickListener(v -> seekPlay(getThis1));
-        } else{
-            title = "Mpd Play";
-            alertLayout.findViewById(R.id.playspotify).setOnClickListener(v -> {logic.getMpc().play();
-                logic.setPaused(false);});
-            alertLayout.findViewById(R.id.stopspotify).setOnClickListener(v -> {logic.getMpc().pause();
-            logic.setPaused(true);});
-            alertLayout.findViewById(R.id.pausespotify).setOnClickListener(v -> MainActivity.getThis.playPause());
-            alertLayout.findViewById(R.id.previousspotify).setOnClickListener(v -> logic.getMpc().previous());
-            alertLayout.findViewById(R.id.nextspotify).setOnClickListener(v -> logic.getMpc().next());
-            alertLayout.findViewById(R.id.volumespotify).setOnClickListener(v -> MainActivity.getThis.setVolume(getThis1));
-            //alertLayout.findViewById(R.id.positionspotify).setOnClickListener(v -> seekPlay(getThis1));
-        }
+        View playbutton = alertLayout.findViewById(R.id.playspotify);
+        View stopbutton = alertLayout.findViewById(R.id.stopspotify);
+        View playpausebutton = alertLayout.findViewById(R.id.pausespotify);
+        View previousbutton = alertLayout.findViewById(R.id.previousspotify);
+        View nextbutton = alertLayout.findViewById(R.id.nextspotify);
+        View volumebutton = alertLayout.findViewById(R.id.volumespotify);
+        View seekbutton = alertLayout.findViewById(R.id.positionspotify);
+        String title = setListenersForButtons(getThis1, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
         AlertDialog.Builder alert = new AlertDialog.Builder(getThis1);
         alert.setTitle(title);
         // this is set the view from XML inside AlertDialog
@@ -2601,6 +2593,35 @@ public class SpotifyActivity extends AppCompatActivity implements
         alert.setPositiveButton("OK", (dialog, which) -> {});
         AlertDialog dialog = alert.create();
         dialog.show();
+    }
+
+    @NonNull
+    private static String setListenersForButtons(Activity getThis1, View playbutton, View stopbutton, View playpausebutton, View previousbutton, View nextbutton, View volumebutton, View seekbutton) {
+        String title = "Spotify Play";
+        MpcStatus mpcStatus = new MpcStatus().invoke();
+        boolean mpdPlaying = mpcStatus.isMpdPlaying();
+        Logic logic = mpcStatus.getLogic();
+        if (!mpdPlaying) {
+            playbutton.setOnClickListener(v -> playSpotify());
+            stopbutton.setOnClickListener(v -> stopSpotifyPlaying(ipAddress));
+            playpausebutton.setOnClickListener(v -> playPauseSpotify(ipAddress));
+            previousbutton.setOnClickListener(v -> previousSpotifyPlaying(ipAddress));
+            nextbutton.setOnClickListener(v -> nextSpotifyPlaying(ipAddress));
+            volumebutton.setOnClickListener(v -> setVolume(getThis1));
+            seekbutton.setOnClickListener(v -> seekPlay(getThis1));
+        } else{
+            title = "Mpd Play";
+            playbutton.setOnClickListener(v -> {logic.getMpc().play();
+                logic.setPaused(false);});
+            stopbutton.setOnClickListener(v -> {logic.getMpc().pause();
+            logic.setPaused(true);});
+            playpausebutton.setOnClickListener(v -> MainActivity.getThis.playPause());
+            previousbutton.setOnClickListener(v -> logic.getMpc().previous());
+            nextbutton.setOnClickListener(v -> logic.getMpc().next());
+            volumebutton.setOnClickListener(v -> MainActivity.getThis.setVolume(getThis1));
+            //alertLayout.findViewById(R.id.positionspotify).setOnClickListener(v -> seekPlay(getThis1));
+        }
+        return title;
     }
 
     private static class MpcStatus {

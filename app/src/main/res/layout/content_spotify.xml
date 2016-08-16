@@ -4,6 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     >
+
     <include layout="@layout/songtitle_layout" />
      <TextView
         android:id="@+id/artist_title"
@@ -60,46 +61,7 @@
             android:background="#B29090" >
         </ListView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="10dip" >
-
-
-        <ImageButton
-            style="@style/ToolBarButtonStyle"
-            android:id="@+id/playspotifyButton"
-            android:src="@drawable/play"
-            android:layout_width="61dp"
-            android:layout_height="59dp"  />
-        <ImageButton
-            style="@style/ToolBarButtonStyle"
-            android:id="@+id/stopspotifyButton"
-            android:src="@drawable/stop"
-            android:layout_width="61dp"
-            android:layout_height="59dp" />
-        <ImageButton
-            style="@style/ToolBarButtonStyle"
-            android:id="@+id/clearspotifyButton"
-            android:src="@drawable/delete"
-            android:layout_width="61dp"
-            android:layout_height="59dp" />
-        <ImageButton
-            style="@style/ToolBarButtonStyle"
-            android:id="@+id/refreshspotifyButton"
-            android:src="@drawable/ic_refresh_white"
-            android:layout_width="61dp"
-            android:layout_height="59dp" />
-        <!--<ImageButton
-            style="@style/ToolBarButtonStyle"
-            android:id="@+id/removeupspotifyButton"
-            android:src="@drawable/removeup"
-            android:layout_width="61dp"
-            android:layout_height="59dp" />-->
-
-
-    </LinearLayout>
+        <include layout="@layout/play_spotify" />
     </LinearLayout>
 
 </ScrollView>
