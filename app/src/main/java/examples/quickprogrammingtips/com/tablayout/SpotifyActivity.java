@@ -316,14 +316,6 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                 spotifyStartPosition = playlist.length() - ids.size();
                 playAtPosition(spotifyStartPosition);
-                //int plid=playlist.getJSONObject(spotifyStartPosition).getInt("tlid");
-                //start playing at spotifyStartPosition
-                //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"Player.Open\", \"params\": { \"item\": { \"playlistid\": 0, \"position\": " + spotifyStartPosition + " } }, \"id\": 1}",
-                //curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.playback.play"}' http://192.168.2.12:6680/mopidy/rpc tl_track
-                //GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.playback.play\", \"params\": { \"tlid\":"  + plid + " } }",
-                //        ipAddress);
-                //GetJsonFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"method\": \"Player.GoTo\", \"params\": { \"playerid\": 0, \"to\": %s}, \"id\": 1}\u200B", spotifyStartPosition),
-                //        ipAddress + "?PlayerGoto");
                 getThis.runOnUiThread(new Runnable() {
                     public void run() {
                         if (dialog1.isShowing())
@@ -567,30 +559,6 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             playButtonsAtBottom();
 
-            /*ImageButton refreshspotifyButton = (ImageButton) findViewById(R.id.refreshspotifyButton);
-            refreshspotifyButton.setOnClickListener(v -> {
-                refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
-            });
-        ImageButton stopButton = (ImageButton) findViewById(R.id.stopspotifyButton);
-        stopButton.setOnClickListener(v -> playPauseSpotify(ipAddress));
-
-        ImageButton clearButton = (ImageButton) findViewById(R.id.clearspotifyButton);
-        clearButton.setOnClickListener(v -> {
-            try {
-                clearSpotifyPlaylist();
-            } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
-        });
-        ImageButton playButton = (ImageButton) findViewById(R.id.playspotifyButton);
-        playButton.setOnClickListener(v -> {
-            try {
-                stopMpd();
-                playSpotify();
-            } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
-        });*/
             artistTitleTextView = (TextView)
 
                     findViewById(R.id.artist_title);//relatedartists_text
@@ -750,12 +718,6 @@ public class SpotifyActivity extends AppCompatActivity implements
             });
 
             if(!nosearch)
-/*
-                        menu.getMenu().add(lists[SpotifyList]);
-                menu.getMenu().add(lists[AlbumList]);
-                menu.getMenu().add(lists[MpdList]);
-
- */
             {
                 initArtistlist(artistName);
                 currentList=AlbumList+1;
@@ -794,7 +756,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             nextCommand="";
         }
 
-    void nextList(){
+    public void nextList(){
 
         currentList++;
         if (currentList>3)currentList=1;
@@ -802,12 +764,6 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     private void selectList(String title) {
-        /*
-                        menu.getMenu().add(lists[SpotifyList]);
-                menu.getMenu().add(lists[AlbumList]);
-                menu.getMenu().add(lists[MpdList]);
-
-         */
         if ((title.equals(lists[SpotifyList]))) {
             currentList=SpotifyList+1;
             displayMpd=false;
@@ -930,7 +886,9 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void addAndPlayAlbum(int counter) {
-
+                MPC mpc = getLogic().getMpc();
+                mpc.play(counter);
+                mpc.play();
             }
 
             @Override
@@ -956,6 +914,22 @@ public class SpotifyActivity extends AppCompatActivity implements
             @Override
             public void removeUp(int counter) {
                 removeUplist(albumAdapter, albumsListview,counter,getThis);
+            }
+            private void add(String path,boolean toplay,boolean clear){
+                /*
+
+                    ArrayList<String>commands=new ArrayList<>();
+                    if (clear)
+                        commands.add("clear");
+                    path = Logic.removeSlashAtEnd(path);
+                    String s = "add \""+path+"\"";
+                    //Log.v("samba","command:"+s);
+
+                    commands.add(s);
+                    logic.getMpc().enqueCommands(commands);
+                    logic.playWithDelay(id, toplay);
+
+ */
             }
 
             @Override
@@ -1030,15 +1004,36 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void replaceAndPlayAlbum(int counter) {
-                clearSpotifyPlaylist();
-                //Log.v("samba","end removing");
-                getAlbumtracksFromSpotify(counter);
+                if (albumVisible)
+                    try{
+                        if (!playMpdAlbum(albumIds.get(counter), true, false, true)) {
+                            clearSpotifyPlaylist();
+                            //Log.v("samba","end removing");
+                            getAlbumtracksFromSpotify(counter);
+                        }
+
+
+
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+
             }
 
             @Override
             public void addAndPlayAlbum(int counter) {
+                if (albumVisible)
+                    try{
+                        if (!playMpdAlbum(albumIds.get(counter), false, false, true))
+                            getAlbumtracksFromSpotify(counter);
 
-                getAlbumtracksFromSpotify(counter);
+
+
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+
+                //getAlbumtracksFromSpotify(counter);
             }
 
             @Override
@@ -1048,7 +1043,17 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void addAlbum(int counter) {
-                addAlbumStatic(counter,albumAdapter, albumsListview);
+                if (albumVisible)
+                    try{
+                        if (!playMpdAlbum(albumIds.get(counter), false, false, false))
+                            addAlbumStatic(counter,albumAdapter, albumsListview);
+
+
+
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+
             }
 
             @Override
@@ -2762,53 +2767,57 @@ class SpotifyHeader {
     }
 
     public void setArtistText(final String artistName, Image image) {
-
-        artistTitleTextView.setText(artistName);
-
-        String artistText = "";
-
-        try {
-            JSONObject artist = (new JSONObject(SpotifyActivity.LastFMArtist(artistName))).getJSONObject("artist");
-
-            artistText = artist.getJSONObject("bio").getString("content");
-        } catch (JSONException e) {
-            Log.v("samba", Log.getStackTraceString(e));
-        }
-        SpannableString SS = new SpannableString(artistText);
-
-        int scale = 250;
-        int leftMargin = scale + 10;
-
-        //Set the icon in R.id.icon
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scale, scale);
-        icon.setLayoutParams(layoutParams);
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                getThis.runOnUiThread(() -> {
+                    artistTitleTextView.setText(artistName);
+                });
 
 
-        try {
-            new DownLoadImageTask() {
-                @Override
-                public void setImage(Bitmap logo) {
-                    ImageView i = (ImageView) getThis.findViewById(R.id.image);
-                    //Log.v("samba", "image loaded");
-                    icon.setImageBitmap(logo);
+                String artistText = "";
+
+                try {
+                    JSONObject artist = (new JSONObject(SpotifyActivity.LastFMArtist(artistName))).getJSONObject("artist");
+
+                    artistText = artist.getJSONObject("bio").getString("content");
+                } catch (JSONException e) {
+                    Log.v("samba", Log.getStackTraceString(e));
                 }
-            }.execute(image.url);
-        } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
-        }
-/*        try {
-            //sometimes no album-image available
-            ImageView i = (ImageView) findViewById(R.id.image);
-            Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(image.url).getContent());
-            Log.v("samba", "image loaded");
-            icon.setImageBitmap(bitmap);
-        } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
-        }*/
+                SpannableString SS = new SpannableString(artistText);
+
+                int scale = 250;
+                int leftMargin = scale + 10;
+
+                //Set the icon in R.id.icon
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scale, scale);
 
 
-        SS.setSpan(new MyLeadingMarginSpan2(scale / 50, leftMargin), 0, SS.length(), 0);
-        MessageView.setText(SS);
+                try {
+                    new DownLoadImageTask() {
+                        @Override
+                        public void setImage(Bitmap logo) {
+                            ImageView i = (ImageView) getThis.findViewById(R.id.image);
+                            //Log.v("samba", "image loaded");
+                            getThis.runOnUiThread(() -> {
+                                icon.setLayoutParams(layoutParams);
+                                icon.setImageBitmap(logo);
+                            });
+                        }
+                    }.execute(image.url);
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
+
+                SS.setSpan(new MyLeadingMarginSpan2(scale / 50, leftMargin), 0, SS.length(), 0);
+                getThis.runOnUiThread(() -> {
+                    MessageView.setText(SS);
+                });
+
+            }
+        });
+
+
     }
 }
 

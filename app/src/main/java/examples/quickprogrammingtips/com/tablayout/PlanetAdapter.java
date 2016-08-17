@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,10 +221,10 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("wikipedia");
         } else {
             menu.setOnMenuItemClickListener(item -> {
-                if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")){
+                /*if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")){
                     Toast.makeText(v.getContext(), "not implemented yet", Toast.LENGTH_LONG).show();
                     return false;
-                }
+                }*/
 
                 if (item.getTitle().toString().equals("replace and play")) {
                     replaceAndPlayAlbum(position);
