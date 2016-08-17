@@ -131,6 +131,9 @@ public class SpotifyActivity extends AppCompatActivity implements
     // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "testschema://callback";
     public static final String MPD = "mpd://";
+    public static final int SpotifyList = 0;
+    public static final int AlbumList = 1;
+    public static final int MpdList = 2;
     private static ArrayList<String> mainids;
     private static int playingEngine;
     private SpotifyHeader spotifyHeader;
@@ -185,6 +188,8 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static int currentTime;
     OnFlingGestureListener flingListener;
     private boolean displayMpd;
+    private int currentList=SpotifyList+1;
+    private String[] lists = new String[]{"spotifylist","albumlist","mpdlist"};;
 
     public void checkAppMemory(){
         // Get app memory info
@@ -717,44 +722,20 @@ public class SpotifyActivity extends AppCompatActivity implements
             fab=(FloatingActionButton)
 
             findViewById(R.id.fab);
+            fab.setOnLongClickListener(view ->{nextList();return true;});
 
             fab.setOnClickListener(view -> {
                 PopupMenu menu = new PopupMenu(fab.getContext(), fab);
-                menu.getMenu().add("tracklist");
-                menu.getMenu().add("albumlist");
-                menu.getMenu().add("mpdlist");
+                menu.getMenu().add(lists[SpotifyList]);
+                menu.getMenu().add(lists[AlbumList]);
+                menu.getMenu().add(lists[MpdList]);
                 menu.getMenu().add("return to main");
 
                 menu.show();
                 menu.setOnMenuItemClickListener(item -> {
                             String title = item.getTitle().toString();
-                            if ((title.equals("tracklist"))) {
-                                displayMpd=false;
-                                setAdapterForSpotify();
-                                String hartistName=artistName;
-                                refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
-                                setVisibility(View.GONE);
-                                artistName=hartistName;
-                                playButtonsAtBottom();
-                            } else
-                            if ((title.equals("mpdlist"))) {
-                                displayMpd(albumsListview);
-                                playButtonsAtBottom();
-                            }else
-                            if ((title.equals("albumlist"))) {
-                                if (displayMpd){
-                                    if (artistName.equals("The Beatles")) {
-                                        CopyOnWriteArrayList<Mp3File> playlistFiles = MainActivity.getThis.getLogic().getPlaylistFiles();
-                                        if (playlistFiles.size() > 0)
-                                            artistName = playlistFiles.get(0).getArtist();
-                                    }
-                                }
-                                setAdapterForSpotify();
-                                displayAlbums();
-                                displayMpd=false;
-                                playButtonsAtBottom();
-                            }else
-                            if ((title.equals("return to main"))) {
+                    selectList(title);
+                    if ((title.equals("return to main"))) {
                                 getThis.finish();
 
                             }
@@ -769,14 +750,21 @@ public class SpotifyActivity extends AppCompatActivity implements
             });
 
             if(!nosearch)
+/*
+                        menu.getMenu().add(lists[SpotifyList]);
+                menu.getMenu().add(lists[AlbumList]);
+                menu.getMenu().add(lists[MpdList]);
 
+ */
             {
                 initArtistlist(artistName);
+                currentList=AlbumList+1;
             }
 
             else
 
             {
+                currentList=SpotifyList+1;
                 //Log.v("samba", "nosearch");
 
 
@@ -805,6 +793,51 @@ public class SpotifyActivity extends AppCompatActivity implements
             }
             nextCommand="";
         }
+
+    void nextList(){
+
+        currentList++;
+        if (currentList>3)currentList=1;
+        selectList(lists[currentList-1]);
+    }
+
+    private void selectList(String title) {
+        /*
+                        menu.getMenu().add(lists[SpotifyList]);
+                menu.getMenu().add(lists[AlbumList]);
+                menu.getMenu().add(lists[MpdList]);
+
+         */
+        if ((title.equals(lists[SpotifyList]))) {
+            currentList=SpotifyList+1;
+            displayMpd=false;
+            setAdapterForSpotify();
+            String hartistName=artistName;
+            refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+            setVisibility(View.GONE);
+            artistName=hartistName;
+            playButtonsAtBottom();
+        } else
+        if ((title.equals(lists[MpdList]))) {
+            currentList=MpdList+1;
+            displayMpd(albumsListview);
+            playButtonsAtBottom();
+        }else
+        if ((title.equals(lists[AlbumList]))) {
+            currentList=AlbumList+1;
+            if (displayMpd){
+                if (artistName.equals("The Beatles")) {
+                    CopyOnWriteArrayList<Mp3File> playlistFiles = MainActivity.getThis.getLogic().getPlaylistFiles();
+                    if (playlistFiles.size() > 0)
+                        artistName = playlistFiles.get(0).getArtist();
+                }
+            }
+            setAdapterForSpotify();
+            displayAlbums();
+            displayMpd=false;
+            playButtonsAtBottom();
+        }
+    }
 
     private void playButtonsAtBottom() {
         View playbutton = findViewById(R.id.playspotify);
