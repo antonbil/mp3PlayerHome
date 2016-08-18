@@ -161,8 +161,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
             public void onDrawerOpened(View drawerView) {
                 //Snackbar.make(drawerView, "opened", Snackbar.LENGTH_SHORT).show();
-                //SongItems songItems = new SongItems(getThis);
                 ListView albumsListview = (ListView) findViewById(R.id.drawer_list);
+                Log.v("samba","current:"+SpotifyActivity.currentList);
                 PlanetAdapter albumAdapter = new PlanetAdapter(SpotifyActivity.albumList, getThis,SpotifyActivity.albumTracks) {
                     @Override
                     public void removeUp(int counter) {
@@ -249,29 +249,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 SpotifyActivity.refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
                 //song_display2
                 LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
-                viewHeader.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        spotifyPopupMenu(viewHeader, mDrawerLayout);
-
-
-
-                    }
-                });
+                viewHeader.setOnClickListener(v -> spotifyPopupMenu(viewHeader, mDrawerLayout));
                 final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
                 fab.setOnClickListener(view -> spotifyPopupMenu(fab, mDrawerLayout));
 
                 (findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 (findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top2);
-                viewById.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        SpotifyActivity.setVolume(getThis);
-                        //spotifyPopupMenu(viewHeader, mDrawerLayout);
-                        //startPlaylistSpotify();mDrawerLayout.closeDrawers();
-                    }
-                });
+                viewById.setOnClickListener(v -> SpotifyActivity.setVolume(getThis));
                 updateTimerThread = new Runnable() {
 
                     public void run() {
