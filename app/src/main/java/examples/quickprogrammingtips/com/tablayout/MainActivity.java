@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -284,6 +285,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (SpotifyActivity.isPlaying()){
+                    SpotifyActivity.playPauseSpotify();
+                }else
                 playPause();
             }
         });//android:id="@+id/song_title"
@@ -308,14 +312,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
             @Override
             public boolean onLongClick(View v) {
-                displayLargeImage(MainActivity.this, MainActivity.this.albumBitmap);
+                displayLargeImage(MainActivity.this, /*MainActivity.this.albumBitmap*/((BitmapDrawable)im.getDrawable()).getBitmap());
                 return true;
             }
         });
         im.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setVolume(getThis);
+                //setVolume(getThis);
+                SpotifyActivity.showPlayMenu(getThis,im);
             }
         });
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
@@ -1077,9 +1082,27 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public void statusUpdate(MPCStatus newStatus) {
+
+        if (SpotifyActivity.isPlaying()){
+
+            //(findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
+            //(findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
+            ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top);
+            //viewById.setOnClickListener(v -> SpotifyActivity.setVolume(getThis));
+            SpotifyActivity.updateSongInfo((TextView) findViewById(R.id.time_top),
+                    (TextView) findViewById(R.id.totaltime_top),
+                    (TextView) findViewById(R.id.title_top),
+                    (TextView) findViewById(R.id.artist_top),
+                    viewById,
+                    null,  null,getThis,getSpotifyInterface);
+            return;
+
+        }
         final MPCStatus status = newStatus;
         logic.mpcStatus = newStatus;
-        if (status.song == null) return;
+        if (status.song == null) {
+
+            return;}
         Handler h = new Handler(Looper.getMainLooper());
         h.post(new Runnable() {
             public void run() {

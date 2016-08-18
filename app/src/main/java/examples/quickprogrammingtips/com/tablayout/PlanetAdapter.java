@@ -118,7 +118,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                 //Log.v("samba","righttoleft");
                 //Toast toast = Toast.makeText(context, "righttoleft", Toast.LENGTH_SHORT);
                 //toast.show();
-                SpotifyActivity.getThis.changeScreen();
+                SpotifyActivity.getThis.previousList();
             }
 
             @Override

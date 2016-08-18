@@ -53,7 +53,7 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
                     //Log.v("samba","righttoleft");
                     //Toast toast = Toast.makeText(SpotifyActivity.getThis, "righttoleft", Toast.LENGTH_SHORT);
                     //toast.show();
-                    SpotifyActivity.getThis.changeScreen();
+                    SpotifyActivity.getThis.previousList();
 
                 }
 

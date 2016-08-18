@@ -690,9 +690,9 @@ public class SpotifyActivity extends AppCompatActivity implements
             fab=(FloatingActionButton)
 
             findViewById(R.id.fab);
-            fab.setOnLongClickListener(view ->{nextList();return true;});
+            fab.setOnClickListener(view ->{nextList();});
 
-            fab.setOnClickListener(view -> {
+            fab.setOnLongClickListener(view -> {
                 PopupMenu menu = new PopupMenu(fab.getContext(), fab);
                 menu.getMenu().add(lists[SpotifyList]);
                 menu.getMenu().add(lists[AlbumList]);
@@ -712,6 +712,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                         }
 
                 );
+                return true;
 
                 //albumsListview.setOnItemClickListener(cl);
                 //listAlbumsForArtist(api, spotify, atistName, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
@@ -761,6 +762,12 @@ public class SpotifyActivity extends AppCompatActivity implements
         currentList++;
         if (currentList>3)currentList=1;
         selectList(lists[currentList-1]);
+    }
+    public void previousList() {
+
+        currentList--;
+        if (currentList < 1) currentList = 3;
+        selectList(lists[currentList - 1]);
     }
 
     private void selectList(String title) {
@@ -1182,6 +1189,11 @@ public class SpotifyActivity extends AppCompatActivity implements
             // Set up the buttons
             builder.setPositiveButton("OK", (dialog, which) -> {
                 String artistString = input.getText().toString();
+                if (artistString.length()==0){
+                    Toast.makeText(getApplicationContext(), "Please enter something for artist!",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 boolean add=true;
                 for (String s:searchArtistString)
                     if (s.equals(artistString))add=false;
@@ -1290,6 +1302,11 @@ public class SpotifyActivity extends AppCompatActivity implements
             // Set up the buttons
             builder.setPositiveButton("OK", (dialog, which) -> {
                 searchAlbumString = input.getText().toString();
+                if (searchAlbumString.length()==0){
+                    Toast.makeText(getApplicationContext(), "Please enter something for album!",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 //SearchActivity.artistName=artist;
                 fillListviewWithValues = new FillListviewWithValues() {
 
@@ -2230,6 +2247,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public static boolean isPlaying(){
+        checkAddress();
         try {
             return getState().equals("playing");
         } catch (Exception e) {return false;}
@@ -2256,25 +2274,29 @@ public class SpotifyActivity extends AppCompatActivity implements
                                       ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, AppCompatActivity getThis,final SpotifyInterface getSpotifyInterface) {
             try {
                 if (isPlaying()) {//(speed.doubleValue() > 0) {
-                    if (playingEngine==2){SpotifyActivity.getThis.playButtonsAtBottom();}
-                    playingEngine=1;
+                    if (albumAdapter!=null)
+                        if (playingEngine==2){SpotifyActivity.getThis.playButtonsAtBottom();}
+                        playingEngine=1;
                      String[] trid1 = getCurrentTrack();//
                     String trid=trid1[0];
                     totalTime = Integer.parseInt(trid1[1])/1000;
                     if (trid.length() > 0) {
                         //currentTrack=0;
-                        for (int i = 0; i < tracksPlaylist.size(); i++) {
-                            if (tracksPlaylist.get(i).id.equals(trid)) {
-                                if (currentTrack != i)
-                                    albumsListview.setItemChecked(currentTrack, false);
-                                currentTrack = i;
-                                //Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
-                                break;
+                        if (albumAdapter!=null)
+                            for (int i = 0; i < tracksPlaylist.size(); i++) {
+                                if (tracksPlaylist.get(i).id.equals(trid)) {
+                                    if (currentTrack != i)
+                                        albumsListview.setItemChecked(currentTrack, false);
+                                    currentTrack = i;
+                                    //Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
+                                    break;
+                                }
                             }
-                        }
 
-                        albumAdapter.setCurrentItem(currentTrack);
-                        albumAdapter.notifyDataSetChanged();
+                        if (albumAdapter!=null) {
+                            albumAdapter.setCurrentItem(currentTrack);
+                            albumAdapter.notifyDataSetChanged();
+                        }
                         final String trackid = trid;
 
                         Track t = getTrack(trackid);
@@ -2703,8 +2725,15 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static String setListenersForButtons(Activity getThis1, View playbutton, View stopbutton, View playpausebutton, View previousbutton, View nextbutton, View volumebutton, View seekbutton) {
         String title = "Spotify Play";
         MpcStatus mpcStatus = new MpcStatus().invoke();
-        boolean mpdPlaying = mpcStatus.isMpdPlaying();
-        Logic logic = mpcStatus.getLogic();
+        Logic logic1=null;
+        boolean mpdPlaying=false;
+        try {
+            mpdPlaying = mpcStatus.isMpdPlaying();
+            logic1 = mpcStatus.getLogic();
+        } catch (Exception e){
+
+        }
+        Logic logic=logic1;
         //isPlaying()
         if (isPlaying()) {
             playbutton.setOnClickListener(v -> playSpotify());
@@ -2714,7 +2743,8 @@ public class SpotifyActivity extends AppCompatActivity implements
             nextbutton.setOnClickListener(v -> nextSpotifyPlaying(ipAddress));
             volumebutton.setOnClickListener(v -> setVolume(getThis1));
             seekbutton.setOnClickListener(v -> seekPlay(getThis1));
-        } else{
+        } else
+        if (logic !=null){
             title = "Mpd Play";
             playbutton.setOnClickListener(v -> {logic.getMpc().play();
                 logic.setPaused(false);});
@@ -2744,10 +2774,14 @@ public class SpotifyActivity extends AppCompatActivity implements
         }
 
         public MpcStatus invoke() {
-            logic = MainActivity.getThis.getLogic();
-            MPCStatus status = logic.mpcStatus;
-            mpdPlaying = status.playing;
-            return this;
+            try {
+                logic = MainActivity.getThis.getLogic();
+                MPCStatus status = logic.mpcStatus;
+                mpdPlaying = status.playing;
+                return this;
+            } catch (Exception e){
+                return null;
+            }
         }
     }
 }
