@@ -131,8 +131,8 @@ public class SpotifyActivity extends AppCompatActivity implements
     // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "testschema://callback";
     public static final String MPD = "mpd://";
-    public static final int SpotifyList = 0;
-    public static final int AlbumList = 1;
+    public static final int SpotifyList = 1;
+    public static final int AlbumList = 0;
     public static final int MpdList = 2;
     private static ArrayList<String> mainids;
     private static int playingEngine;
@@ -189,7 +189,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     OnFlingGestureListener flingListener;
     private boolean displayMpd;
     public static int currentList=SpotifyList+1;
-    private String[] lists = new String[]{"spotifylist","albumlist","mpdlist"};;
+    private String[] lists = new String[]{"albumlist","spotifylist","mpdlist"};;
 
     public void checkAppMemory(){
         // Get app memory info
@@ -956,9 +956,9 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
 
-            } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
                 else {
                     stopMpd();
                     //playlistGotoPosition(counter);
@@ -1526,10 +1526,13 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public void getAlbumtracksFromSpotify(final int position) {
         String s = albumIds.get(position);
-        getAlbumtracksFromSpotify(s, albumList.get(position),getThis, albumAdapter, albumsListview);
+        getAlbumtracksFromSpotify(s, albumList.get(position),getThis, albumAdapter, albumsListview,false);
+    }
+    public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1, PlanetAdapter albumAdapter, ListView albumsListview) {
+        getAlbumtracksFromSpotify(  albumid,   albumname,   getThis1,  albumAdapter,  albumsListview,true);
     }
 
-    public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1, PlanetAdapter albumAdapter, ListView albumsListview) {
+    public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1, PlanetAdapter albumAdapter, ListView albumsListview,boolean display) {
         if (albumAdapter==null)albumAdapter=SpotifyActivity.getThis.albumAdapter;
         if (albumsListview==null)albumsListview=SpotifyActivity.getThis.albumsListview;
         final PlanetAdapter albumAdapter1=albumAdapter;
@@ -1578,6 +1581,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                     @Override
                     public void atEnd() {
                         //Log.v("samba", "einde taak");
+                        if (display)
                         refreshPlaylistFromSpotify(albumAdapter1, albumsListview1,getThis1);
                     }
 
@@ -1875,9 +1879,11 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public static void stopMpd() {
-        if (MainActivity.getThis.getLogic().mpcStatus.playing) {
-            MainActivity.getThis.getLogic().getMpc().stop();
-        }
+        try {
+            if (MainActivity.getThis.getLogic().mpcStatus.playing) {
+                MainActivity.getThis.getLogic().getMpc().stop();
+            }
+        } catch (Exception e){}
     }
 
     static class Task implements Runnable {
