@@ -564,6 +564,8 @@ public class SpotifyActivity extends AppCompatActivity implements
                     findViewById(R.id.artist_title);//relatedartists_text
 
             songItems=new SongItems(this);
+            findViewById(R.id.time_layout).setOnClickListener(v -> MainActivity.playPauseAll());
+            songItems.setOnClickTitles(v -> getThis.finish());
             songItems.setOnClick(arg0 -> {
 
                 View image = songItems.image;
@@ -2208,7 +2210,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private Runnable updateTimerThread = new Runnable() {
 
         public void run() {
-            updateSongInfo(songItems.time,songItems.totaltime,songItems.tvName,songItems.artist,songItems.image,albumAdapter,albumsListview, getThis,getSpotifyInterface);
+           MainActivity.getThis.currentArtist= updateSongInfo(songItems.time,songItems.totaltime,songItems.tvName,songItems.artist,songItems.image,albumAdapter,albumsListview, getThis,getSpotifyInterface);
 
             customHandler.postDelayed(this, 1000);
         }
@@ -2270,9 +2272,10 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     }
 
-    public static void updateSongInfo(TextView time,TextView totaltime,TextView tvName,TextView artist,
-                                      ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, AppCompatActivity getThis,final SpotifyInterface getSpotifyInterface) {
-            try {
+    public static String updateSongInfo(TextView time, TextView totaltime, TextView tvName, TextView artist,
+                                        ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, AppCompatActivity getThis, final SpotifyInterface getSpotifyInterface) {
+        String artistReturn="";
+        try {
                 if (isPlaying()) {//(speed.doubleValue() > 0) {
                     if (albumAdapter!=null)
                         if (playingEngine==2){SpotifyActivity.getThis.playButtonsAtBottom();}
@@ -2331,6 +2334,8 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                         //hours * 60 * 60 + mins * 60 + secs;
                         currentTime = getTime();
+                        artistReturn = t.artists.get(0).name;
+                        MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
                         getThis.runOnUiThread(new Runnable() {
                             public void run() {
                                 time.setText(niceTime(currentTime));
@@ -2338,6 +2343,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                                 totaltime.setText(niceTime(ttimeint));
                                 tvName.setText(t.name);
                                 artist.setText(t.artists.get(0).name);
+                                MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
 
                             }
                         });
@@ -2346,7 +2352,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                     try {
                         Logic logic = MainActivity.getThis.getLogic();
                         MPCStatus status = logic.mpcStatus;
-                        if (!status.playing) return;
+                        if (!status.playing) return artistReturn;
                         if (playingEngine==1){SpotifyActivity.getThis.playButtonsAtBottom();}
                         playingEngine=2;
                         int songnr = status.song.intValue();
@@ -2355,6 +2361,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
                         String title = currentSong.getTitle();
+                        artistReturn = currentSong.getArtist();
                         tvName.setText(title);
 
                         String time1 = Mp3File.niceTime(status.time.intValue());
@@ -2375,6 +2382,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                         }
                         String uri = Logic.getUrlFromSongpath(currentSong);
 
+                        MainActivity.playingStatus=MainActivity.MPD_PLAYING;
                         if (MainActivity.getThis.albumPictures.containsKey(album)) {
                             final Bitmap b = MainActivity.getThis.albumPictures.get(album);
                             MainActivity.getThis.albumBitmap = b;
@@ -2408,6 +2416,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
             }
+        return artistReturn;
 
     }
 

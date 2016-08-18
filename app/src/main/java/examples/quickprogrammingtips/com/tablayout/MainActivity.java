@@ -78,6 +78,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     static final int STATIC_RESULT = 3; //positive > 0 integer.
     static final int NEWALBUMS_RESULT = 15;
+    static final int SPOTIFY_PLAYING = 1;
+    public static final int MPD_PLAYING = 2;
+    public static int playingStatus;
     private boolean footerVisible = false;
     private int tabSelected = 0;
     private ListFragment listFragment;
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     protected TabLayout tabLayout;
     private MainActivity mainActivity;
     public static HashMap<String, Bitmap> albumPictures = new HashMap<>();
-    private String currentArtist;
+    public String currentArtist;
     public ViewHolder viewHolder = new ViewHolder();
 
 
@@ -250,14 +253,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 SpotifyActivity.refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
                 //song_display2
                 LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
-                viewHeader.setOnClickListener(v -> spotifyPopupMenu(viewHeader, mDrawerLayout));
+                //viewHeader.setOnClickListener(v -> spotifyPopupMenu(viewHeader, mDrawerLayout));
                 final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
                 fab.setOnClickListener(view -> spotifyPopupMenu(fab, mDrawerLayout));
 
-                (findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
-                (findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
+                (findViewById(R.id.time_layout)).setOnClickListener(v -> MainActivity.playPauseAll());
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top2);
-                viewById.setOnClickListener(v -> SpotifyActivity.setVolume(getThis));
+                viewById.setOnClickListener(v -> spotifyPopupMenu(viewHeader, mDrawerLayout));
                 updateTimerThread = new Runnable() {
 
                     public void run() {
@@ -285,10 +287,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (SpotifyActivity.isPlaying()){
-                    SpotifyActivity.playPauseSpotify();
-                }else
-                playPause();
+                playPauseAll();
             }
         });//android:id="@+id/song_title"
         ll = ((LinearLayout) findViewById(R.id.song_title));
@@ -484,6 +483,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    static void playPauseAll() {
+        if (MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING){
+            SpotifyActivity.playPauseSpotify();
+        }else
+        MainActivity.getThis.playPause();
     }
 
     public void spotifyPopupMenu(final View viewHeader, final DrawerLayout mDrawerLayout) {
@@ -1089,12 +1095,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //(findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
             ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top);
             //viewById.setOnClickListener(v -> SpotifyActivity.setVolume(getThis));
-            SpotifyActivity.updateSongInfo((TextView) findViewById(R.id.time_top),
+            currentArtist = SpotifyActivity.updateSongInfo((TextView) findViewById(R.id.time_top),
                     (TextView) findViewById(R.id.totaltime_top),
                     (TextView) findViewById(R.id.title_top),
                     (TextView) findViewById(R.id.artist_top),
                     viewById,
                     null,  null,getThis,getSpotifyInterface);
+            MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
             return;
 
         }
@@ -1167,7 +1174,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
 
                                 }
-                                ;
+                                MainActivity.playingStatus=MainActivity.MPD_PLAYING;
                                 //Log.v("samba",uri);
                             } catch (Exception e) {
                                 //mpc.connectionFailed("Connection failed, check settings");

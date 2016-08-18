@@ -3,6 +3,7 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class SongItems  {
@@ -13,6 +14,9 @@ public class SongItems  {
     public  TextView totaltime;
     public  TextView artist;
     public ImageView image;
+    private LinearLayout titles;
+    private View.OnClickListener onClickTitles;
+
     public SongItems(AppCompatActivity getThis){
         this.getThis=getThis;
         initSongItems();
@@ -28,6 +32,7 @@ public class SongItems  {
         totaltime = (TextView) getThis.findViewById(R.id.totaltime_top);
         artist = (TextView) getThis.findViewById(R.id.artist_top);
         image = (ImageView) getThis.findViewById(R.id.thumbnail_top);
+        titles = (LinearLayout) getThis.findViewById(R.id.song_title);
 
 
 
@@ -55,5 +60,9 @@ public class SongItems  {
     public void setOnClick(View.OnClickListener onClick) {
         this.onClick = onClick;
         image.setOnClickListener(onClick);
+    }
+    public void setOnClickTitles(View.OnClickListener onClick) {
+        this.onClickTitles = onClick;
+        titles.setOnClickListener(onClick);
     }
 }
