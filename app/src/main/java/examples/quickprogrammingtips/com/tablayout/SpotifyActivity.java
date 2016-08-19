@@ -1998,7 +1998,7 @@ public class SpotifyActivity extends AppCompatActivity implements
              //       "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetItems\", \"params\": { \"properties\": [\"title\", \"album\", \"artist\", \"duration\", \"thumbnail\",\"file\"], \"playlistid\": 0 }, \"id\": 1}\u200B",
              //       ipAddress + "?GetPLItemsAudio");
             //Log.v("samba", "refresh");
-            refreshPlaylistFromSpotify(1,albumAdapter1,getThis);
+            refreshPlaylistFromSpotify(1,albumAdapter1,getThis,albumList,albumTracks);
             //spotifyStartPosition=0;
             albumAdapter1.setDisplayCurrentTrack(true);
             //getThis.runOnUiThread(() -> albumAdapter1.notifyDataSetChanged());
@@ -2017,17 +2017,19 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     }
 
-    public static void refreshPlaylistFromSpotify(int nr, final PlanetAdapter albumAdapter1, Activity getThis) {
+    public static void refreshPlaylistFromSpotify(int nr, final PlanetAdapter albumAdapter1, Activity getThis,ArrayList<String> albumList,ArrayList<PlaylistItem> albumTracks) {
         try{
         JSONArray playlist = getPlaylist();
 
-            clearLists();
+        albumList.clear();
+        albumTracks.clear();
+        tracksPlaylist.clear();
         JSONArray items = null;
         items = playlist;
         String prevAlbum = "";
             if ((items==null)&&(nr<3)){
                 Handler handler = new Handler();
-                handler.postDelayed(() -> refreshPlaylistFromSpotify(nr+1, albumAdapter1,getThis), 1000);
+                handler.postDelayed(() -> refreshPlaylistFromSpotify(nr+1, albumAdapter1,getThis,albumList,albumTracks), 1000);
             }
             else
         for (int i = 0; i < items.length(); i++) {
@@ -2035,13 +2037,10 @@ public class SpotifyActivity extends AppCompatActivity implements
             pi.pictureVisible=false;
             String trackid = "";
             JSONObject o = items.getJSONObject(i);
-            //trackid = getTrackId(o.getString("file"));
             trackid=o.getJSONObject("track").getString("uri").replace("spotify:track:","");
             if (trackid.length()>0) {
                 Track t = getTrack(trackid);
-                //tracksPlaylist.add(t);
-                Log.v("samba", t.name);
-                //ArrayList<String> ids=new ArrayList<String>();
+                //Log.v("samba", t.name);
                 String extra = "";
                 try {
                     String name = t.album.name;
@@ -2085,11 +2084,6 @@ public class SpotifyActivity extends AppCompatActivity implements
         super.onDestroy();
     }
 
-    public static void clearLists() {
-        albumList.clear();
-        albumTracks.clear();
-        tracksPlaylist.clear();
-    }
 
     public static String searchSpotifyArtist(String artist){
         SpotifyApi api=new SpotifyApi();
@@ -2272,9 +2266,9 @@ public class SpotifyActivity extends AppCompatActivity implements
             final String[] a= {o.getJSONObject("track").getString("uri").replace("spotify:track:",""), ""+o.getJSONObject("track").getInt("length")};
             return a;
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
+        //return null;
 
     }
 
@@ -2287,7 +2281,10 @@ public class SpotifyActivity extends AppCompatActivity implements
                         if (playingEngine==2){SpotifyActivity.getThis.playButtonsAtBottom();}
                         playingEngine=1;
                      String[] trid1 = getCurrentTrack();//
-                    String trid=trid1[0];
+                    String trid = "0";
+                    try {
+                        trid = trid1[0];
+                    } catch (Exception e){}
                     totalTime = Integer.parseInt(trid1[1])/1000;
                     if (trid.length() > 0) {
                         //currentTrack=0;

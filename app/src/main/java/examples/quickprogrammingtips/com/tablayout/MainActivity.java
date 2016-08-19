@@ -166,30 +166,40 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             public void onDrawerOpened(View drawerView) {
                 //Snackbar.make(drawerView, "opened", Snackbar.LENGTH_SHORT).show();
                 ListView albumsListview = (ListView) findViewById(R.id.drawer_list);
-                Log.v("samba","current:"+SpotifyActivity.currentList);
-                PlanetAdapter albumAdapter = new PlanetAdapter(SpotifyActivity.albumList, getThis,SpotifyActivity.albumTracks) {
+                ArrayList<String> albumList = new ArrayList<>();
+                ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
+                PlanetAdapter albumAdapter = new PlanetAdapter(albumList, getThis,albumTracks) {
                     @Override
                     public void removeUp(int counter) {
+                        duplicateLists();
 
                         SpotifyActivity.removeUplist(this, albumsListview,counter, getThis);
                     }
 
                     @Override
                     public void onClickFunc(int counter) {
+                        duplicateLists();
                         SpotifyActivity.stopMpd();
                         SpotifyActivity.playlistGotoPosition(counter);
                     }
 
                     @Override
                     public void removeDown(int counter) {
+                        duplicateLists();
                         SpotifyActivity.removeDownlist(this, albumsListview,counter,getThis);
 
                     }
 
                     @Override
                     public void removeAlbum(int counter) {
+                        duplicateLists();
                         SpotifyActivity.removeAlbum(this, counter, albumsListview,getThis);
 
+                    }
+
+                    private void duplicateLists() {
+                        SpotifyActivity.albumList=albumList;
+                        SpotifyActivity.albumTracks=albumTracks;
                     }
 
                     @Override
@@ -199,12 +209,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     @Override
                     public void addAlbumToFavoritesTrack(int counter) {
+                        duplicateLists();
                         SpotifyActivity.addAlbumToFavoritesTrackwise(counter);
 
                     }
 
                     @Override
                     public void removeTrack(int counter) {
+                        duplicateLists();
                         SpotifyActivity.removeTrackSpotify(counter);
 
                     }
@@ -250,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 };
                 albumsListview.setAdapter(albumAdapter);
                 SpotifyActivity.checkAddress();
-                SpotifyActivity.refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+                SpotifyActivity.refreshPlaylistFromSpotify(1,albumAdapter, getThis,albumList,albumTracks);
                 //song_display2
                 LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
                 //viewHeader.setOnClickListener(v -> spotifyPopupMenu(viewHeader, mDrawerLayout));
