@@ -21,6 +21,7 @@ import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -156,9 +157,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 mDrawerLayout,
                 R.string.hello_world,
                 R.string.hello_world
-        ) {
+        ) {PlanetAdapter albumAdapter;
             public void onDrawerClosed(View view) {
                 customHandler.removeCallbacks(updateTimerThread);
+                albumAdapter=null;
 
                 //Snackbar.make(view, "closed", Snackbar.LENGTH_SHORT).show();
             }
@@ -168,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 ListView albumsListview = (ListView) findViewById(R.id.drawer_list);
                 ArrayList<String> albumList = new ArrayList<>();
                 ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
-                PlanetAdapter albumAdapter = new PlanetAdapter(albumList, getThis,albumTracks) {
+                albumAdapter = new PlanetAdapter(albumList, getThis,albumTracks) {
                     @Override
                     public void removeUp(int counter) {
                         duplicateLists();
@@ -223,8 +225,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     @Override
                     public void displayArtist(int counter) {
-                        getThis.callSpotify(SpotifyActivity.tracksPlaylist.get(counter).artists.get(0).name);
                         mDrawerLayout.closeDrawers();
+                        getThis.callSpotify(SpotifyActivity.tracksPlaylist.get(counter).artists.get(0).name);
+
 
                     }
 
@@ -267,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
                 //viewHeader.setOnClickListener(v -> spotifyPopupMenu(viewHeader, mDrawerLayout));
                 final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
-                fab.setOnClickListener(view -> spotifyPopupMenu(fab, mDrawerLayout));
+                fab.setOnClickListener(view -> SpotifyActivity.showPlayMenu(getThis,viewHeader));
 
                 (findViewById(R.id.time_layout)).setOnClickListener(v -> MainActivity.playPauseAll());
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top2);
@@ -306,6 +309,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mDrawerLayout.closeDrawer(GravityCompat.START,false);
                 callSpotify(currentArtist);
             }
         });
@@ -516,22 +520,26 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 String title = item.getTitle().toString();
-                //nextSpotifyPlaying,previousSpotifyPlaying,stopSpotifyPlaying,playPauseSpotify,playSpotify()
                 if ((title.equals("Search artist"))) {
                     SpotifyActivity.nextCommand="search artist";
-                    startPlaylistSpotify();mDrawerLayout.closeDrawers();
+                    startSpotify();
                 }else
                 if ((title.equals("Spotify Playlist"))) {
-                    startPlaylistSpotify();mDrawerLayout.closeDrawers();
+                    startSpotify();
                 }else
                 if ((title.equals("Search album"))) {
                     SpotifyActivity.nextCommand="search album";
-                    startPlaylistSpotify();mDrawerLayout.closeDrawers();
+                    startSpotify();
                 }else
                 if ((title.equals("Play"))) {
                     SpotifyActivity.showPlayMenu(getThis,viewHeader);
                 }
                 return true;
+            }
+
+            private void startSpotify() {
+                mDrawerLayout.closeDrawer(GravityCompat.START,false);
+                startPlaylistSpotify();
             }
         });
     }

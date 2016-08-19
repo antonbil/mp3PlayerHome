@@ -15,7 +15,7 @@
         android:layout_height="50dp"
         android:id="@+id/spotifylistimageView"
         android:gravity="center_vertical"
-        android:src="@drawable/abc_btn_rating_star_on_mtrl_alpha" />
+        android:src="@android:drawable/btn_star_big_off" />
     <TextView
         android:id="@+id/number"
         android:text="2"
