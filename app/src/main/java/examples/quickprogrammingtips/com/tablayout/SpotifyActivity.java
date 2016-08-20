@@ -135,7 +135,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     public static final int AlbumList = 0;
     public static final int MpdList = 2;
     private static ArrayList<String> mainids;
-    private static int playingEngine;
+    public static int playingEngine;
     private SpotifyHeader spotifyHeader;
     public FillListviewWithValues fillListviewWithValues;
     public ArrayList<String> artistList = new ArrayList<>();
@@ -804,7 +804,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         }
     }
 
-    private void playButtonsAtBottom() {
+    public void playButtonsAtBottom() {
         View playbutton = findViewById(R.id.playspotify);
         View stopbutton = findViewById(R.id.stopspotify);
         View playpausebutton = findViewById(R.id.pausespotify);
@@ -2322,11 +2322,9 @@ public class SpotifyActivity extends AppCompatActivity implements
                                     new DownLoadImageTask() {
                                         @Override
                                         public void setImage(Bitmap logo) {
-                                            getThis.runOnUiThread(new Runnable() {
-                                                public void run() {
-                                                    image.setImageBitmap(logo);
-                                                    SpotifyActivity.bitmap = logo;
-                                                }
+                                            getThis.runOnUiThread(() -> {
+                                                image.setImageBitmap(logo);
+                                                SpotifyActivity.bitmap = logo;
                                             });
                                         }
                                     }.execute(imageurl);
@@ -2339,16 +2337,14 @@ public class SpotifyActivity extends AppCompatActivity implements
                         currentTime = getTime();
                         artistReturn = t.artists.get(0).name;
                         MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
-                        getThis.runOnUiThread(new Runnable() {
-                            public void run() {
-                                time.setText(niceTime(currentTime));
-                                int ttimeint = totalTime;// thours * 60 * 60 + tmins * 60 + tsecs;
-                                totaltime.setText(niceTime(ttimeint));
-                                tvName.setText(t.name);
-                                artist.setText(t.artists.get(0).name);
-                                MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
+                        getThis.runOnUiThread(() -> {
+                            time.setText(niceTime(currentTime));
+                            int ttimeint = totalTime;// thours * 60 * 60 + tmins * 60 + tsecs;
+                            totaltime.setText(niceTime(ttimeint));
+                            tvName.setText(t.name);
+                            artist.setText(t.artists.get(0).name);
+                            MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
 
-                            }
                         });
                     }
                 } else{//spotify not playing
@@ -2734,13 +2730,13 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     @NonNull
-    private static String setListenersForButtons(Activity getThis1, View playbutton, View stopbutton, View playpausebutton, View previousbutton, View nextbutton, View volumebutton, View seekbutton) {
+    public static String setListenersForButtons(Activity getThis1, View playbutton, View stopbutton, View playpausebutton, View previousbutton, View nextbutton, View volumebutton, View seekbutton) {
         String title = "Spotify Play";
         MpcStatus mpcStatus = new MpcStatus().invoke();
         Logic logic1=null;
-        boolean mpdPlaying=false;
+        //boolean mpdPlaying=false;
         try {
-            mpdPlaying = mpcStatus.isMpdPlaying();
+            //mpdPlaying = mpcStatus.isMpdPlaying();
             logic1 = mpcStatus.getLogic();
         } catch (Exception e){
 

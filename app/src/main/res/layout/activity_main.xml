@@ -73,7 +73,7 @@
         android:background="#333"
         android:orientation="horizontal" >
 
-        <ImageButton
+<!--        <ImageButton
             style="@style/ToolBarButtonStyle"
 
             android:id="@+id/playButton"
@@ -96,7 +96,8 @@
             style="@style/ToolBarButtonStyle"
 
             android:id="@+id/forwardButton"
-            android:src="@drawable/forward" />
+            android:src="@drawable/forward" />-->
+        <include layout="@layout/play_spotify" />
 
     </LinearLayout>
 </RelativeLayout>

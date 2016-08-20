@@ -35,7 +35,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -299,44 +298,25 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         LinearLayout ll = ((LinearLayout) findViewById(R.id.time_layout));
-        ll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playPauseAll();
-            }
-        });//android:id="@+id/song_title"
+        ll.setOnClickListener(v -> playPauseAll());//android:id="@+id/song_title"
         ll = ((LinearLayout) findViewById(R.id.song_title));
-        ll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawerLayout.closeDrawer(GravityCompat.START,false);
-                callSpotify(currentArtist);
-            }
+        ll.setOnClickListener(v -> {
+            mDrawerLayout.closeDrawer(GravityCompat.START,false);
+            callSpotify(currentArtist);
         });
-        ll.setOnLongClickListener(new View.OnLongClickListener() {
-
-            @Override
-            public boolean onLongClick(View v) {
-                MainScreenDialog msDialog = new MainScreenDialog(getThis);
-                msDialog.show();
-                return true;
-            }
+        ll.setOnLongClickListener(v -> {
+            MainScreenDialog msDialog = new MainScreenDialog(getThis);
+            msDialog.show();
+            return true;
         });
         ImageView im = ((ImageView) findViewById(R.id.thumbnail_top));
-        im.setOnLongClickListener(new View.OnLongClickListener() {
-
-            @Override
-            public boolean onLongClick(View v) {
-                displayLargeImage(MainActivity.this, /*MainActivity.this.albumBitmap*/((BitmapDrawable)im.getDrawable()).getBitmap());
-                return true;
-            }
+        im.setOnLongClickListener(v -> {
+            displayLargeImage(MainActivity.this, /*MainActivity.this.albumBitmap*/((BitmapDrawable)im.getDrawable()).getBitmap());
+            return true;
         });
-        im.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //setVolume(getThis);
-                SpotifyActivity.showPlayMenu(getThis,im);
-            }
+        im.setOnClickListener(v -> {
+            //setVolume(getThis);
+            SpotifyActivity.showPlayMenu(getThis,im);
         });
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
@@ -352,59 +332,47 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         final LinearLayout footerView = (LinearLayout) findViewById(R.id.footer);
         footerView.setVisibility(View.GONE);
         final FloatingActionButton findbutton = (FloatingActionButton) findViewById(R.id.find);
-        findbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SpotifyActivity.nextCommand="search artist";
-                startPlaylistSpotify();
-            }
+        findbutton.setOnClickListener(v -> {
+            SpotifyActivity.nextCommand="search artist";
+            startPlaylistSpotify();
         });        FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
         findbutton.setVisibility(View.GONE);
-        FAB.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
+        FAB.setOnClickListener(v -> {
 
 
-                //Toast.makeText(MainActivity.this, "Hello Worl", Toast.LENGTH_SHORT).show();
-                if (tabSelected == 1 || (tabSelected == 2)) {
-                    //Toast.makeText(MainActivity.this, "Back key", Toast.LENGTH_SHORT).show();
-                    if (tabSelected == 1)
-                    listFragment.back();
-                    if (tabSelected == 2) dbFragment.back();
-                } else {{
-                    PopupMenu menu = new PopupMenu(FAB.getContext(), FAB);
-                    menu.getMenu().add("search artist");
-                    menu.getMenu().add("spotify");
-                    menu.getMenu().add("play on/off");
+            //Toast.makeText(MainActivity.this, "Hello Worl", Toast.LENGTH_SHORT).show();
+            if (tabSelected == 1 || (tabSelected == 2)) {
+                //Toast.makeText(MainActivity.this, "Back key", Toast.LENGTH_SHORT).show();
+                if (tabSelected == 1)
+                listFragment.back();
+                if (tabSelected == 2) dbFragment.back();
+            } else {{
+                PopupMenu menu = new PopupMenu(FAB.getContext(), FAB);
+                menu.getMenu().add("search artist");
+                menu.getMenu().add("spotify");
+                menu.getMenu().add("play on/off");
 
-                    menu.show();
-                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                menu.show();
+                menu.setOnMenuItemClickListener(item -> {
+                    String title = item.getTitle().toString();
+                    if ((title.equals("search artist"))) {
+                        SpotifyActivity.nextCommand="search artist";
+                        startPlaylistSpotify();
+                    } else if ((title.equals("spotify"))) {
+                        startPlaylistSpotify();
+                    } else if ((title.equals("play on/off"))) {
+                        setFooterVisibility();
 
-                                                        @Override
-                                                        public boolean onMenuItemClick(MenuItem item) {
-                                                            String title = item.getTitle().toString();
-                                                            if ((title.equals("search artist"))) {
-                                                                SpotifyActivity.nextCommand="search artist";
-                                                                startPlaylistSpotify();
-                                                            } else if ((title.equals("spotify"))) {
-                                                                startPlaylistSpotify();
-                                                            } else if ((title.equals("play on/off"))) {
-                                                                setFooterVisibility();
-
-                                                            } else {}
-                                                            return true;
-                                                        }
-
-                                                    }
-
-                    );
+                    } else {}
+                    return true;
                 }
 
-                }
-
+                );
+            }
 
             }
+
+
         });
 
         listFragment = new ListFragment();
@@ -456,43 +424,24 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
         Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
         setSupportActionBar(tool);
-        ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logic.getMpc().play();
-                logic.setPaused(false);
-            }
+        /*ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
+        playButton.setOnClickListener(v -> {
+            logic.getMpc().play();
+            logic.setPaused(false);
         });
         ImageButton stopButton = (ImageButton) findViewById(R.id.stopButton);
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logic.getMpc().pause();
-                logic.setPaused(true);
-            }
-        });
-        ImageButton pauseButton = (ImageButton) findViewById(R.id.pauseButton);
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playPause();
-            }
-        });
+        stopButton.setOnClickListener(v -> {
+            logic.getMpc().pause();
+            logic.setPaused(true);
+        });*/
+        /*ImageButton pauseButton = (ImageButton) findViewById(R.id.pauseButton);
+        pauseButton.setOnClickListener(v -> playPause());
         ImageButton forwardButton = (ImageButton) findViewById(R.id.forwardButton);
-        forwardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logic.getMpc().next();
-            }
-        });
+        forwardButton.setOnClickListener(v -> logic.getMpc().next());
         ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logic.getMpc().previous();
-            }
-        });
+        backButton.setOnClickListener(v -> logic.getMpc().previous());*/
+        setListenersForButtons();
+
 
         updateDisplay();
 
@@ -1106,8 +1055,26 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     }
 
+    private void checkButtons(int prev){
+        if (prev!=SpotifyActivity.playingEngine) {
+            setListenersForButtons();
+        }
+    }
+
+    private void setListenersForButtons() {
+        View playbutton = findViewById(R.id.playspotify);
+        View stopbutton = findViewById(R.id.stopspotify);
+        View playpausebutton = findViewById(R.id.pausespotify);
+        View previousbutton = findViewById(R.id.previousspotify);
+        View nextbutton = findViewById(R.id.nextspotify);
+        View volumebutton = findViewById(R.id.volumespotify);
+        View seekbutton = findViewById(R.id.positionspotify);
+        SpotifyActivity.setListenersForButtons(this, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+    }
+
     @Override
     public void statusUpdate(MPCStatus newStatus) {
+        int prev=SpotifyActivity.playingEngine;
 
         if (SpotifyActivity.isPlaying()){
 
@@ -1121,10 +1088,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     (TextView) findViewById(R.id.artist_top),
                     viewById,
                     null,  null,getThis,getSpotifyInterface);
+            checkButtons(prev);
             MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
             return;
 
         }
+//        if (SpotifyActivity.playingEngine==1){SpotifyActivity.getThis.playButtonsAtBottom();}
+        SpotifyActivity.playingEngine=2;
+        checkButtons(prev);
+
         final MPCStatus status = newStatus;
         logic.mpcStatus = newStatus;
         if (status.song == null) {
