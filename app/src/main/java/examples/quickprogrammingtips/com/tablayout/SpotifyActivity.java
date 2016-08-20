@@ -2278,7 +2278,12 @@ public class SpotifyActivity extends AppCompatActivity implements
         try {
                 if (isPlaying()) {//(speed.doubleValue() > 0) {
                     if (albumAdapter!=null)
-                        if (playingEngine==2){SpotifyActivity.getThis.playButtonsAtBottom();}
+                        if (albumAdapter!=null)
+                            try {
+                                if (playingEngine == 2) {
+                                    SpotifyActivity.getThis.playButtonsAtBottom();
+                                }
+                            } catch (Exception e){}
                         playingEngine=1;
                      String[] trid1 = getCurrentTrack();//
                     String trid = "0";

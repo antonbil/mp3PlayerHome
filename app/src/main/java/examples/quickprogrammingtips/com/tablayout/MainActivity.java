@@ -361,6 +361,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     } else if ((title.equals("spotify"))) {
                         startPlaylistSpotify();
                     } else if ((title.equals("play on/off"))) {
+                        setListenersForButtons();
                         setFooterVisibility();
 
                     } else {}
@@ -1094,8 +1095,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
         }
 //        if (SpotifyActivity.playingEngine==1){SpotifyActivity.getThis.playButtonsAtBottom();}
+        if (SpotifyActivity.playingEngine==1){setListenersForButtons();}
         SpotifyActivity.playingEngine=2;
-        checkButtons(prev);
+        //checkButtons(prev);
 
         final MPCStatus status = newStatus;
         logic.mpcStatus = newStatus;
