@@ -58,9 +58,9 @@
                     android:scheme="testschema" />
             </intent-filter>
         </activity>
-        <activity
+        <!--<activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />-->
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />

@@ -38,7 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.spotify.sdk.android.player.ConnectionStateCallback;
+//import com.spotify.sdk.android.player.ConnectionStateCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -125,7 +125,7 @@ PlaybackController.get_state()
 
  */
 public class SpotifyActivity extends AppCompatActivity implements
-        ConnectionStateCallback, MPCDatabaseListListener {
+         MPCDatabaseListListener {
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "89f945f1696e4f389aaed419e51beaad";
     // TODO: Replace with your redirect URI
@@ -1630,7 +1630,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         refreshPlaylistFromSpotify(albumAdapter, albumsListview, getThis);
     }
 
-    @Override
+    /*@Override
     public void onLoggedIn() {
         Log.d("MainActivity", "User logged in");        Toast.makeText(getApplicationContext(), "User logged in",
                 Toast.LENGTH_SHORT).show();
@@ -1658,7 +1658,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     @Override
     public void onConnectionMessage(String s) {
 
-    }
+    }*/
 
     @Override
     public void resultDbCall(ArrayList<String> dblist) {
