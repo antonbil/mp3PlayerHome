@@ -1095,8 +1095,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
         }
 //        if (SpotifyActivity.playingEngine==1){SpotifyActivity.getThis.playButtonsAtBottom();}
-        if (SpotifyActivity.playingEngine==1){setListenersForButtons();}
-        SpotifyActivity.playingEngine=2;
         //checkButtons(prev);
 
         final MPCStatus status = newStatus;
@@ -1104,6 +1102,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         if (status.song == null) {
 
             return;}
+        if (status.playing){
+            if (SpotifyActivity.playingEngine==1){setListenersForButtons();}
+            SpotifyActivity.playingEngine=2;
+        }
         Handler h = new Handler(Looper.getMainLooper());
         h.post(new Runnable() {
             public void run() {
