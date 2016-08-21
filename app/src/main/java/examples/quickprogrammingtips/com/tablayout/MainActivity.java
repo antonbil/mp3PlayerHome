@@ -341,13 +341,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
 
             //Toast.makeText(MainActivity.this, "Hello Worl", Toast.LENGTH_SHORT).show();
-            if (tabSelected == 1 || (tabSelected == 2)) {
+            /*if (tabSelected == 1 || (tabSelected == 2)) {
                 //Toast.makeText(MainActivity.this, "Back key", Toast.LENGTH_SHORT).show();
                 if (tabSelected == 1)
                 listFragment.back();
                 if (tabSelected == 2) dbFragment.back();
-            } else {{
-                PopupMenu menu = new PopupMenu(FAB.getContext(), FAB);
+            } else {*/
+                /*PopupMenu menu = new PopupMenu(FAB.getContext(), FAB);
                 menu.getMenu().add("search artist");
                 menu.getMenu().add("spotify");
                 menu.getMenu().add("play on/off");
@@ -355,10 +355,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 menu.show();
                 menu.setOnMenuItemClickListener(item -> {
                     String title = item.getTitle().toString();
-                    if ((title.equals("search artist"))) {
+                    if ((title.equals("search artist"))) {*/
                         SpotifyActivity.nextCommand="search artist";
                         startPlaylistSpotify();
-                    } else if ((title.equals("spotify"))) {
+                    /*} else if ((title.equals("spotify"))) {
                         startPlaylistSpotify();
                     } else if ((title.equals("play on/off"))) {
                         setListenersForButtons();
@@ -368,10 +368,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     return true;
                 }
 
-                );
-            }
-
-            }
+                );*/
+            //}
 
 
         });
@@ -388,24 +386,24 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 tabSelected = tab.getPosition();
                 if (tab.getPosition() == 0) {
                     displayHome();
-                    findbutton.setVisibility(View.GONE);
+                    //findbutton.setVisibility(View.GONE);
                 }
                 if (tabSelected == 1) {
 
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, listFragment).commit();
-                    findbutton.setVisibility(View.VISIBLE);
+                    //findbutton.setVisibility(View.VISIBLE);
                 }
                 if (tab.getPosition() == 2) {
                     try {
 
                         getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
-                        findbutton.setVisibility(View.VISIBLE);
+                        //findbutton.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                     }
                 }
                 if (tab.getPosition() == 4) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new SelectFragment()).commit();
-                    findbutton.setVisibility(View.GONE);
+                    //findbutton.setVisibility(View.GONE);
                 }
                 if (tab.getPosition() == 3) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new PlaylistsFragment()).commit();
@@ -452,7 +450,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     static void playPauseAll() {
-        if (MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING){
+        if (/*MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING*/SpotifyActivity.playingEngine==1){
             SpotifyActivity.playPauseSpotify();
         }else
         MainActivity.getThis.playPause();
@@ -623,6 +621,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public void onBackPressed() {
+        if ((tabSelected==1)||(tabSelected==2)) {
+            if (tabSelected == 1)
+                listFragment.back();
+            if (tabSelected == 2) dbFragment.back();
+        }
+        else
         new AlertDialog.Builder(this)
                 .setMessage("Are you sure you want to exit?")
                 .setCancelable(false)
