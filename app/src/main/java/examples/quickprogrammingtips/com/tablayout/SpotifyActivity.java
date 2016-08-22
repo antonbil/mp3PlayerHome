@@ -40,7 +40,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.api.GoogleApiClient;
 //import com.spotify.sdk.android.player.ConnectionStateCallback;
 
-import org.apache.commons.lang3.StringUtils;
+//import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
