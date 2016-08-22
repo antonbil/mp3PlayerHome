@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
@@ -447,6 +448,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        ArtistAutoCompleteAdapter.getAllFilenames();
     }
 
     static void playPauseAll() {

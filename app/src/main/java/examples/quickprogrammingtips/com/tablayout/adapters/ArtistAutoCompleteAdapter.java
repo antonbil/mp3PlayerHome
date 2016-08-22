@@ -5,6 +5,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -19,9 +21,10 @@ import jcifs.smb.SmbFile;
  */
 public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
     public static final String FAMILYMUSIC = "smb://192.168.2.8/FamilyLibrary/FamilyMusic/";
-    private ArrayList<String> artistList;
+    private static ArrayList<String> artistList=new ArrayList();
     private ArrayList<String> suggestions =new ArrayList<>();
     private char firstLetter =' ';
+    public static ArrayList<Character> letters=new ArrayList();
 
         public ArtistAutoCompleteAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
@@ -47,16 +50,37 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                     if ((constraint != null)&&(constraint.length()>0)) {
                         String firstLetterString=constraint.toString().toLowerCase();
                         //if first letter changes, retrieve results
-                        if (constraint.charAt(0)!= firstLetter) {
+                        char c = constraint.charAt(0);
+                        if (c != firstLetter) {
                             // Retrieve the  results.
-                            artistList = retrieveFromSambaShare(firstLetterString);
-                            firstLetter =constraint.charAt(0);
+                            if (notpartOf(c)) {
+                                artistList.addAll(retrieveFromSambaShare(firstLetterString));
+                                letters.add(c);
+                                getAllFilenames();
+                            }
+                            firstLetter = c;
                         }
 
                         // Assign the data to the FilterResults
                         suggestions =new ArrayList<>();
                         for (String s: artistList){
                             if (s.toLowerCase().contains(firstLetterString)) suggestions.add(s);
+                            if (suggestions.size()>10)  break;
+                        }
+                        if (suggestions.size()==0){
+                            int n=10;
+                            String suit="";
+                            for (String s: artistList){
+                                int levenshteinDistance = StringUtils.getLevenshteinDistance(s.toLowerCase(), firstLetterString);
+                                if (levenshteinDistance <=n) {
+                                    suit=s;
+                                    suggestions.add(0,suit);
+                                    n= levenshteinDistance;
+                                }
+                                //if (s.toLowerCase().contains(firstLetterString)) suggestions.add(s);
+                                //if (suggestions.size()>10)  break;
+                            }
+
                         }
                         filterResults.values = suggestions;
                         filterResults.count = suggestions.size();
@@ -81,7 +105,29 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                 }};
         }
 
-    ArrayList<String> retrieveFromSambaShare(String firstLetter){
+    public static void getAllFilenames() {
+        new Thread()
+        {
+            public void run() {
+                for (char c1 = 'a'; c1 <= 'z'; c1++) {
+                    if (notpartOf(c1)) {
+                        letters.add(c1);
+                        ArrayList<String> artistList1 = retrieveFromSambaShare(c1 + "");
+                        artistList.addAll(artistList1);
+                    }
+                }
+            }
+        }.run();
+    }
+
+    private static boolean notpartOf(char c) {
+        for (char c1:letters){
+            if (c==c1)return false;
+        }
+        return true;
+    }
+
+    static ArrayList<String> retrieveFromSambaShare(String firstLetter){
         firstLetter=firstLetter.toLowerCase().substring(0,1);
         //authentication
         NtlmPasswordAuthentication auth = NetworkShare.getNtlmPasswordAuthentication();

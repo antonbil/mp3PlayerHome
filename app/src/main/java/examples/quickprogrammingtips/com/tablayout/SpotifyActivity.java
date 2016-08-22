@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.api.GoogleApiClient;
 //import com.spotify.sdk.android.player.ConnectionStateCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -1667,6 +1668,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         String prevFile="";
         //String s="";
         int total=0;
+        //StringUtils.getLevenshteinDistance()
         for (String s1:dblist){
             if (s1.startsWith("Album: ")) {
                 String album1= s1.replace("Album: ", "");
