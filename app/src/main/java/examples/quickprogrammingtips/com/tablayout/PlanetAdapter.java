@@ -113,6 +113,13 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             holder.name.setTextColor(Color.YELLOW);
         } else
             holder.name.setTextColor(Color.WHITE);
+        /*convertView.setOnClickListener(view -> {
+            onClickFunc(position);
+        });
+        convertView.setOnLongClickListener(view -> {
+            longclick( position,  convertView2);
+            return false;
+        });*/
         OnFlingGestureListener flingListener;
         flingListener = new OnFlingGestureListener() {
             @Override

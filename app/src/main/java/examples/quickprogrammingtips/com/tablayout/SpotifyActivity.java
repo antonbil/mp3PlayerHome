@@ -22,6 +22,7 @@ import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,9 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-//import com.spotify.sdk.android.player.ConnectionStateCallback;
 
-//import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,6 +58,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -96,6 +96,9 @@ import retrofit.client.Response;
 import static examples.quickprogrammingtips.com.tablayout.model.Favorite.generateLists;
 import static examples.quickprogrammingtips.com.tablayout.model.Mp3File.niceTime;
 
+//import com.spotify.sdk.android.player.ConnectionStateCallback;
+//import org.apache.commons.lang3.StringUtils;
+
 /*
 The most straightforward way to get the access token is to use the Authentication Library from the Spotify Android SDK.(https://github.com/spotify/android-sdk)
 explanation:https://developer.spotify.com/technologies/spotify-android-sdk/android-sdk-authentication-guide/#single-sign-on-with-spotify-client-and-a-webview-fallback
@@ -132,11 +135,13 @@ public class SpotifyActivity extends AppCompatActivity implements
     // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "testschema://callback";
     public static final String MPD = "mpd://";
+    public static boolean longClickActive = false;
     public static final int SpotifyList = 1;
     public static final int AlbumList = 0;
     public static final int MpdList = 2;
     private static ArrayList<String> mainids;
     public static int playingEngine;
+    public static boolean longClickHasbeenCalled=false;
     private SpotifyHeader spotifyHeader;
     public FillListviewWithValues fillListviewWithValues;
     public ArrayList<String> artistList = new ArrayList<>();
@@ -154,7 +159,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static String ipAddress = "";
     public static String nextCommand="";
     public PlanetAdapter albumAdapter;
-    private ListView albumsListview;
+    protected ListView albumsListview;
     private static ProgressDialog dialog1;//
     private static Handler updateBarHandler;
     //AdapterView.OnItemClickListener selectOnPlaylist;
@@ -549,6 +554,10 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         albumsListview = (ListView) findViewById(R.id.albums_listview);
         albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+            SwipeGestureListener gestureListener = new SwipeGestureListener(this);
+            //albumsListview.setOnTouchListener(gestureListener);
+            albumsListview.setOnTouchListener(new SmartLinkSwipeDetector(this));
+            //SmartLinkSwipeDetector
             setAdapterForSpotify();
 
         albumsListview.setOnItemClickListener(cl);
@@ -2987,4 +2996,186 @@ abstract class Seek{
         alert.show();
     }
 
+}
+
+//not used
+class SwipeGestureListener extends GestureDetector.SimpleOnGestureListener implements
+        View.OnTouchListener {
+    Context context;
+    GestureDetector gDetector;
+    static final int SWIPE_MIN_DISTANCE = 60;
+    static final int SWIPE_MAX_OFF_PATH = 250;
+    static final int SWIPE_THRESHOLD_VELOCITY = 400;
+
+    public SwipeGestureListener() {
+        super();
+    }
+
+    public SwipeGestureListener(Context context) {
+        this(context, null);
+    }
+
+    public SwipeGestureListener(Context context, GestureDetector gDetector) {
+
+        if (gDetector == null)
+            gDetector = new GestureDetector(context, this);
+
+        this.context = context;
+        this.gDetector = gDetector;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                           float velocityY) {
+Log.v("samba",""+e1.getX());
+        final int position = SpotifyActivity.getThis.albumsListview.pointToPosition(
+                Math.round(e1.getX()), Math.round(e1.getY()));
+
+        String countryName = (String) SpotifyActivity.getThis.albumsListview.getItemAtPosition(position);
+
+        /*if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH) {
+            if (Math.abs(e1.getX() - e2.getX()) > SWIPE_MAX_OFF_PATH
+                    || Math.abs(velocityY) < SWIPE_THRESHOLD_VELOCITY) {
+                return false;
+            }
+            if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE) {
+                Toast.makeText(SpotifyActivity.getThis, "bottomToTop" + countryName,
+                        Toast.LENGTH_SHORT).show();
+            } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE) {
+                Toast.makeText(SpotifyActivity.getThis,
+                        "topToBottom  " + countryName, Toast.LENGTH_SHORT)
+                        .show();
+            }
+        } else {*/
+            if (Math.abs(velocityX) < SWIPE_THRESHOLD_VELOCITY) {
+                return false;
+            }
+            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE) {
+                //Toast.makeText(SpotifyActivity.getThis,
+                //        "swipe RightToLeft " + countryName, Toast.LENGTH_SHORT).show();
+                SpotifyActivity.getThis.previousList();
+            } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE) {
+                //Toast.makeText(SpotifyActivity.getThis,
+                //        "swipe LeftToright  " + countryName, Toast.LENGTH_SHORT).show();
+                SpotifyActivity.getThis.nextList();
+            }
+        //}
+
+        return super.onFling(e1, e2, velocityX, velocityY);
+
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+
+        return gDetector.onTouchEvent(event);
+    }
+
+    public GestureDetector getDetector() {
+        return gDetector;
+    }
+
+}
+
+class SmartLinkSwipeDetector implements View.OnTouchListener {
+    private static final int MIN_CLICK_DURATION = 3000;
+    private long startClickTime;
+
+    //declare needed constants
+    private final String CLASS_NAME = getClass().getName();
+
+    private final int MIN_DISTANCE = 100; //TODO - change distance
+    private float downX, upX;
+
+    //declare needed variables
+    private Activity swipeDetector;
+
+    public SmartLinkSwipeDetector(Activity fragment) {
+        super();
+        swipeDetector=fragment;
+    }
+    /*public SmartLinkSwipeDetector(WorkoutSupplementBaseFragment fragment) {
+        super();
+        testForSwipeDetectorInterface(fragment);
+    }
+
+    private void testForSwipeDetectorInterface(WorkoutSupplementBaseFragment fragment) {
+        //ensure activity implements interface
+        try {
+            swipeDetector = (SmartLinkSwipeDetectorInterface) fragment;
+        } catch (ClassCastException ex) {
+            String errorString = fragment.getClass().getName() + " must implement   SmartLinkSwipeDetectorInterface";
+            Log.e(CLASS_NAME, errorString);
+            throw new ClassCastException(errorString);
+        }
+    }*/
+
+    @Override
+    public boolean onTouch(View view, MotionEvent event) {
+        switch (event.getAction()) {
+
+            case MotionEvent.ACTION_DOWN:
+                if (!SpotifyActivity.longClickActive) {
+                    SpotifyActivity.longClickActive = true;
+                    startClickTime = Calendar.getInstance().getTimeInMillis();
+                }
+                downX = event.getX();
+                return true;
+
+            case MotionEvent.ACTION_MOVE:
+                if (SpotifyActivity.longClickActive) {
+                    long clickDuration = Calendar.getInstance().getTimeInMillis() - startClickTime;
+                    if (clickDuration >= MIN_CLICK_DURATION) {
+                        Toast.makeText(SpotifyActivity.getThis, "LONG PRESSED!",Toast.LENGTH_SHORT).show();
+                        SpotifyActivity.longClickActive = false;
+                        SpotifyActivity.longClickHasbeenCalled=true;
+
+                    }
+                }
+                return true;
+            case MotionEvent.ACTION_UP:
+                upX = event.getX();
+                float deltaX = downX - upX;
+
+                if (Math.abs(deltaX) > MIN_DISTANCE) {
+                    if (deltaX < 0)
+                        //swipeDetector.swipeRight();
+                    {
+                        //Toast.makeText(SpotifyActivity.getThis,
+                        //        "swipe RightToLeft ", Toast.LENGTH_SHORT).show();
+                        SpotifyActivity.longClickActive=false;
+                        SpotifyActivity.getThis.nextList();
+
+                    }
+                    else if (deltaX > 0)
+                        //swipeDetector.swipeLeft();
+                    {
+                        //Toast.makeText(SpotifyActivity.getThis,
+                        //        "swipe LeftToRight ", Toast.LENGTH_SHORT).show();
+                        SpotifyActivity.longClickActive=false;
+                        SpotifyActivity.getThis.previousList();
+
+                    }
+                } else {
+                    if (SpotifyActivity.longClickHasbeenCalled){
+                        SpotifyActivity.longClickHasbeenCalled = false;
+                        return true;
+                    }
+/*                    {
+                        final int position = SpotifyActivity.getThis.albumsListview.pointToPosition(
+                                Math.round(event.getX()), Math.round(event.getY()));
+
+                        String countryName = (String) SpotifyActivity.getThis.albumsListview.getItemAtPosition(position);
+                        SpotifyActivity.getThis.albumAdapter.onClickFunc(position);
+
+                    }*/
+                }
+                SpotifyActivity.longClickActive = false;
+
+                return true;
+
+            default:
+                return true;
+        }
+    }
 }
