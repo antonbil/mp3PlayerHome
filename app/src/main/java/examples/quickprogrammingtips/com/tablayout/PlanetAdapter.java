@@ -32,6 +32,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 
     private Context context;
     private AppCompatActivity getThis;
+    private int mypos=1;
 
     public abstract void removeUp(int counter);//onClickFunc
 
@@ -87,6 +88,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             if(t.pictureVisible) {
                 holder.image.setVisibility(View.VISIBLE);
                 holder.pos.setVisibility(View.GONE);
+                mypos=1;
 
                 //Log.v("samba", "look for:" + t.url);
                 new DownLoadImageTask() {
@@ -143,7 +145,8 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 
         };
 
-        holder.pos.setText("" + (position + 1));
+        holder.pos.setText("" + (mypos));
+        mypos++;
         convertView.setOnTouchListener((v, event) -> {
             if (flingListener.onTouch(v, event)) {
                 // if gesture detected, ignore other touch events
