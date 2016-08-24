@@ -21,6 +21,7 @@ import java.util.List;
 import examples.quickprogrammingtips.com.tablayout.adapters.OnFlingGestureListener;
 
 public abstract class PlanetAdapter extends ArrayAdapter<String> {
+    public static boolean longclicked=false;
     private final ArrayList<PlaylistItem> tracksPlaylist;
     private boolean displayCurrentTrack = true;
     int currentItem = -1;
@@ -146,6 +147,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 
             @Override
             public void onLongTapUp() {
+                PlanetAdapter.longclicked=true;
                 longclick( position,  convertView2);
 
             }

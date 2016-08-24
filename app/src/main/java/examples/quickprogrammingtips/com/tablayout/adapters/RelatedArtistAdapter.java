@@ -24,6 +24,8 @@ import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
  * Created by anton on 11-8-16.
  */
 public class RelatedArtistAdapter<String> extends ArrayAdapter {
+    public static boolean longclicked=false;
+
     ArrayList<java.lang.String> objects;
 
         public RelatedArtistAdapter(Context context, int resource, ArrayList<java.lang.String> objects) {
@@ -81,6 +83,7 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
 
                 @Override
                 public void onLongTapUp() {
+                    longclicked=true;
                     final java.lang.String selectedItem = SpotifyActivity.getThis.artistList.get(position);
 
                     //Log.v("long clicked", "pos: " + pos + "artist: " + selectedItem);
