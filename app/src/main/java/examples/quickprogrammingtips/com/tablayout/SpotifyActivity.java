@@ -3002,15 +3002,6 @@ class SmartLinkSwipeDetector implements View.OnTouchListener {
     private final int MIN_DISTANCE = 100;
     private float downX, upX;
 
-    //declare needed variables
-    /*private Activity swipeDetector;
-
-    public SmartLinkSwipeDetector(Activity fragment) {
-        super();
-        swipeDetector=fragment;
-    }*/
-
-
     @Override
     public boolean onTouch(View view, MotionEvent event) {
         switch (event.getAction()) {
