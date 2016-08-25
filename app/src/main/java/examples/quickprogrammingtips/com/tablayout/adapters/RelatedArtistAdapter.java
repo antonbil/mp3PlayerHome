@@ -3,12 +3,10 @@ package examples.quickprogrammingtips.com.tablayout.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -48,42 +46,9 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
             final View convertView2=convertView;
             TextView tv = (TextView) convertView.findViewById(R.id.textViewPerformer1);
             tv.setText(objects.get(position));
-            OnFlingGestureListener flingListener;
-            flingListener = new OnFlingGestureListener() {
+            convertView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public void onRightToLeft() {
-                    //Log.v("samba","righttoleft");
-                    //Toast toast = Toast.makeText(SpotifyActivity.getThis, "righttoleft", Toast.LENGTH_SHORT);
-                    //toast.show();
-                    SpotifyActivity.getThis.previousList();
-
-                }
-
-                @Override
-                public void onLeftToRight() {
-                    //Log.v("samba","lefttoright");
-                    //Toast toast = Toast.makeText(SpotifyActivity.getThis, "lefttoright", Toast.LENGTH_SHORT);
-                    //toast.show();
-                    SpotifyActivity.getThis.nextList();
-
-
-                }
-
-
-                @Override
-                public void onTapUp() {
-                    try{
-                        java.lang.String s = SpotifyActivity.getThis.artistList.get(position);
-                        SpotifyActivity.getThis.listAlbumsForArtist(s);
-                    } catch (Exception e) {
-                        Log.v("samba", Log.getStackTraceString(e));
-                    }
-                    ;
-                }
-
-                @Override
-                public void onLongTapUp() {
-                    longclicked=true;
+                public boolean onLongClick(View view) {
                     final java.lang.String selectedItem = SpotifyActivity.getThis.artistList.get(position);
 
                     //Log.v("long clicked", "pos: " + pos + "artist: " + selectedItem);
@@ -122,6 +87,55 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
                         }
 
                     });
+                    return false;
+                }
+            });
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try{
+                        java.lang.String s = SpotifyActivity.getThis.artistList.get(position);
+                        Log.v("samba","get "+s);
+                        longclicked=true;
+                        SpotifyActivity.getThis.setVisibility(View.VISIBLE);
+                        SpotifyActivity.getThis.listAlbumsForArtist(s);
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+
+                }
+            });
+            /*OnFlingGestureListener flingListener;
+            flingListener = new OnFlingGestureListener() {
+                @Override
+                public void onRightToLeft() {
+                    //Log.v("samba","righttoleft");
+                    //Toast toast = Toast.makeText(SpotifyActivity.getThis, "righttoleft", Toast.LENGTH_SHORT);
+                    //toast.show();
+                    SpotifyActivity.getThis.previousList();
+
+                }
+
+                @Override
+                public void onLeftToRight() {
+                    //Log.v("samba","lefttoright");
+                    //Toast toast = Toast.makeText(SpotifyActivity.getThis, "lefttoright", Toast.LENGTH_SHORT);
+                    //toast.show();
+                    SpotifyActivity.getThis.nextList();
+
+
+                }
+
+
+                @Override
+                public void onTapUp() {
+                    ;
+                }
+
+                @Override
+                public void onLongTapUp() {
+                    longclicked=true;
+
 
                 }
 
@@ -145,7 +159,7 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
                 }
 
 
-            });
+            });*/
 
             return super.getView(position, convertView, parent);
         }

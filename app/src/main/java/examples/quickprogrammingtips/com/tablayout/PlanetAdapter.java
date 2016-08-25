@@ -125,17 +125,11 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         flingListener = new OnFlingGestureListener() {
             @Override
             public void onRightToLeft() {
-                //Log.v("samba","righttoleft");
-                //Toast toast = Toast.makeText(context, "righttoleft", Toast.LENGTH_SHORT);
-                //toast.show();
                 SpotifyActivity.getThis.previousList();
             }
 
             @Override
             public void onLeftToRight() {
-                //Log.v("samba","lefttoright");
-                //Toast toast = Toast.makeText(context, "lefttoright", Toast.LENGTH_SHORT);
-                //toast.show();
                 SpotifyActivity.getThis.nextList();
             }
 

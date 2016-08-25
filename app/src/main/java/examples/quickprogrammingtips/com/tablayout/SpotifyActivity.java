@@ -63,7 +63,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAdapter;
 import examples.quickprogrammingtips.com.tablayout.adapters.InstantAutoComplete;
-import examples.quickprogrammingtips.com.tablayout.adapters.OnFlingGestureListener;
 import examples.quickprogrammingtips.com.tablayout.adapters.RelatedArtistAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
@@ -189,7 +188,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private static String searchAlbumString ="";
     private static int totalTime;
     private static int currentTime;
-    OnFlingGestureListener flingListener;
+    //OnFlingGestureListener flingListener;
     private boolean displayMpd;
     public static int currentList=SpotifyList+1;
     private String[] lists = new String[]{"albumlist","spotifylist","mpdlist"};;
@@ -491,7 +490,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             checkAppMemory();
 
 
-            flingListener = new OnFlingGestureListener() {
+            /*flingListener = new OnFlingGestureListener() {
                 @Override
                 public void onRightToLeft() {
                     Log.v("samba","righttoleft");
@@ -513,7 +512,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 }
 
 
-            };
+            };*/
         tracksPlaylist = new ArrayList<Track>();
 
         String ip = MainActivity.getThis.getLogic().getMpc().getAddress();
@@ -1285,10 +1284,10 @@ public class SpotifyActivity extends AppCompatActivity implements
         //Log.v("samba","righttoleft2");
 
         int action = MotionEventCompat.getActionMasked(event);
-        if (flingListener.onTouch(this.getCurrentFocus(), event)) {
+        /*if (flingListener.onTouch(this.getCurrentFocus(), event)) {
             // if gesture detected, ignore other touch events
             return false;
-        }
+        }*/
 
         if (action == MotionEvent.ACTION_DOWN) {
             // normal touch events
@@ -1509,7 +1508,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         listAlbumsForArtist(api, spotify, atistName, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
     }
 
-    private void setVisibility(int visibility) {
+    public void setVisibility(int visibility) {
         int opposite=View.GONE;
         if (visibility==opposite)opposite=View.VISIBLE;
         relatedArtistsListView.setVisibility(visibility);
@@ -2115,6 +2114,8 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void success(ArtistsPager artistsPager, Response response) {
+                Log.v("samba","get 1");
+
                 String id = "";
                 int max = 10000;
                 Image image = null;
@@ -2139,13 +2140,15 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
                 }
+                Log.v("samba","get 2 for "+beatles);
 
                 listAlbumsForArtistId(id, image, beatles, api);
+                Log.v("samba","get 3");
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                error.printStackTrace();
             }
         });
     }
@@ -2167,6 +2170,11 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void success(Pager<Album> albumPager, Response response) {
+                if (albumPager.items.size()==0){
+                    Toast.makeText(getThis, "no albums for "+beatles,
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 albumList.clear();
                 albumTracks.clear();
                 albumIds.clear();
@@ -2178,6 +2186,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                         pi.pictureVisible=true;
                         pi.url=album.images.get(0).url;
                         pi.text=album.name;
+                        Log.v("samba",album.name);
 
                         albumList.add(album.name);
                         albumIds.add(album.id);
@@ -2196,7 +2205,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void failure(RetrofitError error) {
-
+                error.printStackTrace();
             }
         });
         spotify.getRelatedArtists(id, new Callback<Artists>() {
@@ -3004,6 +3013,11 @@ class SmartLinkSwipeDetector implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View view, MotionEvent event) {
+        /*Observable
+                .just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+                .filter(integer -> integer % 2 == 0)
+                .subscribe(System.out::println);*/
+
         switch (event.getAction()) {
 
             case MotionEvent.ACTION_DOWN:

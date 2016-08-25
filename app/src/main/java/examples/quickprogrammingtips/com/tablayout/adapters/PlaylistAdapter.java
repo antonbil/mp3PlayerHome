@@ -4,6 +4,7 @@ package examples.quickprogrammingtips.com.tablayout.adapters;
  * Created by anton on 20-1-16.
  */
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
@@ -120,9 +121,15 @@ public class PlaylistAdapter extends BaseAdapter {
             else {
                 ImageView image=(ImageView) (convertView.findViewById(R.id.thumbnail_playlist));
                 String niceAlbum = mp3File.niceAlbum();
-                if (MainActivity.albumPictures.containsKey(niceAlbum)&&MainActivity.albumPictures.get(niceAlbum)!=null)
-                    image.setImageBitmap(MainActivity.albumPictures.get(niceAlbum));
-                else image.setImageBitmap(BitmapFactory.decodeResource(convertView.getResources(), R.drawable.pause));
+                Bitmap bm = MainActivity.albumPictures.get(niceAlbum);
+                if (MainActivity.albumPictures.containsKey(niceAlbum)&& bm !=null)
+                    image.setImageBitmap(bm);
+                else {
+                    bm=BitmapFactory.decodeResource(convertView.getResources(), R.drawable.pause);
+                    image.setImageBitmap(bm);
+                }
+                Bitmap bm1=bm;
+                image.setOnClickListener(arg0 -> MainActivity.displayLargeImage(MainActivity.getThis, bm1));
                 holder.performer.setText(String.format("%s-%s", mp3File.getArtist(), mp3File.getAlbum()));
                 holder.title.setText(String.format("%s-%s", mp3File.getTracknr(), mp3File.getTitle()));
             }

@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -312,12 +311,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         });
         ImageView im = ((ImageView) findViewById(R.id.thumbnail_top));
         im.setOnLongClickListener(v -> {
-            displayLargeImage(MainActivity.this, /*MainActivity.this.albumBitmap*/((BitmapDrawable)im.getDrawable()).getBitmap());
+            setFooterVisibility();
+            //displayLargeImage(MainActivity.this, /*MainActivity.this.albumBitmap*/((BitmapDrawable)im.getDrawable()).getBitmap());
             return true;
         });
         im.setOnClickListener(v -> {
             //setVolume(getThis);
-            SpotifyActivity.showPlayMenu(getThis,im);
+            setFooterVisibility();
+            //SpotifyActivity.showPlayMenu(getThis,im);
         });
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
