@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -288,9 +289,22 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     }
     public void setAddress(String address) {
-        logic.openServer(address);
-        logic.getMpc().setMPCListener((MainActivity) getActivity());
-        MainActivity.getThis.playlistGetContent();
+        new Thread(() -> {
+            try {
+                final Handler handler = new Handler();
+                handler.postDelayed(() -> {
+                    Log.v("samba", "No connection with "+address);
+                    if (!Logic.hasbeen)
+                        Log.v("samba", "No connection2 with "+address);
+                        //handler.postDelayed(() -> {
+                        Toast.makeText(MainActivity.getThis, "No connection with " + Server.servers.get(Server.getServer(MainActivity.getThis)).url, Toast.LENGTH_SHORT).show();
+                    //}, 2000);
+                }, 400);
+            } catch (Exception e){Log.getStackTraceString(e);}
+            logic.openServer(address);
+            logic.getMpc().setMPCListener((MainActivity) getActivity());
+            MainActivity.getThis.playlistGetContent();
+        }).start();
     }
 
     @Override

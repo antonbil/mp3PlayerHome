@@ -103,6 +103,8 @@
     <string name="keukenip">192.168.2.16</string>
     <string name="keukendesc">Keuken</string>
     <string name="kamerip">192.168.2.9</string>
+    <string name="rp1ouddesc">Oude rpi</string>
+    <string name="rp1oudip">192.168.2.125</string>
     <string name="kamerdesc">Kamer</string>
     <string name="bankip">192.168.2.8</string>
     <string name="bankdesc">Bank</string>

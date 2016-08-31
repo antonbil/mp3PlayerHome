@@ -227,6 +227,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("ipserver4"));
             bindPreferenceSummaryToValue(findPreference("nameserver5"));
             bindPreferenceSummaryToValue(findPreference("ipserver5"));
+            bindPreferenceSummaryToValue(findPreference("nameserver6"));
+            bindPreferenceSummaryToValue(findPreference("ipserver6"));
             //bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 

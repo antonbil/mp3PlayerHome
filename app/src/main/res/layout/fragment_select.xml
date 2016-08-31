@@ -50,6 +50,12 @@
                 android:layout_height="wrap_content"
                 android:text="Studeerkamer2"
                 android:id="@+id/selectstudeer2" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rpi1-oud"
+                android:id="@+id/selectrp1oud" />
+
 
         </RadioGroup>
 

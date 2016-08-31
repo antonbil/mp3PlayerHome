@@ -108,5 +108,24 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="fourth description" />
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/rp1oudip"
+        android:inputType="textCapWords"
+        android:key="ipserver6"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="rp1oud ip" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/rp1ouddesc"
+        android:inputType="textCapWords"
+        android:key="nameserver6"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="rp1oud description" />
 
 </PreferenceScreen>

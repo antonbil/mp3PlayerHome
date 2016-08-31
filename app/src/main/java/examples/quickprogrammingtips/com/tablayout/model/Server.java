@@ -51,7 +51,8 @@ public class Server {
             new Server(R.id.selectkamer, getPref("ipserver2"), getPref("nameserver2")),
             new Server(R.id.selectbank, getPref("ipserver3"), getPref("nameserver3")),
             new Server(R.id.selectstudeer, getPref("ipserver4"), getPref("nameserver4")),
-    new Server(R.id.selectstudeer2, getPref("ipserver5"), getPref("nameserver5"))
+    new Server(R.id.selectstudeer2, getPref("ipserver5"), getPref("nameserver5")),
+    new Server(R.id.selectrp1oud, getPref("ipserver6"), getPref("nameserver6"))
             //new Server(R.id.selectxbmc, getPref("ipserver5"), getPref("nameserver5"))
     ));
 

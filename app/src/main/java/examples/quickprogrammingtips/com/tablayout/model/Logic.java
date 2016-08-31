@@ -29,6 +29,8 @@ public class Logic  implements SambaInterface {
     private CopyOnWriteArrayList<Mp3File> playlistFiles = new CopyOnWriteArrayList<>();
     MainActivity activity;
     public MPCStatus mpcStatus;
+    public static boolean hasbeen;
+
     public static boolean isMp3File(String name) {
         return name.endsWith(".mp3")|| name.endsWith(".m4a")|| name.endsWith(".flac")|| name.endsWith(".mpc");
     }
@@ -59,7 +61,9 @@ public class Logic  implements SambaInterface {
     }
     public Logic(MainActivity activity){
         openServer(Server.servers.get(Server.getServer(activity)).url);
-        getMpc().setMPCListener(activity);
+        //new Thread(() -> {
+            getMpc().setMPCListener(activity);
+        //}).start();
         this.activity=activity;
         history.add(new HistoryListview(basePath, 0));
         historyMpd.add(new HistoryListview("", 0));
@@ -96,9 +100,14 @@ public class Logic  implements SambaInterface {
         //address = "192.168.2.16";
         Log.v("samba", address);
         setMpc(new MPC(address, DEFAULT_PORT, 1000, db));
-        mpc.sendSingleMessage("consume 0");
-        mpc.sendSingleMessage("random 0");
-        mpc.sendSingleMessage("repeat 1");
+        new Thread(() -> {
+            hasbeen=false;
+
+            mpc.sendSingleMessage("consume 0");
+            mpc.sendSingleMessage("random 0");
+            mpc.sendSingleMessage("repeat 1");
+            hasbeen=true;
+        }).start();
     }
 
     public ArrayList<HistoryListview> getHistory() {

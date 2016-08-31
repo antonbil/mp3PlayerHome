@@ -64,6 +64,7 @@ import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAd
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
+import examples.quickprogrammingtips.com.tablayout.model.Server;
 import examples.quickprogrammingtips.com.tablayout.tools.ImageLoadTask;
 import kaaes.spotify.webapi.android.models.Track;
 import mpc.DatabaseCommand;
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+    private boolean statusThread=false;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -121,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("samba", "Text:1");
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
         final String action = intent.getAction();
@@ -134,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
             //mUsername = segments.get(1);
         }
+        Log.d("samba", "Text:2");
 
         SugarContext.init(this);//init db
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -144,13 +148,16 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         getSpotifyInterface=new SpotifyInterface();
         dialog = new ProgressDialog(this);//keep it hidden until needed
         updateBarHandler = new Handler();
+        Log.d("samba", "Text:3");
 
         logic = new Logic(this);
         Handler customHandler = new Handler();
 
+        Log.v("samba",""+15);
         setContentView(R.layout.activity_main);
         DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         //mDrawerLayout.closeDrawers();
+        Log.d("samba", "Text:4");
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,
@@ -278,14 +285,18 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     public void run() {
 
-                        SpotifyActivity.updateSongInfo((TextView) findViewById(R.id.time_top2),
-                                (TextView) findViewById(R.id.totaltime_top2),
-                                (TextView) findViewById(R.id.title_top2),
-                                (TextView) findViewById(R.id.artist_top2),
-                                viewById,
-                                albumAdapter,  albumsListview,getThis,getSpotifyInterface);
+                        new Thread(new Runnable() {
+                            public void run() {
+                                SpotifyActivity.updateSongInfo((TextView) findViewById(R.id.time_top2),
+                                        (TextView) findViewById(R.id.totaltime_top2),
+                                        (TextView) findViewById(R.id.title_top2),
+                                        (TextView) findViewById(R.id.artist_top2),
+                                        viewById,
+                                        albumAdapter,  albumsListview,getThis,getSpotifyInterface);
 
-                        customHandler.postDelayed(this, 1000);
+                                customHandler.postDelayed(this, 1000);
+                            }
+                        }).start();
                     }
 
                 };
@@ -296,7 +307,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        Log.v("samba",""+16);
 
+        Log.d("samba", "Text:5");
         LinearLayout ll = ((LinearLayout) findViewById(R.id.time_layout));
         ll.setOnClickListener(v -> playPauseAll());//android:id="@+id/song_title"
         ll = ((LinearLayout) findViewById(R.id.song_title));
@@ -320,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             setFooterVisibility();
             //SpotifyActivity.showPlayMenu(getThis,im);
         });
+        Log.d("samba", "Text:6");
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -330,6 +344,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         tabLayout.addTab(tabLayout.newTab().setText("Select"));
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
 
+        Log.d("samba", "Text:7");
+        Log.v("samba",""+17);
         this.setTitle("");
         final LinearLayout footerView = (LinearLayout) findViewById(R.id.footer);
         footerView.setVisibility(View.GONE);
@@ -339,6 +355,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             startPlaylistSpotify();
         });        FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
         findbutton.setVisibility(View.GONE);
+        Log.d("samba", "Text:8");
         FAB.setOnClickListener(v -> {
 
 
@@ -377,10 +394,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         });
 
         listFragment = new ListFragment();
+        Log.d("samba", "Text:9");
         dbFragment = new DBFragment();
+        Log.v("samba",""+18);
 
         //display tablayout
         displayHome();
+        Log.d("samba", "Text:8");
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -422,10 +442,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
         });
 
+        Log.v("samba",""+19);
 
         Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
         setSupportActionBar(tool);
-        /*ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
+        Log.d("samba", "Text:9");
+                /*ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
         playButton.setOnClickListener(v -> {
             logic.getMpc().play();
             logic.setPaused(false);
@@ -443,13 +465,25 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         backButton.setOnClickListener(v -> logic.getMpc().previous());*/
         setListenersForButtons();
 
-
-        updateDisplay();
+        Log.v("samba",""+20);
+        new Thread(() -> {
+            updateDisplay();
+        }).start();
+        Log.d("samba", "Text:10");
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         ArtistAutoCompleteAdapter.getAllFilenames();
+        Log.d("samba", "Text:11");
+        final Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            if(!Logic.hasbeen)
+                //Log.v("samba", "No connection with "+address);
+            //handler.postDelayed(() -> {
+            Toast.makeText(this, "No connection with "+ Server.servers.get(Server.getServer(this)).url, Toast.LENGTH_SHORT).show();
+            //}, 2000);
+        }, 400);
     }
 
     static void playPauseAll() {
@@ -1077,116 +1111,122 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         View nextbutton = findViewById(R.id.nextspotify);
         View volumebutton = findViewById(R.id.volumespotify);
         View seekbutton = findViewById(R.id.positionspotify);
-        SpotifyActivity.setListenersForButtons(this, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+        new Thread(() -> {
+            SpotifyActivity.setListenersForButtons(this, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+        }).start();
+
     }
 
     @Override
     public void statusUpdate(MPCStatus newStatus) {
-        int prev=SpotifyActivity.playingEngine;
+        if (statusThread) return;
+        new Thread(() -> {
+            statusThread=true;
 
-        if (SpotifyActivity.isPlaying()){
+            int prev=SpotifyActivity.playingEngine;
 
-            //(findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
-            //(findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
-            ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top);
-            //viewById.setOnClickListener(v -> SpotifyActivity.setVolume(getThis));
-            currentArtist = SpotifyActivity.updateSongInfo((TextView) findViewById(R.id.time_top),
-                    (TextView) findViewById(R.id.totaltime_top),
-                    (TextView) findViewById(R.id.title_top),
-                    (TextView) findViewById(R.id.artist_top),
-                    viewById,
-                    null,  null,getThis,getSpotifyInterface);
-            checkButtons(prev);
-            MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
-            return;
+            if (SpotifyActivity.isPlaying()){
 
-        }
-//        if (SpotifyActivity.playingEngine==1){SpotifyActivity.getThis.playButtonsAtBottom();}
-        //checkButtons(prev);
+                //(findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
+                //(findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
+                ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top);
+                //viewById.setOnClickListener(v -> SpotifyActivity.setVolume(getThis));
+                currentArtist = SpotifyActivity.updateSongInfo((TextView) findViewById(R.id.time_top),
+                        (TextView) findViewById(R.id.totaltime_top),
+                        (TextView) findViewById(R.id.title_top),
+                        (TextView) findViewById(R.id.artist_top),
+                        viewById,
+                        null,  null,getThis,getSpotifyInterface);
+                checkButtons(prev);
+                MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
+                statusThread=false;
 
-        final MPCStatus status = newStatus;
-        logic.mpcStatus = newStatus;
-        if (status.song == null) {
+                return;
 
-            return;}
-        if (status.playing){
-            if (SpotifyActivity.playingEngine==1){setListenersForButtons();}
-            SpotifyActivity.playingEngine=2;
-        }
-        Handler h = new Handler(Looper.getMainLooper());
-        h.post(new Runnable() {
-            public void run() {
+            }
+        //        if (SpotifyActivity.playingEngine==1){SpotifyActivity.getThis.playButtonsAtBottom();}
+            //checkButtons(prev);
+
+            final MPCStatus status = newStatus;
+            logic.mpcStatus = newStatus;
+            if (status.song == null) {
+
+                statusThread=false;
+                return;}
+            if (status.playing){
+                if (SpotifyActivity.playingEngine==1){setListenersForButtons();}
+                SpotifyActivity.playingEngine=2;
+            }
+            Handler h = new Handler(Looper.getMainLooper());
+            h.post(() -> {
                 //Log.v("samba","tijd:"+newStatus.time.toString());
 
                 if (status.song.intValue() < logic.getPlaylistFiles().size())
-                    runOnUiThread(new Runnable() {
+                    runOnUiThread(() -> {
+                        ViewHolder vh = getThis.viewHolder;
+                        try {
+                            Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
 
-
-                        @Override
-                        public void run() {
-                            ViewHolder vh = getThis.viewHolder;
+                            TextView tvName = (TextView) findViewById(R.id.title_top);
+                            final String title = currentSong.getTitle();
+                            tvName.setText(title);
+                            vh.title = title;
+                            //Log.v("samba", currentSong.getTitle());
+                            //Log.v("samba", currentSong.getArtist());
+                            TextView time = (TextView) findViewById(R.id.time_top);
+                            final String time1 = Mp3File.niceTime(status.time.intValue());
+                            vh.time = time1;
+                            time.setText(time1);
+                            TextView totaltime = (TextView) findViewById(R.id.totaltime_top);
                             try {
-                                Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
-
-                                TextView tvName = (TextView) findViewById(R.id.title_top);
-                                final String title = currentSong.getTitle();
-                                tvName.setText(title);
-                                vh.title = title;
-                                //Log.v("samba", currentSong.getTitle());
-                                //Log.v("samba", currentSong.getArtist());
-                                TextView time = (TextView) findViewById(R.id.time_top);
-                                final String time1 = Mp3File.niceTime(status.time.intValue());
-                                vh.time = time1;
-                                time.setText(time1);
-                                TextView totaltime = (TextView) findViewById(R.id.totaltime_top);
-                                try {
-                                    final String timeNice = currentSong.getTimeNice();
-                                    totaltime.setText(timeNice);
-                                    vh.totaltime = timeNice;
-                                } catch (Exception e) {
-                                    totaltime.setText("00:00");
-                                }
-                                String album = "";
-                                TextView artist = (TextView) findViewById(R.id.artist_top);
-                                try {
-                                    album = currentSong.niceAlbum();
-                                    currentArtist = currentSong.getArtist();
-                                    artist.setText(album);
-                                    vh.album = album;
-                                } catch (Exception e) {
-                                    artist.setText("");
-                                }
-                                final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
-                                String uri = Logic.getUrlFromSongpath(currentSong);
-
-                                if (albumPictures.containsKey(album)) {
-                                    final Bitmap b = albumPictures.get(album);
-                                    albumBitmap = b;
-                                    currentSong.setBitmap(b);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            image.setImageBitmap(b);
-                                        }
-                                    });
-                                } else {
-                                    albumPictures.put(album, null);
-
-
-                                    new ImageLoadTask(uri, album, mainActivity, image).execute();
-
-
-                                }
-                                MainActivity.playingStatus=MainActivity.MPD_PLAYING;
-                                //Log.v("samba",uri);
+                                final String timeNice = currentSong.getTimeNice();
+                                totaltime.setText(timeNice);
+                                vh.totaltime = timeNice;
                             } catch (Exception e) {
-                                //mpc.connectionFailed("Connection failed, check settings");
-                                //t.stop();
+                                totaltime.setText("00:00");
                             }
+                            String album = "";
+                            TextView artist = (TextView) findViewById(R.id.artist_top);
+                            try {
+                                album = currentSong.niceAlbum();
+                                currentArtist = currentSong.getArtist();
+                                artist.setText(album);
+                                vh.album = album;
+                            } catch (Exception e) {
+                                artist.setText("");
+                            }
+                            final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
+                            String uri = Logic.getUrlFromSongpath(currentSong);
+
+                            if (albumPictures.containsKey(album)) {
+                                final Bitmap b = albumPictures.get(album);
+                                albumBitmap = b;
+                                currentSong.setBitmap(b);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        image.setImageBitmap(b);
+                                    }
+                                });
+                            } else {
+                                albumPictures.put(album, null);
+
+
+                                new ImageLoadTask(uri, album, mainActivity, image).execute();
+
+
+                            }
+                            MainActivity.playingStatus=MainActivity.MPD_PLAYING;
+                            //Log.v("samba",uri);
+                        } catch (Exception e) {
+                            //mpc.connectionFailed("Connection failed, check settings");
+                            //t.stop();
                         }
                     });
-            }
-        });
+            });
+            statusThread=false;
+
+        }).start();
     }
 
 
