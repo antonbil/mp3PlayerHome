@@ -123,7 +123,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("samba", "Text:1");
+        try{
+        //Log.d("samba", "Text:1");
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
         final String action = intent.getAction();
@@ -131,13 +132,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         if (Intent.ACTION_VIEW.equals(action)) {
             final List<String> segments = intent.getData().getPathSegments();
             if (segments.size() > 1) {
-                Log.d("MainActivity", "Text:" + segments.get(1));
+                //Log.d("MainActivity", "Text:" + segments.get(1));
                 Toast.makeText(getApplicationContext(), "Text:" + segments.get(1),
                         Toast.LENGTH_SHORT).show();
             }
             //mUsername = segments.get(1);
         }
-        Log.d("samba", "Text:2");
+        //Log.d("samba", "Text:2");
 
         SugarContext.init(this);//init db
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -148,16 +149,16 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         getSpotifyInterface=new SpotifyInterface();
         dialog = new ProgressDialog(this);//keep it hidden until needed
         updateBarHandler = new Handler();
-        Log.d("samba", "Text:3");
+        //Log.d("samba", "Text:3");
 
         logic = new Logic(this);
         Handler customHandler = new Handler();
 
-        Log.v("samba",""+15);
+        //Log.v("samba",""+15);
         setContentView(R.layout.activity_main);
         DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         //mDrawerLayout.closeDrawers();
-        Log.d("samba", "Text:4");
+        //Log.d("samba", "Text:4");
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,
@@ -307,9 +308,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        Log.v("samba",""+16);
+        //Log.v("samba",""+16);
 
-        Log.d("samba", "Text:5");
+        //Log.d("samba", "Text:5");
         LinearLayout ll = ((LinearLayout) findViewById(R.id.time_layout));
         ll.setOnClickListener(v -> playPauseAll());//android:id="@+id/song_title"
         ll = ((LinearLayout) findViewById(R.id.song_title));
@@ -333,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             setFooterVisibility();
             //SpotifyActivity.showPlayMenu(getThis,im);
         });
-        Log.d("samba", "Text:6");
+        //Log.d("samba", "Text:6");
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -344,8 +345,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         tabLayout.addTab(tabLayout.newTab().setText("Select"));
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
 
-        Log.d("samba", "Text:7");
-        Log.v("samba",""+17);
+        //Log.d("samba", "Text:7");
+        //Log.v("samba",""+17);
         this.setTitle("");
         final LinearLayout footerView = (LinearLayout) findViewById(R.id.footer);
         footerView.setVisibility(View.GONE);
@@ -355,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             startPlaylistSpotify();
         });        FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
         findbutton.setVisibility(View.GONE);
-        Log.d("samba", "Text:8");
+        //Log.d("samba", "Text:8");
         FAB.setOnClickListener(v -> {
 
 
@@ -394,13 +395,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         });
 
         listFragment = new ListFragment();
-        Log.d("samba", "Text:9");
+        //Log.d("samba", "Text:9");
         dbFragment = new DBFragment();
-        Log.v("samba",""+18);
+        //Log.v("samba",""+18);
 
         //display tablayout
         displayHome();
-        Log.d("samba", "Text:8");
+        //Log.d("samba", "Text:8");
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -442,11 +443,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
         });
 
-        Log.v("samba",""+19);
+        //Log.v("samba",""+19);
 
         Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
         setSupportActionBar(tool);
-        Log.d("samba", "Text:9");
+        //Log.d("samba", "Text:9");
                 /*ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
         playButton.setOnClickListener(v -> {
             logic.getMpc().play();
@@ -469,13 +470,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         new Thread(() -> {
             updateDisplay();
         }).start();
-        Log.d("samba", "Text:10");
+        //Log.d("samba", "Text:10");
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         ArtistAutoCompleteAdapter.getAllFilenames();
-        Log.d("samba", "Text:11");
+        //Log.d("samba", "Text:11");
         final Handler handler = new Handler();
         handler.postDelayed(() -> {
             if(!Logic.hasbeen)
@@ -484,6 +485,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             Toast.makeText(this, "No connection with "+ Server.servers.get(Server.getServer(this)).url, Toast.LENGTH_SHORT).show();
             //}, 2000);
         }, 400);
+    } catch (Exception e){Log.getStackTraceString(e);}
     }
 
     static void playPauseAll() {

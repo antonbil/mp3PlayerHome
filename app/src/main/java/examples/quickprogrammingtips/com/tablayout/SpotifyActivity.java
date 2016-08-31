@@ -477,6 +477,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         @Override
     protected void onCreate(Bundle savedInstanceState) {
+            try{
             dialog1=new ProgressDialog(this);
             updateBarHandler = MainActivity.getThis.updateBarHandler;
         // Code called from an activity
@@ -765,6 +766,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 searchArtist();
             }
             nextCommand="";
+        } catch (Exception e){Log.getStackTraceString(e);}
         }
 
     public void nextList(){
