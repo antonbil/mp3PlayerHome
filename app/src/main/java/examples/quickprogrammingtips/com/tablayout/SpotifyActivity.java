@@ -407,18 +407,18 @@ public class SpotifyActivity extends AppCompatActivity implements
                     sb.append(line).append("\n");
                 }
             } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
+                //Log.v("samba", Log.getStackTraceString(e));
             } finally {
                 try {
                     is.close();
                 } catch (Exception e) {
-                    Log.v("samba", Log.getStackTraceString(e));
+                    //Log.v("samba", Log.getStackTraceString(e));
                 }
             }
 
 
         } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
+            //Log.v("samba", Log.getStackTraceString(e));
         }
         return sb.toString();
     }
@@ -774,7 +774,6 @@ public class SpotifyActivity extends AppCompatActivity implements
                 Handler handler = new Handler();
                 Runnable runnable = new Runnable() {
                     public void run() {
-                        if (!busyupdateSongInfo)
                         MainActivity.getThis.currentArtist= updateSongInfo(songItems.time,songItems.totaltime,songItems.tvName,songItems.artist,songItems.image,albumAdapter,albumsListview, getThis,getSpotifyInterface);
 
                         handler.postDelayed(this, 1000);
@@ -2073,6 +2072,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 handler.postDelayed(() -> refreshPlaylistFromSpotify(nr+1, albumAdapter1,getThis,albumList,albumTracks), 1000);
             }
             else
+            if (items!=null)
         for (int i = 0; i < items.length(); i++) {
             final PlaylistItem pi=new PlaylistItem();
             pi.pictureVisible=false;
