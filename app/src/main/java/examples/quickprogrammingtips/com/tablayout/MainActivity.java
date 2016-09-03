@@ -412,25 +412,26 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 if (tab.getPosition() == 0) {
                     displayHome();
                     //findbutton.setVisibility(View.GONE);
-                }
+                }else
                 if (tabSelected == 1) {
 
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, listFragment).commit();
                     //findbutton.setVisibility(View.VISIBLE);
-                }
+                }else
                 if (tab.getPosition() == 2) {
 
                         getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
                         //findbutton.setVisibility(View.VISIBLE);
-                }
+                }else
                 if (tab.getPosition() == 4) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new SelectFragment()).commit();
                     //findbutton.setVisibility(View.GONE);
-                }
+                }else
                 if (tab.getPosition() == 3) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new PlaylistsFragment()).commit();
                     findbutton.setVisibility(View.GONE);
-                }
+                }else
+                    displayHome();
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
@@ -634,7 +635,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     private void displayHome() {
-        playFragment = new PlayFragment();
+        if (playFragment==null) playFragment = new PlayFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, playFragment).commit();
     }
 
