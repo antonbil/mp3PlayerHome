@@ -407,6 +407,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             public void onTabSelected(TabLayout.Tab tab) {
                 //playlistThread.interrupt();
                 tabSelected = tab.getPosition();
+
+                try {
                 if (tab.getPosition() == 0) {
                     displayHome();
                     //findbutton.setVisibility(View.GONE);
@@ -417,12 +419,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     //findbutton.setVisibility(View.VISIBLE);
                 }
                 if (tab.getPosition() == 2) {
-                    try {
 
                         getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
                         //findbutton.setVisibility(View.VISIBLE);
-                    } catch (Exception e) {
-                    }
                 }
                 if (tab.getPosition() == 4) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new SelectFragment()).commit();
@@ -431,6 +430,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 if (tab.getPosition() == 3) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new PlaylistsFragment()).commit();
                     findbutton.setVisibility(View.GONE);
+                }
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
                 }
             }
 
@@ -443,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
         });
 
-        //Log.v("samba",""+19);
+        Log.v("samba",""+19);
 
         Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
         setSupportActionBar(tool);
