@@ -22,6 +22,10 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     private String currentId;//chdb
     private boolean download=false;
 
+    public DBFragment(){
+        super(R.id.listViewFiles2,R.layout.fragment_list2);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

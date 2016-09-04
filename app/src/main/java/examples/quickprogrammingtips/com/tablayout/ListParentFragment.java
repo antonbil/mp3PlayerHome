@@ -26,6 +26,8 @@ import mpc.MPCDatabaseListener;
  * Created by anton on 29-1-16.
  */
 public  class ListParentFragment extends Fragment implements SambaInterface, MPCDatabaseListener {
+    int listViewId = R.id.listViewFiles;
+    int fragment_list = R.layout.fragment_list;
     protected FileListAdapter fileListAdapter;
     ArrayList<File> files = new ArrayList<>();NetworkShare networkShare;Logic logic;
     ArrayList<String>filesToCheck=new ArrayList<>();
@@ -33,14 +35,25 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     ListView fileListView;
     private int listViewPosition=0;
 
+    public ListParentFragment() {
+        super();
+    }
+    public ListParentFragment(int listViewId,int fragment_list) {
+        super();
+        this.listViewId=listViewId;
+        this.fragment_list=fragment_list;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         logic =((MainActivity)getActivity()).getLogic();
         listParentFragment=this;
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-        fileListView = (android.widget.ListView) view.findViewById(R.id.listViewFiles);
+
+        View view = inflater.inflate(fragment_list, container, false);
+
+        fileListView = (android.widget.ListView) view.findViewById(listViewId);
         fileListAdapter = new FileListAdapter(getActivity(),this, files);
         fileListView.setAdapter(fileListAdapter);
         //registerForContextMenu(fileListView);

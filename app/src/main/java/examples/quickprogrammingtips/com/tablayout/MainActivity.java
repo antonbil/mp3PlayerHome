@@ -395,12 +395,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
 
         });
+            //create fragments for tabs in background
+            new Thread(() -> {
+                listFragment = new ListFragment();
+                //Log.d("samba", "Text:9");
+                playlistFragmentragment = new PlaylistsFragment();
+                selectFragment = new SelectFragment();
+                dbFragment = new DBFragment();
+            }).start();
 
-        listFragment = new ListFragment();
-        //Log.d("samba", "Text:9");
-            playlistFragmentragment = new PlaylistsFragment();
-            selectFragment = new SelectFragment();
-        dbFragment = new DBFragment();
         //Log.v("samba",""+18);
 
         //display tablayout
@@ -419,6 +422,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 }else
                 if (tabSelected == 1) {
 
+                    /*Fragment myFragment = (Fragment) getFragmentManager().findFragmentById(R.id.frLayout);
+                    if(myFragment!=null){
+                        myFragment.update();
+                    }*/
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, listFragment).commit();
                     //findbutton.setVisibility(View.VISIBLE);
                 }else
@@ -433,7 +440,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 }else
                 if (tab.getPosition() == 3) {
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, playlistFragmentragment).commit();
-                    findbutton.setVisibility(View.GONE);
+                    //findbutton.setVisibility(View.GONE);
                 }else
                     displayHome();
                 } catch (Exception e) {
@@ -450,6 +457,31 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
         });
 
+            /*
+                        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            adapter = new PagerAdapter
+                    (getSupportFragmentManager(), tabLayout.getTabCount());
+            viewPager.setAdapter(adapter);
+            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    viewPager.setCurrentItem(tab.getPosition());
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
+
+
+             */
         Log.v("samba",""+19);
 
         Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
@@ -1193,7 +1225,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 if (SpotifyActivity.playingEngine==1){setListenersForButtons();}
                 SpotifyActivity.playingEngine=2;
             }
-            if (MainActivity.activityVisible) {
+            //if (MainActivity.activityVisible)
+            {
                 Handler h = new Handler(Looper.getMainLooper());
                 h.post(() -> {
                     //Log.v("samba","tijd:"+newStatus.time.toString());
