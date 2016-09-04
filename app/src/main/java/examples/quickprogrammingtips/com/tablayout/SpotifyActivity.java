@@ -708,6 +708,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             spotifyHeader.connectVarsToFront();
                 Log.d("samba", "Text:7");
 
+                //TODO option to make artistinfo and relatedartistsinfo visible again
                 findViewById(R.id.artist_title).setOnClickListener(view ->{findViewById(R.id.artistinfo).setVisibility(View.GONE);});
                 findViewById(R.id.relatedartists_text).setOnClickListener(view ->{findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);});
             fab=(FloatingActionButton)
