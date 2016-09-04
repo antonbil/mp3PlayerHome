@@ -110,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
      */
     private GoogleApiClient client;
     private boolean statusThread=false;
+    private PlaylistsFragment playlistFragmentragment;
+    private SelectFragment selectFragment;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -396,6 +398,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
         listFragment = new ListFragment();
         //Log.d("samba", "Text:9");
+            playlistFragmentragment = new PlaylistsFragment();
+            selectFragment = new SelectFragment();
         dbFragment = new DBFragment();
         //Log.v("samba",""+18);
 
@@ -424,11 +428,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         //findbutton.setVisibility(View.VISIBLE);
                 }else
                 if (tab.getPosition() == 4) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new SelectFragment()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, selectFragment).commit();
                     //findbutton.setVisibility(View.GONE);
                 }else
                 if (tab.getPosition() == 3) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, new PlaylistsFragment()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, playlistFragmentragment).commit();
                     findbutton.setVisibility(View.GONE);
                 }else
                     displayHome();
@@ -1270,8 +1274,39 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
         super.onDestroy();
         SugarContext.terminate();
+        try {
+            trimCache(this);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
+    public static void trimCache(Context context) {
+        try {
+            java.io.File dir = context.getCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
+
+    public static boolean deleteDir(java.io.File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new java.io.File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+
+        // The directory is now empty so delete it
+        return dir.delete();
+    }
     @Override
     public void onStart() {
         super.onStart();
