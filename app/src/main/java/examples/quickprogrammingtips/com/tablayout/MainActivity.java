@@ -1189,75 +1189,76 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 if (SpotifyActivity.playingEngine==1){setListenersForButtons();}
                 SpotifyActivity.playingEngine=2;
             }
-            Handler h = new Handler(Looper.getMainLooper());
-            h.post(() -> {
-                //Log.v("samba","tijd:"+newStatus.time.toString());
+            if (MainActivity.activityVisible) {
+                Handler h = new Handler(Looper.getMainLooper());
+                h.post(() -> {
+                    //Log.v("samba","tijd:"+newStatus.time.toString());
 
-                if (status.song.intValue() < logic.getPlaylistFiles().size())
-                    if (MainActivity.activityVisible)
+                    if (status.song.intValue() < logic.getPlaylistFiles().size())
 
-                runOnUiThread(() -> {
-                        ViewHolder vh = getThis.viewHolder;
-                        try {
-                            Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
-
-                            TextView tvName = (TextView) findViewById(R.id.title_top);
-                            final String title = currentSong.getTitle();
-                            tvName.setText(title);
-                            vh.title = title;
-                            //Log.v("samba", currentSong.getTitle());
-                            //Log.v("samba", currentSong.getArtist());
-                            TextView time = (TextView) findViewById(R.id.time_top);
-                            final String time1 = Mp3File.niceTime(status.time.intValue());
-                            vh.time = time1;
-                            time.setText(time1);
-                            TextView totaltime = (TextView) findViewById(R.id.totaltime_top);
+                        runOnUiThread(() -> {
+                            ViewHolder vh = getThis.viewHolder;
                             try {
-                                final String timeNice = currentSong.getTimeNice();
-                                totaltime.setText(timeNice);
-                                vh.totaltime = timeNice;
+                                Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
+
+                                TextView tvName = (TextView) findViewById(R.id.title_top);
+                                final String title = currentSong.getTitle();
+                                tvName.setText(title);
+                                vh.title = title;
+                                //Log.v("samba", currentSong.getTitle());
+                                //Log.v("samba", currentSong.getArtist());
+                                TextView time = (TextView) findViewById(R.id.time_top);
+                                final String time1 = Mp3File.niceTime(status.time.intValue());
+                                vh.time = time1;
+                                time.setText(time1);
+                                TextView totaltime = (TextView) findViewById(R.id.totaltime_top);
+                                try {
+                                    final String timeNice = currentSong.getTimeNice();
+                                    totaltime.setText(timeNice);
+                                    vh.totaltime = timeNice;
+                                } catch (Exception e) {
+                                    totaltime.setText("00:00");
+                                }
+                                String album = "";
+                                TextView artist = (TextView) findViewById(R.id.artist_top);
+                                try {
+                                    album = currentSong.niceAlbum();
+                                    currentArtist = currentSong.getArtist();
+                                    artist.setText(album);
+                                    vh.album = album;
+                                } catch (Exception e) {
+                                    artist.setText("");
+                                }
+                                final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
+                                String uri = Logic.getUrlFromSongpath(currentSong);
+
+                                if (albumPictures.containsKey(album)) {
+                                    final Bitmap b = albumPictures.get(album);
+                                    albumBitmap = b;
+                                    currentSong.setBitmap(b);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            image.setImageBitmap(b);
+                                        }
+                                    });
+                                } else {
+                                    albumPictures.put(album, null);
+
+
+                                    new ImageLoadTask(uri, album, mainActivity, image).execute();
+
+
+                                }
+                                MainActivity.playingStatus = MainActivity.MPD_PLAYING;
+                                //Log.v("samba",uri);
                             } catch (Exception e) {
-                                totaltime.setText("00:00");
+                                //mpc.connectionFailed("Connection failed, check settings");
+                                //t.stop();
                             }
-                            String album = "";
-                            TextView artist = (TextView) findViewById(R.id.artist_top);
-                            try {
-                                album = currentSong.niceAlbum();
-                                currentArtist = currentSong.getArtist();
-                                artist.setText(album);
-                                vh.album = album;
-                            } catch (Exception e) {
-                                artist.setText("");
-                            }
-                            final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
-                            String uri = Logic.getUrlFromSongpath(currentSong);
-
-                            if (albumPictures.containsKey(album)) {
-                                final Bitmap b = albumPictures.get(album);
-                                albumBitmap = b;
-                                currentSong.setBitmap(b);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        image.setImageBitmap(b);
-                                    }
-                                });
-                            } else {
-                                albumPictures.put(album, null);
-
-
-                                new ImageLoadTask(uri, album, mainActivity, image).execute();
-
-
-                            }
-                            MainActivity.playingStatus=MainActivity.MPD_PLAYING;
-                            //Log.v("samba",uri);
-                        } catch (Exception e) {
-                            //mpc.connectionFailed("Connection failed, check settings");
-                            //t.stop();
-                        }
-                    });
-            });
+                        });
+                });
+            }
             statusThread=false;
 
         }).start();
