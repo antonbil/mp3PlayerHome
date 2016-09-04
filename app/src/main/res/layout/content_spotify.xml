@@ -6,6 +6,12 @@
     >
 
     <include layout="@layout/songtitle_layout" />
+    <LinearLayout
+        android:id="@+id/artistinfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="0dip" >
      <TextView
         android:id="@+id/artist_title"
         android:layout_width="fill_parent"
@@ -19,6 +25,7 @@
         android:fillViewport="true" >
         <include layout="@layout/spotify_header" />
     </ScrollView>
+        </LinearLayout>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/spotifyscrollviewmiddle"
     android:layout_width="fill_parent"
@@ -31,6 +38,12 @@
         android:orientation="vertical"
         android:padding="10dip" >
 
+    <LinearLayout
+        android:id="@+id/relatedartistsinfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="0dip" >
         <TextView
             android:id="@+id/relatedartists_text"
             android:layout_width="match_parent"
@@ -46,6 +59,7 @@
             android:layout_marginTop="10dip"
             android:background="#4A9C67" >
         </ListView>
+        </LinearLayout>
         <TextView
             android:id="@+id/albumsartist_listview"
             android:layout_width="match_parent"

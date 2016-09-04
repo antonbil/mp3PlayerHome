@@ -708,6 +708,8 @@ public class SpotifyActivity extends AppCompatActivity implements
             spotifyHeader.connectVarsToFront();
                 Log.d("samba", "Text:7");
 
+                findViewById(R.id.artist_title).setOnClickListener(view ->{findViewById(R.id.artistinfo).setVisibility(View.GONE);});
+                findViewById(R.id.relatedartists_text).setOnClickListener(view ->{findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);});
             fab=(FloatingActionButton)
 
             findViewById(R.id.fab);
