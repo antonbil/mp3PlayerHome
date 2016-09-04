@@ -910,7 +910,30 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         super.onActivityResult(requestCode, resultCode, data);
 
     }
+    public static boolean isActivityVisible() {
+        return activityVisible;
+    }
 
+    public static void activityResumed() {
+        activityVisible = true;
+    }
+
+    public static void activityPaused() {
+        activityVisible = false;
+    }
+
+    private static boolean activityVisible=true;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        activityResumed();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        activityPaused();
+    }
     public Logic getLogic() {
         return logic;
     }
@@ -923,6 +946,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         AsyncTask thread = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
+                if (!MainActivity.activityVisible)return true;
                 String address = logic.getMpc().getAddress();
                 Socket sock = null;
                 BufferedReader in = null;
@@ -980,6 +1004,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                             logic.getPlaylistFiles().addAll(playlist);
                         }
                         String albumName = "";
+                        String previousAlbumName = "";
 
                         for (final Mp3File f : logic.getPlaylistFiles()) {
                             if (f.getBitmap() != null) continue;
@@ -987,6 +1012,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                             albumName = f.getAlbum();
                             final String niceAlbumName = f.niceAlbum();
+                            if (previousAlbumName.equals(niceAlbumName))continue;
+                            previousAlbumName=niceAlbumName;
                             if (albumPictures.containsKey(niceAlbumName)) {
                                 if (albumPictures.get(niceAlbumName) != null)
                                     f.setBitmap(albumPictures.get(niceAlbumName));
@@ -1012,7 +1039,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                                     albumPictures.remove(niceAlbumName);
                                     Log.v("samba", "error connect " + Logic.getUrlFromSongpath(f));
-                                    e.printStackTrace();
                                 }
 
                             } catch (Exception e) {
@@ -1124,6 +1150,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public void statusUpdate(MPCStatus newStatus) {
+
         if (statusThread) return;
         new Thread(() -> {
             statusThread=true;
@@ -1167,7 +1194,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 //Log.v("samba","tijd:"+newStatus.time.toString());
 
                 if (status.song.intValue() < logic.getPlaylistFiles().size())
-                    runOnUiThread(() -> {
+                    if (MainActivity.activityVisible)
+
+                runOnUiThread(() -> {
                         ViewHolder vh = getThis.viewHolder;
                         try {
                             Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
