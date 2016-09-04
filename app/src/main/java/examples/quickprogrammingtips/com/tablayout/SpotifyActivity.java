@@ -590,6 +590,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 PopupMenu menu = new PopupMenu(songItems.image.getContext(), image);
                 menu.getMenu().add("play");
                 menu.getMenu().add("search artist");
+                menu.getMenu().add("show artist-info");
                 menu.getMenu().add("search album");
                 menu.getMenu().add("new albums");
                 menu.getMenu().add("new albums categories");
@@ -599,6 +600,10 @@ public class SpotifyActivity extends AppCompatActivity implements
                     String title = item.getTitle().toString();
                     if ((title.equals("play"))) {
                         SpotifyActivity.showPlayMenu(getThis,songItems.image);
+                    } else
+                    if ((title.equals("show artist-info"))) {
+                        findViewById(R.id.artistinfo).setVisibility(View.VISIBLE);
+                        findViewById(R.id.relatedartistsinfo).setVisibility(View.VISIBLE);
                     } else
                     if ((title.equals("new albums categories"))) {
                         PopupMenu menu1 = new PopupMenu(songItems.image.getContext(), songItems.image);
@@ -708,7 +713,6 @@ public class SpotifyActivity extends AppCompatActivity implements
             spotifyHeader.connectVarsToFront();
                 Log.d("samba", "Text:7");
 
-                //TODO option to make artistinfo and relatedartistsinfo visible again
                 findViewById(R.id.artist_title).setOnClickListener(view ->{findViewById(R.id.artistinfo).setVisibility(View.GONE);});
                 findViewById(R.id.relatedartists_text).setOnClickListener(view ->{findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);});
             fab=(FloatingActionButton)
