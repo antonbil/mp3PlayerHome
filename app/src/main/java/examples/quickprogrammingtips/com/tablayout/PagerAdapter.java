@@ -5,41 +5,51 @@ package examples.quickprogrammingtips.com.tablayout;
  */
 
 
-        import android.support.v4.app.Fragment;
-        import android.support.v4.app.FragmentManager;
-        import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
+    SelectFragment selectFragment;
+    PlaylistsFragment playlistFragment;
+    PlayFragment playFragment;
     int mNumOfTabs;
     ListFragment listFragment;
     DBFragment         dbFragment;
-    public int tabselected;
+    public int tabselected=0;
 
     public PagerAdapter(FragmentManager fm, int NumOfTabs) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
-        listFragment = new ListFragment();
-        dbFragment = new DBFragment();
+        //create fragments for tabs in background
+        playFragment = new PlayFragment();
+        new Thread(() -> {
+            listFragment = new ListFragment();
+            //Log.d("samba", "Text:9");
+            playlistFragment = new PlaylistsFragment();
+            selectFragment = new SelectFragment();
+            dbFragment = new DBFragment();
+        }).start();
 
     }
 
     @Override
     public Fragment getItem(int position) {
+
+        Log.v("samba","pos:"+position);
         tabselected=position;
 
         switch (position) {
             case 0:
-                PlayFragment tab1 = new PlayFragment();
-                return tab1;
+                return playFragment;
             case 1:
                 return listFragment;
             case 2:
-                return dbFragment;
-            case 3:
-                PlaylistsFragment         playlistFragment = new PlaylistsFragment();
                 return playlistFragment;
+            case 3:
+                return dbFragment;
             case 4:
-                SelectFragment         selectFragment = new SelectFragment();
                 return selectFragment;
             default:
                 return null;

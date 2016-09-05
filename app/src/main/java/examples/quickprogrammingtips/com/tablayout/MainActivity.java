@@ -1188,6 +1188,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public void statusUpdate(MPCStatus newStatus) {
 
         if (statusThread) return;
+
         new Thread(() -> {
             statusThread=true;
 
@@ -1227,8 +1228,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
             //if (MainActivity.activityVisible)
             {
-                Handler h = new Handler(Looper.getMainLooper());
-                h.post(() -> {
+                //Handler h = new Handler(Looper.getMainLooper());
+                //h.post(() -> {
                     //Log.v("samba","tijd:"+newStatus.time.toString());
 
                     if (status.song.intValue() < logic.getPlaylistFiles().size())
@@ -1290,11 +1291,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                 MainActivity.playingStatus = MainActivity.MPD_PLAYING;
                                 //Log.v("samba",uri);
                             } catch (Exception e) {
+                                statusThread=false;
                                 //mpc.connectionFailed("Connection failed, check settings");
                                 //t.stop();
                             }
                         });
-                });
+                //});
             }
             statusThread=false;
 
