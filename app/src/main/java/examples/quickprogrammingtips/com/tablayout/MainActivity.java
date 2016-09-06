@@ -395,14 +395,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
 
         });
-            //create fragments for tabs in background
-            new Thread(() -> {
-                listFragment = new ListFragment();
-                //Log.d("samba", "Text:9");
-                playlistFragmentragment = new PlaylistsFragment();
-                selectFragment = new SelectFragment();
-                dbFragment = new DBFragment();
-            }).start();
 
         //Log.v("samba",""+18);
 
@@ -508,6 +500,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         Log.v("samba",""+20);
         new Thread(() -> {
             updateDisplay();
+            //create fragments for tabs in background
+                listFragment = new ListFragment();
+                //Log.d("samba", "Text:9");
+                playlistFragmentragment = new PlaylistsFragment();
+                selectFragment = new SelectFragment();
+                dbFragment = new DBFragment();
         }).start();
         //Log.d("samba", "Text:10");
 
@@ -519,10 +517,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         final Handler handler = new Handler();
         handler.postDelayed(() -> {
             if(!Logic.hasbeen)
-                //Log.v("samba", "No connection with "+address);
-            //handler.postDelayed(() -> {
             Toast.makeText(this, "No connection with "+ Server.servers.get(Server.getServer(this)).url, Toast.LENGTH_SHORT).show();
-            //}, 2000);
         }, 400);
     } catch (Exception e){Log.getStackTraceString(e);}
     }
