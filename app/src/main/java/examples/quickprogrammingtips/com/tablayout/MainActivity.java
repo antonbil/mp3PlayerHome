@@ -519,6 +519,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             if(!Logic.hasbeen)
             Toast.makeText(this, "No connection with "+ Server.servers.get(Server.getServer(this)).url, Toast.LENGTH_SHORT).show();
         }, 400);
+            //refresh tab 0
+            tabLayout.getTabAt(0).select();
     } catch (Exception e){Log.getStackTraceString(e);}
     }
 
