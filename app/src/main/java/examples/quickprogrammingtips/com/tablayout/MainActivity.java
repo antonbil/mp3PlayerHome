@@ -648,7 +648,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             @Override
             public void run() {
                 try {
-                    statusThread=false;
+                    if (statusThread) {
+                        statusThread = false;
+                        statusUpdate(logic.mpcStatus);
+                    }
                 } catch (Exception e) {
 
                 }
