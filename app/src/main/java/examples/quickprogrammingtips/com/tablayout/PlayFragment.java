@@ -65,7 +65,7 @@ public class PlayFragment extends Fragment implements MpdInterface {
                 // this is successful mission, do with it.
                 Toast.makeText(getContext(), "succesfully returned!"+data.getExtras().getString("artist"), Toast.LENGTH_SHORT).show();
                 MainActivity.getThis.tabLayout.getTabAt(2).select();
-                new DatabaseCommand(logic.getMpc(),"find artist \""+data.getExtras().getString("artist")+"\"",MainActivity.getThis.dbFragment,true).run();
+                new DatabaseCommand(logic.getMpc(),"find artist \""+data.getExtras().getString("artist")+"\"",MainActivity.getThis.adapter.dbFragment,true).run();
 //                favorites.clear();
 //                getFavorites();
 

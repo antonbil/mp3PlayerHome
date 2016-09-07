@@ -5,12 +5,25 @@ package examples.quickprogrammingtips.com.tablayout;
  */
 
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
+    private final Context context;
+    private int[] imageResId = {
+            R.drawable.common_google_signin_btn_icon_dark_pressed,
+            R.drawable.common_full_open_on_phone,
+            R.drawable.common_google_signin_btn_icon_dark_pressed,
+            R.drawable.common_full_open_on_phone,
+            R.drawable.common_plus_signin_btn_icon_dark_normal
+    };
     SelectFragment selectFragment;
     PlaylistsFragment playlistFragment;
     PlayFragment playFragment;
@@ -19,19 +32,44 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     DBFragment         dbFragment;
     public int tabselected=0;
 
-    public PagerAdapter(FragmentManager fm, int NumOfTabs) {
+    public PagerAdapter(FragmentManager fm, int NumOfTabs, Context context) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
+        this.context=context;
         //create fragments for tabs in background
         playFragment = new PlayFragment();
         new Thread(() -> {
+            selectFragment = new SelectFragment();
             listFragment = new ListFragment();
             //Log.d("samba", "Text:9");
             playlistFragment = new PlaylistsFragment();
-            selectFragment = new SelectFragment();
             dbFragment = new DBFragment();
         }).start();
 
+    }
+
+    /*
+    http://stackoverflow.com/questions/30892545/tablayout-with-icons
+    By default, the tab created by TabLayout sets the textAllCaps property to be true, which prevents ImageSpans from being rendered. You can override this behavior by changing the tabTextAppearance property.
+
+  <style name="MyCustomTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/MyCustomTextAppearance</item>
+  </style>
+
+  <style name="MyCustomTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+  </style>
+     */
+    @Override
+    public CharSequence getPageTitle(int position) {
+        // Generate title based on item position
+        // return tabTitles[position];
+        Drawable image = context.getResources().getDrawable(imageResId[position]);
+        image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
+        SpannableString sb = new SpannableString(" ");
+        ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
+        sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sb;
     }
 
     @Override

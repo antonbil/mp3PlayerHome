@@ -21,6 +21,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -83,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static final int MPD_PLAYING = 2;
     public static int playingStatus;
     private boolean footerVisible = false;
-    private int tabSelected = 0;
-    private ListFragment listFragment;
-    protected DBFragment dbFragment;
+    //private int tabSelected = 0;
+    //private ListFragment listFragment;
+    //protected DBFragment dbFragment;
     private Logic logic;
     public Handler updateBarHandler;
     private int timerTime = 0;
@@ -110,8 +111,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
      */
     private GoogleApiClient client;
     private boolean statusThread=false;
-    private PlaylistsFragment playlistFragmentragment;
-    private SelectFragment selectFragment;
+    //private PlaylistsFragment playlistFragmentragment;
+    //private SelectFragment selectFragment;
+    protected PagerAdapter adapter;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -342,8 +344,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.addTab(tabLayout.newTab().setText("Play"));
         tabLayout.addTab(tabLayout.newTab().setText("List"));
-        tabLayout.addTab(tabLayout.newTab().setText("DB"));
         tabLayout.addTab(tabLayout.newTab().setText("Radio"));
+            tabLayout.addTab(tabLayout.newTab().setText("DB"));
         tabLayout.addTab(tabLayout.newTab().setText("Select"));
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
 
@@ -401,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //display tablayout
         displayHome();
         //Log.d("samba", "Text:8");
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        /*tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 //playlistThread.interrupt();
@@ -414,10 +416,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 }else
                 if (tabSelected == 1) {
 
-                    /*Fragment myFragment = (Fragment) getFragmentManager().findFragmentById(R.id.frLayout);
-                    if(myFragment!=null){
-                        myFragment.update();
-                    }*/
+
                     getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, listFragment).commit();
                     //findbutton.setVisibility(View.VISIBLE);
                 }else
@@ -447,12 +446,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
             }
-        });
+        });*/
 
-            /*
+
                         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
             adapter = new PagerAdapter
-                    (getSupportFragmentManager(), tabLayout.getTabCount());
+                    (getSupportFragmentManager(), tabLayout.getTabCount(),this);
             viewPager.setAdapter(adapter);
             viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
             tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -473,7 +472,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             });
 
 
-             */
+
         Log.v("samba",""+19);
 
         Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
@@ -501,19 +500,19 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         new Thread(() -> {
             updateDisplay();
             //create fragments for tabs in background
-                listFragment = new ListFragment();
+               /* listFragment = new ListFragment();
                 //Log.d("samba", "Text:9");
                 playlistFragmentragment = new PlaylistsFragment();
                 selectFragment = new SelectFragment();
-                dbFragment = new DBFragment();
+                dbFragment = new DBFragment();*/
         }).start();
-        //Log.d("samba", "Text:10");
+        Log.d("samba", "Text:10");
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         ArtistAutoCompleteAdapter.getAllFilenames();
-        //Log.d("samba", "Text:11");
+        Log.d("samba", "Text:11");
         final Handler handler = new Handler();
         handler.postDelayed(() -> {
             if(!Logic.hasbeen)
@@ -668,8 +667,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     private void displayHome() {
-        if (playFragment==null) playFragment = new PlayFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, playFragment).commit();
+        //if (playFragment==null) playFragment = new PlayFragment();
+        //getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, adapter.playFragment).commit();
     }
 
     @Override
@@ -696,10 +695,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public void onBackPressed() {
-        if ((tabSelected==1)||(tabSelected==2)) {
+        int tabSelected=tabLayout.getSelectedTabPosition();;
+        if ((tabSelected==1)||(tabSelected==3)) {
             if (tabSelected == 1)
-                listFragment.back();
-            if (tabSelected == 2) dbFragment.back();
+                adapter.listFragment.back();
+            if (tabSelected == 3) adapter.dbFragment.back();
         }
         else
         new AlertDialog.Builder(this)
@@ -780,7 +780,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             @Override
             public void run() {
                 selectTab(2);
-                getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, adapter.dbFragment).commit();
                 //searchForItem(searchString);
             }
         }, 100);
@@ -816,7 +816,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public void searchForItem(String searchString) {
         //Log.v("samba", "search:" + searchString);
         //selectTab(2);
-        new DatabaseCommand(logic.getMpc(), "find any \"" + searchString + "\"", dbFragment, true).run();
+        new DatabaseCommand(logic.getMpc(), "find any \"" + searchString + "\"", adapter.dbFragment, true).run();
     }
 
     public void setVolume(Activity activity) {
@@ -922,7 +922,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     public void run() {
                         selectTab(2);
                         //give the program time to restore saved instance
-                        getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, adapter.dbFragment).commit();
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -1097,7 +1097,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public void playlistCall(ArrayList<Mp3File> playlist, boolean change) {
-        if (tabSelected == 0)
+        if (tabLayout.getSelectedTabPosition() == 0)
             playFragment.playlistCall(playlist, change);
 
     }
@@ -1137,7 +1137,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void databaseCallCompleted(ArrayList<File> files) {
 
-        dbFragment.databaseCallCompleted(files);
+        adapter.dbFragment.databaseCallCompleted(files);
 
 
     }
