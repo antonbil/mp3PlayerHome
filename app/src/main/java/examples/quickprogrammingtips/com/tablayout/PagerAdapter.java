@@ -17,12 +17,12 @@ import android.util.Log;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     private final Context context;
-    private int[] imageResId = {
-            R.drawable.common_google_signin_btn_icon_dark_pressed,
-            R.drawable.common_full_open_on_phone,
-            R.drawable.common_google_signin_btn_icon_dark_pressed,
-            R.drawable.common_full_open_on_phone,
-            R.drawable.common_plus_signin_btn_icon_dark_normal
+    public int[] imageResId = {
+            R.drawable.play,
+            R.drawable.smb,
+            R.drawable.swan1,
+            R.drawable.mpd,
+            R.drawable.ic_sync_black_24dp
     };
     SelectFragment selectFragment;
     PlaylistsFragment playlistFragment;
@@ -69,7 +69,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         SpannableString sb = new SpannableString(" ");
         ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
         sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return sb;
+        return null;
     }
 
     @Override

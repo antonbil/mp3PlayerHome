@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 R.string.hello_world
         ) {PlanetAdapter albumAdapter;
             public void onDrawerClosed(View view) {
-                customHandler.removeCallbacks(updateTimerThread);
+                //customHandler.removeCallbacks(updateTimerThread);
                 albumAdapter=null;
 
                 //Snackbar.make(view, "closed", Snackbar.LENGTH_SHORT).show();
@@ -191,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     @Override
                     public void onClickFunc(int counter) {
+                        getSpotifyInterface.previousTrack.id="";
                         duplicateLists();
                         SpotifyActivity.stopMpd();
                         SpotifyActivity.playlistGotoPosition(counter);
@@ -283,10 +284,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
                 fab.setOnClickListener(view -> SpotifyActivity.showPlayMenu(getThis,viewHeader));
 
-                (findViewById(R.id.time_layout)).setOnClickListener(v -> MainActivity.playPauseAll());
+                /*(findViewById(R.id.time_layout)).setOnClickListener(v -> MainActivity.playPauseAll());
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top2);
-                viewById.setOnClickListener(v -> spotifyPopupMenu(viewHeader, mDrawerLayout));
-                updateTimerThread = new Runnable() {
+                viewById.setOnClickListener(v -> spotifyPopupMenu(viewHeader, mDrawerLayout));*/
+                /*updateTimerThread = new Runnable() {
 
                     public void run() {
 
@@ -305,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     }
 
                 };
-                customHandler.postDelayed(updateTimerThread,0);
+                customHandler.postDelayed(updateTimerThread,0);*/
 
 
 
@@ -342,14 +343,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.addTab(tabLayout.newTab().setText("Play"));
-        tabLayout.addTab(tabLayout.newTab().setText("List"));
-        tabLayout.addTab(tabLayout.newTab().setText("Radio"));
-            tabLayout.addTab(tabLayout.newTab().setText("DB"));
-        tabLayout.addTab(tabLayout.newTab().setText("Select"));
+        tabLayout.addTab(tabLayout.newTab()/*.setText("Play")*/);
+        tabLayout.addTab(tabLayout.newTab()/*.setText("List")*/);
+        tabLayout.addTab(tabLayout.newTab()/*.setText("Radio")*/);
+            tabLayout.addTab(tabLayout.newTab()/*.setText("DB")*/);
+        tabLayout.addTab(tabLayout.newTab()/*.setText("Select")*/);
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
 
-        //Log.d("samba", "Text:7");
+
+            //Log.d("samba", "Text:7");
         //Log.v("samba",""+17);
         this.setTitle("");
         final LinearLayout footerView = (LinearLayout) findViewById(R.id.footer);
@@ -474,6 +476,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
 
         Log.v("samba",""+19);
+            tabLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    tabLayout.setupWithViewPager(viewPager);
+                    for (int i=0;i<tabLayout.getTabCount();i++)
+                        tabLayout.getTabAt(i).setIcon(adapter.imageResId[i]);
+                }
+            });
 
         Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
         setSupportActionBar(tool);
@@ -518,8 +528,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             if(!Logic.hasbeen)
             Toast.makeText(this, "No connection with "+ Server.servers.get(Server.getServer(this)).url, Toast.LENGTH_SHORT).show();
         }, 400);
+            cleanUp();
             //refresh tab 0
-            tabLayout.getTabAt(0).select();
+            //tabLayout.getTabAt(0).select();
     } catch (Exception e){Log.getStackTraceString(e);}
     }
 
@@ -628,6 +639,23 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             logic.setPaused(true);
 
         }
+    }
+
+    private void cleanUp(){
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                try {
+                    statusThread=false;
+                } catch (Exception e) {
+
+                }
+            }
+
+        }, 0, 10000);//Update text every second
+
     }
 
     private void updateDisplay() {
