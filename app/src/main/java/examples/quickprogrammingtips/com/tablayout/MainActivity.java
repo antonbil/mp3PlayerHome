@@ -161,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //Log.v("samba",""+15);
         setContentView(R.layout.activity_main);
         DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        //mDrawerLayout.closeDrawers();
         //Log.d("samba", "Text:4");
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this,
@@ -172,12 +171,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             public void onDrawerClosed(View view) {
                 //customHandler.removeCallbacks(updateTimerThread);
                 albumAdapter=null;
-
-                //Snackbar.make(view, "closed", Snackbar.LENGTH_SHORT).show();
             }
 
             public void onDrawerOpened(View drawerView) {
-                //Snackbar.make(drawerView, "opened", Snackbar.LENGTH_SHORT).show();
                 ListView albumsListview = (ListView) findViewById(R.id.drawer_list);
                 ArrayList<String> albumList = new ArrayList<>();
                 ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
@@ -191,10 +187,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     @Override
                     public void onClickFunc(int counter) {
-                        getSpotifyInterface.previousTrack.id="";
-                        duplicateLists();
-                        SpotifyActivity.stopMpd();
-                        SpotifyActivity.playlistGotoPosition(counter);
+                        try {
+                            getSpotifyInterface.previousTrack.id = "";
+                        } catch (Exception e){Log.v("samba","error in starting song");};
+                            Log.v("samba","a");
+                            duplicateLists();
+                            Log.v("samba","b");
+                            SpotifyActivity.stopMpd();
+                            Log.v("samba","c");
+                            SpotifyActivity.playlistGotoPosition(counter);
                     }
 
                     @Override
@@ -335,9 +336,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             return true;
         });
         im.setOnClickListener(v -> {
-            //setVolume(getThis);
             setFooterVisibility();
-            //SpotifyActivity.showPlayMenu(getThis,im);
         });
         //Log.d("samba", "Text:6");
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
@@ -364,94 +363,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         findbutton.setVisibility(View.GONE);
         //Log.d("samba", "Text:8");
         FAB.setOnClickListener(v -> {
-
-
-            //Toast.makeText(MainActivity.this, "Hello Worl", Toast.LENGTH_SHORT).show();
-            /*if (tabSelected == 1 || (tabSelected == 2)) {
-                //Toast.makeText(MainActivity.this, "Back key", Toast.LENGTH_SHORT).show();
-                if (tabSelected == 1)
-                listFragment.back();
-                if (tabSelected == 2) dbFragment.back();
-            } else {*/
-                /*PopupMenu menu = new PopupMenu(FAB.getContext(), FAB);
-                menu.getMenu().add("search artist");
-                menu.getMenu().add("spotify");
-                menu.getMenu().add("play on/off");
-
-                menu.show();
-                menu.setOnMenuItemClickListener(item -> {
-                    String title = item.getTitle().toString();
-                    if ((title.equals("search artist"))) {*/
                         SpotifyActivity.nextCommand="search artist";
                         startPlaylistSpotify();
-                    /*} else if ((title.equals("spotify"))) {
-                        startPlaylistSpotify();
-                    } else if ((title.equals("play on/off"))) {
-                        setListenersForButtons();
-                        setFooterVisibility();
-
-                    } else {}
-                    return true;
-                }
-
-                );*/
-            //}
-
-
         });
 
         //Log.v("samba",""+18);
 
-        //display tablayout
-        displayHome();
-        //Log.d("samba", "Text:8");
-        /*tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                //playlistThread.interrupt();
-                tabSelected = tab.getPosition();
-
-                try {
-                if (tab.getPosition() == 0) {
-                    displayHome();
-                    //findbutton.setVisibility(View.GONE);
-                }else
-                if (tabSelected == 1) {
-
-
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, listFragment).commit();
-                    //findbutton.setVisibility(View.VISIBLE);
-                }else
-                if (tab.getPosition() == 2) {
-
-                        getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
-                        //findbutton.setVisibility(View.VISIBLE);
-                }else
-                if (tab.getPosition() == 4) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, selectFragment).commit();
-                    //findbutton.setVisibility(View.GONE);
-                }else
-                if (tab.getPosition() == 3) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, playlistFragmentragment).commit();
-                    //findbutton.setVisibility(View.GONE);
-                }else
-                    displayHome();
-                } catch (Exception e) {
-                    Log.v("samba", Log.getStackTraceString(e));
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });*/
-
-
-                        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
             adapter = new PagerAdapter
                     (getSupportFragmentManager(), tabLayout.getTabCount(),this);
             viewPager.setAdapter(adapter);
@@ -488,33 +406,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
         setSupportActionBar(tool);
         //Log.d("samba", "Text:9");
-                /*ImageButton playButton = (ImageButton) findViewById(R.id.playButton);
-        playButton.setOnClickListener(v -> {
-            logic.getMpc().play();
-            logic.setPaused(false);
-        });
-        ImageButton stopButton = (ImageButton) findViewById(R.id.stopButton);
-        stopButton.setOnClickListener(v -> {
-            logic.getMpc().pause();
-            logic.setPaused(true);
-        });*/
-        /*ImageButton pauseButton = (ImageButton) findViewById(R.id.pauseButton);
-        pauseButton.setOnClickListener(v -> playPause());
-        ImageButton forwardButton = (ImageButton) findViewById(R.id.forwardButton);
-        forwardButton.setOnClickListener(v -> logic.getMpc().next());
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> logic.getMpc().previous());*/
+
         setListenersForButtons();
 
         Log.v("samba",""+20);
         new Thread(() -> {
             updateDisplay();
-            //create fragments for tabs in background
-               /* listFragment = new ListFragment();
-                //Log.d("samba", "Text:9");
-                playlistFragmentragment = new PlaylistsFragment();
-                selectFragment = new SelectFragment();
-                dbFragment = new DBFragment();*/
+
         }).start();
         Log.d("samba", "Text:10");
 
@@ -529,8 +427,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             Toast.makeText(this, "No connection with "+ Server.servers.get(Server.getServer(this)).url, Toast.LENGTH_SHORT).show();
         }, 400);
             cleanUp();
-            //refresh tab 0
-            //tabLayout.getTabAt(0).select();
+
     } catch (Exception e){Log.getStackTraceString(e);}
     }
 
@@ -697,10 +594,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         return preferences.getBoolean("are_crashes_enabled", false);
     }
 
-    private void displayHome() {
-        //if (playFragment==null) playFragment = new PlayFragment();
-        //getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, adapter.playFragment).commit();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
