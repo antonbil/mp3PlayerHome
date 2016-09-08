@@ -210,7 +210,7 @@ public class NewAlbumsActivity extends Activity {
              String uri = items.get(position).url.replace("spotify:album:", "");
              String prefix="spotify:album:";
              SpotifyActivity.AddSpotifyItemToPlaylist(prefix, uri);
-             SpotifyActivity.refreshPlaylistFromSpotify(1, SpotifyActivity.getThis.albumAdapter,SpotifyActivity.getThis,SpotifyActivity.albumList,SpotifyActivity.albumTracks);
+             SpotifyActivity.refreshPlaylistFromSpotify(1, SpotifyActivity.getThis.albumAdapter,SpotifyActivity.getThis.getActivity(),SpotifyActivity.albumList,SpotifyActivity.albumTracks);
          }
      }
     public void processAlbum(NewAlbum album){

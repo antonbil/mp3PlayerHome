@@ -1,7 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -125,7 +124,7 @@ PlaybackController.get_time_position()
 PlaybackController.get_state()
 
  */
-public class SpotifyActivity extends Fragment implements
+public class SpotifyActivity extends android.support.v4.app.Fragment implements
          MPCDatabaseListListener {
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "89f945f1696e4f389aaed419e51beaad";
@@ -194,11 +193,14 @@ public class SpotifyActivity extends Fragment implements
     public static int currentList=SpotifyList+1;
     private String[] lists = new String[]{"albumlist","spotifylist","mpdlist"};;
     private static Activity activityThis;
+    View llview;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_spotify, container, false);
+        llview = inflater.inflate(R.layout.activity_spotify, container, false);
+        onActivityCreated();
+        return llview;
     }
 
     public void checkAppMemory(){
@@ -483,8 +485,9 @@ public class SpotifyActivity extends Fragment implements
 // Can be any integer
     //private static final int REQUEST_CODE = 1337;
 
-        @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+        //@Override
+    //public void onActivityCreated(Bundle savedInstanceState) {
+        public void onActivityCreated() {
             Log.d("samba", "Text:1");
             activityThis=getActivity();
 
@@ -565,7 +568,7 @@ public class SpotifyActivity extends Fragment implements
 
         //Log.v("samba", "nosearch2");
 
-        albumsListview = (ListView) getView().findViewById(R.id.albums_listview);
+        albumsListview = (ListView) llview.findViewById(R.id.albums_listview);
         albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
             SmartLinkSwipeDetector swipeDetector = new SmartLinkSwipeDetector();
@@ -573,9 +576,9 @@ public class SpotifyActivity extends Fragment implements
             setAdapterForSpotify();
 
         albumsListview.setOnItemClickListener(cl);
-        relatedArtistsListView = (ListView) getView().findViewById(R.id.relatedartists_listview);
+        relatedArtistsListView = (ListView) llview.findViewById(R.id.relatedartists_listview);
             relatedArtistsListView.setOnTouchListener(swipeDetector);
-                getView().findViewById(R.id.spotifylayouttop).setOnTouchListener(swipeDetector);
+                llview.findViewById(R.id.spotifylayouttop).setOnTouchListener(swipeDetector);
             //
         //Log.v("samba", "nosearch3");
                 Log.d("samba", "Text:6");
@@ -587,10 +590,10 @@ public class SpotifyActivity extends Fragment implements
 
             artistTitleTextView = (TextView)
 
-                    getView().findViewById(R.id.artist_title);//relatedartists_text
+                    llview.findViewById(R.id.artist_title);//relatedartists_text
 
             songItems=new SongItems(activityThis);
-                getView().findViewById(R.id.time_layout).setOnClickListener(v -> MainActivity.playPauseAll());
+                llview.findViewById(R.id.time_layout).setOnClickListener(v -> MainActivity.playPauseAll());
             //songItems.setOnClickTitles(v -> getThis.finish());
             songItems.setOnClick(arg0 -> {
 
@@ -610,8 +613,8 @@ public class SpotifyActivity extends Fragment implements
                         SpotifyActivity.showPlayMenu(activityThis,songItems.image);
                     } else
                     if ((title.equals("show artist-info"))) {
-                        getView().findViewById(R.id.artistinfo).setVisibility(View.VISIBLE);
-                        getView().findViewById(R.id.relatedartistsinfo).setVisibility(View.VISIBLE);
+                        llview.findViewById(R.id.artistinfo).setVisibility(View.VISIBLE);
+                        llview.findViewById(R.id.relatedartistsinfo).setVisibility(View.VISIBLE);
                     } else
                     if ((title.equals("new albums categories"))) {
                         PopupMenu menu1 = new PopupMenu(songItems.image.getContext(), songItems.image);
@@ -721,11 +724,11 @@ public class SpotifyActivity extends Fragment implements
             spotifyHeader.connectVarsToFront();
                 Log.d("samba", "Text:7");
 
-                getView().findViewById(R.id.artist_title).setOnClickListener(view ->{getView().findViewById(R.id.artistinfo).setVisibility(View.GONE);});
-                getView().findViewById(R.id.relatedartists_text).setOnClickListener(view ->{getView().findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);});
+                llview.findViewById(R.id.artist_title).setOnClickListener(view ->{llview.findViewById(R.id.artistinfo).setVisibility(View.GONE);});
+                llview.findViewById(R.id.relatedartists_text).setOnClickListener(view ->{llview.findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);});
             fab=(FloatingActionButton)
 
-                    getView().findViewById(R.id.fab);
+                    llview.findViewById(R.id.fab);
             fab.setOnClickListener(view ->{nextList();});
 
             fab.setOnLongClickListener(view -> {
@@ -774,7 +777,7 @@ public class SpotifyActivity extends Fragment implements
                     //mainLayout.setVisibility(View.GONE);//spotifyscrollviewtop
                     int visibility = View.GONE;
                     setVisibility(visibility);//
-                    getView().findViewById(R.id.song_display).setVisibility(View.VISIBLE);
+                    llview.findViewById(R.id.song_display).setVisibility(View.VISIBLE);
                     //startPlaylistThread
                     customHandler.postDelayed(startPlaylistThread, 1000);
                 } catch (Exception e) {
@@ -857,13 +860,13 @@ public class SpotifyActivity extends Fragment implements
     }
 
     public void playButtonsAtBottom() {
-        View playbutton = getView().findViewById(R.id.playspotify);
-        View stopbutton = getView().findViewById(R.id.stopspotify);
-        View playpausebutton = getView().findViewById(R.id.pausespotify);
-        View previousbutton = getView().findViewById(R.id.previousspotify);
-        View nextbutton = getView().findViewById(R.id.nextspotify);
-        View volumebutton = getView().findViewById(R.id.volumespotify);
-        View seekbutton = getView().findViewById(R.id.positionspotify);
+        View playbutton = llview.findViewById(R.id.playspotify);
+        View stopbutton = llview.findViewById(R.id.stopspotify);
+        View playpausebutton = llview.findViewById(R.id.pausespotify);
+        View previousbutton = llview.findViewById(R.id.previousspotify);
+        View nextbutton = llview.findViewById(R.id.nextspotify);
+        View volumebutton = llview.findViewById(R.id.volumespotify);
+        View seekbutton = llview.findViewById(R.id.positionspotify);
         new Thread(() -> {
             setListenersForButtons(activityThis, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
         }).start();
@@ -1559,11 +1562,11 @@ public class SpotifyActivity extends Fragment implements
         artistTitleTextView.setVisibility(visibility);
         spotifyHeader.icon.setVisibility(visibility);
         //fab.setVisibility(opposite);//spotifyscrollviewtop
-        ((TextView) getView().findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
-        ((TextView) getView().findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
+        ((TextView) llview.findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
+        ((TextView) llview.findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
 
         spotifyHeader.MessageView.setVisibility(visibility);
-        ((ScrollView) getView().findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview
+        ((ScrollView) llview.findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview
     }
 
     public static void playlistGotoPosition(int position) {

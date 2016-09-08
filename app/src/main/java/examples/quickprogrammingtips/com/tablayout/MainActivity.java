@@ -339,6 +339,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             setFooterVisibility();
         });
         //Log.d("samba", "Text:6");
+            //TODO: make it for-statement (6 times!)
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -347,6 +348,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         tabLayout.addTab(tabLayout.newTab()/*.setText("Radio")*/);
             tabLayout.addTab(tabLayout.newTab()/*.setText("DB")*/);
         tabLayout.addTab(tabLayout.newTab()/*.setText("Select")*/);
+            tabLayout.addTab(tabLayout.newTab()/*.setText("Select")*/);
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
 
 
@@ -394,20 +396,31 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
 
         Log.v("samba",""+19);
-            tabLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    tabLayout.setupWithViewPager(viewPager);
-                    for (int i=0;i<tabLayout.getTabCount();i++)
-                        tabLayout.getTabAt(i).setIcon(adapter.imageResId[i]);
-                }
-            });
+            try {
+                tabLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        tabLayout.setupWithViewPager(viewPager);
+                        for (int i = 0; i < tabLayout.getTabCount(); i++)
+                            tabLayout.getTabAt(i).setIcon(adapter.imageResId[i]);
+                    }
+                });
+            }
+                catch (Exception e){Log.v("samba","error in post for tablayout");}
+            Log.v("samba","a"+19);
 
-        Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
-        setSupportActionBar(tool);
-        //Log.d("samba", "Text:9");
+            try {
+                Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
+                Log.v("samba", "b" + 19);
+                setSupportActionBar(tool);
+            }
+            catch (Exception e){Log.v("samba","error in setting up tool");}
+            //Log.d("samba", "Text:9");
 
+            try{
         setListenersForButtons();
+        }
+        catch (Exception e){Log.v("samba","error setting listeners");}
 
         Log.v("samba",""+20);
         new Thread(() -> {
@@ -416,6 +429,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         }).start();
         Log.d("samba", "Text:10");
 
+            try{
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -426,9 +440,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             if(!Logic.hasbeen)
             Toast.makeText(this, "No connection with "+ Server.servers.get(Server.getServer(this)).url, Toast.LENGTH_SHORT).show();
         }, 400);
+        }
+        catch (Exception e){Log.v("samba","error setting handler");}
+            try{
             cleanUp();
+        }
+        catch (Exception e){Log.v("samba","error cleanup");}
 
-    } catch (Exception e){Log.getStackTraceString(e);}
+    } catch (Exception e){Log.v("samba","error");e.printStackTrace();Log.getStackTraceString(e);}
     }
 
     static void playPauseAll() {

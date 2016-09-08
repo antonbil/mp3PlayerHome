@@ -40,7 +40,7 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
 // This a new view we inflate the new layout
-                LayoutInflater inflater = (LayoutInflater) SpotifyActivity.getThis.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater inflater = (LayoutInflater) SpotifyActivity.getThis.getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.item_file1, parent, false);
             }
             final View convertView2=convertView;
@@ -67,10 +67,10 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
                                     /*MainActivity.getThis.selectTab(2);
                                     try{ Thread.sleep(1000); MainActivity.getThis.searchTerm(selectedItem);}catch(InterruptedException e){ }
                                     */
-                                    final Intent intent = SpotifyActivity.getThis.getIntent();
+                                    final Intent intent = SpotifyActivity.getThis.getActivity().getIntent();
                                     intent.putExtra("artist", selectedItem);
-                                    SpotifyActivity.getThis.setResult(Activity.RESULT_OK, intent);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
-                                    SpotifyActivity.getThis.finish(); //finish the activity
+                                    SpotifyActivity.getThis.getActivity().setResult(Activity.RESULT_OK, intent);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
+                                    //SpotifyActivity.getThis.finish(); //finish the activity
 
 
 

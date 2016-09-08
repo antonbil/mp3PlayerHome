@@ -17,14 +17,17 @@ import android.util.Log;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     private final Context context;
+    private SpotifyActivity spotifyFragment;
     public int[] imageResId = {
             R.drawable.play,
             R.drawable.smb,
             R.drawable.swan1,
             R.drawable.mpd,
-            R.drawable.ic_sync_black_24dp
+            R.drawable.ic_sync_black_24dp,
+            R.drawable.spf
     };
     SelectFragment selectFragment;
+
     PlaylistsFragment playlistFragment;
     PlayFragment playFragment;
     int mNumOfTabs;
@@ -44,6 +47,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             //Log.d("samba", "Text:9");
             playlistFragment = new PlaylistsFragment();
             dbFragment = new DBFragment();
+            spotifyFragment=new SpotifyActivity();
         }).start();
 
     }
@@ -89,6 +93,8 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 return dbFragment;
             case 4:
                 return selectFragment;
+            case 5:
+                return spotifyFragment;
             default:
                 return null;
         }
