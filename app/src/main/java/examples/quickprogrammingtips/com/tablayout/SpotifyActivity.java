@@ -1,6 +1,7 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,9 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.InputType;
 import android.text.Layout;
@@ -25,6 +24,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -125,7 +125,7 @@ PlaybackController.get_time_position()
 PlaybackController.get_state()
 
  */
-public class SpotifyActivity extends AppCompatActivity implements
+public class SpotifyActivity extends Fragment implements
          MPCDatabaseListListener {
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "89f945f1696e4f389aaed419e51beaad";
@@ -193,6 +193,13 @@ public class SpotifyActivity extends AppCompatActivity implements
     private boolean displayMpd;
     public static int currentList=SpotifyList+1;
     private String[] lists = new String[]{"albumlist","spotifylist","mpdlist"};;
+    private static Activity activityThis;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_spotify, container, false);
+    }
 
     public void checkAppMemory(){
         // Get app memory info
@@ -477,11 +484,12 @@ public class SpotifyActivity extends AppCompatActivity implements
     //private static final int REQUEST_CODE = 1337;
 
         @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
             Log.d("samba", "Text:1");
+            activityThis=getActivity();
 
             try{
-            dialog1=new ProgressDialog(this);
+            dialog1=new ProgressDialog(activityThis);
             updateBarHandler = MainActivity.getThis.updateBarHandler;
         // Code called from an activity
         /*final AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
@@ -536,10 +544,10 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                 ;
             };*/
-        super.onCreate(savedInstanceState);
+        //super.onCreate(savedInstanceState);
         getThis = this;
             getSpotifyInterface=new SpotifyInterface();
-        setContentView(R.layout.activity_spotify);
+        //setContentView(R.layout.activity_spotify);
         //Log.v("samba", "nosearch1");
         api = new SpotifyApi();
                 Log.d("samba", "Text:4");
@@ -548,7 +556,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         GetSpotifyToken();
 
 
-        Bundle extras = getIntent().getExtras();
+        Bundle extras = activityThis.getIntent().getExtras();
         String temp = extras.getString("artist");
         nosearch = (temp.startsWith("nosearch"));
         if (nosearch) temp = "The Beatles";
@@ -557,7 +565,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
         //Log.v("samba", "nosearch2");
 
-        albumsListview = (ListView) findViewById(R.id.albums_listview);
+        albumsListview = (ListView) getView().findViewById(R.id.albums_listview);
         albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
             SmartLinkSwipeDetector swipeDetector = new SmartLinkSwipeDetector();
@@ -565,25 +573,25 @@ public class SpotifyActivity extends AppCompatActivity implements
             setAdapterForSpotify();
 
         albumsListview.setOnItemClickListener(cl);
-        relatedArtistsListView = (ListView) findViewById(R.id.relatedartists_listview);
+        relatedArtistsListView = (ListView) getView().findViewById(R.id.relatedartists_listview);
             relatedArtistsListView.setOnTouchListener(swipeDetector);
-            findViewById(R.id.spotifylayouttop).setOnTouchListener(swipeDetector);
+                getView().findViewById(R.id.spotifylayouttop).setOnTouchListener(swipeDetector);
             //
         //Log.v("samba", "nosearch3");
                 Log.d("samba", "Text:6");
 
-        relatedArtistsAdapter = new RelatedArtistAdapter<String>(this, android.R.layout.simple_list_item_1, artistList);
+        relatedArtistsAdapter = new RelatedArtistAdapter<String>(activityThis, android.R.layout.simple_list_item_1, artistList);
         relatedArtistsListView.setAdapter(relatedArtistsAdapter);
 
             playButtonsAtBottom();
 
             artistTitleTextView = (TextView)
 
-                    findViewById(R.id.artist_title);//relatedartists_text
+                    getView().findViewById(R.id.artist_title);//relatedartists_text
 
-            songItems=new SongItems(this);
-            findViewById(R.id.time_layout).setOnClickListener(v -> MainActivity.playPauseAll());
-            songItems.setOnClickTitles(v -> getThis.finish());
+            songItems=new SongItems(activityThis);
+                getView().findViewById(R.id.time_layout).setOnClickListener(v -> MainActivity.playPauseAll());
+            //songItems.setOnClickTitles(v -> getThis.finish());
             songItems.setOnClick(arg0 -> {
 
                 View image = songItems.image;
@@ -599,11 +607,11 @@ public class SpotifyActivity extends AppCompatActivity implements
                 menu.setOnMenuItemClickListener(item -> {
                     String title = item.getTitle().toString();
                     if ((title.equals("play"))) {
-                        SpotifyActivity.showPlayMenu(getThis,songItems.image);
+                        SpotifyActivity.showPlayMenu(activityThis,songItems.image);
                     } else
                     if ((title.equals("show artist-info"))) {
-                        findViewById(R.id.artistinfo).setVisibility(View.VISIBLE);
-                        findViewById(R.id.relatedartistsinfo).setVisibility(View.VISIBLE);
+                        getView().findViewById(R.id.artistinfo).setVisibility(View.VISIBLE);
+                        getView().findViewById(R.id.relatedartistsinfo).setVisibility(View.VISIBLE);
                     } else
                     if ((title.equals("new albums categories"))) {
                         PopupMenu menu1 = new PopupMenu(songItems.image.getContext(), songItems.image);
@@ -709,15 +717,15 @@ public class SpotifyActivity extends AppCompatActivity implements
 
 
 
-            spotifyHeader=new SpotifyHeader(this,artistTitleTextView);
+            spotifyHeader=new SpotifyHeader(activityThis,artistTitleTextView);
             spotifyHeader.connectVarsToFront();
                 Log.d("samba", "Text:7");
 
-                findViewById(R.id.artist_title).setOnClickListener(view ->{findViewById(R.id.artistinfo).setVisibility(View.GONE);});
-                findViewById(R.id.relatedartists_text).setOnClickListener(view ->{findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);});
+                getView().findViewById(R.id.artist_title).setOnClickListener(view ->{getView().findViewById(R.id.artistinfo).setVisibility(View.GONE);});
+                getView().findViewById(R.id.relatedartists_text).setOnClickListener(view ->{getView().findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);});
             fab=(FloatingActionButton)
 
-            findViewById(R.id.fab);
+                    getView().findViewById(R.id.fab);
             fab.setOnClickListener(view ->{nextList();});
 
             fab.setOnLongClickListener(view -> {
@@ -732,7 +740,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                             String title = item.getTitle().toString();
                     selectList(title);
                     if ((title.equals("return to main"))) {
-                                getThis.finish();
+                                //getThis.finish();
 
                             }
 
@@ -766,7 +774,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                     //mainLayout.setVisibility(View.GONE);//spotifyscrollviewtop
                     int visibility = View.GONE;
                     setVisibility(visibility);//
-                    findViewById(R.id.song_display).setVisibility(View.VISIBLE);
+                    getView().findViewById(R.id.song_display).setVisibility(View.VISIBLE);
                     //startPlaylistThread
                     customHandler.postDelayed(startPlaylistThread, 1000);
                 } catch (Exception e) {
@@ -781,7 +789,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 Handler handler = new Handler();
                 Runnable runnable = new Runnable() {
                     public void run() {
-                        MainActivity.getThis.currentArtist= updateSongInfo(songItems.time,songItems.totaltime,songItems.tvName,songItems.artist,songItems.image,albumAdapter,albumsListview, getThis,getSpotifyInterface);
+                        MainActivity.getThis.currentArtist= updateSongInfo(songItems.time,songItems.totaltime,songItems.tvName,songItems.artist,songItems.image,albumAdapter,albumsListview, activityThis,getSpotifyInterface);
 
                         handler.postDelayed(this, 1000);
                     }
@@ -822,7 +830,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             setAdapterForSpotify();
             String hartistName=artistName;
 
-            refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+            refreshPlaylistFromSpotify(albumAdapter, albumsListview,activityThis);
             setVisibility(View.GONE);
             artistName=hartistName;
             playButtonsAtBottom();
@@ -849,20 +857,20 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public void playButtonsAtBottom() {
-        View playbutton = findViewById(R.id.playspotify);
-        View stopbutton = findViewById(R.id.stopspotify);
-        View playpausebutton = findViewById(R.id.pausespotify);
-        View previousbutton = findViewById(R.id.previousspotify);
-        View nextbutton = findViewById(R.id.nextspotify);
-        View volumebutton = findViewById(R.id.volumespotify);
-        View seekbutton = findViewById(R.id.positionspotify);
+        View playbutton = getView().findViewById(R.id.playspotify);
+        View stopbutton = getView().findViewById(R.id.stopspotify);
+        View playpausebutton = getView().findViewById(R.id.pausespotify);
+        View previousbutton = getView().findViewById(R.id.previousspotify);
+        View nextbutton = getView().findViewById(R.id.nextspotify);
+        View volumebutton = getView().findViewById(R.id.volumespotify);
+        View seekbutton = getView().findViewById(R.id.positionspotify);
         new Thread(() -> {
-            setListenersForButtons(this, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+            setListenersForButtons(activityThis, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
         }).start();
     }
 
     private void setAdapterForMpd() {
-        albumAdapter = new PlanetAdapter(albumList, this,albumTracks) {
+        albumAdapter = new PlanetAdapter(albumList, activityThis,albumTracks) {
             @Override
             public void removeUp(int counter) {
                 String message = "delete 0:" + (counter + 1);
@@ -965,10 +973,10 @@ public class SpotifyActivity extends AppCompatActivity implements
         }
 
     private void setAdapterForSpotify() {
-        albumAdapter = new PlanetAdapter(albumList, this,albumTracks) {
+        albumAdapter = new PlanetAdapter(albumList, activityThis,albumTracks) {
             @Override
             public void removeUp(int counter) {
-                removeUplist(albumAdapter, albumsListview,counter,getThis);
+                removeUplist(albumAdapter, albumsListview,counter,activityThis);
             }
             private void add(String path,boolean toplay,boolean clear){
                 /*
@@ -1014,12 +1022,12 @@ public class SpotifyActivity extends AppCompatActivity implements
 
             @Override
             public void removeDown(int counter) {
-                removeDownlist(albumAdapter, albumsListview,counter, getThis);
+                removeDownlist(albumAdapter, albumsListview,counter, activityThis);
             }
 
             @Override
             public void removeAlbum(int counter) {
-                SpotifyActivity.removeAlbum(albumAdapter, counter, albumsListview,getThis);
+                SpotifyActivity.removeAlbum(albumAdapter, counter, albumsListview,activityThis);
             }
 
             @Override
@@ -1037,7 +1045,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             @Override
             public void removeTrack(int counter) {
                 removeTrackSpotify(counter);
-                refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+                refreshPlaylistFromSpotify(albumAdapter, albumsListview,activityThis);
             }
 
             @Override
@@ -1170,7 +1178,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public void changeScreen() {
         if (!nosearch) {
-            refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+            refreshPlaylistFromSpotify(albumAdapter, albumsListview,activityThis);
             setVisibility(View.GONE);
         } else {
             displayAlbums();
@@ -1219,13 +1227,13 @@ public class SpotifyActivity extends AppCompatActivity implements
     public void searchArtist() {
         try {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
+            AlertDialog.Builder builder = new AlertDialog.Builder(activityThis);
             builder.setTitle("Search artist");
 
             // Set up the input
-            ArtistAutoCompleteAdapter adapter = new ArtistAutoCompleteAdapter(this,
+            ArtistAutoCompleteAdapter adapter = new ArtistAutoCompleteAdapter(activityThis,
                     android.R.layout.simple_spinner_item/*android.R.layout.simple_dropdown_item_1line*/);
-            final InstantAutoComplete input = new InstantAutoComplete(getThis);
+            final InstantAutoComplete input = new InstantAutoComplete(activityThis);
             //input.setText(searchArtistString);
             input.setAdapter(adapter);
             input.setThreshold(0);
@@ -1238,7 +1246,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             builder.setPositiveButton("OK", (dialog, which) -> {
                 String artistString = input.getText().toString();
                 if (artistString.length()==0){
-                    Toast.makeText(getApplicationContext(), "Please enter something for artist!",
+                    Toast.makeText(activityThis.getApplicationContext(), "Please enter something for artist!",
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -1317,31 +1325,28 @@ public class SpotifyActivity extends AppCompatActivity implements
             Log.v("samba", Log.getStackTraceString(e));
         }
     }
-    @Override
+    //TODO see if fragment has other method for onTouchEvent
+    /*@Override
     public boolean onTouchEvent(MotionEvent event){
         //Log.v("samba","righttoleft2");
 
         int action = MotionEventCompat.getActionMasked(event);
-        /*if (flingListener.onTouch(this.getCurrentFocus(), event)) {
-            // if gesture detected, ignore other touch events
-            return false;
-        }*/
 
         if (action == MotionEvent.ACTION_DOWN) {
             // normal touch events
             return true;
         }
         return true;
-    }
+    }*/
 
     public void searchAlbum() {
         try {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(getThis);
+            AlertDialog.Builder builder = new AlertDialog.Builder(activityThis);
             builder.setTitle("Search album");
 
             // Set up the input
-            final EditText input = new EditText(getThis);
+            final EditText input = new EditText(activityThis);
             input.setText(searchAlbumString);
             // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
             input.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -1351,7 +1356,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             builder.setPositiveButton("OK", (dialog, which) -> {
                 searchAlbumString = input.getText().toString();
                 if (searchAlbumString.length()==0){
-                    Toast.makeText(getApplicationContext(), "Please enter something for album!",
+                    Toast.makeText(activityThis.getApplicationContext(), "Please enter something for album!",
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -1389,7 +1394,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
                     @Override
                     public void processAlbum(SearchItem album) {
-                        getAlbumtracksFromSpotify(album.id, album.artist, getThis, albumAdapter, albumsListview);
+                        getAlbumtracksFromSpotify(album.id, album.artist, activityThis, albumAdapter, albumsListview);
                     }
 
                     ;
@@ -1415,7 +1420,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public static void addAlbumStatic(int counter, PlanetAdapter albumAdapter, ListView albumsListview) {
         artistName = tracksPlaylist.get(counter).artists.get(0).name;
-        getAlbumtracksFromSpotify(tracksPlaylist.get(counter).album.id, tracksPlaylist.get(counter).album.name,getThis,albumAdapter, albumsListview);
+        getAlbumtracksFromSpotify(tracksPlaylist.get(counter).album.id, tracksPlaylist.get(counter).album.name,activityThis,albumAdapter, albumsListview);
     }
 
     public static void addAlbumToFavoritesTrackwise(int counter) {
@@ -1440,7 +1445,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         newFavorite(url, description, Favorite.NEWALBUM);
     }
 
-    public static void removeAlbum(PlanetAdapter albumAdapter, int counter, ListView albumsListview, AppCompatActivity getThis) {
+    public static void removeAlbum(PlanetAdapter albumAdapter, int counter, ListView albumsListview, Activity getThis) {
         String albumid = tracksPlaylist.get(counter).album.id;
         for (int i = tracksPlaylist.size() - 1; i >= 0; i--) {
             if (tracksPlaylist.get(i).album.id.equals(albumid)) removeTrackSpotify(i);
@@ -1527,7 +1532,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         Log.v("samba","return:");
         if (resultCode==441){
         }
@@ -1554,11 +1559,11 @@ public class SpotifyActivity extends AppCompatActivity implements
         artistTitleTextView.setVisibility(visibility);
         spotifyHeader.icon.setVisibility(visibility);
         //fab.setVisibility(opposite);//spotifyscrollviewtop
-        ((TextView) findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
-        ((TextView) findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
+        ((TextView) getView().findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
+        ((TextView) getView().findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
 
         spotifyHeader.MessageView.setVisibility(visibility);
-        ((ScrollView) findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview
+        ((ScrollView) getView().findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview
     }
 
     public static void playlistGotoPosition(int position) {
@@ -1572,7 +1577,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public void getAlbumtracksFromSpotify(final int position) {
         String s = albumIds.get(position);
-        getAlbumtracksFromSpotify(s, albumList.get(position),getThis, albumAdapter, albumsListview,false);
+        getAlbumtracksFromSpotify(s, albumList.get(position),activityThis, albumAdapter, albumsListview,false);
     }
     public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1, PlanetAdapter albumAdapter, ListView albumsListview) {
         getAlbumtracksFromSpotify(  albumid,   albumname,   getThis1,  albumAdapter,  albumsListview,true);
@@ -1649,7 +1654,7 @@ public class SpotifyActivity extends AppCompatActivity implements
         listAlbumsForArtist(api, spotify, s, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
     }
 
-    public static void removeDownlist(PlanetAdapter albumAdapter, ListView albumsListview, int counter, AppCompatActivity getThis) {
+    public static void removeDownlist(PlanetAdapter albumAdapter, ListView albumsListview, int counter, Activity getThis) {
         for (int i = tracksPlaylist.size()-1;i>= counter;i--) {
             //Log.v("samba", "remove " + i);
             removeTrackSpotify(i);
@@ -1669,7 +1674,7 @@ public class SpotifyActivity extends AppCompatActivity implements
                 ipAddress);
     }
 
-    public static void removeUplist(PlanetAdapter albumAdapter, ListView albumsListview, int counter, AppCompatActivity getThis) {
+    public static void removeUplist(PlanetAdapter albumAdapter, ListView albumsListview, int counter, Activity getThis) {
         for (int i = counter; i >=0; i--)
             removeTrackSpotify(i);
         spotifyStartPosition = 0;
@@ -2016,7 +2021,7 @@ public class SpotifyActivity extends AppCompatActivity implements
 
     public static void addTracksToPlaylist(ArrayList<String> ids) {
         try {
-            new AddTracksToPlaylist(ids, getThis) {
+            new AddTracksToPlaylist(ids, activityThis) {
                 @Override
                 public void atEnd() {
                     //Log.v("samba", "einde taak");
@@ -2124,13 +2129,13 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
     }
 
-    @Override
+    /*@Override
     protected void onDestroy() {
         if (currentList!=1){
             selectList((lists[SpotifyList]));
         }
         super.onDestroy();
-    }
+    }*/
 
 
     public static String searchSpotifyArtist(String artist){
@@ -2210,7 +2215,7 @@ public class SpotifyActivity extends AppCompatActivity implements
             @Override
             public void success(Pager<Album> albumPager, Response response) {
                 if (albumPager.items.size()==0){
-                    Toast.makeText(getThis, "no albums for "+beatles,
+                    Toast.makeText(activityThis, "no albums for "+beatles,
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -2268,7 +2273,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private Runnable updateTimerThread = new Runnable() {
 
         public void run() {
-           MainActivity.getThis.currentArtist= updateSongInfo(songItems.time,songItems.totaltime,songItems.tvName,songItems.artist,songItems.image,albumAdapter,albumsListview, getThis,getSpotifyInterface);
+           MainActivity.getThis.currentArtist= updateSongInfo(songItems.time,songItems.totaltime,songItems.tvName,songItems.artist,songItems.image,albumAdapter,albumsListview, activityThis,getSpotifyInterface);
 
             customHandler.postDelayed(this, 1000);
         }
@@ -2278,7 +2283,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     private Runnable startPlaylistThread = new Runnable() {
 
         public void run() {
-            refreshPlaylistFromSpotify(albumAdapter, albumsListview,getThis);
+            refreshPlaylistFromSpotify(albumAdapter, albumsListview,activityThis);
         }
 
     };
@@ -2331,7 +2336,7 @@ public class SpotifyActivity extends AppCompatActivity implements
     }
 
     public static String updateSongInfo(TextView time, TextView totaltime, TextView tvName, TextView artist,
-                                        ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, AppCompatActivity getThis, final SpotifyInterface getSpotifyInterface) {
+                                        ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, Activity getThis, final SpotifyInterface getSpotifyInterface) {
         String artistReturn="";
         if (busyupdateSongInfo)return "";
         busyupdateSongInfo=true;
@@ -2867,13 +2872,13 @@ class PlaylistItem {
 }
 
 class SpotifyHeader {
-    AppCompatActivity getThis;
+    Activity getThis;
     TextView artistTitleTextView;
 
     public ImageView icon;
     public TextView MessageView;
 
-    public SpotifyHeader(AppCompatActivity getThis, TextView artistTitleTextView){
+    public SpotifyHeader(Activity getThis, TextView artistTitleTextView){
         this.getThis=getThis;
         this.artistTitleTextView=artistTitleTextView;
     }

@@ -1,6 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 public class SongItems  {
     private View.OnClickListener onClick;
-    AppCompatActivity getThis;
+    Activity getThis;
     public TextView tvName;
     public  TextView time;
     public  TextView totaltime;
@@ -17,7 +17,7 @@ public class SongItems  {
     private LinearLayout titles;
     private View.OnClickListener onClickTitles;
 
-    public SongItems(AppCompatActivity getThis){
+    public SongItems(Activity getThis){
         this.getThis=getThis;
         initSongItems();
     }

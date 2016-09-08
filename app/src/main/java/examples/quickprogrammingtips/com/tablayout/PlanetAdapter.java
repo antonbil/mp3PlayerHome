@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v4.view.MotionEventCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -32,7 +31,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     }
 
     private Context context;
-    private AppCompatActivity getThis;
+    private Context getThis;
     private int mypos=1;
 
     public abstract void removeUp(int counter);//onClickFunc
@@ -56,7 +55,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void addAlbum(int counter);
     public abstract void addAlbumNoplay(int counter);
 
-    public PlanetAdapter(List<String> planetList, AppCompatActivity ctx, ArrayList<PlaylistItem> tracksPlaylist) {
+    public PlanetAdapter(List<String> planetList, Context ctx, ArrayList<PlaylistItem> tracksPlaylist) {
         super(ctx, R.layout.spotifylist, planetList);
         this.tracksPlaylist=tracksPlaylist;
         this.context = ctx;
