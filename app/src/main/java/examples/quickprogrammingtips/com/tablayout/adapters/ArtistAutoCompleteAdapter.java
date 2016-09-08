@@ -1,11 +1,10 @@
 package examples.quickprogrammingtips.com.tablayout.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
-
-//import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +13,8 @@ import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
 import examples.quickprogrammingtips.com.tablayout.tools.NetworkShare;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
+
+//import org.apache.commons.lang3.StringUtils;
 
 /**
  * ArtistAutoCompleteAdapter returns artist-list retrieved from samba-share
@@ -148,11 +149,11 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
     }
 
     static ArrayList<String> retrieveFromSambaShare(String firstLetter){
+        ArrayList<String>artists=new ArrayList<>();
         firstLetter=firstLetter.toLowerCase().substring(0,1);
         //authentication
-        NtlmPasswordAuthentication auth = NetworkShare.getNtlmPasswordAuthentication();
-        ArrayList<String>artists=new ArrayList<>();
         try {
+        NtlmPasswordAuthentication auth = NetworkShare.getNtlmPasswordAuthentication();
             //retrieve artist-list from samba-share
             SmbFile dir = new SmbFile(FAMILYMUSIC +firstLetter+"/", auth);
             for (SmbFile f : dir.listFiles()) {
@@ -166,9 +167,6 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                     artists.add(h);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         //sort the artist-list
         String start=firstLetter;
         Collections.sort(artists, (s1, s2) -> {
@@ -183,6 +181,9 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                 return s1.compareTo(s2);
             }
         });
+        } catch (Exception e) {
+            Log.v("samba","error samba");
+        }
         return artists;
     }
 

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.text.InputType;
@@ -124,7 +125,7 @@ PlaybackController.get_time_position()
 PlaybackController.get_state()
 
  */
-public class SpotifyActivity extends android.support.v4.app.Fragment implements
+public class SpotifyActivity extends Fragment implements
          MPCDatabaseListListener {
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "89f945f1696e4f389aaed419e51beaad";
@@ -151,7 +152,7 @@ public class SpotifyActivity extends android.support.v4.app.Fragment implements
     private static HashMap<String, String> spotifyToken = new HashMap<>();
     private static HashMap hm = new HashMap();
 
-    private Handler customHandler = new Handler();
+    //private Handler customHandler = new Handler();
     private static String ipAddress = "";
     public static String nextCommand="";
     public PlanetAdapter albumAdapter;
@@ -198,8 +199,10 @@ public class SpotifyActivity extends android.support.v4.app.Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("samba", "Text:a1");
         llview = inflater.inflate(R.layout.activity_spotify, container, false);
         onActivityCreated();
+        Log.d("samba", "Text:c1");
         return llview;
     }
 
@@ -779,7 +782,7 @@ public class SpotifyActivity extends android.support.v4.app.Fragment implements
                     setVisibility(visibility);//
                     llview.findViewById(R.id.song_display).setVisibility(View.VISIBLE);
                     //startPlaylistThread
-                    customHandler.postDelayed(startPlaylistThread, 1000);
+                    //customHandler.postDelayed(startPlaylistThread, 1000);
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                     //Log.v("samba", Log.getStackTraceString(e));
@@ -788,7 +791,7 @@ public class SpotifyActivity extends android.support.v4.app.Fragment implements
             }
 
                 Log.d("samba", "Text:10");
-            //customHandler.postDelayed(updateTimerThread,0);
+
                 Handler handler = new Handler();
                 Runnable runnable = new Runnable() {
                     public void run() {
@@ -2278,7 +2281,7 @@ public class SpotifyActivity extends android.support.v4.app.Fragment implements
         public void run() {
            MainActivity.getThis.currentArtist= updateSongInfo(songItems.time,songItems.totaltime,songItems.tvName,songItems.artist,songItems.image,albumAdapter,albumsListview, activityThis,getSpotifyInterface);
 
-            customHandler.postDelayed(this, 1000);
+            //customHandler.postDelayed(this, 1000);
         }
 
     };

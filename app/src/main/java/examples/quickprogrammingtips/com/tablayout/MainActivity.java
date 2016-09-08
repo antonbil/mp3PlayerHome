@@ -127,9 +127,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        try{
+        //try{
         //Log.d("samba", "Text:1");
         super.onCreate(savedInstanceState);
+            Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
         final Intent intent = getIntent();
         final String action = intent.getAction();
 
@@ -447,7 +448,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         }
         catch (Exception e){Log.v("samba","error cleanup");}
 
-    } catch (Exception e){Log.v("samba","error");e.printStackTrace();Log.getStackTraceString(e);}
+    //} catch (Exception e){Log.v("samba","error");e.printStackTrace();Log.getStackTraceString(e);}
     }
 
     static void playPauseAll() {
@@ -570,6 +571,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     }
                 } catch (Exception e) {
 
+                    Log.v("samba","cleanup");
                 }
             }
 
@@ -591,6 +593,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     } else timerTime++;
                     mpc.getStatusSynch();
                 } catch (Exception e) {
+                    Log.v("samba","updateDisplay");
 
                 }
             }
@@ -954,6 +957,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         if (in != null) in.close();
                         if (out != null) out.close();
                     } catch (Exception e) {
+                        Log.v("samba","playlist get content");
                     }
 
                     //see if address has not changed while getting information
@@ -1018,6 +1022,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                 }
 
                             } catch (Exception e) {
+                                Log.v("samba","playlistgetcontent");
                             }
 
                         }
@@ -1205,7 +1210,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                     artist.setText(album);
                                     vh.album = album;
                                 } catch (Exception e) {
-                                    artist.setText("");
+                                    artist.setText("statusupdate");
                                 }
                                 final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
                                 String uri = Logic.getUrlFromSongpath(currentSong);
@@ -1232,6 +1237,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                 //Log.v("samba",uri);
                             } catch (Exception e) {
                                 statusThread=false;
+                                Log.v("samba","statusupdate");
+
                                 //mpc.connectionFailed("Connection failed, check settings");
                                 //t.stop();
                             }
@@ -1253,6 +1260,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             trimCache(this);
         } catch (Exception e) {
             // TODO Auto-generated catch block
+            Log.v("samba","ondestroy");
+
             e.printStackTrace();
         }
     }
@@ -1265,6 +1274,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
         } catch (Exception e) {
             // TODO: handle exception
+            Log.v("samba","trimcache");
+
         }
     }
 
