@@ -138,6 +138,7 @@ public class SpotifyActivity extends Fragment implements
     //private static ArrayList<String> mainids;
     public static int playingEngine;
     private static boolean busyupdateSongInfo=false;
+    public static boolean explicitlyCalled=false;
     //public static boolean longClickHasbeenCalled=false;
     private SpotifyHeader spotifyHeader;
     public FillListviewWithValues fillListviewWithValues;
@@ -195,6 +196,11 @@ public class SpotifyActivity extends Fragment implements
     private String[] lists = new String[]{"albumlist","spotifylist","mpdlist"};;
     private static Activity activityThis;
     View llview;
+    //((ImageView) findViewById(R.id.thumbnail_top))setOnLongClickListener(v -> {
+    //setFooterVisibility();
+    //displayLargeImage(MainActivity.this, /*MainActivity.this.albumBitmap*/((BitmapDrawable)im.getDrawable()).getBitmap());
+    //return true;
+//});
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -204,6 +210,21 @@ public class SpotifyActivity extends Fragment implements
         onActivityCreated();
         Log.d("samba", "Text:c1");
         return llview;
+    }
+   /* @Override
+    public void onResume() {
+        Log.e("DEBUG", "onResume of HomeFragment");
+        onActivityCreated();
+        super.onResume();
+    }*/
+    @Override
+    public void onPause() {
+        Log.e("DEBUG", "OnPause of loginFragment");
+        super.onPause();
+        ((ImageView) MainActivity.getThis.findViewById(R.id.thumbnail_top)).setOnLongClickListener(v -> {
+            MainActivity.getThis.setFooterVisibility();
+        return true;
+});
     }
 
     public void checkAppMemory(){
@@ -562,16 +583,21 @@ public class SpotifyActivity extends Fragment implements
         GetSpotifyToken();
 
 
-        Bundle extras = activityThis.getIntent().getExtras();
-        String temp = extras.getString("artist");
-        nosearch = (temp.startsWith("nosearch"));
-        if (nosearch) temp = "The Beatles";
-        artistName = temp;
+        //Bundle extras = activityThis.getIntent().getExtras();
+        //String temp = extras.getString("artist");
+        //nosearch = (temp.startsWith("nosearch"));
+                if (!explicitlyCalled){
+                    nosearch=true;
+                    nextCommand="";
+                }
+                explicitlyCalled=false;
+        if (nosearch) artistName = "The Beatles";
+        //artistName = temp;
                 Log.d("samba", "Text:5");
 
         //Log.v("samba", "nosearch2");
 
-        albumsListview = (ListView) llview.findViewById(R.id.albums_listview);
+        albumsListview = (ListView) llview.findViewById(R.id.albums_listview2);
         albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
             SmartLinkSwipeDetector swipeDetector = new SmartLinkSwipeDetector();
@@ -596,8 +622,9 @@ public class SpotifyActivity extends Fragment implements
                     llview.findViewById(R.id.artist_title);//relatedartists_text
 
             songItems=new SongItems(activityThis);
-                llview.findViewById(R.id.time_layout).setOnClickListener(v -> MainActivity.playPauseAll());
+                //llview.findViewById(R.id.time_layout).setOnClickListener(v -> MainActivity.playPauseAll());
             //songItems.setOnClickTitles(v -> getThis.finish());
+
             songItems.setOnClick(arg0 -> {
 
                 View image = songItems.image;
@@ -724,7 +751,7 @@ public class SpotifyActivity extends Fragment implements
 
 
             spotifyHeader=new SpotifyHeader(activityThis,artistTitleTextView);
-            spotifyHeader.connectVarsToFront();
+            //spotifyHeader.connectVarsToFront();
                 Log.d("samba", "Text:7");
 
                 llview.findViewById(R.id.artist_title).setOnClickListener(view ->{llview.findViewById(R.id.artistinfo).setVisibility(View.GONE);});
@@ -732,7 +759,7 @@ public class SpotifyActivity extends Fragment implements
             fab=(FloatingActionButton)
 
                     llview.findViewById(R.id.fab);
-            fab.setOnClickListener(view ->{nextList();});
+            fab.setOnClickListener(view ->{Log.d("samba", "fab");nextList();});
 
             fab.setOnLongClickListener(view -> {
                 PopupMenu menu = new PopupMenu(fab.getContext(), fab);
@@ -776,11 +803,12 @@ public class SpotifyActivity extends Fragment implements
 
 
                 try {
+                    selectList(lists[SpotifyList]);
                     //refreshPlaylistFromSpotify(albumAdapter, albumsListview);
                     //mainLayout.setVisibility(View.GONE);//spotifyscrollviewtop
                     int visibility = View.GONE;
                     setVisibility(visibility);//
-                    llview.findViewById(R.id.song_display).setVisibility(View.VISIBLE);
+                    //llview.findViewById(R.id.song_display).setVisibility(View.VISIBLE);
                     //startPlaylistThread
                     //customHandler.postDelayed(startPlaylistThread, 1000);
                 } catch (Exception e) {
@@ -1562,13 +1590,13 @@ public class SpotifyActivity extends Fragment implements
         if (visibility==opposite)opposite=View.VISIBLE;
         relatedArtistsListView.setVisibility(visibility);
 
-        artistTitleTextView.setVisibility(visibility);
-        spotifyHeader.icon.setVisibility(visibility);
+        //artistTitleTextView.setVisibility(visibility);
+        //spotifyHeader.icon.setVisibility(visibility);
         //fab.setVisibility(opposite);//spotifyscrollviewtop
         ((TextView) llview.findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
         ((TextView) llview.findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
 
-        spotifyHeader.MessageView.setVisibility(visibility);
+        //spotifyHeader.MessageView.setVisibility(visibility);
         ((ScrollView) llview.findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview
     }
 
@@ -2887,64 +2915,76 @@ class SpotifyHeader {
     public SpotifyHeader(Activity getThis, TextView artistTitleTextView){
         this.getThis=getThis;
         this.artistTitleTextView=artistTitleTextView;
+        connectVarsToFront();
     }
     public void connectVarsToFront() {
         icon = (ImageView)
 
-                getThis.findViewById(R.id.icon2);
+                SpotifyActivity.getThis.llview.findViewById(R.id.icon2);
 
 
         //RelativeLayout mainLayout = (RelativeLayout) getThis.findViewById(R.id.spotifylayouttop);
         MessageView = (TextView)
 
-                getThis.findViewById(R.id.artist_content);        //Expose the indent for the first three rows
+                SpotifyActivity.getThis.llview.findViewById(R.id.artist_content);        //Expose the indent for the first three rows
     }
 
     public void setArtistText(final String artistName, Image image) {
         AsyncTask.execute(() -> {
-            getThis.runOnUiThread(() -> {
-                artistTitleTextView.setText(artistName);
-            });
+            try{
+                Log.v("samba", "1");
+                    MainActivity.getThis.runOnUiThread(() -> {
+                    artistTitleTextView.setText(artistName);
+                });
 
 
-            String artistText = "";
+                Log.v("samba", "2");
+                String artistText = "";
 
-            try {
-                JSONObject artist = (new JSONObject(SpotifyActivity.LastFMArtist(artistName))).getJSONObject("artist");
+                try {
+                    JSONObject artist = (new JSONObject(SpotifyActivity.LastFMArtist(artistName))).getJSONObject("artist");
 
-                artistText = artist.getJSONObject("bio").getString("content");
-            } catch (JSONException e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
-            SpannableString SS = new SpannableString(artistText);
+                    artistText = artist.getJSONObject("bio").getString("content");
+                } catch (JSONException e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
+                Log.v("samba", "3");
+                SpannableString SS = new SpannableString(artistText);
 
-            int scale = 250;
-            int leftMargin = scale + 10;
+                int scale = 250;
+                int leftMargin = scale + 10;
 
-            //Set the icon in R.id.icon
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scale, scale);
+                //Set the icon in R.id.icon
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scale, scale);
 
+                Log.v("samba", "4");
 
-            try {
-                new DownLoadImageTask() {
-                    @Override
-                    public void setImage(Bitmap logo) {
-                        ImageView i = (ImageView) getThis.findViewById(R.id.image);
-                        //Log.v("samba", "image loaded");
-                        getThis.runOnUiThread(() -> {
-                            icon.setLayoutParams(layoutParams);
-                            icon.setImageBitmap(logo);
-                        });
-                    }
-                }.execute(image.url);
+                try {
+                    new DownLoadImageTask() {
+                        @Override
+                        public void setImage(Bitmap logo) {
+                            ImageView i = (ImageView) MainActivity.getThis.findViewById(R.id.image);
+                            //Log.v("samba", "image loaded");
+                            MainActivity.getThis.runOnUiThread(() -> {
+                                icon.setLayoutParams(layoutParams);
+                                icon.setImageBitmap(logo);
+                            });
+                        }
+                    }.execute(image.url);
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
+                Log.v("samba", "5");
+
+                SS.setSpan(new MyLeadingMarginSpan2(scale / 50, leftMargin), 0, SS.length(), 0);
+                Log.v("samba", "6");
+                MainActivity.getThis.runOnUiThread(() -> {
+                    MessageView.setText(SS);
+                });
+                Log.v("samba", "7");
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
             }
-
-            SS.setSpan(new MyLeadingMarginSpan2(scale / 50, leftMargin), 0, SS.length(), 0);
-            getThis.runOnUiThread(() -> {
-                MessageView.setText(SS);
-            });
 
         });
 

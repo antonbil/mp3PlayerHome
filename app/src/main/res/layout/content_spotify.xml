@@ -5,7 +5,7 @@
     android:orientation="vertical"
     >
 
-    <include layout="@layout/songtitle_layout" />
+    <!--<include layout="@layout/songtitle_layout" />-->
     <LinearLayout
         android:id="@+id/artistinfo"
         android:layout_width="match_parent"
@@ -68,7 +68,7 @@
             android:text="Albums" />
 
         <ListView
-            android:id="@+id/albums_listview"
+            android:id="@+id/albums_listview2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:dividerHeight="0dp"

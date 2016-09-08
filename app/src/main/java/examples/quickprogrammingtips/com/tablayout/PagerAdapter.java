@@ -80,6 +80,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        MainActivity.getThis.connectListenersToThumbnail();
 
         Log.v("samba","pos:"+position);
         tabselected=position;

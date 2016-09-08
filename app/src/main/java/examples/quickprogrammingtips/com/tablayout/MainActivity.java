@@ -330,15 +330,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             msDialog.show();
             return true;
         });
-        ImageView im = ((ImageView) findViewById(R.id.thumbnail_top));
-        im.setOnLongClickListener(v -> {
-            setFooterVisibility();
-            //displayLargeImage(MainActivity.this, /*MainActivity.this.albumBitmap*/((BitmapDrawable)im.getDrawable()).getBitmap());
-            return true;
-        });
-        im.setOnClickListener(v -> {
-            setFooterVisibility();
-        });
+        connectListenersToThumbnail();
         //Log.d("samba", "Text:6");
             //TODO: make it for-statement (6 times!)
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
@@ -373,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //Log.v("samba",""+18);
 
             final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setOffscreenPageLimit(1);
             adapter = new PagerAdapter
                     (getSupportFragmentManager(), tabLayout.getTabCount(),this);
             viewPager.setAdapter(adapter);
@@ -451,6 +444,18 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     //} catch (Exception e){Log.v("samba","error");e.printStackTrace();Log.getStackTraceString(e);}
     }
 
+    void connectListenersToThumbnail() {
+        ImageView im = ((ImageView) findViewById(R.id.thumbnail_top));
+        im.setOnLongClickListener(v -> {
+            setFooterVisibility();
+            //displayLargeImage(MainActivity.this, /*MainActivity.this.albumBitmap*/((BitmapDrawable)im.getDrawable()).getBitmap());
+            return true;
+        });
+        im.setOnClickListener(v -> {
+            setFooterVisibility();
+        });
+    }
+
     static void playPauseAll() {
         if (/*MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING*/SpotifyActivity.playingEngine==1){
             SpotifyActivity.playPauseSpotify();
@@ -496,10 +501,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     public void startPlaylistSpotify() {
         try {
-            Intent intent = new Intent(MainActivity.getThis, SpotifyActivity.class);
+            /*Intent intent = new Intent(MainActivity.getThis, SpotifyActivity.class);
             intent.putExtra("artist", "nosearch");
 
-            MainActivity.getThis.startActivity(intent);
+            MainActivity.getThis.startActivity(intent);*/
+            SpotifyActivity.artistName="nosearch";
+            callSpotify();
+            //hiermoetiets
             Log.v("samba", "Spotify");
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
@@ -509,15 +517,22 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     public void callSpotify(String currentArtist) {
         try {
-            Intent intent = new Intent(getThis, SpotifyActivity.class);
-            intent.putExtra("artist", currentArtist);
+            //Intent intent = new Intent(getThis, SpotifyActivity.class);
+            //intent.putExtra("artist", currentArtist);
 
-            getThis.startActivityForResult(intent, 4);
+            //getThis.startActivityForResult(intent, 4);
+            SpotifyActivity.artistName=currentArtist;
+            callSpotify();
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
             //e.printStackTrace();
         }
 
+    }
+
+    public void callSpotify() {
+        SpotifyActivity.explicitlyCalled=true;
+        tabLayout.getTabAt(5).select();
     }
 
     public void callSpotifyPlaylist(String currentArtist) {
@@ -601,7 +616,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         }, 0, 1000);//Update text every second
     }
 
-    private void setFooterVisibility() {
+    protected void setFooterVisibility() {
         LinearLayout footerView = (LinearLayout) findViewById(R.id.footer);
         if (footerVisible)
             footerView.setVisibility(View.GONE);
