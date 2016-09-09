@@ -1305,29 +1305,38 @@ public class SpotifyFragment extends Fragment implements
 
                             @Override
                             public void success(ArtistsPager artistsPager, Response response) {
+                                try{
                                 String id = "";
                                 int max = 10000;
                                 Image image1 = null;
-                                for (Artist artist : artistsPager.artists.items) {
-                                    String name = artist.name;
-                                    Log.v("samba", "artist found: " + name);
-                                    if (name.startsWith("The "))
-                                        name = name.substring(4);
+                                    if (artistsPager.artists.items.size()>0) {
+                                        for (Artist artist : artistsPager.artists.items) {
+                                            String name = artist.name;
+                                            Log.v("samba", "artist found: " + name);
+                                            if (name.startsWith("The "))
+                                                name = name.substring(4);
 
-                                    SearchItem si = new SearchItem();
-                                    si.artist = name;
-                                    si.title = "";
-                                    si.id = artist.id;
-                                    if (artist.images.size() > 0)
-                                        si.imageid = artist.images.get(0).url;
-                                    else
-                                        si.imageid = "";
-                                    newAlbums.add(si);
+                                            SearchItem si = new SearchItem();
+                                            si.artist = name;
+                                            si.title = "";
+                                            si.id = artist.id;
+                                            if (artist.images.size() > 0)
+                                                si.imageid = artist.images.get(0).url;
+                                            else
+                                                si.imageid = "";
+                                            newAlbums.add(si);
 
 
-                                }
+                                        }
+                                    } else {
+                                        Toast.makeText(activityThis.getApplicationContext(), "No artists found!",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
                                 SearchActivity.getThis.notifyChange();
+                            } catch (Exception e) {
+                                Log.v("samba", Log.getStackTraceString(e));
                             }
+                        }
 
                             @Override
                             public void failure(RetrofitError error) {
