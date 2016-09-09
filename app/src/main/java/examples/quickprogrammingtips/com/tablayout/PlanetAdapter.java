@@ -124,12 +124,12 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         flingListener = new OnFlingGestureListener() {
             @Override
             public void onRightToLeft() {
-                SpotifyActivity.getThis.previousList();
+                SpotifyFragment.getThis.previousList();
             }
 
             @Override
             public void onLeftToRight() {
-                SpotifyActivity.getThis.nextList();
+                SpotifyFragment.getThis.nextList();
             }
 
 

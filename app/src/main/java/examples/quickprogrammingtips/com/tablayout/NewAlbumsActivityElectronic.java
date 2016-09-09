@@ -15,7 +15,7 @@ public     class NewAlbumsActivityElectronic extends NewAlbumsActivity {
 
     @Override
     public void generateList(ArrayList<NewAlbum> newAlbums) {
-            SpotifyActivity.getThis.fillListviewWithValues.generateList(newAlbums);
+            SpotifyFragment.getThis.fillListviewWithValues.generateList(newAlbums);
 
     }
 }

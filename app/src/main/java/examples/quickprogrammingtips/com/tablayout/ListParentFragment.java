@@ -176,7 +176,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
             }
             else  if (id==getString(R.string.addtofavorites_filelist)){
                 String[] paths=path.split("/");
-                SpotifyActivity.newFavorite(path, paths[paths.length-1], Favorite.NEWALBUM);
+                SpotifyFragment.newFavorite(path, paths[paths.length-1], Favorite.NEWALBUM);
             }else {
 
                 if (path.contains("FamilyLibrary"))

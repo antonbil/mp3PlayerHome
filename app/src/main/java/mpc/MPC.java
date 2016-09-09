@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import examples.quickprogrammingtips.com.tablayout.MainActivity;
-import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
+import examples.quickprogrammingtips.com.tablayout.SpotifyFragment;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
 /**
@@ -74,7 +74,7 @@ public class MPC {
 	}
 
 	private void checkIfPlaying(final boolean first) {
-		SpotifyActivity.stopSpotifyPlaying(SpotifyActivity.checkAddress());
+		SpotifyFragment.stopSpotifyPlaying(SpotifyFragment.checkAddress());
 		Log.v("samba","not playing before");
 		final MainActivity mainObject = MainActivity.getThis;
 		final Handler handler = new Handler(Looper.getMainLooper());
@@ -83,7 +83,7 @@ public class MPC {
 				final ProgressDialog loadingdialog;
 				loadingdialog = ProgressDialog.show(mainObject,
 						"", "Stop playing, please wait", true);
-				SpotifyActivity.stopSpotifyPlaying(SpotifyActivity.checkAddress());
+				SpotifyFragment.stopSpotifyPlaying(SpotifyFragment.checkAddress());
 				final Handler handler = new Handler();
 				handler.postDelayed(new Runnable() {
 					@Override

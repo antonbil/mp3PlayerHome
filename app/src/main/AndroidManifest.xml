@@ -32,7 +32,7 @@
             android:value="bc2197999b21e7ba11c8a95c07b57385c5ccd83a" />
 
         <activity
-            android:name=".SpotifyActivity"
+            android:name=".SpotifyFragment"
             android:label="Spotify">
 
             <!--

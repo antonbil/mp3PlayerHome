@@ -317,12 +317,12 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 final ProgressDialog loadingdialog;
                 loadingdialog = ProgressDialog.show(activity,
                         "","Loading, please wait",true);
-                SpotifyActivity.clearSpotifyPlaylist();
-                new SpotifyActivity.getEntirePlaylistFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST,""),MainActivity.getThis){
+                SpotifyFragment.clearSpotifyPlaylist();
+                new SpotifyFragment.getEntirePlaylistFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST,""),MainActivity.getThis){
                     @Override
                     public void atLast() {
                         loadingdialog.dismiss();
-                        SpotifyActivity.playSpotify();
+                        SpotifyFragment.playSpotify();
                         MainActivity.getThis.startPlaylistSpotify();
                     }
                 }.run();
@@ -338,8 +338,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 final ProgressDialog loadingdialog;
                 loadingdialog = ProgressDialog.show(activity,
                         "","Loading, please wait",true);
-                SpotifyActivity.clearSpotifyPlaylist();
-                new SpotifyActivity.addExternalPlaylistToSpotify(favorite.getUri(),MainActivity.getThis){
+                SpotifyFragment.clearSpotifyPlaylist();
+                new SpotifyFragment.addExternalPlaylistToSpotify(favorite.getUri(),MainActivity.getThis){
                     @Override
                     public void atLast() {
                         loadingdialog.dismiss();
@@ -371,10 +371,10 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     final ProgressDialog loadingdialog;
                     loadingdialog = ProgressDialog.show(activity,
                             "","Loading, please wait",true);
-                    SpotifyActivity.clearSpotifyPlaylist();
+                    SpotifyFragment.clearSpotifyPlaylist();
                     String[] a = favorite.getDescription().split("-");
                     //SpotifyActivity.artistName=a[0];
-                    new SpotifyActivity.addAlbumWithIdToSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM,""),a[0],a[1],MainActivity.getThis){
+                    new SpotifyFragment.addAlbumWithIdToSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM,""),a[0],a[1],MainActivity.getThis){
                         @Override
                         public void atLast() {
                             loadingdialog.dismiss();

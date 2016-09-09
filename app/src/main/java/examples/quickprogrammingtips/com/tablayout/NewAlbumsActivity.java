@@ -48,7 +48,7 @@ public class NewAlbumsActivity extends Activity {
         final FloatingActionButton fab = (FloatingActionButton)
 
                 findViewById(R.id.fabspotifylist);
-        fab.setOnClickListener(view -> SpotifyActivity.showPlayMenu(this,fab));
+        fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
 
         final ListAdapter customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
@@ -141,7 +141,7 @@ public class NewAlbumsActivity extends Activity {
 
                             menu.setOnMenuItemClickListener(item -> {
                                 if (item.getTitle().toString().equals("add album to favorites")) {
-                                    SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+                                    SpotifyFragment.getThis.fillListviewWithValues.addToFavorites(items.get(position));
 
                                 }else
                                 if (item.getTitle().toString().equals("add album")) {
@@ -192,7 +192,7 @@ public class NewAlbumsActivity extends Activity {
                      AddAlbumToPlaylist(position);
                  }else
                  if (item.getTitle().toString().equals("add album to favorites")) {
-                     SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+                     SpotifyFragment.getThis.fillListviewWithValues.addToFavorites(items.get(position));
 
                  }else
                  if (item.getTitle().toString().equals("wikipedia")) {
@@ -209,14 +209,14 @@ public class NewAlbumsActivity extends Activity {
          public void AddAlbumToPlaylist(int position) {
              String uri = items.get(position).url.replace("spotify:album:", "");
              String prefix="spotify:album:";
-             SpotifyActivity.AddSpotifyItemToPlaylist(prefix, uri);
-             SpotifyActivity.refreshPlaylistFromSpotify(1, SpotifyActivity.getThis.albumAdapter,SpotifyActivity.getThis.getActivity(),SpotifyActivity.albumList,SpotifyActivity.albumTracks);
+             SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
+             SpotifyFragment.refreshPlaylistFromSpotify(1, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.getActivity(), SpotifyFragment.albumList, SpotifyFragment.albumTracks);
          }
      }
     public void processAlbum(NewAlbum album){
-        SpotifyActivity.artistName=album.artist;
+        SpotifyFragment.artistName=album.artist;
         //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""); Toast.LENGTH_SHORT).show();
-        SpotifyActivity.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this, null, null);
+        SpotifyFragment.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this, null, null);
 
     }
 }

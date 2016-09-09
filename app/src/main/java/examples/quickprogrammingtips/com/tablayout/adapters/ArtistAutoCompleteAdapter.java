@@ -9,7 +9,7 @@ import android.widget.Filterable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
+import examples.quickprogrammingtips.com.tablayout.SpotifyFragment;
 import examples.quickprogrammingtips.com.tablayout.tools.NetworkShare;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
@@ -87,7 +87,7 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                         filterResults.count = suggestions.size();
                     }
                     else {
-                        suggestions = SpotifyActivity.searchArtistString;
+                        suggestions = SpotifyFragment.searchArtistString;
                         filterResults.values = suggestions;
                         filterResults.count = suggestions.size();
 

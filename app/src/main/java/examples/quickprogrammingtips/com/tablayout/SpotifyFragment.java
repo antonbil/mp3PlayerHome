@@ -125,7 +125,7 @@ PlaybackController.get_time_position()
 PlaybackController.get_state()
 
  */
-public class SpotifyActivity extends Fragment implements
+public class SpotifyFragment extends Fragment implements
          MPCDatabaseListListener {
     // TODO: Replace with your client ID
     private static final String CLIENT_ID = "89f945f1696e4f389aaed419e51beaad";
@@ -146,7 +146,7 @@ public class SpotifyActivity extends Fragment implements
     public static  ArrayList<String> albumIds = new ArrayList<>();
     public static ArrayList<String> albumList = new ArrayList<>();
     public static ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
-    public static SpotifyActivity getThis;
+    public static SpotifyFragment getThis;
     public static SpotifyInterface getSpotifyInterface;
     //private ListView albumsListview, relatedArtistsListView;
     private static int spotifyStartPosition = 0;
@@ -165,7 +165,7 @@ public class SpotifyActivity extends Fragment implements
     private static TextView artistTitleTextView;
     public static ArrayList<Track> tracksPlaylist=new ArrayList<>();
     private static int currentTrack;
-    public static String artistName;
+    public static String artistName="";
     private ArrayAdapter<String> relatedArtistsAdapter;
     private ListView relatedArtistsListView;
     private SpotifyApi api;
@@ -586,11 +586,6 @@ public class SpotifyActivity extends Fragment implements
         //Bundle extras = activityThis.getIntent().getExtras();
         //String temp = extras.getString("artist");
         //nosearch = (temp.startsWith("nosearch"));
-                if (!explicitlyCalled){
-                    nosearch=true;
-                    nextCommand="";
-                }
-                explicitlyCalled=false;
         if (nosearch) artistName = "The Beatles";
         //artistName = temp;
                 Log.d("samba", "Text:5");
@@ -640,7 +635,7 @@ public class SpotifyActivity extends Fragment implements
                 menu.setOnMenuItemClickListener(item -> {
                     String title = item.getTitle().toString();
                     if ((title.equals("play"))) {
-                        SpotifyActivity.showPlayMenu(activityThis,songItems.image);
+                        SpotifyFragment.showPlayMenu(activityThis,songItems.image);
                     } else
                     if ((title.equals("show artist-info"))) {
                         llview.findViewById(R.id.artistinfo).setVisibility(View.VISIBLE);
@@ -769,16 +764,22 @@ public class SpotifyActivity extends Fragment implements
                 Log.d("samba", "Text:8");
             if(!nosearch)
             {
-                initArtistlist(artistName);
-                Log.d("samba", "Text:9");
-                currentList=AlbumList+1;
+                try{
+                    Log.d("samba", "Text:9a");
+                    initArtistlist(artistName);
+                    Log.d("samba", "Text:9b");
+                    currentList=AlbumList+1;
+                } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                        //Log.v("samba", Log.getStackTraceString(e));
+                }
             }
 
             else
 
             {
                 currentList=SpotifyList+1;
-                //Log.v("samba", "nosearch");
+                Log.d("samba", "nosearch");
 
 
                 try {
@@ -820,13 +821,25 @@ public class SpotifyActivity extends Fragment implements
             }
             nextCommand="";
                 Log.d("samba", "Text:12");
+                if (!explicitlyCalled){
+
+                    Log.d("samba", "now display spotify playlist");
+                    if (artistName==null||artistName.equals("")||artistName.equals("The Beatles")){
+                        artistName= MainActivity.getThis.currentArtist;;
+                    }
+                    Log.d("samba", "Text:13"+artistName+"!");
+                    currentList=SpotifyList;
+
+                    selectList(lists[SpotifyList]);                }
+                Log.d("samba", "Text:14");
+                explicitlyCalled=false;
         } catch (Exception e){Log.getStackTraceString(e);}
         }
 
     public void nextList(){
 
         currentList++;
-        if (currentList>3)currentList=1;
+        if (currentList>2)currentList=1;
         if (currentList<1)currentList=1;
         selectList(lists[currentList-1]);
     }
@@ -839,15 +852,20 @@ public class SpotifyActivity extends Fragment implements
 
     private void selectList(String title) {
         if ((title.equals(lists[SpotifyList]))) {
+            Log.d("samba", "SpotifyList1");
             currentList=SpotifyList+1;
             displayMpd=false;
+            Log.d("samba", "SpotifyList1a");
             setAdapterForSpotify();
             String hartistName=artistName;
 
+            Log.d("samba", "SpotifyList1b");
             refreshPlaylistFromSpotify(albumAdapter, albumsListview,activityThis);
+            Log.d("samba", "SpotifyList1c");
             setVisibility(View.GONE);
             artistName=hartistName;
             playButtonsAtBottom();
+            Log.d("samba", "SpotifyList1d");
         } else
         if ((title.equals(lists[MpdList]))) {
             currentList=MpdList+1;
@@ -855,18 +873,28 @@ public class SpotifyActivity extends Fragment implements
             playButtonsAtBottom();
         }else
         if ((title.equals(lists[AlbumList]))) {
+            Log.d("samba", "AlbumList1");
             currentList=AlbumList+1;
             if (displayMpd){
                 if (artistName.equals("The Beatles")) {
+                    Log.d("samba", "AlbumList1b");
                     CopyOnWriteArrayList<Mp3File> playlistFiles = MainActivity.getThis.getLogic().getPlaylistFiles();
+                    Log.d("samba", "AlbumList1c");
                     if (playlistFiles.size() > 0)
                         artistName = playlistFiles.get(0).getArtist();
                 }
             }
+            Log.d("samba", "AlbumList1d"+artistName);
             setAdapterForSpotify();
+            Log.d("samba", "AlbumList1e");
             displayAlbums();
+            Log.d("samba", "AlbumList1f");
             displayMpd=false;
+            albumAdapter.notifyDataSetChanged();
+
+            relatedArtistsAdapter.notifyDataSetChanged();
             playButtonsAtBottom();
+            Log.d("samba", "AlbumList1g");
         }
     }
 
@@ -1041,7 +1069,7 @@ public class SpotifyActivity extends Fragment implements
 
             @Override
             public void removeAlbum(int counter) {
-                SpotifyActivity.removeAlbum(albumAdapter, counter, albumsListview,activityThis);
+                SpotifyFragment.removeAlbum(albumAdapter, counter, albumsListview,activityThis);
             }
 
             @Override
@@ -1598,8 +1626,8 @@ public class SpotifyActivity extends Fragment implements
     }
 
     public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1, PlanetAdapter albumAdapter, ListView albumsListview,boolean display) {
-        if (albumAdapter==null)albumAdapter=SpotifyActivity.getThis.albumAdapter;
-        if (albumsListview==null)albumsListview=SpotifyActivity.getThis.albumsListview;
+        if (albumAdapter==null)albumAdapter= SpotifyFragment.getThis.albumAdapter;
+        if (albumsListview==null)albumsListview= SpotifyFragment.getThis.albumsListview;
         final PlanetAdapter albumAdapter1=albumAdapter;
         final ListView albumsListview1=albumsListview;
         Activity getThis=getThis1;
@@ -2253,7 +2281,7 @@ public class SpotifyActivity extends Fragment implements
 
                     }
                 //albumAdapter.setDisplayCurrentTrack(false);
-                //albumAdapter.notifyDataSetChanged();
+                albumAdapter.notifyDataSetChanged();
                 Utils.setDynamicHeight(albumsListview, 0);
                 //DatabaseListThread a=new DatabaseListThread(MainActivity.getThis.getLogic().getMpc(),"list \"file\" artist \"Rolling Stones\" group album",getThis);//"album"
                 DatabaseListThread a=new DatabaseListThread(MainActivity.getThis.getLogic().getMpc(),String.format("find \"artist\" \"%s\"",beatles),getThis);//"album"
@@ -2359,7 +2387,7 @@ public class SpotifyActivity extends Fragment implements
                    if (albumAdapter!=null)
                         if (albumAdapter!=null)
                                 if (playingEngine == 2) {
-                                    SpotifyActivity.getThis.playButtonsAtBottom();
+                                    SpotifyFragment.getThis.playButtonsAtBottom();
                                 }
                         playingEngine=1;
                      String[] trid1 = getCurrentTrack();//
@@ -2405,7 +2433,7 @@ public class SpotifyActivity extends Fragment implements
                                         public void setImage(Bitmap logo) {
                                             getThis.runOnUiThread(() -> {
                                                 image.setImageBitmap(logo);
-                                                SpotifyActivity.bitmap = logo;
+                                                SpotifyFragment.bitmap = logo;
                                             });
                                         }
                                     }.execute(imageurl);
@@ -2431,7 +2459,8 @@ public class SpotifyActivity extends Fragment implements
                         Logic logic = MainActivity.getThis.getLogic();
                         MPCStatus status = logic.mpcStatus;
                         if (!status.playing) return artistReturn;
-                        if (playingEngine==1){SpotifyActivity.getThis.playButtonsAtBottom();}
+                        if (playingEngine==1){
+                            SpotifyFragment.getThis.playButtonsAtBottom();}
                         playingEngine=2;
                         int songnr = status.song.intValue();
                         Mp3File currentSong = logic.getPlaylistFiles().get(songnr);
@@ -2480,9 +2509,9 @@ public class SpotifyActivity extends Fragment implements
 
 
                         }
-                        if (SpotifyActivity.getThis.displayMpd)
+                        if (SpotifyFragment.getThis.displayMpd)
                             if (albumTracks.size()!=logic.getPlaylistFiles().size())
-                                SpotifyActivity.getThis.displayMpd(albumsListview);
+                                SpotifyFragment.getThis.displayMpd(albumsListview);
                         albumAdapter.notifyDataSetChanged();
 
                     } catch (Exception e) {
@@ -2900,13 +2929,13 @@ class SpotifyHeader {
     public void connectVarsToFront() {
         icon = (ImageView)
 
-                SpotifyActivity.getThis.llview.findViewById(R.id.icon2);
+                SpotifyFragment.getThis.llview.findViewById(R.id.icon2);
 
 
         //RelativeLayout mainLayout = (RelativeLayout) getThis.findViewById(R.id.spotifylayouttop);
         MessageView = (TextView)
 
-                SpotifyActivity.getThis.llview.findViewById(R.id.artist_content);        //Expose the indent for the first three rows
+                SpotifyFragment.getThis.llview.findViewById(R.id.artist_content);        //Expose the indent for the first three rows
     }
 
     public void setArtistText(final String artistName, Image image) {
@@ -2914,7 +2943,9 @@ class SpotifyHeader {
             try{
                 Log.v("samba", "1");
                     MainActivity.getThis.runOnUiThread(() -> {
-                    artistTitleTextView.setText(artistName);
+                        ((TextView)
+
+                                SpotifyFragment.getThis.llview.findViewById(R.id.albumsartist_listview)).setText(artistName);
                 });
 
 
@@ -2922,7 +2953,7 @@ class SpotifyHeader {
                 String artistText = "";
 
                 try {
-                    JSONObject artist = (new JSONObject(SpotifyActivity.LastFMArtist(artistName))).getJSONObject("artist");
+                    JSONObject artist = (new JSONObject(SpotifyFragment.LastFMArtist(artistName))).getJSONObject("artist");
 
                     artistText = artist.getJSONObject("bio").getString("content");
                 } catch (JSONException e) {
@@ -3108,12 +3139,12 @@ class SmartLinkSwipeDetector implements View.OnTouchListener {
                 if (Math.abs(deltaX) > MIN_DISTANCE) {
                     if (deltaX < 0)
                     {
-                        SpotifyActivity.getThis.nextList();
+                        SpotifyFragment.getThis.nextList();
 
                     }
                     else if (deltaX > 0)
                     {
-                        SpotifyActivity.getThis.previousList();
+                        SpotifyFragment.getThis.previousList();
 
                     }
                 } else {

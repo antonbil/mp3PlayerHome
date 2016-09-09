@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     public void removeUp(int counter) {
                         duplicateLists();
 
-                        SpotifyActivity.removeUplist(this, albumsListview,counter, getThis);
+                        SpotifyFragment.removeUplist(this, albumsListview,counter, getThis);
                     }
 
                     @Override
@@ -194,28 +194,28 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                             Log.v("samba","a");
                             duplicateLists();
                             Log.v("samba","b");
-                            SpotifyActivity.stopMpd();
+                            SpotifyFragment.stopMpd();
                             Log.v("samba","c");
-                            SpotifyActivity.playlistGotoPosition(counter);
+                            SpotifyFragment.playlistGotoPosition(counter);
                     }
 
                     @Override
                     public void removeDown(int counter) {
                         duplicateLists();
-                        SpotifyActivity.removeDownlist(this, albumsListview,counter,getThis);
+                        SpotifyFragment.removeDownlist(this, albumsListview,counter,getThis);
 
                     }
 
                     @Override
                     public void removeAlbum(int counter) {
                         duplicateLists();
-                        SpotifyActivity.removeAlbum(this, counter, albumsListview,getThis);
+                        SpotifyFragment.removeAlbum(this, counter, albumsListview,getThis);
 
                     }
 
                     private void duplicateLists() {
-                        SpotifyActivity.albumList=albumList;
-                        SpotifyActivity.albumTracks=albumTracks;
+                        SpotifyFragment.albumList=albumList;
+                        SpotifyFragment.albumTracks=albumTracks;
                     }
 
                     @Override
@@ -226,28 +226,28 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     @Override
                     public void addAlbumToFavoritesTrack(int counter) {
                         duplicateLists();
-                        SpotifyActivity.addAlbumToFavoritesTrackwise(counter);
+                        SpotifyFragment.addAlbumToFavoritesTrackwise(counter);
 
                     }
 
                     @Override
                     public void removeTrack(int counter) {
                         duplicateLists();
-                        SpotifyActivity.removeTrackSpotify(counter);
+                        SpotifyFragment.removeTrackSpotify(counter);
 
                     }
 
                     @Override
                     public void displayArtist(int counter) {
                         mDrawerLayout.closeDrawers();
-                        getThis.callSpotify(SpotifyActivity.tracksPlaylist.get(counter).artists.get(0).name);
+                        getThis.callSpotify(SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name);
 
 
                     }
 
                     @Override
                     public void displayArtistWikipedia(int counter) {
-                        String s = SpotifyActivity.tracksPlaylist.get(counter).artists.get(0).name;
+                        String s = SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name;
                         MainActivity.startWikipediaPage(s);
                     }
 
@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     @Override
                     public void addAlbum(int counter) {
-                        SpotifyActivity.getAlbumtracksFromSpotify(SpotifyActivity.tracksPlaylist.get(counter).album.id, SpotifyActivity.tracksPlaylist.get(counter).artists.get(0).name
+                        SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.tracksPlaylist.get(counter).album.id, SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name
                                 , getThis, this, albumsListview);
 
                     }
@@ -278,13 +278,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     }
                 };
                 albumsListview.setAdapter(albumAdapter);
-                SpotifyActivity.checkAddress();
-                SpotifyActivity.refreshPlaylistFromSpotify(1,albumAdapter, getThis,albumList,albumTracks);
+                SpotifyFragment.checkAddress();
+                SpotifyFragment.refreshPlaylistFromSpotify(1,albumAdapter, getThis,albumList,albumTracks);
                 //song_display2
                 LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
                 //viewHeader.setOnClickListener(v -> spotifyPopupMenu(viewHeader, mDrawerLayout));
                 final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
-                fab.setOnClickListener(view -> SpotifyActivity.showPlayMenu(getThis,viewHeader));
+                fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(getThis,viewHeader));
 
                 /*(findViewById(R.id.time_layout)).setOnClickListener(v -> MainActivity.playPauseAll());
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top2);
@@ -352,13 +352,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         footerView.setVisibility(View.GONE);
         final FloatingActionButton findbutton = (FloatingActionButton) findViewById(R.id.find);
         findbutton.setOnClickListener(v -> {
-            SpotifyActivity.nextCommand="search artist";
+            SpotifyFragment.nextCommand="search artist";
             startPlaylistSpotify();
         });        FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
         findbutton.setVisibility(View.GONE);
         //Log.d("samba", "Text:8");
         FAB.setOnClickListener(v -> {
-                        SpotifyActivity.nextCommand="search artist";
+                        SpotifyFragment.nextCommand="search artist";
+            Log.v("samba","search"+1);
                         startPlaylistSpotify();
         });
 
@@ -369,6 +370,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             adapter = new PagerAdapter
                     (getSupportFragmentManager(), tabLayout.getTabCount(),this);
             viewPager.setAdapter(adapter);
+        viewPager.setPageTransformer(false, new NoPageTransformer());
             viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
             tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
@@ -457,10 +459,21 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     static void playPauseAll() {
-        if (/*MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING*/SpotifyActivity.playingEngine==1){
-            SpotifyActivity.playPauseSpotify();
+        if (/*MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING*/SpotifyFragment.playingEngine==1){
+            SpotifyFragment.playPauseSpotify();
         }else
         MainActivity.getThis.playPause();
+    }
+    private static class NoPageTransformer implements ViewPager.PageTransformer {
+        public void transformPage(View view, float position) {
+            if (position < 0) {
+                view.setScrollX((int)((float)(view.getWidth()) * position));
+            } else if (position > 0) {
+                view.setScrollX(-(int) ((float) (view.getWidth()) * -position));
+            } else {
+                view.setScrollX(0);
+            }
+        }
     }
 
     public void spotifyPopupMenu(final View viewHeader, final DrawerLayout mDrawerLayout) {
@@ -476,18 +489,18 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             public boolean onMenuItemClick(MenuItem item) {
                 String title = item.getTitle().toString();
                 if ((title.equals("Search artist"))) {
-                    SpotifyActivity.nextCommand="search artist";
+                    SpotifyFragment.nextCommand="search artist";
                     startSpotify();
                 }else
                 if ((title.equals("Spotify Playlist"))) {
                     startSpotify();
                 }else
                 if ((title.equals("Search album"))) {
-                    SpotifyActivity.nextCommand="search album";
+                    SpotifyFragment.nextCommand="search album";
                     startSpotify();
                 }else
                 if ((title.equals("Play"))) {
-                    SpotifyActivity.showPlayMenu(getThis,viewHeader);
+                    SpotifyFragment.showPlayMenu(getThis,viewHeader);
                 }
                 return true;
             }
@@ -505,7 +518,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             intent.putExtra("artist", "nosearch");
 
             MainActivity.getThis.startActivity(intent);*/
-            SpotifyActivity.artistName="nosearch";
+            SpotifyFragment.artistName="nosearch";
+            Log.v("samba","search"+2);
+
             callSpotify();
             //hiermoetiets
             Log.v("samba", "Spotify");
@@ -521,7 +536,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //intent.putExtra("artist", currentArtist);
 
             //getThis.startActivityForResult(intent, 4);
-            SpotifyActivity.artistName=currentArtist;
+            SpotifyFragment.artistName=currentArtist;
+            Log.v("samba", "call artist! with:"+currentArtist);
             callSpotify();
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
@@ -531,27 +547,41 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public void callSpotify() {
-        SpotifyActivity.explicitlyCalled=true;
+        SpotifyFragment.explicitlyCalled=true;
+        Log.v("samba","search"+3);
+
+        //tabLayout.getTabAt(2).select();
+        if(tabLayout.getSelectedTabPosition()>=4){
+            //adapter.spotifyFragment.
+                    getSupportFragmentManager()
+                    .beginTransaction()
+                    .detach(adapter.spotifyFragment)
+                    .attach(adapter.spotifyFragment)
+                    .commit();
+            //Log.v("samba","search"+4);
+        }
         tabLayout.getTabAt(5).select();
+        Log.v("samba","search"+4);
+
     }
 
     public void callSpotifyPlaylist(String currentArtist) {
         /*
         does not work; libspotify does not support spotify readio-stations
          */
-        String id=SpotifyActivity.searchSpotifyArtist(currentArtist);
+        String id= SpotifyFragment.searchSpotifyArtist(currentArtist);
         if (id.length()>0)
         try {
             id="spotify:station:artist:"+id;
             final ProgressDialog loadingdialog;
             loadingdialog = ProgressDialog.show(getThis,
                     "","Loading, please wait",true);
-            SpotifyActivity.clearSpotifyPlaylist();
-            new SpotifyActivity.getEntirePlaylistFromSpotify(id,MainActivity.getThis){
+            SpotifyFragment.clearSpotifyPlaylist();
+            new SpotifyFragment.getEntirePlaylistFromSpotify(id,MainActivity.getThis){
                 @Override
                 public void atLast() {
                     loadingdialog.dismiss();
-                    SpotifyActivity.playAtPosition(0);
+                    SpotifyFragment.playAtPosition(0);
                     MainActivity.getThis.startPlaylistSpotify();
                 }
             }.run();
@@ -1125,7 +1155,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     private void checkButtons(int prev){
-        if (prev!=SpotifyActivity.playingEngine) {
+        if (prev!= SpotifyFragment.playingEngine) {
             setListenersForButtons();
         }
     }
@@ -1139,7 +1169,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         View volumebutton = findViewById(R.id.volumespotify);
         View seekbutton = findViewById(R.id.positionspotify);
         new Thread(() -> {
-            SpotifyActivity.setListenersForButtons(this, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+            SpotifyFragment.setListenersForButtons(this, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
         }).start();
 
     }
@@ -1152,15 +1182,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         new Thread(() -> {
             statusThread=true;
 
-            int prev=SpotifyActivity.playingEngine;
+            int prev= SpotifyFragment.playingEngine;
 
-            if (SpotifyActivity.isPlaying()){
+            if (SpotifyFragment.isPlaying()){
 
                 //(findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 //(findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top);
                 //viewById.setOnClickListener(v -> SpotifyActivity.setVolume(getThis));
-                currentArtist = SpotifyActivity.updateSongInfo((TextView) findViewById(R.id.time_top),
+                currentArtist = SpotifyFragment.updateSongInfo((TextView) findViewById(R.id.time_top),
                         (TextView) findViewById(R.id.totaltime_top),
                         (TextView) findViewById(R.id.title_top),
                         (TextView) findViewById(R.id.artist_top),
@@ -1183,8 +1213,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 statusThread=false;
                 return;}
             if (status.playing){
-                if (SpotifyActivity.playingEngine==1){setListenersForButtons();}
-                SpotifyActivity.playingEngine=2;
+                if (SpotifyFragment.playingEngine==1){setListenersForButtons();}
+                SpotifyFragment.playingEngine=2;
             }
             //if (MainActivity.activityVisible)
             {

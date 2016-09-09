@@ -5,7 +5,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
+import examples.quickprogrammingtips.com.tablayout.SpotifyFragment;
 
 /**
  * Created by anton on 23-1-16.
@@ -56,7 +56,7 @@ public class Favorite {
 
     public static void generateLists() {
         Favorite.categoryDescriptions=new ArrayList<>(Arrays.asList("New Links"));//categoryIds
-        for (int j=0;j<SpotifyActivity.CATEGORY_IDS.size();j++)Favorite.categoryDescriptions.add(SpotifyActivity.CATEGORY_IDS.get(j));
+        for (int j = 0; j< SpotifyFragment.CATEGORY_IDS.size(); j++)Favorite.categoryDescriptions.add(SpotifyFragment.CATEGORY_IDS.get(j));
         for (int j = Favorite.categoryIds.size(); j< Favorite.categoryDescriptions.size(); j++)Favorite.categoryIds.add("2"+j);
     }
 

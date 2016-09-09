@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.MainActivity;
 import examples.quickprogrammingtips.com.tablayout.R;
-import examples.quickprogrammingtips.com.tablayout.SpotifyActivity;
+import examples.quickprogrammingtips.com.tablayout.SpotifyFragment;
 
 /**
  * Created by anton on 11-8-16.
@@ -40,7 +40,7 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
 // This a new view we inflate the new layout
-                LayoutInflater inflater = (LayoutInflater) SpotifyActivity.getThis.getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater inflater = (LayoutInflater) SpotifyFragment.getThis.getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.item_file1, parent, false);
             }
             final View convertView2=convertView;
@@ -49,7 +49,7 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
             convertView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    final java.lang.String selectedItem = SpotifyActivity.getThis.artistList.get(position);
+                    final java.lang.String selectedItem = SpotifyFragment.getThis.artistList.get(position);
 
                     //Log.v("long clicked", "pos: " + pos + "artist: " + selectedItem);
                     PopupMenu menu = new PopupMenu(convertView2.getContext(), convertView2);
@@ -67,9 +67,9 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
                                     /*MainActivity.getThis.selectTab(2);
                                     try{ Thread.sleep(1000); MainActivity.getThis.searchTerm(selectedItem);}catch(InterruptedException e){ }
                                     */
-                                    final Intent intent = SpotifyActivity.getThis.getActivity().getIntent();
+                                    final Intent intent = SpotifyFragment.getThis.getActivity().getIntent();
                                     intent.putExtra("artist", selectedItem);
-                                    SpotifyActivity.getThis.getActivity().setResult(Activity.RESULT_OK, intent);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
+                                    SpotifyFragment.getThis.getActivity().setResult(Activity.RESULT_OK, intent);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
                                     //SpotifyActivity.getThis.finish(); //finish the activity
 
 
@@ -94,11 +94,11 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
                 @Override
                 public void onClick(View view) {
                     try{
-                        java.lang.String s = SpotifyActivity.getThis.artistList.get(position);
+                        java.lang.String s = SpotifyFragment.getThis.artistList.get(position);
                         Log.v("samba","get "+s);
                         longclicked=true;
-                        SpotifyActivity.getThis.setVisibility(View.VISIBLE);
-                        SpotifyActivity.getThis.listAlbumsForArtist(s);
+                        SpotifyFragment.getThis.setVisibility(View.VISIBLE);
+                        SpotifyFragment.getThis.listAlbumsForArtist(s);
                     } catch (Exception e) {
                         Log.v("samba", Log.getStackTraceString(e));
                     }
