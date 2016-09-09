@@ -762,29 +762,8 @@ public class SpotifyActivity extends Fragment implements
             fab.setOnClickListener(view ->{Log.d("samba", "fab");nextList();});
 
             fab.setOnLongClickListener(view -> {
-                PopupMenu menu = new PopupMenu(fab.getContext(), fab);
-                menu.getMenu().add(lists[SpotifyList]);
-                menu.getMenu().add(lists[AlbumList]);
-                menu.getMenu().add(lists[MpdList]);
-                menu.getMenu().add("return to main");
-
-                menu.show();
-                menu.setOnMenuItemClickListener(item -> {
-                            String title = item.getTitle().toString();
-                    selectList(title);
-                    if ((title.equals("return to main"))) {
-                                //getThis.finish();
-
-                            }
-
-                            return true;
-                        }
-
-                );
+                previousList();
                 return true;
-
-                //albumsListview.setOnItemClickListener(cl);
-                //listAlbumsForArtist(api, spotify, atistName, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
             });
 
                 Log.d("samba", "Text:8");
@@ -848,6 +827,7 @@ public class SpotifyActivity extends Fragment implements
 
         currentList++;
         if (currentList>3)currentList=1;
+        if (currentList<1)currentList=1;
         selectList(lists[currentList-1]);
     }
     public void previousList() {
@@ -2373,7 +2353,7 @@ public class SpotifyActivity extends Fragment implements
                                         ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, Activity getThis, final SpotifyInterface getSpotifyInterface) {
         String artistReturn="";
         if (busyupdateSongInfo)return "";
-        busyupdateSongInfo=true;
+        busyupdateSongInfo=false;
         try {
                 if (isPlaying()) {//(speed.doubleValue() > 0) {
                    if (albumAdapter!=null)
