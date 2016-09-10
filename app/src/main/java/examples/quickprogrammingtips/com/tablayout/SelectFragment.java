@@ -323,7 +323,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     public void atLast() {
                         loadingdialog.dismiss();
                         SpotifyFragment.playSpotify();
-                        MainActivity.getThis.startPlaylistSpotify();
+                        //MainActivity.getThis.startPlaylistSpotify();
                     }
                 }.run();
             } catch (Exception e) {
@@ -343,7 +343,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     @Override
                     public void atLast() {
                         loadingdialog.dismiss();
-                        MainActivity.getThis.startPlaylistSpotify();
+                        //MainActivity.getThis.startPlaylistSpotify();
                     }
                 }.run();
             } catch (Exception e) {
@@ -379,7 +379,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         public void atLast() {
                             loadingdialog.dismiss();
 
-                            MainActivity.getThis.startPlaylistSpotify();
+                            //MainActivity.getThis.startPlaylistSpotify();
 
                         }
                     }.run();

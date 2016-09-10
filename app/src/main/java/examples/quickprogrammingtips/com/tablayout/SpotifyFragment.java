@@ -222,29 +222,8 @@ public class SpotifyFragment extends Fragment implements
                 currentList=AlbumList+1;
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
-                //Log.v("samba", Log.getStackTraceString(e));
             }
         }
-
-        else
-
-        {
-            currentList=SpotifyList+1;
-            Log.d("samba", "nosearch");
-
-
-            try {
-                selectList(lists[SpotifyList]);
-
-                int visibility = View.GONE;
-                setVisibility(visibility);//
-
-            } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
-
-        }
-
 
         if (nextCommand.equals("search album")){
             searchAlbum();
@@ -256,18 +235,6 @@ public class SpotifyFragment extends Fragment implements
         }
         nextCommand="";
         Log.d("samba", "Text:12");
-        if (!explicitlyCalled){
-
-            Log.d("samba", "now display spotify playlist");
-            //if (artistName==null||artistName.equals("")||artistName.equals("The Beatles")){
-            //    artistName= MainActivity.getThis.currentArtist;;
-            //}
-            Log.d("samba", "Text:13"+artistName+"!");
-            currentList=SpotifyList;
-
-            selectList(lists[SpotifyList]);                }
-        Log.d("samba", "Text:14");
-        explicitlyCalled=false;
 
     }
 
@@ -1534,6 +1501,8 @@ public class SpotifyFragment extends Fragment implements
         //fab.setVisibility(opposite);//spotifyscrollviewtop
         ((TextView) llview.findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
         ((TextView) llview.findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
+        llview.findViewById(R.id.artist_title).setVisibility(visibility);
+
 
         //spotifyHeader.MessageView.setVisibility(visibility);
         ((ScrollView) llview.findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview

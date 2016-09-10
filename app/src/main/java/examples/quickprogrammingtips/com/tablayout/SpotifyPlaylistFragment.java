@@ -26,6 +26,8 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
         albumAdapter.notifyDataSetChanged();
         playButtonsAtBottom();
         fab.setVisibility(View.GONE);
+        llview.findViewById(R.id.artist_title).setVisibility(View.GONE);
+        //
 
     }
     @Override
