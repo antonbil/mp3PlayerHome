@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //Log.v("samba",""+18);
 
             final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setOffscreenPageLimit(1);
+        viewPager.setOffscreenPageLimit(0);
             adapter = new PagerAdapter
                     (getSupportFragmentManager(), tabLayout.getTabCount(),this);
             viewPager.setAdapter(adapter);
@@ -561,7 +561,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     .commit();
             //Log.v("samba","search"+4);
         //}
-        tabLayout.getTabAt(4).select();
+        tabLayout.getTabAt(3).select();
         Log.v("samba","search"+4);
 
     }

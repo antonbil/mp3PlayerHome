@@ -51,6 +51,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void albumArtistWikipedia(int counter);
     public abstract void addAlbum(int counter);
     public abstract void addAlbumNoplay(int counter);
+    Bitmap logo1;
 
     public PlanetAdapter(List<String> planetList, Context ctx, ArrayList<PlaylistItem> tracksPlaylist) {
         super(ctx, R.layout.spotifylist, planetList);
@@ -89,10 +90,15 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 
                 //Log.v("samba", "look for:" + t.url);
                 new DownLoadImageTask() {
+
                     @Override
                     public void setImage(final Bitmap logo) {
+                        logo1=logo;
                         holder.image.setImageBitmap(logo);
-                        holder.image.setOnClickListener(arg0 -> MainActivity.displayLargeImage(getThis, logo));
+                        holder.image.setOnClickListener(arg0 -> {
+                            //MainActivity.displayLargeImage(getThis, logo);
+                            longclick( position,  convertView2,logo);
+                        });
                     }
                 }.execute(t.url);
             } else
@@ -114,7 +120,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             onClickFunc(position);
         });
         convertView.setOnLongClickListener(view -> {
-            longclick( position,  convertView2);
+            longclick( position,  convertView2,logo1);
             return false;
         });
         /*OnFlingGestureListener flingListener;
@@ -166,7 +172,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         return convertView;
     }
 
-    private void longclick(int position, View v){
+    private void longclick(int position, View v, Bitmap logo){
         Log.v("samba","ontouch album");
         PopupMenu menu = new PopupMenu(v.getContext(), v);
         if (!isAlbumVisible()) {
@@ -198,6 +204,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                             } else if (title1.equals("remove track")) {
                                 removeTrack(position);
                             }
+                            //
                             return true;
                         }
 
@@ -209,6 +216,8 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                         displayArtist(position);
                     } else if (title.equals("wikipedia")) {
                         displayArtistWikipedia(position);
+                    } else if (title.equals("large picture")) {
+                        MainActivity.displayLargeImage(getThis, logo);
                     } else if (title.equals("add album to favorites")) {
                         addAlbumToFavoritesTrack(position);
                     }
@@ -222,6 +231,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("add album to favorites");
             menu.getMenu().add("display artist");
             menu.getMenu().add("wikipedia");
+            menu.getMenu().add("large picture");
         } else {
             menu.setOnMenuItemClickListener(item -> {
                 /*if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")){
@@ -235,6 +245,8 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                     addAndPlayAlbum(position);
                 } else if (item.getTitle().toString().equals("wikipedia artist")) {
                     albumArtistWikipedia(position);
+                } else if (item.getTitle().toString().equals("large picture")) {
+                    MainActivity.displayLargeImage(getThis, logo);
                 } else if (item.getTitle().toString().equals("add")) {
                     //Toast.makeText(getThis.getApplicationContext(), "Not implemented yet",
                     //        Toast.LENGTH_SHORT).show();
@@ -254,6 +266,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("add");//submenu
             menu.getMenu().add("wikipedia artist");//submenu
             menu.getMenu().add("add album to favorites");//submenu
+            menu.getMenu().add("large picture");
 
         }
         menu.show();

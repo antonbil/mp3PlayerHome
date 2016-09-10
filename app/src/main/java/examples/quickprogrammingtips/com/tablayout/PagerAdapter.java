@@ -23,8 +23,8 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             R.drawable.play,
             R.drawable.smb,
             R.drawable.swan1,
-            R.drawable.mpd,
             R.drawable.spf,
+            R.drawable.mpd,
             R.drawable.ic_sync_black_24dp,
             R.drawable.spf
     };
@@ -98,11 +98,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 return listFragment;
             case 2:
                 return playlistFragment;
-            case 3:
+            case 4:
                 return dbFragment;
             case 5:
                 return selectFragment;
-            case 4:
+            case 3:
                 return spotifyFragment;
             case 6:
                 return new SpotifyPlaylistFragment();
