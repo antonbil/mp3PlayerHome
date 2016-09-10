@@ -3,11 +3,9 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -16,8 +14,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import examples.quickprogrammingtips.com.tablayout.adapters.OnFlingGestureListener;
 
 public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public static boolean longclicked=false;
@@ -113,14 +109,14 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             holder.name.setTextColor(Color.YELLOW);
         } else
             holder.name.setTextColor(Color.WHITE);
-        /*convertView.setOnClickListener(view -> {
+        convertView.setOnClickListener(view -> {
             onClickFunc(position);
         });
         convertView.setOnLongClickListener(view -> {
             longclick( position,  convertView2);
             return false;
-        });*/
-        OnFlingGestureListener flingListener;
+        });
+        /*OnFlingGestureListener flingListener;
         flingListener = new OnFlingGestureListener() {
             @Override
             public void onRightToLeft() {
@@ -145,11 +141,11 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 
             }
 
-        };
+        };*/
 
         holder.pos.setText("" + (mypos));
         mypos++;
-        convertView.setOnTouchListener((v, event) -> {
+        /*convertView.setOnTouchListener((v, event) -> {
             if (flingListener.onTouch(v, event)) {
                 // if gesture detected, ignore other touch events
                 return true;
@@ -163,7 +159,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                 return false;
             }
             return true;
-        });
+        });*/
 
 
         return convertView;
