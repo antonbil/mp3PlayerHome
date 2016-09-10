@@ -342,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             tabLayout.addTab(tabLayout.newTab()/*.setText("DB")*/);
         tabLayout.addTab(tabLayout.newTab()/*.setText("Select")*/);
             tabLayout.addTab(tabLayout.newTab()/*.setText("Select")*/);
+        tabLayout.addTab(tabLayout.newTab()/*.setText("Select")*/);
         tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
 
 
@@ -551,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         Log.v("samba","search"+3);
 
         //tabLayout.getTabAt(2).select();
-        if(tabLayout.getSelectedTabPosition()>=4){
+        //if(tabLayout.getSelectedTabPosition()>=3){
             //adapter.spotifyFragment.
                     getSupportFragmentManager()
                     .beginTransaction()
@@ -559,8 +560,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     .attach(adapter.spotifyFragment)
                     .commit();
             //Log.v("samba","search"+4);
-        }
-        tabLayout.getTabAt(5).select();
+        //}
+        tabLayout.getTabAt(4).select();
         Log.v("samba","search"+4);
 
     }

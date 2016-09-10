@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -166,6 +167,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     }
 
     private void longclick(int position, View v){
+        Log.v("samba","ontouch album");
         PopupMenu menu = new PopupMenu(v.getContext(), v);
         if (!isAlbumVisible()) {
 
