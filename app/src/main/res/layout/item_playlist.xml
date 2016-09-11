@@ -27,7 +27,7 @@
 
         android:layout_weight="0.7"
         android:maxLines="2"
- />
+        android:textColor="@color/dim_foreground_material_dark" />
 
 
 

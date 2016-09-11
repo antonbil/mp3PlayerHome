@@ -1091,7 +1091,9 @@ public class SpotifyFragment extends Fragment implements
                     file="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
                     //Log.v("samba",file);
                     pi.url=file;
-                    pi.text=String.format("%s(%s)",s.getTitle()+text,s.getTimeNice());
+                    pi.time=s.getTime();
+                    Log.v("samba","time:"+pi.time);
+                    pi.text=String.format("%s",s.getTitle()+text,s.getTimeNice());
                     albumList.add(pi.text);
                     albumTracks.add(pi);
                 }
@@ -1671,6 +1673,7 @@ public class SpotifyFragment extends Fragment implements
                         pi.pictureVisible=true;
                         pi.url="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
                         pi.text=album;
+                        pi.time=0;
 
                         albumList.add(album);
                         albumIds.add(MPD+file);
@@ -1694,6 +1697,7 @@ public class SpotifyFragment extends Fragment implements
             pi.pictureVisible=true;
             pi.url="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
             pi.text=album;
+            pi.time=0;
 
             albumList.add(album);
             albumIds.add(MPD+file);
@@ -2042,12 +2046,15 @@ public class SpotifyFragment extends Fragment implements
                     if (!prevAlbum.startsWith(name)) {
                         extra = String.format("(%s-%s)", t.artists.get(0).name, name);
                         prevAlbum = name;
-                    }
-                    pi.pictureVisible = true;
+                        pi.pictureVisible = true;
+                    } else
+                    pi.pictureVisible = false;
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
-                pi.text = t.name + extra + String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue()));
+                int time = new Double(t.duration_ms / 1000).intValue();
+                pi.time=time;
+                pi.text = t.name + extra/* + String.format("(%s)", Mp3File.niceString(time))*/;
                 new DownLoadImageUrlTask() {
                     @Override
                     public void setUrl(String logo) {
@@ -2172,6 +2179,7 @@ public class SpotifyFragment extends Fragment implements
                         pi.pictureVisible=true;
                         pi.url=album.images.get(0).url;
                         pi.text=String.format("%s",album.name);
+                        pi.time=0;
                         Log.v("samba",album.name);
 
                         albumList.add(album.name);
@@ -2812,6 +2820,7 @@ class PlaylistItem {
     public String url;
     public String text;
     public String id;
+    public int time;
 }
 
 class SpotifyHeader {

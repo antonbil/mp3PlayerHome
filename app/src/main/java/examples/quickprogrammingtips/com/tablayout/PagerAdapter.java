@@ -22,10 +22,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public int[] imageResId = {
             R.drawable.play,
             R.drawable.smb,
-            R.drawable.swan1,
+            R.drawable.ic_sync_black_24dp,
             R.drawable.spf,
             R.drawable.mpd,
-            R.drawable.ic_sync_black_24dp,
+            R.drawable.swan1,
             R.drawable.spf
     };
     SelectFragment selectFragment;
@@ -96,11 +96,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 return playFragment;
             case 1:
                 return listFragment;
-            case 2:
+            case 5:
                 return playlistFragment;
             case 4:
                 return dbFragment;
-            case 5:
+            case 2:
                 return selectFragment;
             case 3:
                 return spotifyFragment;

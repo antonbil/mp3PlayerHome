@@ -33,6 +33,16 @@
         android:text="This text is an example"
         android:gravity="center_vertical"
         android:layout_marginLeft="1dp" />
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:text="04:30"
+
+            android:layout_margin="4dp"
+            android:id="@+id/spotifytime"
+            android:gravity="right"
+            android:minWidth="60dp"
+            android:layout_weight="0"
+            android:layout_gravity="center_vertical" />
 
     </LinearLayout>
 

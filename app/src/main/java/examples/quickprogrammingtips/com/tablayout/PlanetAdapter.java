@@ -16,6 +16,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
+
 public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public static boolean longclicked=false;
     private final ArrayList<PlaylistItem> tracksPlaylist;
@@ -76,6 +78,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 
         holder.image = (ImageView) convertView.findViewById(R.id.spotifylistimageView);
         holder.name = (TextView) convertView.findViewById(R.id.name);
+        holder.time = (TextView) convertView.findViewById(R.id.spotifytime);
 
         convertView.setTag(holder);
 
@@ -83,6 +86,9 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         try {
             PlaylistItem t = tracksPlaylist.get(position);
             holder.name.setText(t.text);
+            if (t.time>0)
+            holder.time.setText(Mp3File.niceTime(t.time));
+            else holder.time.setVisibility(View.GONE);
             if(t.pictureVisible) {
                 holder.image.setVisibility(View.VISIBLE);
                 holder.pos.setVisibility(View.GONE);
@@ -107,6 +113,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             holder.image.setVisibility(View.GONE);
         }
 
+        int textcolor = Color.parseColor("#bebebe");
         if (displayCurrentTrack && (position == currentItem))
             convertView.setBackgroundColor(Color.rgb(40, 40, 40));//
         else if ((position & 1) == 0) {
@@ -114,8 +121,10 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         } else convertView.setBackgroundColor(Color.rgb(64, 64, 64));
         if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")&&!displayCurrentTrack){
             holder.name.setTextColor(Color.YELLOW);
-        } else
-            holder.name.setTextColor(Color.WHITE);
+        } else {
+            holder.name.setTextColor(textcolor);
+            holder.time.setTextColor(textcolor);
+        }
         convertView.setOnClickListener(view -> {
             onClickFunc(position);
         });
@@ -289,7 +298,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     }
 
     class ViewHolder {
-        TextView pos, name;
+        TextView pos, name,time;
         public ImageView image;
     }
 }
