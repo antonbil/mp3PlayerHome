@@ -812,7 +812,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public void setVolume(Activity activity) {
-        final AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        if (SpotifyFragment.isPlaying()){
+            SpotifyFragment.setVolume(activity);
+            return;
+        }
+
+            final AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
         alert.setTitle("Volume");
 

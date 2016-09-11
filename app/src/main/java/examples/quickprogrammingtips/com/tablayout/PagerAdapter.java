@@ -23,7 +23,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             R.drawable.play,
             R.drawable.smb,
             R.drawable.ic_sync_black_24dp,
-            R.drawable.spf,
+            R.drawable.spotifylist,
             R.drawable.mpd,
             R.drawable.swan1,
             R.drawable.spf
