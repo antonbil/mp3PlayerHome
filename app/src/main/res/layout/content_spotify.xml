@@ -57,7 +57,7 @@
             </ListView>
         </LinearLayout>
 
-        <include layout="@layout/play_spotify" />
+        <!--<include layout="@layout/play_spotify" />-->
     </LinearLayout>
 
 </ScrollView>

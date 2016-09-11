@@ -138,6 +138,7 @@ public class SpotifyFragment extends Fragment implements
     public static int playingEngine;
     private static boolean busyupdateSongInfo=false;
     public static boolean explicitlyCalled=false;
+    private static boolean spotifyPaused=false;
     //public static boolean longClickHasbeenCalled=false;
     private SpotifyHeader spotifyHeader;
     public FillListviewWithValues fillListviewWithValues;
@@ -242,10 +243,10 @@ public class SpotifyFragment extends Fragment implements
     public void onPause() {
         Log.e("DEBUG", "OnPause of loginFragment");
         super.onPause();
-        ((ImageView) MainActivity.getThis.findViewById(R.id.thumbnail_top)).setOnLongClickListener(v -> {
+        /*((ImageView) MainActivity.getThis.findViewById(R.id.thumbnail_top)).setOnLongClickListener(v -> {
             MainActivity.getThis.setFooterVisibility();
         return true;
-});
+});*/
     }
 
     public void checkAppMemory(){
@@ -564,11 +565,11 @@ public class SpotifyFragment extends Fragment implements
 
             songItems=new SongItems(activityThis);
 
-            songItems.setOnClick(arg0 -> {
+            /*songItems.setOnClick(arg0 -> {
 
-                onClickSongitems();
+                onClickSongitems(songItems.image);
 
-            });
+            });*/
 
 
 
@@ -581,7 +582,7 @@ public class SpotifyFragment extends Fragment implements
             fab=(FloatingActionButton)
 
                     llview.findViewById(R.id.fab);
-            fab.setOnClickListener(view ->{Log.d("samba", "fab");nextList();});
+            fab.setOnClickListener(view ->{Log.d("samba", "fab");onClickSongitems(fab);});
 
             fab.setOnLongClickListener(view -> {
                 previousList();
@@ -604,8 +605,8 @@ public class SpotifyFragment extends Fragment implements
         } catch (Exception e){Log.getStackTraceString(e);}
         }
 
-    public void onClickSongitems() {
-        View image = songItems.image;
+    public void onClickSongitems(View image) {
+
         PopupMenu menu = new PopupMenu(songItems.image.getContext(), image);
         menu.getMenu().add("play");
         menu.getMenu().add("search artist");
@@ -788,7 +789,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public void playButtonsAtBottom() {
-        View playbutton = llview.findViewById(R.id.playspotify);
+        /*View playbutton = llview.findViewById(R.id.playspotify);
         View stopbutton = llview.findViewById(R.id.stopspotify);
         View playpausebutton = llview.findViewById(R.id.pausespotify);
         View previousbutton = llview.findViewById(R.id.previousspotify);
@@ -797,7 +798,7 @@ public class SpotifyFragment extends Fragment implements
         View seekbutton = llview.findViewById(R.id.positionspotify);
         new Thread(() -> {
             setListenersForButtons(activityThis, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
-        }).start();
+        }).start();*/
     }
 
     private void setAdapterForMpd() {
@@ -2763,8 +2764,51 @@ public class SpotifyFragment extends Fragment implements
 
         }
         Logic logic=logic1;
+
+        playbutton.setOnClickListener(v -> {
+            try {
+                if (SpotifyFragment.playingEngine==1||MainActivity.getThis.tabLayout.getSelectedTabPosition()==6) playSpotify();
+                else MainActivity.getThis.getLogic().getMpc().play();
+            }catch (Exception e){
+                Log.v("samba","Error starting play!");
+            }
+        });
+        stopbutton.setOnClickListener(v -> {
+            try{
+            if (SpotifyFragment.playingEngine==1) stopSpotifyPlaying(ipAddress);
+            else {
+                MainActivity.getThis.getLogic().getMpc().pause();
+                MainActivity.getThis.getLogic().setPaused(true);
+            }
+        }catch (Exception e){
+                Log.v("samba","Error starting stop!");
+        }
+        });
+        playpausebutton.setOnClickListener(v -> {
+            if (SpotifyFragment.playingEngine==1||spotifyPaused) {
+                playPauseSpotify(ipAddress);
+                spotifyPaused=!spotifyPaused;
+            }
+            else MainActivity.getThis.playPause();
+        });
+        previousbutton.setOnClickListener(v -> {
+            if (SpotifyFragment.playingEngine==1) previousSpotifyPlaying(ipAddress);
+            else MainActivity.getThis.getLogic().getMpc().previous();
+        });
+        nextbutton.setOnClickListener(v -> {
+            if (SpotifyFragment.playingEngine==1) nextSpotifyPlaying(ipAddress);
+            else MainActivity.getThis.getLogic().getMpc().next();
+        });
+        volumebutton.setOnClickListener(v -> {
+            if (SpotifyFragment.playingEngine==1) setVolume(getThis1);
+            else MainActivity.getThis.setVolume(getThis1);
+        });
+        seekbutton.setOnClickListener(v -> {
+            if (SpotifyFragment.playingEngine==1) seekPlay(getThis1);
+            else seekPlayMpd(getThis1);
+        });
         //isPlaying()
-        if (isPlaying()) {
+        /*if (isPlaying()) {
             playbutton.setOnClickListener(v -> playSpotify());
             stopbutton.setOnClickListener(v -> stopSpotifyPlaying(ipAddress));
             playpausebutton.setOnClickListener(v -> playPauseSpotify(ipAddress));
@@ -2786,7 +2830,7 @@ public class SpotifyFragment extends Fragment implements
             seekbutton.setOnClickListener(v -> seekPlayMpd(getThis1));
             //seekPlayMpd(
             //alertLayout.findViewById(R.id.positionspotify).setOnClickListener(v -> seekPlay(getThis1));
-        }
+        }*/
         return title;
     }
 
