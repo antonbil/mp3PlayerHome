@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     static final int NEWALBUMS_RESULT = 15;
     static final int SPOTIFY_PLAYING = 1;
     public static final int MPD_PLAYING = 2;
+    public static final int MPDTAB = 4;
+    public static final int SMBTAB = 1;
     public static int playingStatus;
     private boolean footerVisible = false;
     //private int tabSelected = 0;
@@ -688,10 +690,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void onBackPressed() {
         int tabSelected=tabLayout.getSelectedTabPosition();;
-        if ((tabSelected==1)||(tabSelected==3)) {
-            if (tabSelected == 1)
+        if ((tabSelected== SMBTAB)||(tabSelected==MPDTAB)) {
+            if (tabSelected == SMBTAB)
                 adapter.listFragment.back();
-            if (tabSelected == 3) adapter.dbFragment.back();
+            if (tabSelected == MPDTAB) adapter.dbFragment.back();
         }
         else
         new AlertDialog.Builder(this)

@@ -94,11 +94,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 return playFragment;
-            case 1:
+            case MainActivity.SMBTAB:
                 return listFragment;
             case 5:
                 return playlistFragment;
-            case 4:
+            case MainActivity.MPDTAB:
                 return dbFragment;
             case 2:
                 return selectFragment;
