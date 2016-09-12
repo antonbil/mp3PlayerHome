@@ -88,17 +88,21 @@ public class PlayFragment extends Fragment implements MpdInterface {
 
         if (change){
             //final ArrayList<Mp3File> files1 = playlist;
-            try {
-                playlististAdapter.setCurrentSong(logic.mpcStatus.song.intValue());
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        playlististAdapter.notifyDataSetChanged();
+            updateCurrentSong();
+        }
+    }
 
-                    }
-                });
-            } catch(Exception e){}
-            }
+    public void updateCurrentSong() {
+        try {
+            playlististAdapter.setCurrentSong(logic.mpcStatus.song.intValue());
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    playlististAdapter.notifyDataSetChanged();
+
+                }
+            });
+        } catch(Exception e){}
     }
 
     @Override

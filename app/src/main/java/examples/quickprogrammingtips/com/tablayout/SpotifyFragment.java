@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
@@ -171,7 +170,7 @@ public class SpotifyFragment extends Fragment implements
     private SpotifyApi api;
     private SpotifyService spotify;
     private AdapterView.OnItemClickListener cl;
-    protected FloatingActionButton fab;
+    //protected FloatingActionButton fab;
     public static boolean albumVisible = true;
     static Bitmap bitmap;
     private boolean artistInitiated = false;
@@ -209,6 +208,7 @@ public class SpotifyFragment extends Fragment implements
         llview = inflater.inflate(R.layout.activity_spotify, container, false);
         if (albumTracks.size()>0 && albumTracks.get(0).time>0)
             clearAlbums();
+        checkAddress();
 
         onActivityCreated();
         lastOncreateView();
@@ -233,13 +233,6 @@ public class SpotifyFragment extends Fragment implements
         }
         //new_albums_categories
 
-        if (nextCommand.equals("new_albums_categories")){
-            newAlbumsCategories(MainActivity.getThis.findViewById(R.id.thumbnail_top));
-        }
-        if (nextCommand.equals("search album")){
-            searchAlbum();
-
-        }
         Log.d("samba", "Text:11");
         if ((nextCommand.equals("search artist"))) {
             searchArtist();
@@ -523,63 +516,64 @@ public class SpotifyFragment extends Fragment implements
 
         public void onActivityCreated() {
             Log.d("samba", "Text:1");
-            activityThis=getActivity();
+            activityThis = getActivity();
 
-            try{
-            dialog1=new ProgressDialog(activityThis);
-            updateBarHandler = MainActivity.getThis.updateBarHandler;
+            try {
+                dialog1 = new ProgressDialog(activityThis);
+                updateBarHandler = MainActivity.getThis.updateBarHandler;
 
-            memoryHandler_ = new Handler();
+                memoryHandler_ = new Handler();
                 Log.d("samba", "Text:2");
-            checkAppMemory();
+                checkAppMemory();
 
 
-        tracksPlaylist = new ArrayList<Track>();
+                tracksPlaylist = new ArrayList<Track>();
 
-        String ip = MainActivity.getThis.getLogic().getMpc().getAddress();
-        ipAddress = String.format("http://%s:8080/jsonrpc", ip);
+                String ip = MainActivity.getThis.getLogic().getMpc().getAddress();
+                ipAddress = String.format("http://%s:8080/jsonrpc", ip);
                 Log.d("samba", "Text:3");
 
-        //Log.v("samba", "ip:" + ip);
+                //Log.v("samba", "ip:" + ip);
 
-        getThis = this;
-            getSpotifyInterface=new SpotifyInterface();
-        //Log.v("samba", "nosearch1");
-        api = new SpotifyApi();
+                getThis = this;
+                getSpotifyInterface = new SpotifyInterface();
+                //Log.v("samba", "nosearch1");
+                api = new SpotifyApi();
                 Log.d("samba", "Text:4");
-        spotify = api.getService();
+                spotify = api.getService();
 
-        GetSpotifyToken();
-                if (artistName==null||artistName.equals("")){
-                    artistName= MainActivity.getThis.currentArtist;;
+                GetSpotifyToken();
+                if (artistName == null || artistName.equals("")) {
+                    artistName = MainActivity.getThis.currentArtist;
+                    ;
                 }
-        if (nosearch) artistName = "The Beatles";
+                if (nosearch) artistName = "The Beatles";
 
                 Log.d("samba", "Text:5");
 
-        //Log.v("samba", "nosearch2");
+                //Log.v("samba", "nosearch2");
 
-        albumsListview = (ListView) llview.findViewById(R.id.albums_listview2);
-        albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                albumsListview = (ListView) llview.findViewById(R.id.albums_listview2);
+                albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-            setAdapterForSpotify();
+                setAdapterForSpotify();
 
-        albumsListview.setOnItemClickListener(cl);
-        relatedArtistsListView = (ListView) llview.findViewById(R.id.relatedartists_listview);
+                albumsListview.setOnItemClickListener(cl);
+                relatedArtistsListView = (ListView) llview.findViewById(R.id.relatedartists_listview);
 
-        //Log.v("samba", "nosearch3");
+                //Log.v("samba", "nosearch3");
                 Log.d("samba", "Text:6");
 
-        relatedArtistsAdapter = new RelatedArtistAdapter<String>(activityThis, android.R.layout.simple_list_item_1, artistList);
-        relatedArtistsListView.setAdapter(relatedArtistsAdapter);
+                relatedArtistsAdapter = new RelatedArtistAdapter<String>(activityThis, android.R.layout.simple_list_item_1, artistList);
+                relatedArtistsListView.setAdapter(relatedArtistsAdapter);
 
-            playButtonsAtBottom();
+                playButtonsAtBottom();
 
-            artistTitleTextView = (TextView)
+                artistTitleTextView = (TextView)
 
-                    llview.findViewById(R.id.artist_title);//relatedartists_text
+                        llview.findViewById(R.id.artist_title);//relatedartists_text
 
-            songItems=new SongItems(activityThis);
+                songItems = new SongItems(activityThis);
 
             /*songItems.setOnClick(arg0 -> {
 
@@ -588,14 +582,17 @@ public class SpotifyFragment extends Fragment implements
             });*/
 
 
-
-            spotifyHeader=new SpotifyHeader(activityThis,artistTitleTextView);
+                spotifyHeader = new SpotifyHeader(activityThis, artistTitleTextView);
 
                 Log.d("samba", "Text:7");
 
-                llview.findViewById(R.id.artist_title).setOnClickListener(view ->{llview.findViewById(R.id.artistinfo).setVisibility(View.GONE);});
-                llview.findViewById(R.id.relatedartists_text).setOnClickListener(view ->{llview.findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);});
-            fab=(FloatingActionButton)
+                llview.findViewById(R.id.artist_title).setOnClickListener(view -> {
+                    llview.findViewById(R.id.artistinfo).setVisibility(View.GONE);
+                });
+                llview.findViewById(R.id.relatedartists_text).setOnClickListener(view -> {
+                    llview.findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);
+                });
+            /*fab=(FloatingActionButton)
 
                     llview.findViewById(R.id.fab);
             fab.setOnClickListener(view ->{Log.d("samba", "fab");onClickSongitems(fab);});
@@ -603,7 +600,7 @@ public class SpotifyFragment extends Fragment implements
             fab.setOnLongClickListener(view -> {
                 previousList();
                 return true;
-            });
+            });*/
 
                 Log.d("samba", "Text:8");
                 Log.d("samba", "Text:10");
@@ -618,7 +615,9 @@ public class SpotifyFragment extends Fragment implements
                 };
                 runnable.run();
 
-        } catch (Exception e){Log.getStackTraceString(e);}
+            } catch (Exception e) {
+                Log.getStackTraceString(e);
+            }
         }
 
     public void onClickSongitems(View image) {
@@ -678,7 +677,8 @@ public class SpotifyFragment extends Fragment implements
         menu1.show();
         generateLists();
         menu1.setOnMenuItemClickListener(item1 -> {
-            String title1 = item1.getTitle().toString();
+           String title1 = item1.getTitle().toString();
+            //menu1.getMenu().clear();
 
             try {
                 //if (title.startsWith("new albums ")) {

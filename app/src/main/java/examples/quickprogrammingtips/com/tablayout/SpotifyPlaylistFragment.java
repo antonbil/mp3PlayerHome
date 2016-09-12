@@ -1,6 +1,5 @@
 package examples.quickprogrammingtips.com.tablayout;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -14,20 +13,24 @@ import kaaes.spotify.webapi.android.SpotifyService;
 public class SpotifyPlaylistFragment extends SpotifyFragment {
     @Override
     public void lastOncreateView() {
-        currentList=SpotifyList;
+        if (nextCommand.equals("new_albums_categories")){
+            newAlbumsCategories(MainActivity.getThis.findViewById(R.id.thumbnail_top));
+        }else
+        if (nextCommand.equals("search album")){
+            searchAlbum();
 
-        setAdapterForSpotify();
-        String hartistName=artistName;
+        }else {
+                currentList = SpotifyList;
 
-        Log.d("samba", "SpotifyPlayList1b");
-        refreshPlaylistFromSpotify(albumAdapter, albumsListview,MainActivity.getThis);
-        Log.d("samba", "SpotifyPlayList1c");
+                setAdapterForSpotify();
+
+                refreshPlaylistFromSpotify(albumAdapter, albumsListview, MainActivity.getThis);
+                MainActivity.getThis.runOnUiThread(() -> albumAdapter.notifyDataSetChanged());
+        }
         setVisibility(View.GONE);
-        albumAdapter.notifyDataSetChanged();
         playButtonsAtBottom();
-        fab.setVisibility(View.GONE);
+        //fab.setVisibility(View.GONE);
         llview.findViewById(R.id.artist_title).setVisibility(View.GONE);
-        //
 
     }
     @Override

@@ -17,7 +17,6 @@ import android.util.Log;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     private final Context context;
-    private SpotifyPlaylistFragment spotifyPlaylistFragment;
     SpotifyFragment spotifyFragment;
     public int[] imageResId = {
             R.drawable.play,
@@ -29,6 +28,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             R.drawable.spf
     };
     SelectFragment selectFragment;
+    SpotifyPlaylistFragment spotifyPlaylistFragment;
 
     PlaylistsFragment playlistFragment;
     PlayFragment playFragment;
@@ -56,6 +56,8 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 spotifyPlaylistFragment = new SpotifyPlaylistFragment();
             }
             catch (Exception e){Log.v("samba","error spotify playlist create");}
+            spotifyPlaylistFragment = new SpotifyPlaylistFragment();
+
         }).start();
 
     }
@@ -105,7 +107,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 3:
                 return spotifyFragment;
             case 6:
-                return new SpotifyPlaylistFragment();
+                return spotifyPlaylistFragment;
             default:
                 return null;
         }

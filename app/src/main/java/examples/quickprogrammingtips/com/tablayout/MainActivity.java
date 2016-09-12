@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static final int MPD_PLAYING = 2;
     public static final int MPDTAB = 4;
     public static final int SMBTAB = 1;
+    public static final int SPOTIFYTAB = 3;
+    public static final int SPOTIFYPLAYLISTTAB = 6;
     public static int playingStatus;
     private boolean footerVisible = false;
     //private int tabSelected = 0;
@@ -551,7 +553,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     public void callSpotify() {
         SpotifyFragment.explicitlyCalled=true;
-        Log.v("samba","search"+3);
+        Log.v("samba","search"+ SPOTIFYTAB);
 
         //tabLayout.getTabAt(2).select();
         //if(tabLayout.getSelectedTabPosition()>=3){
@@ -563,8 +565,26 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     .commit();
             //Log.v("samba","search"+4);
         //}
-        tabLayout.getTabAt(3).select();
-        Log.v("samba","search"+4);
+        tabLayout.getTabAt(SPOTIFYTAB).select();
+        //Log.v("samba","search"+4);
+
+    }
+
+    public void callSpotifyPlaylist() {
+        SpotifyFragment.explicitlyCalled=true;
+        Log.v("samba","search"+SPOTIFYPLAYLISTTAB);
+
+        //tabLayout.getTabAt(2).select();
+        //if(tabLayout.getSelectedTabPosition()>=3){
+        //adapter.spotifyFragment.
+        getSupportFragmentManager()
+                .beginTransaction()
+                .detach(adapter.spotifyPlaylistFragment)
+                .attach(adapter.spotifyPlaylistFragment)
+                .commit();
+        //Log.v("samba","search"+4);
+        //}
+        tabLayout.getTabAt(SPOTIFYPLAYLISTTAB).select();
 
     }
 
@@ -681,8 +701,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem checkable = menu.findItem(R.id.display_footer);
         checkable.setChecked(footerVisible);
-        MenuItem filter_spotify = menu.findItem(R.id.filter_spotify);
-        checkable.setChecked(filterSpotify);
 
         return true;
     }
@@ -724,16 +742,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         if (id == R.id.set_volume) {
             setVolume(getThis);
         }
-        if (id == R.id.spotify_playlist) {
-            startPlaylistSpotify();
-        }
         if (id == R.id.new_albums_categories) {
             SpotifyFragment.nextCommand="new_albums_categories";
-            startPlaylistSpotify();
+            callSpotifyPlaylist();
         }
         if (id == R.id.search_album) {
             SpotifyFragment.nextCommand="search album";
-            startPlaylistSpotify();
+            callSpotifyPlaylist();
 
         }
         //noinspection SimplifiableIfStatement
@@ -741,18 +756,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             boolean isChecked = !item.isChecked();
             item.setChecked(isChecked);
             setFooterVisibility();
-            return true;
-        }
-        if (id == R.id.filter_spotify) {
-            boolean filter_spotify = !item.isChecked();
-            item.setChecked(filter_spotify);
-            filterSpotify = !filterSpotify;
-            try {
-                SelectFragment.getThis.getFavorites();
-            } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
-            //setFooterVisibility();
             return true;
         }
         if ((id == R.id.search_option)) {//playlists_option
@@ -1294,7 +1297,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                     new ImageLoadTask(uri, album, mainActivity, image).execute();
 
 
-                                }
+                                }//
+                                if (adapter.playFragment!=null)adapter.playFragment.updateCurrentSong();
                                 MainActivity.playingStatus = MainActivity.MPD_PLAYING;
                                 //Log.v("samba",uri);
                             } catch (Exception e) {

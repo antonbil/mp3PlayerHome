@@ -1,24 +1,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+    <group android:id="@+id/grpSort">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never"
         />
+    </group>
     <item android:id="@+id/display_footer" android:title="@string/display_buttons"
-        android:orderInCategory="100" app:showAsAction="never"
-        android:checkable="true"/>
+        android:orderInCategory="100" app:showAsAction="never"/>
+    <group android:id="@+id/grpSort2">
     <item android:id="@+id/search_option" android:title="Search mpd"
         android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/spotify_playlist" android:title="Spotify Playlist"
-        android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/filter_spotify" android:title="Filter Spotify favorties"
-        android:orderInCategory="100" app:showAsAction="never"
-        android:checkable="true"/>
-    <item android:id="@+id/set_volume" android:title="Volume"
-        android:orderInCategory="100" app:showAsAction="never"/>
+        <item android:id="@+id/search_album" android:title="Search album"
+            android:orderInCategory="100" app:showAsAction="never"/>
     <item android:id="@+id/new_albums_categories" android:title="New albums categories"
         android:orderInCategory="100" app:showAsAction="never"/>
-    <item android:id="@+id/search_album" android:title="Search album"
+    </group>
+    <item android:id="@+id/set_volume" android:title="Volume"
         android:orderInCategory="100" app:showAsAction="never"/>
 
  </menu>
