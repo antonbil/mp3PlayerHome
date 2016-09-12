@@ -574,16 +574,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         SpotifyFragment.explicitlyCalled=true;
         Log.v("samba","search"+SPOTIFYPLAYLISTTAB);
 
-        //tabLayout.getTabAt(2).select();
-        //if(tabLayout.getSelectedTabPosition()>=3){
-        //adapter.spotifyFragment.
+        if(tabLayout.getSelectedTabPosition()>=5)
         getSupportFragmentManager()
                 .beginTransaction()
                 .detach(adapter.spotifyPlaylistFragment)
                 .attach(adapter.spotifyPlaylistFragment)
                 .commit();
-        //Log.v("samba","search"+4);
-        //}
         tabLayout.getTabAt(SPOTIFYPLAYLISTTAB).select();
 
     }
@@ -745,11 +741,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         if (id == R.id.new_albums_categories) {
             SpotifyFragment.nextCommand="new_albums_categories";
             callSpotifyPlaylist();
+            return true;
         }
         if (id == R.id.search_album) {
             SpotifyFragment.nextCommand="search album";
             callSpotifyPlaylist();
-
+            return true;
         }
         //noinspection SimplifiableIfStatement
         if (id == R.id.display_footer) {

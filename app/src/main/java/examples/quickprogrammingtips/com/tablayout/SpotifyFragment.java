@@ -1306,7 +1306,7 @@ public class SpotifyFragment extends Fragment implements
     public void searchAlbum() {
         try {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(activityThis);
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.getThis);
             builder.setTitle("Search album");
 
             // Set up the input
