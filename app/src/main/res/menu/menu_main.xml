@@ -16,5 +16,9 @@
         android:checkable="true"/>
     <item android:id="@+id/set_volume" android:title="Volume"
         android:orderInCategory="100" app:showAsAction="never"/>
+    <item android:id="@+id/new_albums_categories" android:title="New albums categories"
+        android:orderInCategory="100" app:showAsAction="never"/>
+    <item android:id="@+id/search_album" android:title="Search album"
+        android:orderInCategory="100" app:showAsAction="never"/>
 
  </menu>

@@ -727,6 +727,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         if (id == R.id.spotify_playlist) {
             startPlaylistSpotify();
         }
+        if (id == R.id.new_albums_categories) {
+            SpotifyFragment.nextCommand="new_albums_categories";
+            startPlaylistSpotify();
+        }
+        if (id == R.id.search_album) {
+            SpotifyFragment.nextCommand="search album";
+            startPlaylistSpotify();
+
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.display_footer) {
             boolean isChecked = !item.isChecked();
@@ -1169,7 +1178,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     private void setListenersForButtons() {
-        View playbutton = findViewById(R.id.playspotify);
+        //View playbutton = findViewById(R.id.playspotify);
         View stopbutton = findViewById(R.id.stopspotify);
         View playpausebutton = findViewById(R.id.pausespotify);
         View previousbutton = findViewById(R.id.previousspotify);
@@ -1177,7 +1186,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         View volumebutton = findViewById(R.id.volumespotify);
         View seekbutton = findViewById(R.id.positionspotify);
         new Thread(() -> {
-            SpotifyFragment.setListenersForButtons(this, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+            SpotifyFragment.setListenersForButtons(this, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
         }).start();
 
     }

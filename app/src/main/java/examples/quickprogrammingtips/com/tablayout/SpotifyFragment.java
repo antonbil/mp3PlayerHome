@@ -207,6 +207,9 @@ public class SpotifyFragment extends Fragment implements
                              Bundle savedInstanceState) {
         Log.d("samba", "Text:a1");
         llview = inflater.inflate(R.layout.activity_spotify, container, false);
+        if (albumTracks.size()>0 && albumTracks.get(0).time>0)
+            clearAlbums();
+
         onActivityCreated();
         lastOncreateView();
         Log.d("samba", "Text:c1");
@@ -224,8 +227,15 @@ public class SpotifyFragment extends Fragment implements
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
             }
-        }
+        }else {
+            clearAlbums();
 
+        }
+        //new_albums_categories
+
+        if (nextCommand.equals("new_albums_categories")){
+            newAlbumsCategories(MainActivity.getThis.findViewById(R.id.thumbnail_top));
+        }
         if (nextCommand.equals("search album")){
             searchAlbum();
 
@@ -237,6 +247,12 @@ public class SpotifyFragment extends Fragment implements
         nextCommand="";
         Log.d("samba", "Text:12");
 
+    }
+
+    public void clearAlbums() {
+        albumIds.clear();
+        albumList.clear();
+        albumTracks.clear();
     }
 
     @Override
@@ -611,9 +627,9 @@ public class SpotifyFragment extends Fragment implements
         menu.getMenu().add("play");
         menu.getMenu().add("search artist");
         menu.getMenu().add("show artist-info");
-        menu.getMenu().add("search album");
+        menu.getMenu().add("search album");//keep in menu
         menu.getMenu().add("new albums");
-        menu.getMenu().add("new albums categories");
+        menu.getMenu().add("new albums categories");//keep in menu
 
         menu.show();
         menu.setOnMenuItemClickListener(item -> {
@@ -626,81 +642,8 @@ public class SpotifyFragment extends Fragment implements
                 llview.findViewById(R.id.relatedartistsinfo).setVisibility(View.VISIBLE);
             } else
             if ((title.equals("new albums categories"))) {
-                PopupMenu menu1 = new PopupMenu(songItems.image.getContext(), songItems.image);
-                ;
-                for (String cat : CATEGORY_IDS) {
-                    menu1.getMenu().add(cat);
-                }
-                menu1.show();
-                generateLists();
-                menu1.setOnMenuItemClickListener(item1 -> {
-                    String title1 = item1.getTitle().toString();
-
-                    try {
-                        //if (title.startsWith("new albums ")) {
-                        final String cat = title1.replace("new albums ", "");
-                        fillListviewWithValues = new FillListviewWithValues() {
-
-                            @Override
-                            public void generateList(ArrayList<NewAlbum> newAlbums) {
-                                //Bundle extras = getIntent().getExtras();
-
-                                String url = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
-
-                                Favorite.NEWALBUM=Favorite.getCategoryId(cat);
-
-                                Document doc = null;
-                                try {
-                                    doc = Jsoup.connect(url).get();
-                                    String temp1 = doc.html().replace("<br>", "$$$").replace("<br />", "$$$"); //$$$ instead <br>
-                                    doc = Jsoup.parse(temp1); //Parse again
-                                } catch (IOException e) {
-                                    Log.v("samba", Log.getStackTraceString(e));
-                                }
-
-                                Elements trackelements = doc.getElementsByClass("album");
-                                //;
-                                //ArrayList<String> ids = new ArrayList<String>();
-                                for (Element element : trackelements) {
-                                    String image1 = "http://www.spotifynewmusic.com/" + element.select("img").attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
-                                    Elements links = element.getElementsByClass("play").select("a[href]"); // a with href
-                                    String s = links.get(0).attr("href");
-                                    Log.v("samba", s);
-
-                                    String div = element.children().get(1).text();
-                                    Log.v("samba", div);
-                                    try {
-                                        String[] list = div.replace("$$$", ";").split(";");
-                                        String artist = list[0];
-                                        String album = "";
-                                        if (list.length > 1)
-                                            album = list[1];
-                                        //ids.add(artist + "-" + album);
-                                        newAlbums.add(new NewAlbum(s, artist, album, image1));
-                                    } catch (Exception e) {
-                                        Log.v("samba", Log.getStackTraceString(e));
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void addToFavorites(NewAlbum newAlbum) {
-                                newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
-                            }
-
-                        };
-
-
-                        {
-                            Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
-                            startActivity(intent);
-                        }
-                        // }
-                    } catch (Exception e) {
-                        Log.v("samba", Log.getStackTraceString(e));
-                    }
-                    return true;
-                });
+                View itemview = songItems.image;
+                newAlbumsCategories(itemview);
 
             }
             try {
@@ -724,6 +667,84 @@ public class SpotifyFragment extends Fragment implements
         }
 
         );
+    }
+
+    public void newAlbumsCategories(View itemview) {
+        PopupMenu menu1 = new PopupMenu(songItems.image.getContext(), itemview);
+        ;
+        for (String cat : CATEGORY_IDS) {
+            menu1.getMenu().add(cat);
+        }
+        menu1.show();
+        generateLists();
+        menu1.setOnMenuItemClickListener(item1 -> {
+            String title1 = item1.getTitle().toString();
+
+            try {
+                //if (title.startsWith("new albums ")) {
+                final String cat = title1.replace("new albums ", "");
+                fillListviewWithValues = new FillListviewWithValues() {
+
+                    @Override
+                    public void generateList(ArrayList<NewAlbum> newAlbums) {
+                        //Bundle extras = getIntent().getExtras();
+
+                        String url = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
+
+                        Favorite.NEWALBUM=Favorite.getCategoryId(cat);
+
+                        Document doc = null;
+                        try {
+                            doc = Jsoup.connect(url).get();
+                            String temp1 = doc.html().replace("<br>", "$$$").replace("<br />", "$$$"); //$$$ instead <br>
+                            doc = Jsoup.parse(temp1); //Parse again
+                        } catch (IOException e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+                        }
+
+                        Elements trackelements = doc.getElementsByClass("album");
+                        //;
+                        //ArrayList<String> ids = new ArrayList<String>();
+                        for (Element element : trackelements) {
+                            String image1 = "http://www.spotifynewmusic.com/" + element.select("img").attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
+                            Elements links = element.getElementsByClass("play").select("a[href]"); // a with href
+                            String s = links.get(0).attr("href");
+                            Log.v("samba", s);
+
+                            String div = element.children().get(1).text();
+                            Log.v("samba", div);
+                            try {
+                                String[] list = div.replace("$$$", ";").split(";");
+                                String artist = list[0];
+                                String album = "";
+                                if (list.length > 1)
+                                    album = list[1];
+                                //ids.add(artist + "-" + album);
+                                newAlbums.add(new NewAlbum(s, artist, album, image1));
+                            } catch (Exception e) {
+                                Log.v("samba", Log.getStackTraceString(e));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void addToFavorites(NewAlbum newAlbum) {
+                        newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
+                    }
+
+                };
+
+
+                {
+                    Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                    startActivity(intent);
+                }
+                // }
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+            }
+            return true;
+        });
     }
 
     public void nextList(){
@@ -2733,14 +2754,14 @@ public class SpotifyFragment extends Fragment implements
 
         LayoutInflater inflater = getThis1.getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.play_spotify, null);
-        View playbutton = alertLayout.findViewById(R.id.playspotify);
+        //View playbutton = alertLayout.findViewById(R.id.playspotify);
         View stopbutton = alertLayout.findViewById(R.id.stopspotify);
         View playpausebutton = alertLayout.findViewById(R.id.pausespotify);
         View previousbutton = alertLayout.findViewById(R.id.previousspotify);
         View nextbutton = alertLayout.findViewById(R.id.nextspotify);
         View volumebutton = alertLayout.findViewById(R.id.volumespotify);
         View seekbutton = alertLayout.findViewById(R.id.positionspotify);
-        String title = setListenersForButtons(getThis1, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+        String title = setListenersForButtons(getThis1, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
         AlertDialog.Builder alert = new AlertDialog.Builder(getThis1);
         alert.setTitle(title);
         // this is set the view from XML inside AlertDialog
@@ -2752,7 +2773,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     @NonNull
-    public static String setListenersForButtons(Activity getThis1, View playbutton, View stopbutton, View playpausebutton, View previousbutton, View nextbutton, View volumebutton, View seekbutton) {
+    public static String setListenersForButtons(Activity getThis1, View stopbutton, View playpausebutton, View previousbutton, View nextbutton, View volumebutton, View seekbutton) {
         String title = "Spotify Play";
         MpcStatus mpcStatus = new MpcStatus().invoke();
         Logic logic1=null;
@@ -2765,14 +2786,14 @@ public class SpotifyFragment extends Fragment implements
         }
         Logic logic=logic1;
 
-        playbutton.setOnClickListener(v -> {
+        /*playbutton.setOnClickListener(v -> {
             try {
                 if (SpotifyFragment.playingEngine==1||MainActivity.getThis.tabLayout.getSelectedTabPosition()==6) playSpotify();
                 else MainActivity.getThis.getLogic().getMpc().play();
             }catch (Exception e){
                 Log.v("samba","Error starting play!");
             }
-        });
+        });*/
         stopbutton.setOnClickListener(v -> {
             try{
             if (SpotifyFragment.playingEngine==1) stopSpotifyPlaying(ipAddress);
