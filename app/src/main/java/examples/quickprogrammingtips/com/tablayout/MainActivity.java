@@ -418,13 +418,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             catch (Exception e){Log.v("samba","error in setting up tool");}
             //Log.d("samba", "Text:9");
 
-            try{
-        setListenersForButtons();
-        }
-        catch (Exception e){Log.v("samba","error setting listeners");}
 
         Log.v("samba",""+20);
         new Thread(() -> {
+            try{
+                setListenersForButtons();
+            }
+            catch (Exception e){Log.v("samba","error setting listeners");}
             updateDisplay();
 
         }).start();
