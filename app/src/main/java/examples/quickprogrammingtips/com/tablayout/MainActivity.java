@@ -426,6 +426,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
             catch (Exception e){Log.v("samba","error setting listeners");}
             updateDisplay();
+            SpotifyFragment.getOnlyPlaylistFromSpotify(1, SpotifyFragment.albumList, SpotifyFragment.albumTracks);
 
         }).start();
         Log.d("samba", "Text:10");

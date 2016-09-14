@@ -1,6 +1,7 @@
 package examples.quickprogrammingtips.com.tablayout.adapters;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
@@ -22,10 +23,10 @@ import jcifs.smb.SmbFile;
  */
 public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements Filterable {
     public static final String FAMILYMUSIC = "smb://192.168.2.8/FamilyLibrary/FamilyMusic/";
-    private static ArrayList<String> artistList=new ArrayList();
+    private static ArrayList<String> artistList=new ArrayList<String>();
     private ArrayList<String> suggestions =new ArrayList<>();
     private char firstLetter =' ';
-    public static ArrayList<Character> letters=new ArrayList();
+    public static ArrayList<Character> letters=new ArrayList<Character>();
 
         public ArtistAutoCompleteAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
@@ -55,7 +56,11 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                         if (c != firstLetter) {
                             // Retrieve the  results.
                             if (notpartOf(c)) {
-                                artistList.addAll(retrieveFromSambaShare(firstLetterString));
+                                try {
+                                    artistList.addAll(retrieveFromSambaShare(firstLetterString));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 letters.add(c);
                                 getAllFilenames();
                             }
@@ -127,13 +132,26 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
     }
 
     public static void getAllFilenames() {
+        new AsyncTask<Object, Object, Object>(){
+
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                return null;
+            }
+        }.execute();
         new Thread()
         {
             public void run() {
+
                 for (char c1 = 'a'; c1 <= 'z'; c1++) {
                     if (notpartOf(c1)) {
                         letters.add(c1);
-                        ArrayList<String> artistList1 = retrieveFromSambaShare(c1 + "");
+                        ArrayList<String> artistList1 = null;
+                        try {
+                            artistList1 = retrieveFromSambaShare(c1 + "");
+                        } catch (Exception e) {
+                            return;
+                        }
                         artistList.addAll(artistList1);
                     }
                 }
@@ -148,7 +166,7 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
         return true;
     }
 
-    static ArrayList<String> retrieveFromSambaShare(String firstLetter){
+    static ArrayList<String> retrieveFromSambaShare(String firstLetter) throws Exception {
         ArrayList<String>artists=new ArrayList<>();
         firstLetter=firstLetter.toLowerCase().substring(0,1);
         //authentication
@@ -183,6 +201,8 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
         });
         } catch (Exception e) {
             Log.v("samba","error samba");
+            throw new Exception("Samba");
+            //return null;
         }
         return artists;
     }
