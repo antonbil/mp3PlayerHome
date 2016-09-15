@@ -197,11 +197,6 @@ public class SpotifyFragment extends Fragment implements
     protected String[] lists = new String[]{"albumlist","spotifylist","mpdlist"};;
     private static Activity activityThis;
     View llview;
-    //((ImageView) findViewById(R.id.thumbnail_top))setOnLongClickListener(v -> {
-    //setFooterVisibility();
-    //displayLargeImage(MainActivity.this, /*MainActivity.this.albumBitmap*/((BitmapDrawable)im.getDrawable()).getBitmap());
-    //return true;
-//});
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
