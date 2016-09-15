@@ -6,19 +6,21 @@ package examples.quickprogrammingtips.com.tablayout;
 
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
 import android.util.Log;
 
-public class PagerAdapter extends FragmentStatePagerAdapter {
+public class PagerAdapter extends android.support.v4.app.FragmentStatePagerAdapter {
+    /*
+    http://stackoverflow.com/questions/21471712/replacing-fragment-in-viewpager-shows-blank-screen
+
+    Use this,
+
+public class MyPagerAdapter extends android.support.v4.app.FragmentStatePagerAdapter
+     */
     private final Context context;
     SpotifyFragment spotifyFragment;
-    public int[] imageResId = {
+    /*public int[] imageResId = {
             R.drawable.play,
             R.drawable.smb,
             R.drawable.ic_sync_black_24dp,
@@ -26,15 +28,15 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             R.drawable.mpd,
             R.drawable.swan1,
             R.drawable.spf
-    };
+    };*/
     SelectFragment selectFragment;
     SpotifyPlaylistFragment spotifyPlaylistFragment;
 
     PlaylistsFragment playlistFragment;
     PlayFragment playFragment;
-    int mNumOfTabs;
     ListFragment listFragment;
     DBFragment         dbFragment;
+    int mNumOfTabs;
     public int tabselected=0;
 
     public PagerAdapter(FragmentManager fm, int NumOfTabs, Context context) {
@@ -56,7 +58,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 spotifyPlaylistFragment = new SpotifyPlaylistFragment();
             }
             catch (Exception e){Log.v("samba","error spotify playlist create");}
-            spotifyPlaylistFragment = new SpotifyPlaylistFragment();
+            //spotifyPlaylistFragment = new SpotifyPlaylistFragment();
 
         }).start();
 
@@ -74,7 +76,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         <item name="textAllCaps">false</item>
   </style>
      */
-    @Override
+    /*@Override
     public CharSequence getPageTitle(int position) {
         // Generate title based on item position
         // return tabTitles[position];
@@ -84,7 +86,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
         sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return null;
-    }
+    }*/
 
     @Override
     public Fragment getItem(int position) {
@@ -102,9 +104,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 return playlistFragment;
             case MainActivity.MPDTAB:
                 return dbFragment;
-            case 2:
+            case MainActivity.SELECTTAB:
                 return selectFragment;
-            case 3:
+            case MainActivity.SPOTIFYTAB:
                 return spotifyFragment;
             case 6:
                 return spotifyPlaylistFragment;

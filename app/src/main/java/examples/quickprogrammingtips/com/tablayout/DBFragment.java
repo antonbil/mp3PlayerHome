@@ -51,6 +51,7 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     }
 
     public void displayContents(String path) {
+        Log.v("samba","get path "+path);
         new DatabaseCommand(logic.getMpc(),"lsinfo \""+path+"\"",this, false).run();
     }
     @Override
