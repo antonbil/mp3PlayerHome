@@ -189,11 +189,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         try {
                             getSpotifyInterface.previousTrack.id = "";
                         } catch (Exception e){Log.v("samba","error in starting song");};
-                            Log.v("samba","a");
+                            //Log.v("samba","a");
                             duplicateLists();
-                            Log.v("samba","b");
+                            //Log.v("samba","b");
                             SpotifyFragment.stopMpd();
-                            Log.v("samba","c");
+                            //Log.v("samba","c");
                             SpotifyFragment.playlistGotoPosition(counter);
                     }
 
@@ -317,6 +317,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 R.drawable.swan1,
                 R.drawable.spf
         };
+        playFragment = new PlayFragment();
         for (int i=0;i<tabLayout.getTabCount();i++){
             tabLayout.getTabAt(i).setIcon(imageResId[i]);
         }
@@ -332,10 +333,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-        playFragment = new PlayFragment();
         new Thread(() -> {
             selectFragment = new SelectFragment();
-            Log.d("samba", "Text:9");
+            TabLayout.Tab tab = tabLayout.getTabAt(SELECTTAB);
+            tab.select();
+            tab = tabLayout.getTabAt(0);
+            tab.select();
+            //Log.d("samba", "Text:9");
 
             try{
                 spotifyFragment=new SpotifyFragment();}
@@ -345,10 +349,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 spotifyPlaylistFragment = new SpotifyPlaylistFragment();
             }
             catch (Exception e){Log.v("samba","error spotify playlist create");}
-            TabLayout.Tab tab = tabLayout.getTabAt(2);
-            tab.select();
-            tab = tabLayout.getTabAt(0);
-            tab.select();
             try{
                 dbFragment = new DBFragment();}
             catch (Exception e){Log.v("samba","error spotify create");}
@@ -373,20 +373,20 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //Log.d("samba", "Text:8");
         FAB.setOnClickListener(v -> {
                         SpotifyFragment.nextCommand="search artist";
-            Log.v("samba","search"+1);
+            //Log.v("samba","search"+1);
                         startPlaylistSpotify();
         });
 
             try {
                 Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
-                Log.v("samba", "b" + 19);
+                //Log.v("samba", "b" + 19);
                 setSupportActionBar(tool);
             }
             catch (Exception e){Log.v("samba","error in setting up tool");}
             //Log.d("samba", "Text:9");
 
 
-        Log.v("samba",""+20);
+        //Log.v("samba",""+20);
         new Thread(() -> {
             try{
                 setListenersForButtons();
@@ -396,14 +396,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             SpotifyFragment.getOnlyPlaylistFromSpotify(1, SpotifyFragment.albumList, SpotifyFragment.albumTracks);
 
         }).start();
-        Log.d("samba", "Text:10");
+        //Log.d("samba", "Text:10");
 
             try{
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         ArtistAutoCompleteAdapter.getAllFilenames();
-        Log.d("samba", "Text:11");
+        //Log.d("samba", "Text:11");
         final Handler handler = new Handler();
         handler.postDelayed(() -> {
             if(!Logic.hasbeen)
@@ -439,7 +439,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 replaceFragment(dbFragment);
                 break;
             case PLAYLISTTAB:
-                Log.v("samba","playlisttab wordt nu geinitialiseerd omdat de tab wordt geselecteerd");
                 replaceFragment(playlistFragment);
                 break;
             case SPOTIFYPLAYLISTTAB :
@@ -477,11 +476,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
             MainActivity.getThis.startActivity(intent);*/
             SpotifyFragment.artistName="nosearch";
-            Log.v("samba","search"+2);
+            //Log.v("samba","search"+2);
 
             callSpotify();
             //hiermoetiets
-            Log.v("samba", "Spotify");
+            //Log.v("samba", "Spotify");
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
             //e.printStackTrace();
@@ -495,7 +494,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
             //getThis.startActivityForResult(intent, 4);
             SpotifyFragment.artistName=currentArtist;
-            Log.v("samba", "call artist! with:"+currentArtist);
+            //Log.v("samba", "call artist! with:"+currentArtist);
             callSpotify();
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
@@ -839,15 +838,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
 
             String urlString = extras.getString("url");
-            Log.v("samba", "return:" + urlString);
+            //Log.v("samba", "return:" + urlString);
             Toast.makeText(MainActivity.this, "return:" + urlString, Toast.LENGTH_SHORT).show();
 
         }
-        Log.v("samba", "in hoofd-activity");
-        Log.v("samba", "requestcode:" + resultCode);
+        //Log.v("samba", "in hoofd-activity");
+        //Log.v("samba", "requestcode:" + resultCode);
         if (resultCode == 23) {Log.v("samba", "get favorites");
             SelectFragment.getThis.getFavorites();return;}
-        Log.v("samba", "in hoofd-activity erna");
+        //Log.v("samba", "in hoofd-activity erna");
         {
             if (resultCode == Activity.RESULT_OK) {
                 //spotify window asks for search of artist
