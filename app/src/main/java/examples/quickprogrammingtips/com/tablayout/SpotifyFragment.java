@@ -687,6 +687,7 @@ public class SpotifyFragment extends Fragment implements
         menu1.show();
         generateLists();
         menu1.setOnMenuItemClickListener(item1 -> {
+            menu1.dismiss();
            String title1 = item1.getTitle().toString();
             //menu1.getMenu().clear();
 
