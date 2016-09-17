@@ -29,6 +29,7 @@
         android:layout_below="@+id/app_bar"
         android:background="#888888"
         android:scrollbars="horizontal"
+        app:tabMode="fixed" app:tabGravity="fill"
         app:layout_scrollFlags="scroll|enterAlways"
         android:foregroundTint="#7eff3a">
 

@@ -73,9 +73,10 @@ public class NetworkShare  implements MPCDatabaseListener{
                 ArrayList<File> filesMp3=new ArrayList<>();
                 String mp3FileForDatabaseCommand="";
                 try{
+                    System.setProperty("jcifs.smb.client.responseTimeout", "1000"); // default: 30000 millisec.
+                    System.setProperty("jcifs.smb.client.soTimeout", "1000"); // default: 35000 millisec.
                     NtlmPasswordAuthentication auth = getNtlmPasswordAuthentication();
 
-                    //int countmp3=0;
                     waitForCallBack=false;
                     SmbFile dir = new SmbFile(""+networkPath, auth);
                     for (SmbFile f : dir.listFiles()) {
