@@ -219,11 +219,14 @@ public class SpotifyFragment extends Fragment implements
         {
             try{
                 //Log.d("samba", "Text:9a");
-                initArtistlist(artistName);
-                //Log.d("samba", "Text:9b");
-                currentList=AlbumList+1;
+
+                new Thread(() -> {
+                    initArtistlist(artistName);
+                    //Log.d("samba", "Text:9b");
+                    currentList=AlbumList+1;
+                }).start();
             } catch (Exception e) {
-                //Log.v("samba", Log.getStackTraceString(e));
+                Log.v("samba", Log.getStackTraceString(e));
             }
         }else {
             clearAlbums();
@@ -333,6 +336,7 @@ public class SpotifyFragment extends Fragment implements
     private static void AddSpotifyTrack(Activity getThis, ArrayList<String> ids, final int pos) {
         try {
             if (pos < ids.size()) {
+                Log.v("samba", "before AddSpotifyTrack"+pos);
                 dialog1.incrementProgressBy(1);
                 //add track to playlist
                 String prefix="spotify:track:";
@@ -345,21 +349,24 @@ public class SpotifyFragment extends Fragment implements
                 //GetJsonFromUrl(data, urlString);
                 AddSpotifyTrack(getThis, ids, pos + 1);
             } else {
+                Log.v("samba", "before AddSpotifyTrack1");
                 //all tracks added
                 stopMpd();
                 //get playlist from server
                 JSONArray playlist = getPlaylist();
+                Log.v("samba", "before AddSpotifyTrack");
+                if (playlist!=null&&ids!=null) {
 
-                spotifyStartPosition = playlist.length() - ids.size();
-                playAtPosition(spotifyStartPosition);
-                getThis.runOnUiThread(new Runnable() {
-                    public void run() {
-                        if (dialog1.isShowing())
-                            dialog1.dismiss();
+                    spotifyStartPosition = playlist.length() - ids.size();
+                    playAtPosition(spotifyStartPosition);
+                }
 
-                    }
+                MainActivity.getThis.runOnUiThread(() -> {
+                    if (dialog1.isShowing())
+                        dialog1.dismiss();
+
                 });
-
+                Log.v("samba", "done AddSpotifyTrack");
 
             }
         } catch (Exception e) {
@@ -739,7 +746,7 @@ public class SpotifyFragment extends Fragment implements
 
 
                 {
-                    Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                    Intent intent = new Intent(this.getActivity(), NewAlbumsActivityElectronic.class);
                     startActivity(intent);
                 }
                 // }
@@ -787,6 +794,7 @@ public class SpotifyFragment extends Fragment implements
             playButtonsAtBottom();
         }else
         if ((title.equals(lists[AlbumList]))) {
+            MainActivity.getThis.runOnUiThread(() -> {
             //Log.d("samba", "AlbumList1");
             currentList=AlbumList+1;
             if (displayMpd){
@@ -804,9 +812,10 @@ public class SpotifyFragment extends Fragment implements
             displayAlbums();
             //Log.d("samba", "AlbumList1f");
             displayMpd=false;
-            albumAdapter.notifyDataSetChanged();
+                albumAdapter.notifyDataSetChanged();
 
-            relatedArtistsAdapter.notifyDataSetChanged();
+                relatedArtistsAdapter.notifyDataSetChanged();
+            });
             playButtonsAtBottom();
             //Log.d("samba", "AlbumList1g");
         }
@@ -1128,8 +1137,10 @@ public class SpotifyFragment extends Fragment implements
                 Log.v("samba", Log.getStackTraceString(e));
             }
             //spotifyStartPosition=0;
+        MainActivity.getThis.runOnUiThread(() -> {
             albumAdapter.setDisplayCurrentTrack(true);
             albumAdapter.notifyDataSetChanged();
+        });
 
         setVisibility(View.GONE);
     }
@@ -1512,8 +1523,11 @@ public class SpotifyFragment extends Fragment implements
     }
     private void initArtistlist(final String atistName) {
         artistInitiated = true;
-        Utils.setDynamicHeight(albumsListview, 0);
-        Utils.setDynamicHeight(relatedArtistsListView, 0);
+        MainActivity.getThis.runOnUiThread(() -> {
+
+                    Utils.setDynamicHeight(albumsListview, 0);
+                    Utils.setDynamicHeight(relatedArtistsListView, 0);
+                });
 
         listAlbumsForArtist(api, spotify, atistName, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
     }
@@ -1728,9 +1742,9 @@ public class SpotifyFragment extends Fragment implements
             albumIds.add(MPD+file);
             albumTracks.add(pi);
         }
-        MainActivity.getThis.runOnUiThread(() -> {
-            albumAdapter.setDisplayCurrentTrack(false);
+        albumAdapter.setDisplayCurrentTrack(false);
 
+        MainActivity.getThis.runOnUiThread(() -> {
             albumAdapter.notifyDataSetChanged();
             Utils.setDynamicHeight(albumsListview, 0);
 
@@ -1924,6 +1938,7 @@ public class SpotifyFragment extends Fragment implements
         public void run() {
 
             AddSpotifyTrack(getThis, mainids, 0);
+            Log.v("samba","end run");
             atEnd2();
 
         }
@@ -1964,12 +1979,18 @@ public class SpotifyFragment extends Fragment implements
 
                 new Thread(new Task(mainids, getThis) {
                     public void atEnd2() {
-                        //Log.v("samba", "einde taak");
+                        Log.v("samba", "einde taak");
                         MainActivity.getThis.runOnUiThread(new Runnable() {
                             public void run() {
 
+
+                                try{
                                 dialog1.dismiss();
                                 atEnd();
+                            } catch (Exception e) {
+                                Log.v("samba", Log.getStackTraceString(e));
+                                Log.v("samba", "end thread after at end");
+                            }
 
                             }
                         });
@@ -2239,6 +2260,7 @@ public class SpotifyFragment extends Fragment implements
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
+                    Log.v("samba","now get albums");
                 albumList.clear();
                 albumTracks.clear();
                 albumIds.clear();
@@ -2260,9 +2282,12 @@ public class SpotifyFragment extends Fragment implements
 
                     }
                 //albumAdapter.setDisplayCurrentTrack(false);
-                albumAdapter.notifyDataSetChanged();
-                Utils.setDynamicHeight(albumsListview, 0);
+                //MainActivity.getThis.runOnUiThread(() -> albumAdapter.notifyDataSetChanged());
+                MainActivity.getThis.runOnUiThread(() -> {
+                            albumAdapter.notifyDataSetChanged();
+                            Utils.setDynamicHeight(albumsListview, 0);
                 //DatabaseListThread a=new DatabaseListThread(MainActivity.getThis.getLogic().getMpc(),"list \"file\" artist \"Rolling Stones\" group album",getThis);//"album"
+                });
                 DatabaseListThread a=new DatabaseListThread(MainActivity.getThis.getLogic().getMpc(),String.format("find \"artist\" \"%s\"",beatles),getThis);//"album"
                 a.start();
 
@@ -2280,8 +2305,10 @@ public class SpotifyFragment extends Fragment implements
                 for (Artist artist : artists.artists) {
                     artistList.add(artist.name);
                 }
-                relatedArtistsAdapter.notifyDataSetChanged();
-                Utils.setDynamicHeight(relatedArtistsListView, 0);
+                MainActivity.getThis.runOnUiThread(() -> {
+                    relatedArtistsAdapter.notifyDataSetChanged();
+                    Utils.setDynamicHeight(relatedArtistsListView, 0);
+                });
             }
 
             @Override
@@ -2390,7 +2417,9 @@ public class SpotifyFragment extends Fragment implements
 
                         if (albumAdapter!=null) {
                             albumAdapter.setCurrentItem(currentTrack);
-                            albumAdapter.notifyDataSetChanged();
+                            MainActivity.getThis.runOnUiThread(() -> {
+                                albumAdapter.notifyDataSetChanged();
+                            });
                         }
                         final String trackid = trid;
 
@@ -2491,7 +2520,9 @@ public class SpotifyFragment extends Fragment implements
                         if (SpotifyFragment.getThis.displayMpd)
                             if (albumTracks.size()!=logic.getPlaylistFiles().size())
                                 SpotifyFragment.getThis.displayMpd(albumsListview);
-                        albumAdapter.notifyDataSetChanged();
+                        MainActivity.getThis.runOnUiThread(() -> {
+                            albumAdapter.notifyDataSetChanged();
+                        });
 
                     } catch (Exception e) {
                         busyupdateSongInfo=false;

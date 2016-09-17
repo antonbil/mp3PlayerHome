@@ -7,7 +7,6 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!--android:layout_height="?attr/actionBarSize"-->
@@ -40,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.support.v4.view.ViewPager
+<!--    <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
@@ -49,7 +48,7 @@
         android:id="@+id/frLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tabLayout">
+        android:layout_below="@+id/tabLayout">-->
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/find"
@@ -63,7 +62,7 @@
             app:borderWidth="0dp"
             app:fabSize="normal"
             android:layout_gravity="right|bottom" />
-    </FrameLayout>
+    <!--</FrameLayout>-->
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"

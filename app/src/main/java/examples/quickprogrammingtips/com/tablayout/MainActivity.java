@@ -433,6 +433,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 replaceFragment(selectFragment);
                 break;
             case SPOTIFYTAB :
+                //if(spotifyFragment != null)
+                //    getSupportFragmentManager().beginTransaction().remove(spotifyFragment).commit();
                 replaceFragment(spotifyFragment);
                 break;
             case MPDTAB :
@@ -721,7 +723,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             @Override
             public void run() {
                 selectTab(2);
-                getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, dbFragment).commit();
             }
         }, 100);
 
@@ -856,7 +858,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     public void run() {
                         selectTab(2);
                         //give the program time to restore saved instance
-                        getSupportFragmentManager().beginTransaction().replace(R.id.frLayout, dbFragment).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, dbFragment).commit();
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {

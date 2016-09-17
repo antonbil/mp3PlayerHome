@@ -19,7 +19,6 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:noHistory="true"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,33 +31,6 @@
             android:name="io.fabric.ApiKey"
             android:value="bc2197999b21e7ba11c8a95c07b57385c5ccd83a" />
 
-        <activity
-            android:name=".SpotifyFragment"
-            android:label="Spotify">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:host="open.spotify.com" android:scheme="http"/>
-                <data android:host="open.spotify.com" android:scheme="https"/>
-                <data android:host="play.spotify.com" android:scheme="http"/>
-                <data android:host="play.spotify.com" android:scheme="https"/>
-                <data android:scheme="spotify"/>
-            </intent-filter>
-            -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="callback"
-                    android:scheme="testschema" />
-            </intent-filter>
-        </activity>
         <!--<activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />-->
@@ -104,13 +76,13 @@
              />
         <activity
             android:name=".NewAlbumsActivityElectronic"
-            android:label="@string/title_activity_new_albums_activity_electronic"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog">
+            android:label="@string/title_activity_new_albums_activity_electronic">
+            <!--android:theme="@style/Theme.AppCompat.DayNight.Dialog">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <meta-data android:name="DATABASE" android:value="sugar_example3.db" />
         <meta-data android:name="VERSION" android:value="1" />

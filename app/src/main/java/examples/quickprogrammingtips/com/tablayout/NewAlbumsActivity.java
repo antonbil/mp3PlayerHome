@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -29,15 +28,32 @@ public class NewAlbumsActivity extends Activity {
     Activity getThis;
 
     @Override
+    protected void onStop() {
+        finish();
+        super.onStop();
+        Log.v("samba", "stop");
+        onBackPressed();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WindowManager.LayoutParams params = getWindow().getAttributes();
+        /*WindowManager.LayoutParams params = getWindow().getAttributes();
         params.x = -100;
         params.height = 1000;
         params.width = 800;
         params.y = -50;
 
-        this.getWindow().setAttributes(params);
+        this.getWindow().setAttributes(params);*/
 
         getThis=this;
         setContentView(R.layout.activity_new_albums);
@@ -67,14 +83,16 @@ public class NewAlbumsActivity extends Activity {
                         customAdapter.notifyDataSetChanged();
 
                     });
+                    Log.v("samba", "after generateList");
                 }catch(Exception e){
-                    loadingdialog.dismiss();
+                    //loadingdialog.dismiss();
 
                     Log.v("samba", Log.getStackTraceString(e));}
             }
         };
 
         task.start();
+        Log.v("samba", "task start");
 
 
     }
@@ -151,8 +169,14 @@ public class NewAlbumsActivity extends Activity {
                                     MainActivity.displayLargeImage(getThis, logo);
 
                                 }else
+                                if (item.getTitle().toString().equals("play")) {
+                                    SpotifyFragment.showPlayMenu(getThis,image);
+                                }else
                                 if (item.getTitle().toString().equals("wikipedia")) {
                                     MainActivity.startWikipediaPage(items.get(position).artist);
+                                }else
+                                if (item.getTitle().toString().equals("finish")) {
+                                    finish();
                                 }
                                 return true;
                             });
@@ -161,6 +185,8 @@ public class NewAlbumsActivity extends Activity {
                             menu.getMenu().add("add album");
                             menu.getMenu().add("large image");
                             menu.getMenu().add("wikipedia");
+                            menu.getMenu().add("play");//
+                            menu.getMenu().add("finish");//SpotifyFragment.showPlayMenu(this,fab)
                             menu.show();
                         });
                     }

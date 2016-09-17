@@ -79,6 +79,9 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         holder.image = (ImageView) convertView.findViewById(R.id.spotifylistimageView);
         holder.name = (TextView) convertView.findViewById(R.id.name);
         holder.time = (TextView) convertView.findViewById(R.id.spotifytime);
+        holder.pos.setOnClickListener(view -> {
+            longclick( position,  convertView2,logo1);
+        });
 
         convertView.setTag(holder);
 
