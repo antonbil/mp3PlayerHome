@@ -29,10 +29,10 @@ public class NewAlbumsActivity extends Activity {
 
     @Override
     protected void onStop() {
-        finish();
+
         super.onStop();
         Log.v("samba", "stop");
-        onBackPressed();
+
     }
     @Override
     protected void onPause() {
@@ -176,6 +176,7 @@ public class NewAlbumsActivity extends Activity {
                                     MainActivity.startWikipediaPage(items.get(position).artist);
                                 }else
                                 if (item.getTitle().toString().equals("finish")) {
+                                    SpotifyFragment.categoriesMenu.dismiss();
                                     finish();
                                 }
                                 return true;

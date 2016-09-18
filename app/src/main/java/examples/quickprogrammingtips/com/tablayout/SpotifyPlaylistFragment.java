@@ -13,6 +13,8 @@ import kaaes.spotify.webapi.android.SpotifyService;
 public class SpotifyPlaylistFragment extends SpotifyFragment {
     @Override
     public void lastOncreateView() {
+        if (categoriesMenu!=null)
+            categoriesMenu.getMenu().clear();
         if (nextCommand.equals("new_albums_categories")){
             newAlbumsCategories(MainActivity.getThis.findViewById(R.id.thumbnail_top));
         }else
@@ -27,6 +29,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
                 refreshPlaylistFromSpotify(albumAdapter, albumsListview, MainActivity.getThis);
                 MainActivity.getThis.runOnUiThread(() -> albumAdapter.notifyDataSetChanged());
         }
+        nextCommand="";
         setVisibility(View.GONE);
         playButtonsAtBottom();
         //fab.setVisibility(View.GONE);
