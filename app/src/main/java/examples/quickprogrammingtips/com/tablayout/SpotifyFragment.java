@@ -187,6 +187,7 @@ public class SpotifyFragment extends Fragment implements
     private static Activity activityThis;
     View llview;
     public static PopupMenu categoriesMenu;
+    private static ProgressDialog progressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -2010,13 +2011,16 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void refreshPlaylistFromSpotify(final PlanetAdapter albumAdapter1, ListView albumsListview, Activity getThis) {
-        ProgressDialog progressDialog;
-        progressDialog = new ProgressDialog(getThis);
-        progressDialog.setCancelable(true);
-        progressDialog.setMessage("Get playlist...");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setProgress(0);
-        progressDialog.show();
+        Log.d("samba", "Text:3a1");
+        MainActivity.getThis.runOnUiThread(() ->{
+
+            progressDialog = new ProgressDialog(getThis);
+            progressDialog.setCancelable(true);
+            progressDialog.setMessage("Get playlist...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setProgress(0);
+            progressDialog.show();
+        });
         albumVisible = false;
         albumAdapter1.setAlbumVisible(false);
         try {
@@ -2028,7 +2032,8 @@ public class SpotifyFragment extends Fragment implements
 
             albumAdapter1.setDisplayCurrentTrack(true);
             try{
-            Utils.setDynamicHeight(albumsListview, 0);
+                MainActivity.getThis.runOnUiThread(() ->
+            Utils.setDynamicHeight(albumsListview, 0));
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
@@ -2036,7 +2041,7 @@ public class SpotifyFragment extends Fragment implements
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
-        progressDialog.dismiss();
+        MainActivity.getThis.runOnUiThread(() -> progressDialog.dismiss());
 
     }
 

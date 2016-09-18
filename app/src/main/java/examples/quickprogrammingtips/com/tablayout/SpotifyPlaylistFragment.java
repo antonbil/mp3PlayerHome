@@ -1,5 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -17,17 +18,16 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
             categoriesMenu.getMenu().clear();
         if (nextCommand.equals("new_albums_categories")){
             newAlbumsCategories(MainActivity.getThis.findViewById(R.id.thumbnail_top));
+            new Thread(() -> {
+                setCurrentTracklist();
+            }).start();
+
         }else
         if (nextCommand.equals("search album")){
             searchAlbum();
 
         }else {
-                currentList = SpotifyList;
-
-                setAdapterForSpotify();
-
-                refreshPlaylistFromSpotify(albumAdapter, albumsListview, MainActivity.getThis);
-                MainActivity.getThis.runOnUiThread(() -> albumAdapter.notifyDataSetChanged());
+            setCurrentTracklist();
         }
         nextCommand="";
         setVisibility(View.GONE);
@@ -36,6 +36,16 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
         llview.findViewById(R.id.artist_title).setVisibility(View.GONE);
 
     }
+
+    public void setCurrentTracklist() {
+        currentList = SpotifyList;
+
+        setAdapterForSpotify();
+
+        refreshPlaylistFromSpotify(albumAdapter, albumsListview, MainActivity.getThis);
+        MainActivity.getThis.runOnUiThread(() -> albumAdapter.notifyDataSetChanged());
+    }
+
     @Override
     public void displayAlbums(){
 
