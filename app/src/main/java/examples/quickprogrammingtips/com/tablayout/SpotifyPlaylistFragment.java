@@ -13,13 +13,12 @@ import kaaes.spotify.webapi.android.SpotifyService;
 public class SpotifyPlaylistFragment extends SpotifyFragment {
     @Override
     public void lastOncreateView() {
-        playButtonsAtBottom();
         currentList = SpotifyList;
 
         setAdapterForSpotify();
 
         if (nextCommand.equals("new_albums_categories")){
-            newAlbumsCategories(MainActivity.getThis.findViewById(R.id.thumbnail_top));
+            newAlbumsCategories();
             new Thread(() -> {
                 setCurrentTracklist();
             }).start();
@@ -44,10 +43,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
 
     @Override
     public void displayAlbums(){
-
-    }
-    @Override
-    protected void selectList(String title) {
 
     }
 

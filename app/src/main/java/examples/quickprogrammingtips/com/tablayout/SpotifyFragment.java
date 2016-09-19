@@ -30,7 +30,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,7 +54,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAdapter;
 import examples.quickprogrammingtips.com.tablayout.adapters.InstantAutoComplete;
@@ -554,20 +552,11 @@ public class SpotifyFragment extends Fragment implements
                 relatedArtistsAdapter = new RelatedArtistAdapter<String>(activityThis, android.R.layout.simple_list_item_1, artistList);
                 relatedArtistsListView.setAdapter(relatedArtistsAdapter);
 
-                playButtonsAtBottom();
-
                 artistTitleTextView = (TextView)
 
                         llview.findViewById(R.id.artist_title);//relatedartists_text
 
                 songItems = new SongItems(activityThis);
-
-            /*songItems.setOnClick(arg0 -> {
-
-                onClickSongitems(songItems.image);
-
-            });*/
-
 
                 spotifyHeader = new SpotifyHeader(activityThis, artistTitleTextView);
 
@@ -579,88 +568,13 @@ public class SpotifyFragment extends Fragment implements
                 llview.findViewById(R.id.relatedartists_text).setOnClickListener(view -> {
                     llview.findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);
                 });
-            /*fab=(FloatingActionButton)
-
-                    llview.findViewById(R.id.fab);
-            fab.setOnClickListener(view ->{Log.d("samba", "fab");onClickSongitems(fab);});
-
-            fab.setOnLongClickListener(view -> {
-                previousList();
-                return true;
-            });*/
-
-                //Log.d("samba", "Text:8");
-                //Log.d("samba", "Text:10");
-
-                Handler handler = new Handler();
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            MainActivity.getThis.currentArtist= updateSongInfo(songItems.time,songItems.totaltime,songItems.tvName,songItems.artist,songItems.image,albumAdapter,albumsListview, activityThis,getSpotifyInterface);
-
-                            handler.postDelayed(this, 1000);
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }.start();
 
             } catch (Exception e) {
                 Log.getStackTraceString(e);
             }
         }
 
-    public void onClickSongitems(View image) {
-
-        PopupMenu menu = new PopupMenu(songItems.image.getContext(), image);
-        menu.getMenu().add("play");
-        menu.getMenu().add("search artist");
-        menu.getMenu().add("show artist-info");
-        menu.getMenu().add("search album");//keep in menu
-        menu.getMenu().add("new albums");
-        menu.getMenu().add("new albums categories");//keep in menu
-
-        menu.show();
-        menu.setOnMenuItemClickListener(item -> {
-            String title = item.getTitle().toString();
-            if ((title.equals("play"))) {
-                SpotifyFragment.showPlayMenu(activityThis,songItems.image);
-            } else
-            if ((title.equals("show artist-info"))) {
-                llview.findViewById(R.id.artistinfo).setVisibility(View.VISIBLE);
-                llview.findViewById(R.id.relatedartistsinfo).setVisibility(View.VISIBLE);
-            } else
-            if ((title.equals("new albums categories"))) {
-                View itemview = songItems.image;
-                newAlbumsCategories(itemview);
-
-            }
-            try {
-
-                if ((title.equals("new albums"))) {
-                    Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivity.class);
-                    startActivity(intent);
-                }
-            } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
-
-            if ((title.equals("search album"))) {
-                searchAlbum();
-            }
-            if ((title.equals("search artist"))) {
-                searchArtist();
-            }
-
-            return true;
-        }
-
-        );
-    }
-
-    public void newAlbumsCategories(View itemview) {
+    public void newAlbumsCategories() {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getThis);
         builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
         builderSingle.setTitle("Select Category");
@@ -743,83 +657,6 @@ public class SpotifyFragment extends Fragment implements
                     }
                 });
         builderSingle.show();
-    }
-
-    public void nextList(){
-
-        currentList++;
-        if (currentList>2)currentList=1;
-        if (currentList<1)currentList=1;
-        selectList(lists[currentList-1]);
-    }
-    public void previousList() {
-
-        currentList--;
-        if (currentList < 1) currentList = 3;
-        selectList(lists[currentList - 1]);
-    }
-
-    protected void selectList(String title) {//todo obsolete
-        if ((title.equals(lists[SpotifyList]))) {
-            //Log.d("samba", "SpotifyList1");
-            currentList=SpotifyList+1;
-            displayMpd=false;
-            //Log.d("samba", "SpotifyList1a");
-            setAdapterForSpotify();
-            String hartistName=artistName;
-
-            //Log.d("samba", "SpotifyList1b");
-            refreshPlaylistFromSpotify(albumAdapter, albumsListview,activityThis);
-            //Log.d("samba", "SpotifyList1c");
-            setVisibility(View.GONE);
-            artistName=hartistName;
-            playButtonsAtBottom();
-            //Log.d("samba", "SpotifyList1d");
-        } else
-        if ((title.equals(lists[MpdList]))) {
-            currentList=MpdList+1;
-            displayMpd(albumsListview);
-            playButtonsAtBottom();
-        }else
-        if ((title.equals(lists[AlbumList]))) {
-            MainActivity.getThis.runOnUiThread(() -> {
-            //Log.d("samba", "AlbumList1");
-            currentList=AlbumList+1;
-            if (displayMpd){
-                if (artistName.equals("The Beatles")) {
-                    //Log.d("samba", "AlbumList1b");
-                    CopyOnWriteArrayList<Mp3File> playlistFiles = MainActivity.getThis.getLogic().getPlaylistFiles();
-                    //Log.d("samba", "AlbumList1c");
-                    if (playlistFiles.size() > 0)
-                        artistName = playlistFiles.get(0).getArtist();
-                }
-            }
-            //Log.d("samba", "AlbumList1d"+artistName);
-            setAdapterForSpotify();
-            //Log.d("samba", "AlbumList1e");
-            displayAlbums();
-            //Log.d("samba", "AlbumList1f");
-            displayMpd=false;
-                albumAdapter.notifyDataSetChanged();
-
-                relatedArtistsAdapter.notifyDataSetChanged();
-            });
-            playButtonsAtBottom();
-            //Log.d("samba", "AlbumList1g");
-        }
-    }
-
-    public void playButtonsAtBottom() {
-        /*View playbutton = llview.findViewById(R.id.playspotify);
-        View stopbutton = llview.findViewById(R.id.stopspotify);
-        View playpausebutton = llview.findViewById(R.id.pausespotify);
-        View previousbutton = llview.findViewById(R.id.previousspotify);
-        View nextbutton = llview.findViewById(R.id.nextspotify);
-        View volumebutton = llview.findViewById(R.id.volumespotify);
-        View seekbutton = llview.findViewById(R.id.positionspotify);
-        new Thread(() -> {
-            setListenersForButtons(activityThis, playbutton, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
-        }).start();*/
     }
 
     private void setAdapterForMpd() {
@@ -1516,16 +1353,11 @@ public class SpotifyFragment extends Fragment implements
         if (visibility==opposite)opposite=View.VISIBLE;
         relatedArtistsListView.setVisibility(visibility);
 
-        //artistTitleTextView.setVisibility(visibility);
-        //spotifyHeader.icon.setVisibility(visibility);
-        //fab.setVisibility(opposite);//spotifyscrollviewtop
-        ((TextView) llview.findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
-        ((TextView) llview.findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
+        ( llview.findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
+        ( llview.findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
         llview.findViewById(R.id.artist_title).setVisibility(visibility);
 
-
-        //spotifyHeader.MessageView.setVisibility(visibility);
-        ((ScrollView) llview.findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview
+        ( llview.findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview
     }
 
     public static void playlistGotoPosition(int position) {
@@ -2361,10 +2193,6 @@ public class SpotifyFragment extends Fragment implements
         try {
                 if (isPlaying()) {//(speed.doubleValue() > 0) {
                    if (albumAdapter!=null)
-                        if (albumAdapter!=null)
-                                if (playingEngine == 2) {
-                                    SpotifyFragment.getThis.playButtonsAtBottom();
-                                }
                         playingEngine=1;
                      String[] trid1 = getCurrentTrack();//
                     String trid = "0";
@@ -2437,8 +2265,6 @@ public class SpotifyFragment extends Fragment implements
                         Logic logic = MainActivity.getThis.getLogic();
                         MPCStatus status = logic.mpcStatus;
                         if (!status.playing) return artistReturn;
-                        if (playingEngine==1){
-                            SpotifyFragment.getThis.playButtonsAtBottom();}
                         playingEngine=2;
                         int songnr = status.song.intValue();
                         Mp3File currentSong = logic.getPlaylistFiles().get(songnr);
