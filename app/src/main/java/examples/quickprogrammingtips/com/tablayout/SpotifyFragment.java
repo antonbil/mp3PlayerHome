@@ -164,7 +164,7 @@ public class SpotifyFragment extends Fragment implements
     private AdapterView.OnItemClickListener cl;
     public static boolean albumVisible = true;
     static Bitmap bitmap;
-    private boolean artistInitiated = false;
+    //private boolean artistInitiated = false;
     private final float CHECK_MEMORY_FREQ_SECONDS = 3.0f;
     private final float LOW_MEMORY_THRESHOLD_PERCENT = 5.0f; // Available %
     private Handler memoryHandler_;
@@ -180,7 +180,7 @@ public class SpotifyFragment extends Fragment implements
     private static int totalTime;
     private static int currentTime;
     private boolean displayMpd;
-    public static int currentList=SpotifyList+1;
+    //public static int currentList=SpotifyList+1;
     protected String[] lists = new String[]{"albumlist","spotifylist","mpdlist"};;
     private static Activity activityThis;
     View llview;
@@ -209,9 +209,18 @@ public class SpotifyFragment extends Fragment implements
                 //Log.d("samba", "Text:9a");
 
                 new Thread(() -> {
-                    initArtistlist(artistName);
+                    /*new GetArtistId(spotify, artistName){
+                        public void doSomethingWithId(String id, Image image){
+                            spotifyHeader.setArtistText(artistName, image);
+                            getArtistAlbums(id, artistName, spotify);
+                            getRelatedArtists(id, spotify);
+                        }
+                    }.invoke();*/
+
+                    //initArtistlist(artistName);
+                    listAlbumsForArtist(api, spotify, artistName, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
                     //Log.d("samba", "Text:9b");
-                    currentList=AlbumList+1;
+                    //currentList=AlbumList+1;
                 }).start();
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
@@ -1338,12 +1347,12 @@ public class SpotifyFragment extends Fragment implements
         //Log.v("samba","ja maar!");
     }
     private void initArtistlist(final String atistName) {
-        artistInitiated = true;
-        MainActivity.getThis.runOnUiThread(() -> {
+        //artistInitiated = true;
+        /*MainActivity.getThis.runOnUiThread(() -> {
 
                     Utils.setDynamicHeight(albumsListview, 0);
                     Utils.setDynamicHeight(relatedArtistsListView, 0);
-                });
+                });*/
 
         listAlbumsForArtist(api, spotify, atistName, albumsListview, relatedArtistsListView, albumAdapter, relatedArtistsAdapter);
     }
@@ -1986,15 +1995,6 @@ public class SpotifyFragment extends Fragment implements
     }
 
 
-    /*@Override
-    protected void onDestroy() {
-        if (currentList!=1){
-            selectList((lists[SpotifyList]));
-        }
-        super.onDestroy();
-    }*/
-
-
     public static String searchSpotifyArtist(String artist){
         SpotifyApi api=new SpotifyApi();
         SpotifyService spotify = api.getService();
@@ -2011,47 +2011,11 @@ public class SpotifyFragment extends Fragment implements
 
     public void listAlbumsForArtist(final SpotifyApi api, SpotifyService spotify, final String beatles, final ListView albumsListview, final ListView relatedArtistsListView, final PlanetAdapter albumAdapter, final ArrayAdapter<String> relatedArtistsAdapter) {
         initArtistLook(beatles);
-        spotify.searchArtists(beatles.trim(), new Callback<ArtistsPager>() {
-
-            @Override
-            public void success(ArtistsPager artistsPager, Response response) {
-                //Log.v("samba","get 1");
-
-                String id = "";
-                int max = 10000;
-                Image image = null;
-                for (Artist artist : artistsPager.artists.items) {
-                    String name = artist.name;
-                    //Log.v("samba","artist found: "+name);
-                    if (name.startsWith("The ")) name = name.substring(4);
-                    if (name.toLowerCase().replace(" ","").contains(beatles.toLowerCase().replace(" ",""))) {
-
-
-                        //Log.v("samba","artist found: "+name);
-                        if (name.length() < max) {
-                            id = artist.id;
-                            try{
-                            image = artist.images.get(0);
-                        } catch (Exception e) {
-                            Log.v("samba", Log.getStackTraceString(e));
-                        }
-                            max = name.length();
-                        }
-                    }
-
-
-                }
-                //Log.v("samba","get 2 for "+beatles);
-
+        new GetArtistId(spotify, beatles){
+            public void doSomethingWithId(String id, Image image){
                 listAlbumsForArtistId(id, image, beatles, api);
-                //Log.v("samba","get 3");
             }
-
-            @Override
-            public void failure(RetrofitError error) {
-                error.printStackTrace();
-            }
-        });
+        }.invoke();
     }
 
     public void initArtistLook(String beatles) {
@@ -2067,6 +2031,36 @@ public class SpotifyFragment extends Fragment implements
 
         spotifyHeader.setArtistText(beatles, image);
         SpotifyService spotify = api.getService();
+        getArtistAlbums(id, beatles, spotify);
+        getRelatedArtists(id, spotify);
+    }
+
+    public void getRelatedArtists(String id, SpotifyService spotify) {
+        spotify.getRelatedArtists(id, new Callback<Artists>() {
+            @Override
+            public void success(Artists artists, Response response) {
+                try{
+                    artistList.clear();
+                    for (Artist artist : artists.artists) {
+                        artistList.add(artist.name);
+                    }
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
+                MainActivity.getThis.runOnUiThread(() -> {
+                    relatedArtistsAdapter.notifyDataSetChanged();
+                    Utils.setDynamicHeight(relatedArtistsListView, 0);
+                });
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+    }
+
+    public void getArtistAlbums(String id, final String beatles, SpotifyService spotify) {
         spotify.getArtistAlbums(id, new Callback<Pager<Album>>() {
 
             @Override
@@ -2112,28 +2106,6 @@ public class SpotifyFragment extends Fragment implements
             @Override
             public void failure(RetrofitError error) {
                 error.printStackTrace();
-            }
-        });
-        spotify.getRelatedArtists(id, new Callback<Artists>() {
-            @Override
-            public void success(Artists artists, Response response) {
-                try{
-                    artistList.clear();
-                    for (Artist artist : artists.artists) {
-                        artistList.add(artist.name);
-                    }
-                } catch (Exception e) {
-                    Log.v("samba", Log.getStackTraceString(e));
-                }
-                MainActivity.getThis.runOnUiThread(() -> {
-                    relatedArtistsAdapter.notifyDataSetChanged();
-                    Utils.setDynamicHeight(relatedArtistsListView, 0);
-                });
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
             }
         });
     }
@@ -2620,6 +2592,62 @@ public class SpotifyFragment extends Fragment implements
             } catch (Exception e){
                 return null;
             }
+        }
+    }
+
+    private class GetArtistId {
+        private final String beatles;
+        private SpotifyService spotify;
+
+        public GetArtistId( SpotifyService spotify, String beatles) {
+            this.spotify = spotify;
+            this.beatles = beatles;
+        }
+
+        public void invoke() {
+            spotify.searchArtists(beatles.trim(), new Callback<ArtistsPager>() {
+
+                @Override
+                public void success(ArtistsPager artistsPager, Response response) {
+                    //Log.v("samba","get 1");
+
+                    String id = "";
+                    int max = 10000;
+                    Image image = null;
+                    for (Artist artist : artistsPager.artists.items) {
+                        String name = artist.name;
+                        //Log.v("samba","artist found: "+name);
+                        if (name.startsWith("The ")) name = name.substring(4);
+                        if (name.toLowerCase().replace(" ","").contains(beatles.toLowerCase().replace(" ",""))) {
+
+
+                            //Log.v("samba","artist found: "+name);
+                            if (name.length() < max) {
+                                id = artist.id;
+                                try{
+                                image = artist.images.get(0);
+                            } catch (Exception e) {
+                                Log.v("samba", Log.getStackTraceString(e));
+                            }
+                                max = name.length();
+                            }
+                        }
+
+
+                    }
+                    //Log.v("samba","get 2 for "+beatles);
+
+                    doSomethingWithId(id,image);
+                    //Log.v("samba","get 3");
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    error.printStackTrace();
+                }
+            });
+        }
+        public void doSomethingWithId(String id, Image image){
         }
     }
 }

@@ -13,7 +13,7 @@ import kaaes.spotify.webapi.android.SpotifyService;
 public class SpotifyPlaylistFragment extends SpotifyFragment {
     @Override
     public void lastOncreateView() {
-        currentList = SpotifyList;
+        //currentList = SpotifyList;
 
         setAdapterForSpotify();
 
