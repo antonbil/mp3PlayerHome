@@ -335,10 +335,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         });
         new Thread(() -> {
             selectFragment = new SelectFragment();
-            TabLayout.Tab tab = tabLayout.getTabAt(SELECTTAB);
-            tab.select();
-            tab = tabLayout.getTabAt(0);
-            tab.select();
             //Log.d("samba", "Text:9");
 
             try{
@@ -353,6 +349,16 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 dbFragment = new DBFragment();}
             catch (Exception e){Log.v("samba","error spotify create");}
             playlistFragment = new PlaylistsFragment();
+
+            try{
+
+                MainActivity.getThis.runOnUiThread(() -> {
+                    tabLayout.getTabAt(SELECTTAB).select();
+                });
+
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+            }
 
         }).start();
 
@@ -1130,24 +1136,23 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             int prev= SpotifyFragment.playingEngine;
 
             if (SpotifyFragment.isPlaying()){
+                if (SpotifyFragment.getThis!=null)
                 try{
                 if (SpotifyFragment.getThis.albumAdapter!=null)
                     SpotifyFragment.playingEngine=1;
             } catch (Exception e) {
             }
 
-                //(findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
-                //(findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top);
-                //viewById.setOnClickListener(v -> SpotifyActivity.setVolume(getThis));
                  if (SpotifyFragment.busyupdateSongInfo) {
                      try {
-                         Log.v("samba", "nu binnen");
+                         Log.v("samba", "nu binnen2");
                     String[] trid1 = SpotifyFragment.getCurrentTrack();//
                     String trid = "0";
                         trid = trid1[0];
                     if (trid.length() > 0) {
                         //currentTrack=0;
+                        if (SpotifyFragment.getThis!=null){
                         if (SpotifyFragment.getThis.albumAdapter != null)
                             for (int i = 0; i < SpotifyFragment.tracksPlaylist.size(); i++) {
                                 if (SpotifyFragment.tracksPlaylist.get(i).id.equals(trid)) {
@@ -1164,6 +1169,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                             MainActivity.getThis.runOnUiThread(() -> {
                                 SpotifyFragment.getThis.albumAdapter.notifyDataSetChanged();
                             });
+                        }
                         }
                     }
                      } catch (Exception e) {

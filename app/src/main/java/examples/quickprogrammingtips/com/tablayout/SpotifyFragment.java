@@ -62,7 +62,6 @@ import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
-import examples.quickprogrammingtips.com.tablayout.tools.ImageLoadTask;
 import examples.quickprogrammingtips.com.tablayout.tools.Utils;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
@@ -2161,7 +2160,7 @@ public class SpotifyFragment extends Fragment implements
     public static String updateSongInfo(TextView time, TextView totaltime, TextView tvName, TextView artist,
                                         ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, Activity getThis, final SpotifyInterface getSpotifyInterface) {
         String artistReturn="";
-        if (busyupdateSongInfo)return MainActivity.getThis.currentArtist;
+        if (busyupdateSongInfo)return "";
         busyupdateSongInfo=false;
 
         try {
@@ -2174,21 +2173,28 @@ public class SpotifyFragment extends Fragment implements
                         trid = trid1[0];
                     } catch (Exception e){ busyupdateSongInfo=false;}
                     totalTime = Integer.parseInt(trid1[1])/1000;
-                    Log.v("samba", "erbinnen1");
-                    if (trid.length() > 0) {
+                    //Log.v("samba", "erbinnen1a");
+                    if ((trid.length() > 0)) {
                         //currentTrack=0;
-                        if (albumAdapter!=null) {
-                            Log.v("samba", "erbinnen2");
-                            for (int i = 0; i < tracksPlaylist.size(); i++) {
-                                if (tracksPlaylist.get(i).id.equals(trid)) {
-                                    if (currentTrack != i)
-                                        albumsListview.setItemChecked(currentTrack, false);
-                                    currentTrack = i;
-                                    Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
-                                    break;
+                        if ((albumAdapter!=null)&&(albumsListview!=null)) {
+                            //Log.v("samba", "erbinnen2");
+                            try{
+                                for (int i = 0; i < tracksPlaylist.size(); i++) {
+                                    if (tracksPlaylist.get(i).id.equals(trid)) {
+                                        if (currentTrack != i)
+                                            MainActivity.getThis.runOnUiThread(() -> {
+                                                albumsListview.setItemChecked(currentTrack, false);
+                                            });
+                                        currentTrack = i;
+                                        //Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
+                                        break;
+                                    }
                                 }
+                                albumAdapter.setCurrentItem(currentTrack);
+                            } catch (Exception e) {
+                                //busyupdateSongInfo=false;
+                                Log.v("samba", Log.getStackTraceString(e));
                             }
-                            albumAdapter.setCurrentItem(currentTrack);
                             MainActivity.getThis.runOnUiThread(() -> {
                                 albumAdapter.notifyDataSetChanged();
                             });
@@ -2196,7 +2202,7 @@ public class SpotifyFragment extends Fragment implements
                         final String trackid = trid;
 
                         Track t = getTrack(trackid);
-                        if (t != null)
+                        if ((t != null)&&(getSpotifyInterface!=null))
                             if ((getSpotifyInterface.previousTrack == null) || !(t.id == getSpotifyInterface.previousTrack.id)) {
                                 //Log.v("samba", trackid);
                                 getSpotifyInterface.previousTrack = t;
@@ -2234,73 +2240,6 @@ public class SpotifyFragment extends Fragment implements
                         });
                         busyupdateSongInfo=false;
                     }
-                } else{//spotify not playing
-                    try {
-                        Logic logic = MainActivity.getThis.getLogic();
-                        MPCStatus status = logic.mpcStatus;
-                        if (!status.playing) return artistReturn;
-                        playingEngine=2;
-                        int songnr = status.song.intValue();
-                        Mp3File currentSong = logic.getPlaylistFiles().get(songnr);
-                        albumAdapter.setCurrentItem(songnr);
-
-
-                        String title = currentSong.getTitle();
-                        artistReturn = currentSong.getArtist();
-                        busyupdateSongInfo=false;
-                        tvName.setText(title);
-
-                        String time1 = Mp3File.niceTime(status.time.intValue());
-
-                        time.setText(time1);
-                        try {
-                            final String timeNice = currentSong.getTimeNice();
-                            totaltime.setText(timeNice);
-                        } catch (Exception e) {
-                            totaltime.setText("00:00");
-                        }
-                        String album = "";
-                        try {
-                            album = currentSong.niceAlbum();
-                            artist.setText(album);
-                        } catch (Exception e) {
-                            artist.setText("");
-                        }
-                        String uri = Logic.getUrlFromSongpath(currentSong);
-
-                        MainActivity.playingStatus=MainActivity.MPD_PLAYING;
-                        if (MainActivity.getThis.albumPictures.containsKey(album)) {
-                            final Bitmap b = MainActivity.getThis.albumPictures.get(album);
-                            MainActivity.getThis.albumBitmap = b;
-                            currentSong.setBitmap(b);
-                            MainActivity.getThis.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    image.setImageBitmap(b);
-                                }
-                            });
-                        } else {
-                            MainActivity.getThis.albumPictures.put(album, null);
-
-
-                            new ImageLoadTask(uri, album, MainActivity.getThis, image).execute();
-
-
-                        }
-                        if (SpotifyFragment.getThis.displayMpd)
-                            if (albumTracks.size()!=logic.getPlaylistFiles().size())
-                                SpotifyFragment.getThis.displayMpd(albumsListview);
-                        MainActivity.getThis.runOnUiThread(() -> {
-                            albumAdapter.notifyDataSetChanged();
-                        });
-
-                    } catch (Exception e) {
-                        busyupdateSongInfo=false;
-
-                        //mpc.connectionFailed("Connection failed, check settings");
-                        //t.stop();
-                    }
-
                 }
 
             } catch (Exception e) {
@@ -2717,6 +2656,7 @@ class SpotifyHeader {
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scale, scale);
 
                 //Log.v("samba", "4");
+                if (image!=null)
 
                 try {
                     new DownLoadImageTask() {
