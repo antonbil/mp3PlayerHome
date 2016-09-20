@@ -130,7 +130,7 @@ public class SpotifyFragment extends Fragment implements
     public static final int AlbumList = 0;
     public static final int MpdList = 2;
     public static int playingEngine;
-    private static boolean busyupdateSongInfo=false;
+    public static boolean busyupdateSongInfo=false;
     public static boolean explicitlyCalled=false;
     private static boolean spotifyPaused=false;
     private static ArrayList<PlaylistItem> previousAlbumTracks=new ArrayList<>();
@@ -155,7 +155,7 @@ public class SpotifyFragment extends Fragment implements
     private boolean nosearch = false;
     private static TextView artistTitleTextView;
     public static ArrayList<Track> tracksPlaylist=new ArrayList<>();
-    private static int currentTrack;
+    public static int currentTrack;
     public static String artistName="";
     private ArrayAdapter<String> relatedArtistsAdapter;
     private ListView relatedArtistsListView;
@@ -1028,12 +1028,13 @@ public class SpotifyFragment extends Fragment implements
             ArtistAutoCompleteAdapter adapter = new ArtistAutoCompleteAdapter(activityThis,
                     android.R.layout.simple_spinner_item/*android.R.layout.simple_dropdown_item_1line*/);
             final InstantAutoComplete input = new InstantAutoComplete(activityThis);
+            //input.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
             //input.setText(searchArtistString);
             input.setAdapter(adapter);
             input.setThreshold(0);
             input.setDropDownHeight(400);
             // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            input.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
             builder.setView(input);
 
             // Set up the buttons
@@ -2160,8 +2161,9 @@ public class SpotifyFragment extends Fragment implements
     public static String updateSongInfo(TextView time, TextView totaltime, TextView tvName, TextView artist,
                                         ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, Activity getThis, final SpotifyInterface getSpotifyInterface) {
         String artistReturn="";
-        if (busyupdateSongInfo)return "";
+        if (busyupdateSongInfo)return MainActivity.getThis.currentArtist;
         busyupdateSongInfo=false;
+
         try {
                 if (isPlaying()) {//(speed.doubleValue() > 0) {
                    if (albumAdapter!=null)
@@ -2172,20 +2174,20 @@ public class SpotifyFragment extends Fragment implements
                         trid = trid1[0];
                     } catch (Exception e){ busyupdateSongInfo=false;}
                     totalTime = Integer.parseInt(trid1[1])/1000;
+                    Log.v("samba", "erbinnen1");
                     if (trid.length() > 0) {
                         //currentTrack=0;
-                        if (albumAdapter!=null)
+                        if (albumAdapter!=null) {
+                            Log.v("samba", "erbinnen2");
                             for (int i = 0; i < tracksPlaylist.size(); i++) {
                                 if (tracksPlaylist.get(i).id.equals(trid)) {
                                     if (currentTrack != i)
                                         albumsListview.setItemChecked(currentTrack, false);
                                     currentTrack = i;
-                                    //Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
+                                    Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
                                     break;
                                 }
                             }
-
-                        if (albumAdapter!=null) {
                             albumAdapter.setCurrentItem(currentTrack);
                             MainActivity.getThis.runOnUiThread(() -> {
                                 albumAdapter.notifyDataSetChanged();
@@ -2221,7 +2223,7 @@ public class SpotifyFragment extends Fragment implements
                         currentTime = getTime();
                         artistReturn = t.artists.get(0).name;
                         MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
-                        getThis.runOnUiThread(() -> {
+                        MainActivity.getThis.runOnUiThread(() -> {
                             time.setText(niceTime(currentTime));
                             int ttimeint = totalTime;// thours * 60 * 60 + tmins * 60 + tsecs;
                             totaltime.setText(niceTime(ttimeint));

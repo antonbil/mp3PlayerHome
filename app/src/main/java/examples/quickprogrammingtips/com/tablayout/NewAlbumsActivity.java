@@ -31,9 +31,11 @@ public class NewAlbumsActivity extends Activity {
     protected void onStop() {
         MainActivity.getThis.runOnUiThread(() -> {
             //SpotifyFragment.getThis.albumAdapter.setDisplayCurrentTrack(true);
-            SpotifyFragment.getThis.albumAdapter.notifyDataSetChanged();
-            //Utils.setDynamicHeight(SpotifyFragment.getThis.albumsListview, 0);
-        });
+            try{
+                SpotifyFragment.getThis.albumAdapter.notifyDataSetChanged();
+            }catch(Exception e){
+                Log.v("samba", Log.getStackTraceString(e));}
+            });
 
 
         super.onStop();

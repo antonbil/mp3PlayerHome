@@ -1130,17 +1130,60 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             int prev= SpotifyFragment.playingEngine;
 
             if (SpotifyFragment.isPlaying()){
+                try{
+                if (SpotifyFragment.getThis.albumAdapter!=null)
+                    SpotifyFragment.playingEngine=1;
+            } catch (Exception e) {
+            }
 
                 //(findViewById(R.id.time_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 //(findViewById(R.id.totaltime_top2)).setOnClickListener(v -> SpotifyActivity.playPauseSpotify());
                 ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top);
                 //viewById.setOnClickListener(v -> SpotifyActivity.setVolume(getThis));
-                currentArtist = SpotifyFragment.updateSongInfo((TextView) findViewById(R.id.time_top),
-                        (TextView) findViewById(R.id.totaltime_top),
-                        (TextView) findViewById(R.id.title_top),
-                        (TextView) findViewById(R.id.artist_top),
-                        viewById,
-                        null,  null,getThis,getSpotifyInterface);
+                 if (SpotifyFragment.busyupdateSongInfo) {
+                     try {
+                         Log.v("samba", "nu binnen");
+                    String[] trid1 = SpotifyFragment.getCurrentTrack();//
+                    String trid = "0";
+                        trid = trid1[0];
+                    if (trid.length() > 0) {
+                        //currentTrack=0;
+                        if (SpotifyFragment.getThis.albumAdapter != null)
+                            for (int i = 0; i < SpotifyFragment.tracksPlaylist.size(); i++) {
+                                if (SpotifyFragment.tracksPlaylist.get(i).id.equals(trid)) {
+                                    if (SpotifyFragment.currentTrack != i)
+                                        SpotifyFragment.getThis.albumsListview.setItemChecked(SpotifyFragment.currentTrack, false);
+                                    SpotifyFragment.currentTrack = i;
+                                    //Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
+                                    break;
+                                }
+                            }
+
+                        if (SpotifyFragment.getThis.albumAdapter != null) {
+                            SpotifyFragment.getThis.albumAdapter.setCurrentItem(SpotifyFragment.currentTrack);
+                            MainActivity.getThis.runOnUiThread(() -> {
+                                SpotifyFragment.getThis.albumAdapter.notifyDataSetChanged();
+                            });
+                        }
+                    }
+                     } catch (Exception e) {
+                         Log.v("samba", Log.getStackTraceString(e));
+                     }
+                } else {
+                     PlanetAdapter albumAdapter = null;
+                     if (SpotifyFragment.getThis!=null)
+                         albumAdapter = SpotifyFragment.getThis.albumAdapter;
+                     ListView albumsListview = null;
+                     if (SpotifyFragment.getThis!=null)
+                         albumsListview = SpotifyFragment.getThis.albumsListview;
+                     currentArtist = SpotifyFragment.updateSongInfo((TextView) findViewById(R.id.time_top),
+                             (TextView) findViewById(R.id.totaltime_top),
+                             (TextView) findViewById(R.id.title_top),
+                             (TextView) findViewById(R.id.artist_top),
+                             viewById,
+                             albumAdapter, albumsListview,getThis,getSpotifyInterface);
+                 }
+
                 checkButtons(prev);
                 MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
                 statusThread=false;
@@ -1151,6 +1194,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //        if (SpotifyActivity.playingEngine==1){SpotifyActivity.getThis.playButtonsAtBottom();}
             //checkButtons(prev);
 
+            SpotifyFragment.playingEngine=2;
             final MPCStatus status = newStatus;
             logic.mpcStatus = newStatus;
             if (status.song == null) {
