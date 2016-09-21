@@ -15,6 +15,8 @@
             android:orderInCategory="100" app:showAsAction="never"/>
     <item android:id="@+id/new_albums_categories" android:title="New albums categories"
         android:orderInCategory="100" app:showAsAction="never"/>
+        <item android:id="@+id/dutch_album_top_100" android:title="Dutch album top 100"
+            android:orderInCategory="100" app:showAsAction="never"/>
     </group>
     <item android:id="@+id/set_volume" android:title="Volume"
         android:orderInCategory="100" app:showAsAction="never"/>

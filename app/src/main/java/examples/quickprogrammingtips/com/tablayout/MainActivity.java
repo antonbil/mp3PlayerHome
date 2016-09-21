@@ -693,6 +693,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             callSpotifyPlaylist();
             return true;
         }
+        if (id == R.id.dutch_album_top_100) {
+            SpotifyFragment.nextCommand="dutch_album_top_100";
+            callSpotifyPlaylist();
+            return true;
+        }
         if (id == R.id.search_album) {
             SpotifyFragment.nextCommand="search album";
             callSpotifyPlaylist();

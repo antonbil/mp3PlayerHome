@@ -583,6 +583,69 @@ public class SpotifyFragment extends Fragment implements
             }
         }
 
+    public void albumTop100Nl(){
+        try {
+            fillListviewWithValues = new FillListviewWithValues() {
+
+                @Override
+                public void generateList(ArrayList<NewAlbum> newAlbums) {
+
+                    String url = "http://dutchcharts.nl/weekchart.asp?cat=a";
+
+                    Document doc = null;
+                    try {
+                        doc = Jsoup.connect(url).get();
+                        String temp1 = doc.html().replace("<br>", "$$$").replace("<br />", "$$$").replace("<b>", "b-b-b-").replace("</b>", "b+b+b+"); //$$$ instead <br>
+                        doc = Jsoup.parse(temp1); //Parse again
+                    } catch (IOException e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+
+                    Elements trackelements = doc.getElementsByClass("charts");
+                    int i=0;
+                    for (Element element : trackelements) {
+                        i++;
+                        try {
+                            String image1 =
+                            element.children().get(4).select("img").attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
+                            String s = element.children().get(7).children().get(0).attr("onclick").replace("playSpotify('https://embed.spotify.com/?uri=","").replace("');","").replace("%3A",":");
+                            Log.v("samba", s);
+
+                            String div = element.children().get(5).children().get(0).text();
+                            Log.v("samba", div);
+                            String[] list = div.replace("$$$", ";").split(";");
+                            String artist = list[0].replace("b-b-b-","").replace("b+b+b+","");
+                            String album = "";
+                            if (list.length > 1)
+                                album = ""+i+"."+list[1].replace("\"","");
+                            //ids.add(artist + "-" + album);
+                            newAlbums.add(new NewAlbum(s, artist, album, image1));
+                        } catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+                        }
+                    }
+                }
+
+                @Override
+                public void addToFavorites(NewAlbum newAlbum) {
+                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
+                    generateLists();
+                }
+
+            };
+
+
+            {
+                Intent intent = new Intent(getThis.getActivity(), NewAlbumsActivityElectronic.class);
+                startActivity(intent);
+            }
+            // }
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+
+}
+
     public void newAlbumsCategories() {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getThis);
         builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
@@ -629,7 +692,7 @@ public class SpotifyFragment extends Fragment implements
                                     String image1 = "http://www.spotifynewmusic.com/" + element.select("img").attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
                                     Elements links = element.getElementsByClass("play").select("a[href]"); // a with href
                                     String s = links.get(0).attr("href");
-                                    //Log.v("samba", s);
+                                    Log.v("samba", s);
 
                                     String div = element.children().get(1).text();
                                     //Log.v("samba", div);
@@ -2199,9 +2262,24 @@ public class SpotifyFragment extends Fragment implements
                                 //busyupdateSongInfo=false;
                                 Log.v("samba", Log.getStackTraceString(e));
                             }
-                            if (changed||(MainActivity.getThis.firstTime)==SPOTIFY_FIRSTTIME+2)//wait ffor 2 seconds
+                            /*
+                                                        switch (MainActivity.getThis.firstTime)
+                            {
+
+                                case 0 :
+                                    albumAdapter.notifyDataSetChanged();
+                                    break;
+                                case SPOTIFY_FIRSTTIME+2 :
+                                    MainActivity.getThis.firstTime=0;
+                                    break;
+                                default:
+                                    MainActivity.getThis.firstTime++;
+                            }
+
+                             */
+                            if (changed||(MainActivity.getThis.firstTime)>SPOTIFY_FIRSTTIME+2)//wait for 2 seconds
                             MainActivity.getThis.runOnUiThread(() -> {
-                                MainActivity.getThis.firstTime=0;
+                                //MainActivity.getThis.firstTime=0;
                                 albumAdapter.notifyDataSetChanged();
                             });
                             if ((MainActivity.getThis.firstTime)>=SPOTIFY_FIRSTTIME)

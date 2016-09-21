@@ -1,5 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -12,6 +13,12 @@ import kaaes.spotify.webapi.android.SpotifyService;
  */
 public class SpotifyPlaylistFragment extends SpotifyFragment {
     @Override
+    public void onStop(){
+        MainActivity.getThis.firstTime= 0;
+        Log.v("samba","onstop");
+        super.onStop();
+    }
+    @Override
     public void lastOncreateView() {
         //currentList = SpotifyList;
 
@@ -19,6 +26,13 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
 
         if (nextCommand.equals("new_albums_categories")){
             newAlbumsCategories();
+            new Thread(() -> {
+                setCurrentTracklist();
+            }).start();
+
+        }else
+        if (nextCommand.equals("dutch_album_top_100")){
+            albumTop100Nl();
             new Thread(() -> {
                 setCurrentTracklist();
             }).start();
