@@ -128,6 +128,7 @@ public class SpotifyFragment extends Fragment implements
     public static final int SpotifyList = 1;
     public static final int AlbumList = 0;
     public static final int MpdList = 2;
+    public static final int SPOTIFY_FIRSTTIME = 20;
     public static int playingEngine;
     public static boolean busyupdateSongInfo=false;
     public static boolean explicitlyCalled=false;
@@ -2178,13 +2179,16 @@ public class SpotifyFragment extends Fragment implements
                         //currentTrack=0;
                         if ((albumAdapter!=null)&&(albumsListview!=null)) {
                             //Log.v("samba", "erbinnen2");
+                            boolean changed = false;
                             try{
                                 for (int i = 0; i < tracksPlaylist.size(); i++) {
                                     if (tracksPlaylist.get(i).id.equals(trid)) {
-                                        if (currentTrack != i)
+                                        if (currentTrack != i) {
+                                            changed = true;
                                             MainActivity.getThis.runOnUiThread(() -> {
                                                 albumsListview.setItemChecked(currentTrack, false);
                                             });
+                                        }
                                         currentTrack = i;
                                         //Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
                                         break;
@@ -2195,9 +2199,13 @@ public class SpotifyFragment extends Fragment implements
                                 //busyupdateSongInfo=false;
                                 Log.v("samba", Log.getStackTraceString(e));
                             }
+                            if (changed||(MainActivity.getThis.firstTime)==SPOTIFY_FIRSTTIME+2)//wait ffor 2 seconds
                             MainActivity.getThis.runOnUiThread(() -> {
+                                MainActivity.getThis.firstTime=0;
                                 albumAdapter.notifyDataSetChanged();
                             });
+                            if ((MainActivity.getThis.firstTime)>=SPOTIFY_FIRSTTIME)
+                                MainActivity.getThis.firstTime++;
                         }
                         final String trackid = trid;
 

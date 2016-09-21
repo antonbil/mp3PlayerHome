@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     ListFragment listFragment;
     static DBFragment         dbFragment;
     SpotifyFragment spotifyFragment;
+    public int firstTime=0;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -450,6 +451,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 replaceFragment(playlistFragment);
                 break;
             case SPOTIFYPLAYLISTTAB :
+                firstTime= SpotifyFragment.SPOTIFY_FIRSTTIME;
                 replaceFragment(spotifyPlaylistFragment);
                 break;
         }
