@@ -74,6 +74,12 @@
             android:layout_height="wrap_content"
             android:text="Artist-info"
             android:background="#4A9C67" />
+
+        <ViewFlipper
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/viewFlipper" />
+
         <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/spotifyscrollviewtop"
             android:layout_width="fill_parent"

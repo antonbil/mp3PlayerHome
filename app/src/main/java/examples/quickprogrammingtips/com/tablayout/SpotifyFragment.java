@@ -186,6 +186,7 @@ public class SpotifyFragment extends Fragment implements
     View llview;
     public static PopupMenu categoriesMenu;
     private static ProgressDialog progressDialog;
+    private boolean artist_desc_hidden=true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -571,12 +572,22 @@ public class SpotifyFragment extends Fragment implements
 
                 //Log.d("samba", "Text:7");
 
+                View artist_description_view = llview.findViewById(R.id.spotifyscrollviewtop);
                 llview.findViewById(R.id.artist_title).setOnClickListener(view -> {
-                    llview.findViewById(R.id.artistinfo).setVisibility(View.GONE);
+                    View albums_scroll_view = llview.findViewById(R.id.spotifyscrollviewmiddle);
+                    if (artist_desc_hidden) {
+                        artist_description_view.setVisibility(View.VISIBLE);
+                        albums_scroll_view.setVisibility(View.GONE);
+                    } else{
+                        artist_description_view.setVisibility(View.GONE);
+                        albums_scroll_view.setVisibility(View.VISIBLE);
+                    }
+                    artist_desc_hidden=!artist_desc_hidden;
                 });
                 llview.findViewById(R.id.relatedartists_text).setOnClickListener(view -> {
                     llview.findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE);
                 });
+                artist_description_view.setVisibility(View.GONE);
 
             } catch (Exception e) {
                 Log.getStackTraceString(e);
@@ -623,6 +634,7 @@ public class SpotifyFragment extends Fragment implements
                         } catch (Exception e) {
                             Log.v("samba", Log.getStackTraceString(e));
                         }
+
                     }
                 }
 
@@ -791,8 +803,14 @@ public class SpotifyFragment extends Fragment implements
                 try{
                     displayMpd=false;
                     String s = getLogic().getPlaylistFiles().get(counter).getArtist();
-                    setVisibility(View.VISIBLE);
-                    listAlbumsForArtist(s);
+                    SpotifyFragment.artistName=s;
+                    Log.v("samba","search"+2+s);
+                    MainActivity.getThis.tabLayout.getTabAt(MainActivity.SPOTIFYTAB).select();
+
+                    //MainActivity.getThis.callSpotify();
+
+/*                    setVisibility(View.VISIBLE);
+                    listAlbumsForArtist(s);*/
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
@@ -914,8 +932,11 @@ public class SpotifyFragment extends Fragment implements
             public void displayArtist(int counter) {
                 try{
                     String s = tracksPlaylist.get(counter).artists.get(0).name;
-                    setVisibility(View.VISIBLE);
-                    listAlbumsForArtist(s);
+                    SpotifyFragment.artistName=s;
+                    Log.v("samba","search"+2+s);
+                    MainActivity.getThis.tabLayout.getTabAt(MainActivity.SPOTIFYTAB).select();
+                    //setVisibility(View.VISIBLE);
+                    //listAlbumsForArtist(s);
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
@@ -1428,7 +1449,7 @@ public class SpotifyFragment extends Fragment implements
 
         ( llview.findViewById(R.id.relatedartists_text)).setVisibility(visibility);//albumsartist_listview
         ( llview.findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
-        llview.findViewById(R.id.artist_title).setVisibility(visibility);
+        //llview.findViewById(R.id.artist_title).setVisibility(visibility);
 
         ( llview.findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview
     }

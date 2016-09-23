@@ -70,9 +70,10 @@ public class DatabaseCommand extends Thread{
 
 			// Clear version number from buffer
 			in.readLine();
+			//command="find any \"Hotel California\"";
 
-			out.println(command);
-			Log.v("samba", command);
+			out.println(command.trim());
+			Log.v("samba", command+";");
 			String line;
 
 			ArrayList<File> files=new ArrayList<File>();
@@ -83,7 +84,7 @@ public class DatabaseCommand extends Thread{
 				Log.v("samba", line);
 				//Log.v("samba",line);
 				if (line.startsWith("OK"))break;
-				//Log.v("samba", line);
+				Log.v("samba", line);
 				//directory:
 				//Last-Modified:
 				if (line.startsWith("Last-Modified:")) {

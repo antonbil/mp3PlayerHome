@@ -25,7 +25,8 @@ import java.util.ArrayList;
 
 public class NewAlbumsActivity extends Activity {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
-    Activity getThis;
+    static Activity getThis;
+    public ListAdapter customAdapter;
 
     @Override
     protected void onStop() {
@@ -74,7 +75,7 @@ public class NewAlbumsActivity extends Activity {
                 findViewById(R.id.fabspotifylist);
         fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
 
-        final ListAdapter customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
+        customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
         loadingdialog = ProgressDialog.show(this,
                 "","Loading, please wait",true);

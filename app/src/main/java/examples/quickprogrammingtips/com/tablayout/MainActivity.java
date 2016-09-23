@@ -26,6 +26,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -743,6 +744,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         View inflate = getLayoutInflater().inflate(R.layout.activity_search, null);
         alert.setView(inflate);
         final EditText searchEditText = (EditText) inflate.findViewById(R.id.search);
+        searchEditText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         searchEditText.setText(myterm);
 
         Button save = (Button) inflate.findViewById(R.id.save_search_button);
@@ -764,7 +766,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     public void searchForItem(String searchString) {
         //Log.v("samba", "search:" + searchString);
-        //selectTab(2);
+        selectTab(MainActivity.MPDTAB);
         new DatabaseCommand(logic.getMpc(), "find any \"" + searchString + "\"", dbFragment, true).run();
     }
 
@@ -869,7 +871,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        selectTab(2);
+                        selectTab(MainActivity.MPDTAB);
                         //give the program time to restore saved instance
                         getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, dbFragment).commit();
                         handler.postDelayed(new Runnable() {

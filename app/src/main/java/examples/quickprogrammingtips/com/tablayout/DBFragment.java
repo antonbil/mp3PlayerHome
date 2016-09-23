@@ -90,6 +90,7 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     public void databaseCallCompleted(final ArrayList<File> files1a) {
 
 
+        Log.v("samba","db-call succeeded");
         if (playit){
             logic.sambaCallCompleted(files1a, new ArrayList<File>(),currentId);//chdb
             playit=false;
