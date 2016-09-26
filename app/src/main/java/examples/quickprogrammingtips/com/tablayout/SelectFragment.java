@@ -356,6 +356,9 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             if (id.equals("edit")) {
                 EditFavoriteActivity.editFavorite(getActivity(),favorite);
                 //getFavorites();
+            } else if (id.equals("save")) {
+                EditFavoriteActivity.saveFavorite(favorite);
+                //getFavorites();
             } else if (id.equals("delete")) {
                 if (favorite.getRecord() != null) {
 

@@ -31,6 +31,13 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
             }).start();
 
         }else
+            if (nextCommand.equals("spotify_album_shortcuts")){
+                spotifyAlbumShortcuts();
+                new Thread(() -> {
+                    setCurrentTracklist();
+                }).start();
+
+            }else
         if (nextCommand.equals("dutch_album_top_100")){
             albumTop100Nl();
             new Thread(() -> {

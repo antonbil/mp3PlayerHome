@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +12,11 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
@@ -29,7 +33,6 @@ public class EditFavoriteActivity extends AppCompatActivity{
     private EditText sortkey;
     private EditText description;
     static final int STATIC_RESULT_SELECT =3; //positive > 0 integer.
-    //private EditText category;
     ViewGroup vwgroup;
     private ArrayList<RadioButton> radioButtons=new ArrayList<>();
 
@@ -37,14 +40,10 @@ public class EditFavoriteActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_favorite);
-        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-        // Set up the login form.
         url = (EditText) findViewById(R.id.url);
         sortkey = (EditText) findViewById(R.id.sortkey);
 
         description = (EditText) findViewById(R.id.search);
-        //category = (EditText) findViewById(R.id.category);
-
 
         Button save = (Button) findViewById(R.id.save_button);
 
@@ -59,14 +58,11 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
         RadioGroup.LayoutParams rprms;
 
-        //LinearLayout ll= new LinearLayout(this);
-        /*Favorite.categoryDescriptions=new ArrayList<>(Arrays.asList("New Links"));//categoryIds
-        for (int i=Favorite.categoryIds.size();i<SpotifyActivity.CATEGORY_IDS.size()-1;i++)Favorite.categoryIds.add("2"+i);
-        for (int i=0;i<SpotifyActivity.CATEGORY_IDS.size();i++)Favorite.categoryDescriptions.add(SpotifyActivity.CATEGORY_IDS.get(i));*/
         for (int i=0;i< Favorite.categoryIdssize();i++){
             RadioButton radioButton = new RadioButton(this);
-            radioButton.setText(Favorite.getCategoryDescription(i));
-            if (categoryString.equals(Favorite.categoryIdsget(i)))
+            String categoryDescription = Favorite.getCategoryDescription(i);
+            radioButton.setText(categoryDescription);
+            if (categoryString.equals(categoryDescription))
                 radioButton.setChecked(true);
             radioButtons.add(radioButton);
             radioButton.setId(i);
@@ -74,43 +70,32 @@ public class EditFavoriteActivity extends AppCompatActivity{
             rprms= new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.WRAP_CONTENT);
             vwgroup.addView(radioButton,rprms);
         }
-        //vwgroup.addView(ll);
 
         final int    idString= extras.getInt("id");
 
         sortkey.setText(sortkeyString);
         url.setText(urlString);
         description.setText(descriptionString);
-        //category.setText(categoryString);
 
-        save.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-
-            public void onClick(View v) {
-                try {
-                    FavoriteRecord book = FavoriteRecord.findById(FavoriteRecord.class, idString);
-                    //book.sortkey = sortkey.getText().toString();
-                    book.url = url.getText().toString();
-                    book.description = description.getText().toString()+";;"+sortkey.getText().toString();
-                    //book.category = category.getText().toString();
-                    for (int i=0;i<radioButtons.size();i++)
-                        if (radioButtons.get(i).isChecked())
-                        {
-                            //Log.v("samba", "set category to:" + Favorite.categoryIds.get(i));
-                            book.category =Favorite.categoryIdsget(i);}
-                    book.save();
-                    Intent i = getIntent(); //get the intent that has been called, i.e you did called with startActivityForResult();
-                    //i.putExtras(b);//put some data, in a bundle
-                    setResult(23, i);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
-                    try{
-                        SelectFragment.getThis.getFavorites();
-                    }catch (Exception e){}
-                    finish(); //finish the startNewOne activity
-                } catch (Exception e) {
-                    Toast.makeText(getBaseContext(), "Error!", Toast.LENGTH_SHORT).show();
-
-                }
+        save.setOnClickListener(v -> {
+            try {
+                FavoriteRecord favorite = FavoriteRecord.findById(FavoriteRecord.class, idString);
+                favorite.url = url.getText().toString();
+                favorite.description = description.getText().toString()+";;"+sortkey.getText().toString();
+                for (int i=0;i<radioButtons.size();i++)
+                    if (radioButtons.get(i).isChecked())
+                    {
+                        //Log.v("samba", "set category to:" + Favorite.categoryIds.get(i));
+                        favorite.category =Favorite.categoryIdsget(i);}
+                favorite.save();
+                Intent i = getIntent(); //get the intent that has been called, i.e you did called with startActivityForResult();
+                setResult(23, i);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
+                try{
+                    SelectFragment.getThis.getFavorites();
+                }catch (Exception e){}
+                finish(); //finish the startNewOne activity
+            } catch (Exception e) {
+                Toast.makeText(getBaseContext(), "Error!", Toast.LENGTH_SHORT).show();
 
             }
 
@@ -127,12 +112,55 @@ public class EditFavoriteActivity extends AppCompatActivity{
         }
     }
 
+    public static void saveFavorite(Favorite favorite){
+        //http://192.168.2.8/spotify/electronic/addlink.php?url=spotify:album:0KnrvfmcbQMmXeXgwwMY4W&artist=C.P.E Bach&artistsort=Bach CPE&album=Cello Concertos​
+        String url=favorite.getUri();
+        if (url.contains("spotifyalbum")){
+            url=url.replace("spotifyalbum://","spotify:album:");
+            String[]names=favorite.getDescription().split("-");
+            int nr=Favorite.getCategoryNr(favorite.getRecord().category);
+            String categoryDescription = Favorite.getCategoryString(favorite.getRecord().category);
+            String outputurl=String.format("http://192.168.2.8/spotify/%s/addlink.php?url=%s&artist=%s&artistsort=%s&album=%s",
+                    categoryDescription,url, URLEncoder.encode(names[0].trim()),
+                    URLEncoder.encode(favorite.getSortkey().trim()),URLEncoder.encode(names[1].trim()));
+            Log.v("samba",outputurl);
+            url = outputurl;
+            try {
+
+                URL obj = new URL(url);
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                // optional default is GET
+                con.setRequestMethod("GET");
+
+                String USER_AGENT = "Mozilla/5.0";
+                //add request header
+                con.setRequestProperty("User-Agent", USER_AGENT);
+
+                int responseCode = con.getResponseCode();
+                System.out.println("\nSending 'GET' request to URL : " + url);
+                System.out.println("Response Code : " + responseCode);
+
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+            }catch (Exception e){}
+        }
+
+    }
+
     public static void editFavorite(Activity a, Favorite favorite, long l) {
         Intent intent = new Intent(a, EditFavoriteActivity.class);
         intent.putExtra("id", (int) (l));
         intent.putExtra("url", favorite.getUri());
         intent.putExtra("description", favorite.getDescription());
-        intent.putExtra("category", favorite.getCategoryField());
+        intent.putExtra("category", Favorite.getCategoryString(favorite.getRecord().category));
         intent.putExtra("sortkey", favorite.getSortkey());
         a.startActivityForResult(intent, STATIC_RESULT_SELECT);
     }

@@ -657,6 +657,99 @@ public class SpotifyFragment extends Fragment implements
         }
 
 }
+    public void spotifyAlbumShortcuts(){
+        try {
+            String url = "http://192.168.2.8/spotify";
+
+            showSpotifyAlbumlistDirectory(url);
+
+            // }
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+
+    }
+
+    public void showSpotifyAlbumlistDirectory(String url) {
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(url).get();
+            String temp1 = doc.html();
+            Log.v("samba",temp1);
+            //doc = Jsoup.parse(temp1); //Parse again
+        } catch (IOException e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+        int i=0;
+        Elements links = doc.select("body a");
+        ArrayList<String> directoryListing=new ArrayList();
+        for (Element link : links)
+        {
+            if(link.text().lastIndexOf("/")>0) {
+                String s=link.text().replace("//","");
+                Log.v("samba",link.text());
+                directoryListing.add(s);
+            }
+        }
+        if (directoryListing.size()>0) {
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getThis);
+            builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
+            builderSingle.setTitle("Select Directory");
+
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                    MainActivity.getThis,
+                    android.R.layout.select_dialog_singlechoice);
+            for (String cat : directoryListing) {
+                arrayAdapter.add(cat);
+            }
+
+            builderSingle.setNegativeButton(
+                    "cancel",
+                    (dialog, which) -> {
+                        dialog.dismiss();
+                    });
+
+            builderSingle.setAdapter(
+                    arrayAdapter,
+                    (dialog, which) -> {
+                        final String dir = arrayAdapter.getItem(which);
+                        showSpotifyAlbumlistDirectory(url + "/" + dir);
+                    });
+            builderSingle.show();
+        } else{
+            final Document doc1=doc;
+            fillListviewWithValues = new FillListviewWithValues() {
+
+                @Override
+                public void generateList(ArrayList<NewAlbum> newAlbums) {
+                    Elements trackelements = doc1.getElementsByClass("spotifyalbum");
+                    int i=0;
+                    for (Element element : trackelements) {
+                        String url=element.getElementsByClass("url").get(0).text();
+                        String artist=element.getElementsByClass("artist").get(0).text();
+                        String album=element.getElementsByClass("album").get(0).text();
+                        if (url.length()>0)
+                        newAlbums.add(new NewAlbum(url, artist, album));
+
+                    }
+                }
+
+                @Override
+                public void addToFavorites(NewAlbum newAlbum) {
+                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
+                    generateLists();
+                }
+
+            };
+
+
+            {
+                Intent intent = new Intent(getThis.getActivity(), NewAlbumsActivityElectronic.class);
+                startActivity(intent);
+            }
+
+        }
+    }
 
     public void newAlbumsCategories() {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getThis);

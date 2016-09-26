@@ -32,6 +32,9 @@ public class Favorite {
 
         return r;
     }
+    public static String getCategoryString(String s){
+        return getCategoryDescription(Favorite.getCategoryNr(s));
+    }
 
     public static int categoryIdssize(){
         generateLists();
@@ -49,6 +52,17 @@ public class Favorite {
         for (int i = 0; i < Favorite.categoryDescriptions.size(); i++)
             if (desc.equals(Favorite.categoryDescriptions.get(i))) {
                 ret = Favorite.categoryIds.get(i);
+                Log.v("samba", "add" + Favorite.NEWALBUM);
+            }
+        return ret;
+    }
+
+    public static int getCategoryNr(String desc) {//
+        generateLists();
+        int ret=0;
+        for (int i = 0; i < Favorite.categoryIds.size(); i++)
+            if (desc.equals(Favorite.categoryIds.get(i))) {
+                ret = i;
                 Log.v("samba", "add" + Favorite.NEWALBUM);
             }
         return ret;

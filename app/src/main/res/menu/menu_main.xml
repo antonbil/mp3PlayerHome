@@ -17,6 +17,8 @@
         android:orderInCategory="100" app:showAsAction="never"/>
         <item android:id="@+id/dutch_album_top_100" android:title="Dutch album top 100"
             android:orderInCategory="100" app:showAsAction="never"/>
+        <item android:id="@+id/spotify_album_shortcuts" android:title="Spotify Album Shortcuts"
+            android:orderInCategory="100" app:showAsAction="never"/>
     </group>
     <item android:id="@+id/set_volume" android:title="Volume"
         android:orderInCategory="100" app:showAsAction="never"/>

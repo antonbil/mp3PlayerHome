@@ -99,6 +99,7 @@ public class FavoriteListAdapter extends BaseAdapter {
 
                 menu.getMenu().add("delete");
                 menu.getMenu().add("edit");
+                menu.getMenu().add("save");
                 menu.getMenu().add("add to playlist");
                 menu.show();
 
