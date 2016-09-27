@@ -53,7 +53,9 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void albumArtistWikipedia(int counter);
     public abstract void addAlbum(int counter);
     public abstract void addAlbumNoplay(int counter);
-    Bitmap logo1;
+    public void saveAlbumToFavoritesAlbum(int counter) {}
+
+        Bitmap logo1;
 
     public PlanetAdapter(List<String> planetList, Context ctx, ArrayList<PlaylistItem> tracksPlaylist) {
         super(ctx, R.layout.spotifylist, planetList);
@@ -267,7 +269,12 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                     //addAlbum(position);
                 }
                 else if (item.getTitle().toString().equals("add album to favorites")) {
+                    //tracksPlaylist.get(position).url
                     addAlbumToFavoritesAlbum(position);
+                }
+                else if (item.getTitle().toString().equals("save album to favorites")) {
+                    //tracksPlaylist.get(position).url
+                    saveAlbumToFavoritesAlbum(position);
                 }
 
                 return true;
@@ -278,6 +285,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("add");//submenu
             menu.getMenu().add("wikipedia artist");//submenu
             menu.getMenu().add("add album to favorites");//submenu
+            menu.getMenu().add("save album to favorites");//submenu
             menu.getMenu().add("large picture");
 
         }

@@ -120,39 +120,48 @@ public class EditFavoriteActivity extends AppCompatActivity{
             String[]names=favorite.getDescription().split("-");
             int nr=Favorite.getCategoryNr(favorite.getRecord().category);
             String categoryDescription = Favorite.getCategoryString(favorite.getRecord().category);
-            String outputurl=String.format("http://192.168.2.8/spotify/%s/addlink.php?url=%s&artist=%s&artistsort=%s&album=%s",
-                    categoryDescription,url, URLEncoder.encode(names[0].trim()),
-                    URLEncoder.encode(favorite.getSortkey().trim()),URLEncoder.encode(names[1].trim()));
-            Log.v("samba",outputurl);
-            url = outputurl;
-            try {
+            String artist = names[0];
+            String album = names[1];
+            String pictureUrl="";
+            String sortkey = favorite.getSortkey();
 
-                URL obj = new URL(url);
-                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-                // optional default is GET
-                con.setRequestMethod("GET");
-
-                String USER_AGENT = "Mozilla/5.0";
-                //add request header
-                con.setRequestProperty("User-Agent", USER_AGENT);
-
-                int responseCode = con.getResponseCode();
-                System.out.println("\nSending 'GET' request to URL : " + url);
-                System.out.println("Response Code : " + responseCode);
-
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-            }catch (Exception e){}
+            saveFavoriteToServer(sortkey, url, categoryDescription, artist, album, pictureUrl);
         }
 
+    }
+
+    public static void saveFavoriteToServer(String sortkey, String url, String categoryDescription, String artist, String album, String pictureUrl) {
+        String outputurl=String.format("http://192.168.2.8/spotify/%s/addlink.php?url=%s&artist=%s&artistsort=%s&album=%s&pictureurl=%s",
+                categoryDescription,url, URLEncoder.encode(artist.trim()),
+                URLEncoder.encode(sortkey.trim()),URLEncoder.encode(album.trim()),URLEncoder.encode(pictureUrl)).replace(" ","%20");
+        Log.v("samba",outputurl);
+        //url = outputurl;
+        try {
+
+            URL obj = new URL(outputurl);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+            // optional default is GET
+            con.setRequestMethod("GET");
+
+            String USER_AGENT = "Mozilla/5.0";
+            //add request header
+            con.setRequestProperty("User-Agent", USER_AGENT);
+
+            int responseCode = con.getResponseCode();
+            System.out.println("\nSending 'GET' request to URL : " + outputurl);
+            System.out.println("Response Code : " + responseCode);
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+        }catch (Exception e){}
     }
 
     public static void editFavorite(Activity a, Favorite favorite, long l) {

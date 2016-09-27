@@ -728,8 +728,9 @@ public class SpotifyFragment extends Fragment implements
                         String url=element.getElementsByClass("url").get(0).text();
                         String artist=element.getElementsByClass("artist").get(0).text();
                         String album=element.getElementsByClass("album").get(0).text();
+                        String imageurl=element.select("img").attr("src");
                         if (url.length()>0)
-                        newAlbums.add(new NewAlbum(url, artist, album));
+                        newAlbums.add(new NewAlbum(url, artist, album,imageurl));
 
                     }
                 }
@@ -1005,10 +1006,20 @@ public class SpotifyFragment extends Fragment implements
 
             @Override
             public void addAlbumToFavoritesAlbum(int counter) {
+                //albumTracks.get(counter)
+                //hier heb je alles bij elkaar!
                 addAlbumToFavorites(Favorite.SPOTIFYALBUM + albumIds.get(counter), artistName + "-" + albumList.get(counter));
 
             }
 
+            @Override
+            public void saveAlbumToFavoritesAlbum(int counter) {
+                //albumTracks.get(counter)
+                //hier heb je alles bij elkaar!
+                EditFavoriteActivity.saveFavoriteToServer("", "spotify:album:"+albumIds.get(counter), "New Links", artistName, albumList.get(counter), albumTracks.get(counter).url);
+                //addAlbumToFavorites(Favorite.SPOTIFYALBUM + albumIds.get(counter), artistName + "-" + albumList.get(counter));
+
+            }
             @Override
             public void addAlbumToFavoritesTrack(int counter) {
                 addAlbumToFavoritesTrackwise(counter);
