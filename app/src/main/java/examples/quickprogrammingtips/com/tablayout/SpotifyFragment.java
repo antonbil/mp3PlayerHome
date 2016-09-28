@@ -59,7 +59,6 @@ import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAd
 import examples.quickprogrammingtips.com.tablayout.adapters.InstantAutoComplete;
 import examples.quickprogrammingtips.com.tablayout.adapters.RelatedArtistAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
-import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import examples.quickprogrammingtips.com.tablayout.tools.Utils;
@@ -640,7 +639,7 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 public void addToFavorites(NewAlbum newAlbum) {
-                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
+                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
                     generateLists();
                 }
 
@@ -737,7 +736,7 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 public void addToFavorites(NewAlbum newAlbum) {
-                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
+                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
                     generateLists();
                 }
 
@@ -818,7 +817,7 @@ public class SpotifyFragment extends Fragment implements
 
                             @Override
                             public void addToFavorites(NewAlbum newAlbum) {
-                                newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM);
+                                newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
                                 generateLists();
                             }
 
@@ -1006,20 +1005,10 @@ public class SpotifyFragment extends Fragment implements
 
             @Override
             public void addAlbumToFavoritesAlbum(int counter) {
-                //albumTracks.get(counter)
-                //hier heb je alles bij elkaar!
-                addAlbumToFavorites(Favorite.SPOTIFYALBUM + albumIds.get(counter), artistName + "-" + albumList.get(counter));
+                addAlbumToFavorites(Favorite.SPOTIFYALBUM + albumIds.get(counter), artistName + "-" + albumList.get(counter), albumTracks.get(counter).url);
 
             }
 
-            @Override
-            public void saveAlbumToFavoritesAlbum(int counter) {
-                //albumTracks.get(counter)
-                //hier heb je alles bij elkaar!
-                EditFavoriteActivity.saveFavoriteToServer("", "spotify:album:"+albumIds.get(counter), "New Links", artistName, albumList.get(counter), albumTracks.get(counter).url);
-                //addAlbumToFavorites(Favorite.SPOTIFYALBUM + albumIds.get(counter), artistName + "-" + albumList.get(counter));
-
-            }
             @Override
             public void addAlbumToFavoritesTrack(int counter) {
                 addAlbumToFavoritesTrackwise(counter);
@@ -1415,26 +1404,27 @@ public class SpotifyFragment extends Fragment implements
         getAlbumtracksFromSpotify(tracksPlaylist.get(counter).album.id, tracksPlaylist.get(counter).album.name,activityThis,albumAdapter, albumsListview);
     }
 
-    public static void addAlbumToFavoritesTrackwise(int counter) {
+    public static void addAlbumToFavoritesTrackwise(int counter) {//
         String url = Favorite.SPOTIFYALBUM + tracksPlaylist.get(counter).album.id;
         String name = tracksPlaylist.get(counter).artists.get(0).name;
         String album = tracksPlaylist.get(counter).album.name;
         //Log.v("samba","add "+url+name+"-"+album);
         String description = name + "-" + album;
         String newalbum = Favorite.NEWALBUM;
-        newFavorite(url, description, newalbum);
+        newFavorite(url, description, newalbum, albumTracks.get(counter).url);
     }
 
-    public static void newFavorite(String url, String description, String newalbum) {
-        FavoriteRecord fv=new FavoriteRecord(url,
-                description, newalbum);
-        long a = fv.save();
+    public static void newFavorite(String url, String description, String newalbum, String imageurl) {
+        EditFavoriteActivity.editAndSaveFavorite(MainActivity.getThis,-1, imageurl, url, "", description, "New Links");
+        //FavoriteRecord fv=new FavoriteRecord(url,
+        //        description, newalbum);
+        //long a = fv.save();
         //Log.v("samba","added to favorites."+description);
-        EditFavoriteActivity.editFavorite(MainActivity.getThis, new Favorite(fv.url,description,description,""),a);
+        //EditFavoriteActivity.editFavorite(MainActivity.getThis, new Favorite(fv.url,description,description,""),a);
     }
 
-    public static void addAlbumToFavorites(String url, String description) {
-        newFavorite(url, description, Favorite.NEWALBUM);
+    public static void addAlbumToFavorites(String url, String description, String s) {
+        newFavorite(url, description, Favorite.NEWALBUM,s);
     }
 
     public static void removeAlbum(PlanetAdapter albumAdapter, int counter, ListView albumsListview, Activity getThis) {

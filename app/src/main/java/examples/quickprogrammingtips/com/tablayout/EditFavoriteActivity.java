@@ -45,7 +45,9 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
         description = (EditText) findViewById(R.id.search);
 
+
         Button save = (Button) findViewById(R.id.save_button);
+        Button server = (Button) findViewById(R.id.server_button);
 
         Bundle extras = getIntent().getExtras();
 
@@ -54,6 +56,11 @@ public class EditFavoriteActivity extends AppCompatActivity{
         String    descriptionString= extras.getString("description");
         String    categoryString= extras.getString("category");
         String    sortkeyString= extras.getString("sortkey");
+        String    imageurl="";
+        try{
+            imageurl= extras.getString("imageurl");
+        }catch (Exception e){}
+        String finalimageurl=imageurl;
         vwgroup=((ViewGroup)findViewById(R.id.favorite_radiogroup));
 
         RadioGroup.LayoutParams rprms;
@@ -77,16 +84,37 @@ public class EditFavoriteActivity extends AppCompatActivity{
         url.setText(urlString);
         description.setText(descriptionString);
 
+        server.setOnClickListener(v -> {
+            String[] desc=description.getText().toString().split("-");
+            String url = this.url.getText().toString().replace("spotifyalbum://","spotify:album:");
+            String tempfavorite ="";
+            for (int i=0;i<radioButtons.size();i++)
+                if (radioButtons.get(i).isChecked())
+                {
+                    //Log.v("samba", "set category to:" + Favorite.categoryIds.get(i));
+                    tempfavorite = Favorite.getCategoryDescription(i);
+                }
+
+            saveFavoriteToServer(sortkey.getText().toString(), url, tempfavorite, desc[0], desc[1], finalimageurl);
+            finish();
+        });
         save.setOnClickListener(v -> {
+            String tempfavorite = getCategoryDescription();
+            Log.v("samba","id:"+idString);
+            if (idString<0){
+                try{
+                    FavoriteRecord fv=new FavoriteRecord(url.getText().toString(),
+                            description.getText().toString()+";;"+sortkey.getText().toString(), tempfavorite);
+                    long a = fv.save();
+
+                }
+                catch (Exception e){}
+            }else
             try {
                 FavoriteRecord favorite = FavoriteRecord.findById(FavoriteRecord.class, idString);
                 favorite.url = url.getText().toString();
                 favorite.description = description.getText().toString()+";;"+sortkey.getText().toString();
-                for (int i=0;i<radioButtons.size();i++)
-                    if (radioButtons.get(i).isChecked())
-                    {
-                        //Log.v("samba", "set category to:" + Favorite.categoryIds.get(i));
-                        favorite.category =Favorite.categoryIdsget(i);}
+                favorite.category = tempfavorite;
                 favorite.save();
                 Intent i = getIntent(); //get the intent that has been called, i.e you did called with startActivityForResult();
                 setResult(23, i);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
@@ -103,6 +131,18 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
 
     }
+
+    private String getCategoryDescription() {
+        String tempfavorite ="";
+        for (int i=0;i<radioButtons.size();i++)
+            if (radioButtons.get(i).isChecked())
+            {
+                //Log.v("samba", "set category to:" + Favorite.categoryIds.get(i));
+                tempfavorite = Favorite.categoryIdsget(i);
+            }
+        return tempfavorite;
+    }
+
     public static void editFavorite(Activity a, Favorite favorite) {
 
         if (favorite.getRecord() != null) {
@@ -165,12 +205,23 @@ public class EditFavoriteActivity extends AppCompatActivity{
     }
 
     public static void editFavorite(Activity a, Favorite favorite, long l) {
+        int id = (int) (l);
+        String imageurl="";
+        String uri = favorite.getUri();
+        String sortkey = favorite.getSortkey();
+        String description = favorite.getDescription();
+        String categoryString = Favorite.getCategoryString(favorite.getRecord().category);
+        editAndSaveFavorite(a, id, imageurl, uri, sortkey, description, categoryString);
+    }
+
+    public static void editAndSaveFavorite(Activity a, int id, String imageurl, String uri, String sortkey, String description, String category) {
         Intent intent = new Intent(a, EditFavoriteActivity.class);
-        intent.putExtra("id", (int) (l));
-        intent.putExtra("url", favorite.getUri());
-        intent.putExtra("description", favorite.getDescription());
-        intent.putExtra("category", Favorite.getCategoryString(favorite.getRecord().category));
-        intent.putExtra("sortkey", favorite.getSortkey());
+        intent.putExtra("id", id);
+        intent.putExtra("url", uri);
+        intent.putExtra("description", description);
+        intent.putExtra("category", category);
+        intent.putExtra("sortkey", sortkey);
+        intent.putExtra("imageurl", imageurl);
         a.startActivityForResult(intent, STATIC_RESULT_SELECT);
     }
 }

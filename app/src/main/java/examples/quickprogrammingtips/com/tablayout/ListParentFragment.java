@@ -1,5 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -38,7 +39,8 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     public ListParentFragment() {
         super();
     }
-    public ListParentFragment(int listViewId,int fragment_list) {
+    @SuppressLint("ValidFragment")
+    public ListParentFragment(int listViewId, int fragment_list) {
         super();
         this.listViewId=listViewId;
         this.fragment_list=fragment_list;
@@ -176,7 +178,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
             }
             else  if (id==getString(R.string.addtofavorites_filelist)){
                 String[] paths=path.split("/");
-                SpotifyFragment.newFavorite(path, paths[paths.length-1], Favorite.NEWALBUM);
+                SpotifyFragment.newFavorite(path, paths[paths.length-1], Favorite.NEWALBUM, "");
             }else {
 
                 if (path.contains("FamilyLibrary"))
