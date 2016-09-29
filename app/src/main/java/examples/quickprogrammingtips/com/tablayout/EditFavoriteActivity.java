@@ -21,6 +21,13 @@ import java.util.ArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.AlbumSimple;
+import kaaes.spotify.webapi.android.models.AlbumsPager;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * A login screen that offers login via email/password.
@@ -28,6 +35,7 @@ import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 public class EditFavoriteActivity extends AppCompatActivity{
 
 
+    public static final String SPOTIFY_ALBUM = "spotify:album:";
     // UI references.
     private EditText url;
     private EditText sortkey;
@@ -86,7 +94,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
         server.setOnClickListener(v -> {
             String[] desc=description.getText().toString().split("-");
-            String url = this.url.getText().toString().replace("spotifyalbum://","spotify:album:");
+            String url = this.url.getText().toString().replace(Favorite.SPOTIFYALBUM, SPOTIFY_ALBUM);
             String tempfavorite ="";
             for (int i=0;i<radioButtons.size();i++)
                 if (radioButtons.get(i).isChecked())
@@ -153,21 +161,39 @@ public class EditFavoriteActivity extends AppCompatActivity{
     }
 
     public static void saveFavorite(Favorite favorite){
-        //http://192.168.2.8/spotify/electronic/addlink.php?url=spotify:album:0KnrvfmcbQMmXeXgwwMY4W&artist=C.P.E Bach&artistsort=Bach CPE&album=Cello Concertos​
         String url=favorite.getUri();
-        if (url.contains("spotifyalbum")){
-            url=url.replace("spotifyalbum://","spotify:album:");
+        if (url.contains(Favorite.SPOTIFYALBUM)){
+
+            //data to store
             String[]names=favorite.getDescription().split("-");
-            int nr=Favorite.getCategoryNr(favorite.getRecord().category);
             String categoryDescription = Favorite.getCategoryString(favorite.getRecord().category);
             String artist = names[0];
-            String album = names[1];
-            String pictureUrl="";
+            String albumname = names[1];
             String sortkey = favorite.getSortkey();
 
-            saveFavoriteToServer(sortkey, url, categoryDescription, artist, album, pictureUrl);
-        }
+            //call spotify with album-id for album-image
+            url=url.replace(Favorite.SPOTIFYALBUM,"");
+            final String urlCode=url;
+            SpotifyService spotify = new SpotifyApi().getService();
 
+            spotify.searchAlbums(url.trim(), new Callback<AlbumsPager>() {
+
+                @Override
+                public void success(AlbumsPager albumsPager, Response response) {
+                    for (AlbumSimple album : albumsPager.albums.items) {
+                        //save data with album-image
+                        saveFavoriteToServer(sortkey, SPOTIFY_ALBUM +urlCode, categoryDescription, artist, albumname, album.images.get(0).url);
+                    }
+                    SearchActivity.getThis.notifyChange();
+
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
     }
 
     public static void saveFavoriteToServer(String sortkey, String url, String categoryDescription, String artist, String album, String pictureUrl) {
