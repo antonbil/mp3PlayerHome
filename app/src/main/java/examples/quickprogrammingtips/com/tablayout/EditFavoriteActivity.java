@@ -23,8 +23,7 @@ import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.AlbumSimple;
-import kaaes.spotify.webapi.android.models.AlbumsPager;
+import kaaes.spotify.webapi.android.models.Album;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -176,15 +175,21 @@ public class EditFavoriteActivity extends AppCompatActivity{
             final String urlCode=url;
             SpotifyService spotify = new SpotifyApi().getService();
 
-            spotify.searchAlbums(url.trim(), new Callback<AlbumsPager>() {
+            spotify.getAlbum(url.trim(), new Callback<Album>() {
 
-                @Override
+                /*@Override
                 public void success(AlbumsPager albumsPager, Response response) {
                     for (AlbumSimple album : albumsPager.albums.items) {
                         //save data with album-image
                         saveFavoriteToServer(sortkey, SPOTIFY_ALBUM +urlCode, categoryDescription, artist, albumname, album.images.get(0).url);
                     }
-                    SearchActivity.getThis.notifyChange();
+                    //SearchActivity.getThis.notifyChange();
+
+                }*/
+
+                @Override
+                public void success(Album album, Response response) {
+                    saveFavoriteToServer(sortkey, SPOTIFY_ALBUM +urlCode, categoryDescription, artist, albumname, album.images.get(0).url);
 
                 }
 
