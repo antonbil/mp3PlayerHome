@@ -180,7 +180,6 @@ public class EditFavoriteActivity extends AppCompatActivity{
                 /*@Override
                 public void success(AlbumsPager albumsPager, Response response) {
                     for (AlbumSimple album : albumsPager.albums.items) {
-                        //save data with album-image
                         saveFavoriteToServer(sortkey, SPOTIFY_ALBUM +urlCode, categoryDescription, artist, albumname, album.images.get(0).url);
                     }
                     //SearchActivity.getThis.notifyChange();
@@ -189,6 +188,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
                 @Override
                 public void success(Album album, Response response) {
+                    //save data with album-image
                     saveFavoriteToServer(sortkey, SPOTIFY_ALBUM +urlCode, categoryDescription, artist, albumname, album.images.get(0).url);
 
                 }
