@@ -658,7 +658,7 @@ public class SpotifyFragment extends Fragment implements
 }
     public void spotifyAlbumShortcuts(){
         try {
-            String url = "http://192.168.2.8/spotify";
+            String url = "http://192.168.2.8/spotify/data";
 
             showSpotifyAlbumlistDirectory(url);
 
@@ -1281,7 +1281,7 @@ public class SpotifyFragment extends Fragment implements
                         //listAlbumsForArtist(album.artist);
                         Image im = new Image();
                         try {
-                            im.url = album.images.get(0).url;
+                            im.url = getImageUrl(album.images);
                         } catch (Exception e) {
                         }
                         listAlbumsForArtistId(album.id, im, album.artist, new SpotifyApi());
@@ -1357,7 +1357,7 @@ public class SpotifyFragment extends Fragment implements
                                     si.artist = name;
                                     si.title = "";
                                     si.id = album.id;
-                                    si.imageid = album.images.get(0).url;
+                                    si.imageid = getImageUrl(album.images);
                                     newAlbums.add(si);
                                 }
                                 SearchActivity.getThis.notifyChange();
@@ -2148,7 +2148,7 @@ public class SpotifyFragment extends Fragment implements
                 }.execute(t.album.id);
 
 
-                pi.url = t.album.images.get(0).url;
+                pi.url = getImageUrl(t.album.images);
                 pi.id = trackid;
                 albumList.add(pi.text);
                 albumTracks.add(pi);
@@ -2259,7 +2259,7 @@ public class SpotifyFragment extends Fragment implements
                         if (!album.name.equals(previous)) {
                             PlaylistItem pi=new PlaylistItem();
                             pi.pictureVisible=true;
-                            pi.url=album.images.get(0).url;
+                            pi.url=getImageUrl(album.images);
                             pi.text=String.format("%s",album.name);
                             pi.time=0;
                             //Log.v("samba",album.name);
@@ -2287,6 +2287,13 @@ public class SpotifyFragment extends Fragment implements
                 error.printStackTrace();
             }
         });
+    }
+
+    public static String getImageUrl(List<Image> images) {
+        int imNr=0;
+        //List<Image> images = album.images;
+        if (images.size()>1)imNr=1;
+        return images.get(imNr).url;
     }
 
     public static int getTime(){
@@ -2407,7 +2414,7 @@ public class SpotifyFragment extends Fragment implements
                             if ((getSpotifyInterface.previousTrack == null) || !(t.id == getSpotifyInterface.previousTrack.id)) {
                                 //Log.v("samba", trackid);
                                 getSpotifyInterface.previousTrack = t;
-                                    String imageurl = t.album.images.get(0).url;
+                                    String imageurl = getImageUrl(t.album.images);
                                     if (imageurl == "") {
                                         String urlString = "https://api.spotify.com/v1/tracks/" + trackid;
                                         String getResult = getStringFromUrl(urlString);

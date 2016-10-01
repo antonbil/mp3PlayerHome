@@ -113,7 +113,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
                     FavoriteRecord fv=new FavoriteRecord(url.getText().toString(),
                             description.getText().toString()+";;"+sortkey.getText().toString(), tempfavorite);
                     long a = fv.save();
-
+                    finish(); //finish the startNewOne activity
                 }
                 catch (Exception e){}
             }else
@@ -202,7 +202,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
     }
 
     public static void saveFavoriteToServer(String sortkey, String url, String categoryDescription, String artist, String album, String pictureUrl) {
-        String outputurl=String.format("http://192.168.2.8/spotify/%s/addlink.php?url=%s&artist=%s&artistsort=%s&album=%s&pictureurl=%s",
+        String outputurl=String.format("http://192.168.2.8/spotify/data/genre/%s/addlink.php?url=%s&artist=%s&artistsort=%s&album=%s&pictureurl=%s",
                 categoryDescription,url, URLEncoder.encode(artist.trim()),
                 URLEncoder.encode(sortkey.trim()),URLEncoder.encode(album.trim()),URLEncoder.encode(pictureUrl)).replace(" ","%20");
         Log.v("samba",outputurl);

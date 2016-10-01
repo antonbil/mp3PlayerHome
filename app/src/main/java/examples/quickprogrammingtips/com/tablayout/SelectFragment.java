@@ -221,11 +221,13 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             }
 
         }
-        for (FavoritesListItem fi:favoritesListItemArray)
-            if(fi.favoritesAdded.size()>0)fi.favoriteTextView.setVisibility(View.VISIBLE); else fi.favoriteTextView.setVisibility(View.GONE);
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                for (FavoritesListItem fi:favoritesListItemArray)
+                    if(fi.favoritesAdded.size()>0)fi.favoriteTextView.setVisibility(View.VISIBLE); else {fi.favoriteTextView.setVisibility(View.GONE);
+                        fi.setDistance(0);
+                    };
                 /*if (regularFavoritesVisible)
                     Utils.setDynamicHeight(favoriteListView, 0);
                     //setHeightListView(favoriteListAdapter, favoriteListView,favorites);
@@ -249,7 +251,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     if (fi.isVisible())
                     //setHeightListView(fi.favoritesAddedListAdapter, fi.favoritesAddedListView, fi.favoritesAdded);
                     Utils.setDynamicHeight(fi.favoritesAddedListView, 0);
-                    else setListViewHeight(fi.favoritesAddedListView, 0);
+                    else setListViewHeight(fi.favoritesAddedListView, 1);
                 }
                 /*Collections.sort(favoritesListItemArray, new Comparator() {
                     public int compare(Object o1, Object o2) {
@@ -451,21 +453,20 @@ else//added on 21-6-2016
         public  FavoriteListAdapter favoritesAddedListAdapter;
         public ArrayList<Favorite> favoritesAdded;
         public TextView favoriteTextView;
+        private FragmentActivity activity;
+        private LinearLayout ll;
+
         public FavoritesListItem(SelectFragment selectFragment, View parentView, String listDescription, String selectlistViewcode,boolean visible) {
             this.selectlistViewcode=selectlistViewcode;
 
-            LinearLayout LL = new LinearLayout(selectFragment.getActivity());
-            LL.setOrientation(LinearLayout.VERTICAL);
 
-            LinearLayout.LayoutParams LLParams = new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
-
-            LL.setPadding(10, 10, 10, 10);
-            LL.setLayoutParams(LLParams);
-            favoriteTextView = new TextView(selectFragment.getActivity());
+             activity = selectFragment.getActivity();
+            favoriteTextView = new TextView(activity);
             favoriteTextView.setText(listDescription);
 
-            LLParams.setMargins(0, 10, 10, 0);
-            favoriteTextView.setLayoutParams(LLParams);
+            this.visible=visible;
+            ll = new LinearLayout(activity);
+            setLayoutParams();
 
             final float scale = getResources().getDisplayMetrics().density;
             int dpHeightInPx = (int) (40 * scale);
@@ -473,17 +474,32 @@ else//added on 21-6-2016
 
             favoriteTextView.setGravity(Gravity.CENTER_VERTICAL);
             favoriteTextView.setBackgroundColor(Color.parseColor("#4A9C67"));
-            LL.addView(favoriteTextView);
+            ll.addView(favoriteTextView);
             this.favoritesAdded = new ArrayList<>();
-            this.favoritesAddedListView = new ListView(selectFragment.getActivity());
-            this.favoritesAddedListAdapter = new FavoriteListAdapter(selectFragment.getActivity(), selectFragment, true, this.favoritesAdded);
+            this.favoritesAddedListView = new ListView(activity);
+            this.favoritesAddedListAdapter = new FavoriteListAdapter(activity, selectFragment, true, this.favoritesAdded);
             this.favoritesAddedListView.setAdapter(favoritesAddedListAdapter);
 
-            LL.addView(this.favoritesAddedListView);
+            ll.addView(this.favoritesAddedListView);
             LinearLayout rl=((LinearLayout) parentView.findViewById(R.id.favoritesLinearLayout));
-            rl.addView(LL);
-            this.visible=visible;
+            rl.addView(ll);
 
+        }
+
+        public void setLayoutParams() {
+            setDistance(2);
+        }
+
+        public void setDistance(int distance) {
+            LinearLayout.LayoutParams LLParams = new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
+            ll.setOrientation(LinearLayout.VERTICAL);
+            ll.setPadding(distance, distance, distance, distance);
+
+            //LL.setPadding(10, 10, 10, 10);
+            ll.setLayoutParams(LLParams);
+
+            LLParams.setMargins(0, distance, distance, 0);
+            favoriteTextView.setLayoutParams(LLParams);
         }
 
         public FavoritesListItem(SelectFragment selectFragment, View parentView, String listDescription, String selectlistViewcode) {
@@ -491,6 +507,7 @@ else//added on 21-6-2016
         }
         public void toggleVisible(){
             visible=!visible;
+            setLayoutParams();
         }
         public boolean isVisible(){
             return visible;
