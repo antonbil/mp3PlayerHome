@@ -620,8 +620,8 @@ public class SpotifyFragment extends Fragment implements
                     for (Element element : trackelements) {
                         i++;
                         try {
-                            String image1 =
-                            element.children().get(4).select("img").attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
+                            String image1 =//.getElementsByTag("img").get(0)
+                            element.children().get(4).getElementsByTag("img").get(0).attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
                             String s = element.children().get(7).children().get(0).attr("onclick").replace("playSpotify('https://embed.spotify.com/?uri=","").replace("');","").replace("%3A",":");
                             Log.v("samba", s);
 
@@ -724,7 +724,7 @@ public class SpotifyFragment extends Fragment implements
                     });
             builderSingle.show();
         } else{
-            final Document doc1= spotifyShortcutsDoc;
+            //final Document doc1= spotifyShortcutsDoc;
             trackelements = spotifyShortcutsDoc.getElementsByClass("spotifyalbum");
             spotifyShortcutsDoc =null;
             fillListviewWithValues = new FillListviewWithValues() {
@@ -737,14 +737,12 @@ public class SpotifyFragment extends Fragment implements
                             String artist="";
                             String album="";
                             try {
-                            //doc.select("div.news-col-0 h3");
-                            String url = element.getElementsByClass("url").get(0).text();
-                            //String url=element.getElementsByClass("url").get(0).text();
-                            artist = element.getElementsByClass("artist").get(0).text();
-                            album = element.getElementsByClass("album").get(0).text();
-                            String imageurl = element.getElementsByClass("img").get(0).text();
-                            if (url.length() > 0&&artist.length() > 0&&album.length() > 0)
-                                newAlbums.add(new NewAlbum(url, artist, album, imageurl));
+                                String url = element.getElementsByClass("url").get(0).text();
+                                artist = element.getElementsByClass("artist").get(0).text();
+                                album = element.getElementsByClass("album").get(0).text();
+                                String imageurl = element.getElementsByClass("img").get(0).text();
+                                if (url.length() > 0&&artist.length() > 0&&album.length() > 0)
+                                    newAlbums.add(new NewAlbum(url, artist, album, imageurl));
 
                             }catch (Exception e){
                                 Log.v("samba","Error in "+i+artist+album);
@@ -752,8 +750,6 @@ public class SpotifyFragment extends Fragment implements
                                 }
                             i++;
                         }
-                    //trackelements=null;
-                    //doc1.
                 }
 
                 @Override
@@ -816,7 +812,7 @@ public class SpotifyFragment extends Fragment implements
 
                                 Elements trackelements = doc.getElementsByClass("album");
                                 for (Element element : trackelements) {
-                                    String image1 = "http://www.spotifynewmusic.com/" + element.select("img").attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
+                                    String image1 = "http://www.spotifynewmusic.com/" + element.getElementsByTag("img").get(0).attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
                                     Elements links = element.getElementsByClass("play").select("a[href]"); // a with href
                                     String s = links.get(0).attr("href");
                                     Log.v("samba", s);

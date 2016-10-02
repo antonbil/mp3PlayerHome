@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -64,11 +65,14 @@ public abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> 
                     decodeStream(InputStream is)
                         Decode an input stream into a bitmap.
                  */
-            logo = getResizedBitmap(BitmapFactory.decodeStream(is),150,150);
+            //if (logo.getHeight()>=250)
+            logo = BitmapFactory.decodeStream(is);
+            if (logo.getHeight()>250)
+            logo=getResizedBitmap(logo,250,250);
             albumPictures.put(urlOfImage, logo);//so image is loaded only once
         } catch (Exception e) { // Catch the download exception
             //albumPictures.clear();
-            //Log.v("samba", Log.getStackTraceString(e));
+            Log.v("samba", Log.getStackTraceString(e));
         }
         return logo;
     }
