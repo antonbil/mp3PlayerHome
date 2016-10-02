@@ -503,7 +503,8 @@ public class SpotifyFragment extends Fragment implements
             return sb.toString();
 
         } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
+            Log.v("samba","LastFMArtist(String artist) error");
+            //Log.v("samba", Log.getStackTraceString(e));
         }
         return "";
     }
@@ -604,13 +605,14 @@ public class SpotifyFragment extends Fragment implements
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
 
-                    String url = "http://dutchcharts.nl/weekchart.asp?cat=a";
+                    //String url = "http://dutchcharts.nl/weekchart.asp?cat=a";
 
                     Document doc = null;
                     try {
-                        doc = Jsoup.connect(url).get();
-                        String temp1 = doc.html().replace("<br>", "$$$").replace("<br />", "$$$").replace("<b>", "b-b-b-").replace("</b>", "b+b+b+"); //$$$ instead <br>
-                        doc = Jsoup.parse(temp1); //Parse again
+                        String fullString = getContentsOfAddress("http://dutchcharts.nl/weekchart.asp?cat=a");
+                        //doc = Jsoup.connect(url).get();
+                        fullString=fullString.replace("<br>", "$$$").replace("<br />", "$$$").replace("<b>", "b-b-b-").replace("</b>", "b+b+b+"); //$$$ instead <br>
+                        doc = Jsoup.parse(fullString); //Parse again
                     } catch (IOException e) {
                         Log.v("samba", Log.getStackTraceString(e));
                     }
@@ -623,10 +625,10 @@ public class SpotifyFragment extends Fragment implements
                             String image1 =//.getElementsByTag("img").get(0)
                             element.children().get(4).getElementsByTag("img").get(0).attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
                             String s = element.children().get(7).children().get(0).attr("onclick").replace("playSpotify('https://embed.spotify.com/?uri=","").replace("');","").replace("%3A",":");
-                            Log.v("samba", s);
+                            //Log.v("samba", "albumTop100Nl()");
 
                             String div = element.children().get(5).children().get(0).text();
-                            Log.v("samba", div);
+                            //Log.v("samba", div);
                             String[] list = div.replace("$$$", ";").split(";");
                             String artist = list[0].replace("b-b-b-","").replace("b+b+b+","");
                             String album = "";
@@ -635,7 +637,8 @@ public class SpotifyFragment extends Fragment implements
                             //ids.add(artist + "-" + album);
                             newAlbums.add(new NewAlbum(s, artist, album, image1));
                         } catch (Exception e) {
-                            Log.v("samba", Log.getStackTraceString(e));
+                            //Log.v("samba", Log.getStackTraceString(e));
+                            Log.v("samba", "albumTop100Nl() error");
                         }
 
                     }
@@ -660,6 +663,20 @@ public class SpotifyFragment extends Fragment implements
         }
 
 }
+
+    @NonNull
+    public String getContentsOfAddress(String address) throws IOException {
+        String fullString = "";
+        URL url = new URL(address);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            fullString += line;
+        }
+        reader.close();
+        return fullString;
+    }
+
     public void spotifyAlbumShortcuts(){
         try {
             String url = "http://192.168.2.8/spotify/data";
@@ -678,20 +695,16 @@ public class SpotifyFragment extends Fragment implements
         spotifyShortcutsDoc = null;
         try {
             spotifyShortcutsDoc = Jsoup.connect(url).get();
-            //String temp1 = doc.html();
-            //Log.v("samba",temp1);
-            //doc = Jsoup.parse(temp1); //Parse again
         } catch (IOException e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
-        int i=0;
         Elements links = spotifyShortcutsDoc.select("body a");
         ArrayList<String> directoryListing=new ArrayList();
         for (Element link : links)
         {
             if(link.text().lastIndexOf("/")>0) {
                 String s=link.text().replace("//","");
-                Log.v("samba",link.text());
+                //Log.v("samba",link.text());
                 directoryListing.add(s);
             }
         }
@@ -724,8 +737,7 @@ public class SpotifyFragment extends Fragment implements
                     });
             builderSingle.show();
         } else{
-            //final Document doc1= spotifyShortcutsDoc;
-            trackelements = spotifyShortcutsDoc.getElementsByClass("spotifyalbum");
+           trackelements = spotifyShortcutsDoc.getElementsByClass("spotifyalbum");
             spotifyShortcutsDoc =null;
             fillListviewWithValues = new FillListviewWithValues() {
 
@@ -797,14 +809,14 @@ public class SpotifyFragment extends Fragment implements
                             @Override
                             public void generateList(ArrayList<NewAlbum> newAlbums) {
 
-                                String url = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
+                                //String url = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
 
                                 Favorite.NEWALBUM=Favorite.getCategoryId(cat);
 
                                 Document doc = null;
                                 try {
-                                    doc = Jsoup.connect(url).get();
-                                    String temp1 = doc.html().replace("<br>", "$$$").replace("<br />", "$$$"); //$$$ instead <br>
+                                    //doc = Jsoup.connect(url).get();
+                                    String temp1 = getContentsOfAddress("http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat).replace("<br>", "$$$").replace("<br />", "$$$"); //$$$ instead <br>
                                     doc = Jsoup.parse(temp1); //Parse again
                                 } catch (IOException e) {
                                     Log.v("samba", Log.getStackTraceString(e));
@@ -2870,7 +2882,7 @@ class SpotifyHeader {
 
                     artistText = artist.getJSONObject("bio").getString("content");
                 } catch (JSONException e) {
-                    Log.v("samba", Log.getStackTraceString(e));
+                    //Log.v("samba", Log.getStackTraceString(e));
                 }
                 //Log.v("samba", "3");
                 SpannableString SS = new SpannableString(artistText);
