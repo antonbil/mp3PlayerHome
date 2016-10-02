@@ -9,7 +9,7 @@ import java.net.URL;
 import java.util.HashMap;
 
 public abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-    public static HashMap<String, Bitmap> albumPictures=new HashMap<>();
+    public static HashMap<String, Bitmap> albumPictures=new HashMap<>();//DownLoadImageTask.albumPictures=new HashMap<>();
 
 
     public DownLoadImageTask() {

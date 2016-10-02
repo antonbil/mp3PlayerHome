@@ -186,6 +186,8 @@ public class SpotifyFragment extends Fragment implements
     public static PopupMenu categoriesMenu;
     private static ProgressDialog progressDialog;
     private boolean artist_desc_hidden=true;
+    private Elements trackelements;
+    private Document spotifyShortcutsDoc;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -254,6 +256,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public void checkAppMemory(){
+        Log.v("samba","check for low memory");
         // Get app memory info
         long available = Runtime.getRuntime().maxMemory();
         long used = Runtime.getRuntime().totalMemory();
@@ -270,7 +273,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public void handleLowMemory(){
-        DownLoadImageTask.albumPictures.clear();
+        //DownLoadImageTask.albumPictures.clear();
     }
     private static void GetSpotifyTokenSync(){
         checkAddress();
@@ -670,17 +673,18 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public void showSpotifyAlbumlistDirectory(String url) {
-        Document doc = null;
+        //DownLoadImageTask.albumPictures=new HashMap<>();
+        spotifyShortcutsDoc = null;
         try {
-            doc = Jsoup.connect(url).get();
-            String temp1 = doc.html();
-            Log.v("samba",temp1);
+            spotifyShortcutsDoc = Jsoup.connect(url).get();
+            //String temp1 = doc.html();
+            //Log.v("samba",temp1);
             //doc = Jsoup.parse(temp1); //Parse again
         } catch (IOException e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
         int i=0;
-        Elements links = doc.select("body a");
+        Elements links = spotifyShortcutsDoc.select("body a");
         ArrayList<String> directoryListing=new ArrayList();
         for (Element link : links)
         {
@@ -690,7 +694,10 @@ public class SpotifyFragment extends Fragment implements
                 directoryListing.add(s);
             }
         }
+        links=null;
         if (directoryListing.size()>0) {
+
+            spotifyShortcutsDoc =null;
             AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getThis);
             builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
             builderSingle.setTitle("Select Directory");
@@ -716,22 +723,36 @@ public class SpotifyFragment extends Fragment implements
                     });
             builderSingle.show();
         } else{
-            final Document doc1=doc;
+            final Document doc1= spotifyShortcutsDoc;
+            trackelements = spotifyShortcutsDoc.select("tr.spotifyalbum");
+            spotifyShortcutsDoc =null;
             fillListviewWithValues = new FillListviewWithValues() {
 
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
-                    Elements trackelements = doc1.getElementsByClass("spotifyalbum");
                     int i=0;
-                    for (Element element : trackelements) {
-                        String url=element.getElementsByClass("url").get(0).text();
-                        String artist=element.getElementsByClass("artist").get(0).text();
-                        String album=element.getElementsByClass("album").get(0).text();
-                        String imageurl=element.select("img").attr("src");
-                        if (url.length()>0)
-                        newAlbums.add(new NewAlbum(url, artist, album,imageurl));
+                        for (Element element : trackelements) {
+                            //if (i>20) break;;
+                            String artist="";
+                            String album="";
+                            try {
+                            //doc.select("div.news-col-0 h3");
+                            String url = element.select("div.url").get(0).text();
+                            //String url=element.getElementsByClass("url").get(0).text();
+                            artist = element.select("div.artist").get(0).text();
+                            album = element.select("div.album").get(0).text();
+                            String imageurl = element.select("div.img").get(0).text();
+                            if (url.length() > 0&&artist.length() > 0&&album.length() > 0)
+                                newAlbums.add(new NewAlbum(url, artist, album, imageurl));
 
-                    }
+                            }catch (Exception e){
+                                Log.v("samba","Error in "+i+artist+album);
+                                //Log.v("samba", Log.getStackTraceString(e));
+                                }
+                            i++;
+                        }
+                    //trackelements=null;
+                    //doc1.
                 }
 
                 @Override
