@@ -2,6 +2,7 @@ package examples.quickprogrammingtips.com.tablayout;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.AsyncTask;
 
 import java.io.InputStream;
@@ -21,6 +22,22 @@ public abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> 
         doInBackground(Params... params)
             Override this method to perform a computation on a background thread.
      */
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
+    }
     protected Bitmap doInBackground(String... urls) {
         String urlOfImage = urls[0];
         Bitmap logo = null;
@@ -47,7 +64,7 @@ public abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> 
                     decodeStream(InputStream is)
                         Decode an input stream into a bitmap.
                  */
-            logo = BitmapFactory.decodeStream(is);
+            logo = getResizedBitmap(BitmapFactory.decodeStream(is),150,150);
             albumPictures.put(urlOfImage, logo);//so image is loaded only once
         } catch (Exception e) { // Catch the download exception
             //albumPictures.clear();

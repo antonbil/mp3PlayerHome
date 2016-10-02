@@ -256,15 +256,16 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public void checkAppMemory(){
-        Log.v("samba","check for low memory");
         // Get app memory info
         long available = Runtime.getRuntime().maxMemory();
         long used = Runtime.getRuntime().totalMemory();
 
         // Check for & and handle low memory state
         float percentAvailable = 100f * (1f - ((float) used / available ));
-        if( percentAvailable <= LOW_MEMORY_THRESHOLD_PERCENT )
+        if( percentAvailable <= LOW_MEMORY_THRESHOLD_PERCENT ) {
+            Log.v("samba","check for low memory");
             handleLowMemory();
+        }
 
         // Repeat after a delay
         memoryHandler_.postDelayed( new Runnable(){ public void run() {
@@ -724,7 +725,7 @@ public class SpotifyFragment extends Fragment implements
             builderSingle.show();
         } else{
             final Document doc1= spotifyShortcutsDoc;
-            trackelements = spotifyShortcutsDoc.select("tr.spotifyalbum");
+            trackelements = spotifyShortcutsDoc.getElementsByClass("spotifyalbum");
             spotifyShortcutsDoc =null;
             fillListviewWithValues = new FillListviewWithValues() {
 
@@ -737,11 +738,11 @@ public class SpotifyFragment extends Fragment implements
                             String album="";
                             try {
                             //doc.select("div.news-col-0 h3");
-                            String url = element.select("div.url").get(0).text();
+                            String url = element.getElementsByClass("url").get(0).text();
                             //String url=element.getElementsByClass("url").get(0).text();
-                            artist = element.select("div.artist").get(0).text();
-                            album = element.select("div.album").get(0).text();
-                            String imageurl = element.select("div.img").get(0).text();
+                            artist = element.getElementsByClass("artist").get(0).text();
+                            album = element.getElementsByClass("album").get(0).text();
+                            String imageurl = element.getElementsByClass("img").get(0).text();
                             if (url.length() > 0&&artist.length() > 0&&album.length() > 0)
                                 newAlbums.add(new NewAlbum(url, artist, album, imageurl));
 
