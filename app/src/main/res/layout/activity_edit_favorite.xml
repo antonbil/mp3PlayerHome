@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="2">
+        android:weightSum="3">
 
     <Button
         android:id="@+id/server_button"
@@ -27,6 +27,15 @@
         android:layout_marginTop="16dp"
         android:text="Server"
         android:textStyle="bold" />
+        <Button
+            android:id="@+id/sort_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            style="?android:textAppearanceSmall"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Sort"
+            android:textStyle="bold" />
     <Button
         android:id="@+id/save_button"
         style="?android:textAppearanceSmall"
@@ -56,11 +65,14 @@
 
                 <EditText
                     android:id="@+id/url"
+                    android:inputType="none"
+                    android:textIsSelectable="true"
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="URL"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"/>
 
             </android.support.design.widget.TextInputLayout>
             <android.support.design.widget.TextInputLayout

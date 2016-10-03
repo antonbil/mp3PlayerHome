@@ -55,6 +55,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
         Button save = (Button) findViewById(R.id.save_button);
         Button server = (Button) findViewById(R.id.server_button);
+        Button sort = (Button) findViewById(R.id.sort_button);
 
         Bundle extras = getIntent().getExtras();
 
@@ -104,6 +105,13 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
             saveFavoriteToServer(sortkey.getText().toString(), url, tempfavorite, desc[0], desc[1], finalimageurl);
             finish();
+        });
+        sort.setOnClickListener(v -> {
+            String []desc=description.getText().toString().split("-")[0].split(" ");
+            if (desc.length>1){
+                String sortkeystring=desc[1];
+                sortkey.setText(sortkeystring);
+            }
         });
         save.setOnClickListener(v -> {
             String tempfavorite = getCategoryDescription();

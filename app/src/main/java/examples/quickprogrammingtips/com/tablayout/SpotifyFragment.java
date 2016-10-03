@@ -847,7 +847,7 @@ public class SpotifyFragment extends Fragment implements
 
                             @Override
                             public void addToFavorites(NewAlbum newAlbum) {
-                                newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
+                                newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, cat, newAlbum.getImage());
                                 generateLists();
                             }
 
@@ -1445,7 +1445,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void newFavorite(String url, String description, String newalbum, String imageurl) {
-        EditFavoriteActivity.editAndSaveFavorite(MainActivity.getThis,-1, imageurl, url, "", description, "New Links");
+        EditFavoriteActivity.editAndSaveFavorite(MainActivity.getThis,-1, imageurl, url, "", description, newalbum);
         //FavoriteRecord fv=new FavoriteRecord(url,
         //        description, newalbum);
         //long a = fv.save();
