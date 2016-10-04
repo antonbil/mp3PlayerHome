@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -765,6 +766,50 @@ public class SpotifyFragment extends Fragment implements
                 }
 
                 @Override
+                protected ArrayList<String> getChoices() {
+                    ArrayList<String>choices= new ArrayList<>();
+                    choices.add("delete");
+                    return choices;
+                }
+
+                @Override
+                public boolean processChoice(String choice, NewAlbumsActivity.ListAdapter listAdapter, ArrayList<NewAlbum> items, int position) {
+                    if (choice.equals("delete")) {
+                        String outputurl=String.format(url+"/index.php?key=%s&deleteitem=%s",items.get(position).url,true).replace(" ","%20");
+                        Log.v("samba",outputurl);
+                        try {
+
+                            URL obj = new URL(outputurl);
+                            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+                            // optional default is GET
+                            con.setRequestMethod("GET");
+
+                            String USER_AGENT = "Mozilla/5.0";
+                            //add request header
+                            con.setRequestProperty("User-Agent", USER_AGENT);
+
+                            int responseCode = con.getResponseCode();
+                            BufferedReader in = new BufferedReader(
+                                    new InputStreamReader(con.getInputStream()));
+                            String inputLine;
+                            StringBuffer response = new StringBuffer();
+
+                            while ((inputLine = in.readLine()) != null) {
+                                response.append(inputLine);
+                            }
+                            in.close();
+                            items.remove(position);
+                            listAdapter.notifyDataSetChanged();
+                        }catch (Exception e){}
+                        return true;
+                    } else {
+                        return false;
+                    }
+
+                }
+
+
                 public void addToFavorites(NewAlbum newAlbum) {
                     newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
                     generateLists();

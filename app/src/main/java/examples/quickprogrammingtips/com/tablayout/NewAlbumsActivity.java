@@ -204,7 +204,7 @@ public class NewAlbumsActivity extends Activity {
 
             //}
 
-            rowView.setOnClickListener(v -> processAlbum(items.get(position)));
+            rowView.setOnClickListener(v -> {processAlbum(items.get(position));});
             image.setOnClickListener(v -> {
                 PopupMenu menu = new PopupMenu(v.getContext(), v);
 
@@ -222,8 +222,9 @@ public class NewAlbumsActivity extends Activity {
                     return rowView;
         }
 
-         private void basicMenu(int position, PopupMenu menu) {
+         private PopupMenu basicMenu(int position, PopupMenu menu) {
              menu.setOnMenuItemClickListener(item -> {
+                 if (!SpotifyFragment.getThis.fillListviewWithValues.processChoice(item.getTitle().toString(),this,items,position))
                  if (item.getTitle().toString().equals("add album")) {
                      AddAlbumToPlaylist(position);
                  }else
@@ -237,9 +238,14 @@ public class NewAlbumsActivity extends Activity {
                  return true;
              });
 
+             ArrayList<String>choices=SpotifyFragment.getThis.fillListviewWithValues.getChoices();
+             for (String s:choices){
+                 menu.getMenu().add(s);
+             }
              menu.getMenu().add("add album to favorites");
              menu.getMenu().add("add album");
              menu.getMenu().add("wikipedia");
+             return menu;
          }
 
          public void AddAlbumToPlaylist(int position) {
