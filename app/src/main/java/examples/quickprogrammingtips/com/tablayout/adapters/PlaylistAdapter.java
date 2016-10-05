@@ -4,6 +4,7 @@ package examples.quickprogrammingtips.com.tablayout.adapters;
  * Created by anton on 20-1-16.
  */
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -38,13 +39,13 @@ public class PlaylistAdapter extends BaseAdapter {
     private MpdInterface caller;
     private int currentSongInPlaylist=-1;
 
-    public PlaylistAdapter(PlayFragment selectFragmentContext, MpdInterface caller, CopyOnWriteArrayList<Mp3File> files) {
+    public PlaylistAdapter(PlayFragment selectFragmentContext, MpdInterface caller, CopyOnWriteArrayList<Mp3File> files, Context context) {
 
         fileArrayList = files;
         this.caller=caller;
 
         this.selectFragmentContext = selectFragmentContext;
-        mInflater = LayoutInflater.from(this.selectFragmentContext.getContext());
+        mInflater = LayoutInflater.from(context);
     }
 
     @Override

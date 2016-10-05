@@ -35,7 +35,7 @@
         android:layout_weight="0.5"
         android:padding="4dp">
     <TextView android:layout_height="match_parent"
-        android:layout_width="240dp"
+        android:layout_width="match_parent"
         android:layout_gravity="start"
         android:text="name die ook wel eens langer kan zijn, maar dat zien we dan wel weer."
         android:gravity="center_vertical"
@@ -45,7 +45,7 @@
         android:maxLines="2"
  />
     <TextView android:layout_height="match_parent"
-        android:layout_width="240dp"
+        android:layout_width="match_parent"
         android:layout_gravity="start"
         android:text="name die ook wel eens langer kan zijn, maar dat zien we dan wel weer."
         android:gravity="center_vertical"
@@ -66,7 +66,6 @@
         android:id="@+id/textViewPerformerCountry"
         android:gravity="center_vertical|right"
 
-        android:layout_weight="0.3"
         android:minWidth="60dp"
         android:paddingEnd="12dp"
         android:paddingRight="12dp"/>

@@ -19,7 +19,7 @@
     android:padding="16dp">
 
     <TextView android:layout_height="wrap_content"
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_gravity="start"
         android:text="name die ook wel eens langer kan zijn, maar dat zien we dan wel weer."
         android:layout_margin="4dp"

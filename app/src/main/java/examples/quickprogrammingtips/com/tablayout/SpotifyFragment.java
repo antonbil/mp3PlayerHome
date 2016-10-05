@@ -135,6 +135,7 @@ public class SpotifyFragment extends Fragment implements
     private static boolean spotifyPaused=false;
     private static ArrayList<PlaylistItem> previousAlbumTracks=new ArrayList<>();
     private static ArrayList<Track> previousTracksPlaylist= new ArrayList<>();
+    public static boolean hasBeen=false;
     private SpotifyHeader spotifyHeader;
     public FillListviewWithValues fillListviewWithValues;
     public ArrayList<String> artistList = new ArrayList<>();
@@ -194,6 +195,7 @@ public class SpotifyFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //Log.d("samba", "Text:a1");
+        SpotifyFragment.hasBeen=true;
         llview = inflater.inflate(R.layout.activity_spotify, container, false);
         if (albumTracks.size()>0 && albumTracks.get(0).time>0)
             clearAlbums();
@@ -911,8 +913,8 @@ public class SpotifyFragment extends Fragment implements
         builderSingle.show();
     }
 
-    private void setAdapterForMpd() {
-        albumAdapter = new PlanetAdapter(albumList, activityThis,albumTracks) {
+    public static PlanetAdapter setAdapterForMpd(boolean displayMpd) {
+        return new PlanetAdapter(albumList, activityThis,albumTracks) {
             @Override
             public void removeUp(int counter) {
                 String message = "delete 0:" + (counter + 1);
@@ -969,7 +971,7 @@ public class SpotifyFragment extends Fragment implements
             @Override
             public void displayArtist(int counter) {
                 try{
-                    displayMpd=false;
+                    //displayMpd=false;
                     String s = getLogic().getPlaylistFiles().get(counter).getArtist();
                     SpotifyFragment.artistName=s;
                     Log.v("samba","search"+2+s);
@@ -1016,8 +1018,6 @@ public class SpotifyFragment extends Fragment implements
 
             }
         };
-        albumAdapter.setDisplayCurrentTrack(false);
-        albumsListview.setAdapter(albumAdapter);
         }
 
     protected void setAdapterForSpotify() {
@@ -1183,9 +1183,11 @@ public class SpotifyFragment extends Fragment implements
         albumsListview.setAdapter(albumAdapter);
     }
 
-    private void displayMpd(ListView albumsListview) {//todo obsolete
-        displayMpd=true;
-        setAdapterForMpd();
+    public static PlanetAdapter displayMpd(ListView albumsListview) {//todo obsolete
+        //displayMpd=true;
+        PlanetAdapter albumAdapter = setAdapterForMpd(true);
+        albumAdapter.setDisplayCurrentTrack(false);
+        albumsListview.setAdapter(albumAdapter);
         albumAdapter.setAlbumVisible(false);
             try{
                 albumList.clear();
@@ -1218,7 +1220,7 @@ public class SpotifyFragment extends Fragment implements
                     albumTracks.add(pi);
                 }
 
-                Utils.setDynamicHeight(albumsListview, 0);
+                //Utils.setDynamicHeight(albumsListview, 0);
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
             }
@@ -1228,7 +1230,8 @@ public class SpotifyFragment extends Fragment implements
             albumAdapter.notifyDataSetChanged();
         });
 
-        setVisibility(View.GONE);
+        //setVisibility(View.GONE);
+        return albumAdapter;
     }
 
 

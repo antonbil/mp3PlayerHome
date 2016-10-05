@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -62,6 +63,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAdapter;
+import examples.quickprogrammingtips.com.tablayout.adapters.PlaylistAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
@@ -126,6 +128,19 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         h.post(() -> Toast.makeText(getThis, message, Toast.LENGTH_SHORT).show());
     }
 
+    class MyDrawerLayout extends DrawerLayout{
+
+        public MyDrawerLayout(Context context) {
+            super(context);
+        }
+        @Override
+        public boolean onTouchEvent(MotionEvent ev){
+            Log.v("samba","click");
+            super.onTouchEvent(ev); // still prevents transmission of TouchEvent
+            //getThis.onTouchEvent(ev);
+            return true;
+        }    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //try{
@@ -162,6 +177,53 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //Log.v("samba",""+15);
         setContentView(R.layout.activity_main);
         DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        mDrawerLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("samba","click");
+            }
+        });
+
+        //http://stackoverflow.com/questions/22590247/android-navigation-drawer-doesnt-pass-ontouchevent-to-activity/22596574#22596574
+        /*
+        Last Example - Full Code
+Ok, looking on example number 3, after understanding what exactly I did, we can make it faster by extending the onFinishInflate() method and save it as a global variable for this CustomDrawerLayout for later use. We can also put that first 'if' inside the second one to save some more work. OK here goes:
+
+View mDrawerListView;
+...
+
+@Override
+protected void onFinishInflate() {
+    super.onFinishInflate();
+    mDrawerListView = findViewById(R.id.drawer_listview);
+}
+
+@Override
+public boolean onTouchEvent(MotionEvent event) {
+    super.onTouchEvent(event);
+
+    if(event.getX() > 30 && event.getAction() == MotionEvent.ACTION_DOWN){
+        if(isDrawerOpen(mDrawerListView) || isDrawerVisible(mDrawerListView)){
+            return true;
+        } else{
+            return false;
+        }
+    }
+
+    return true;
+}
+         */
+        mDrawerLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                getThis.onTouchEvent( event );
+                //return super.onInterceptTouchEvent( ev );
+                Log.v("samba","click");
+                return false;
+            }
+        });
+
         //Log.d("samba", "Text:4");
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this,
@@ -175,6 +237,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
 
             public void onDrawerOpened(View drawerView) {
+                if (!SpotifyFragment.hasBeen) return;
+                ListView rightListview = (ListView) findViewById(R.id.DrawerListRight);
+                rightListview.setAdapter(new PlaylistAdapter(playFragment,getThis, getThis.getLogic().getPlaylistFiles(), getThis.getApplicationContext()));
+                rightListview.setOnItemClickListener((parent, view, position, id) -> {
+                    Log.v("samba","click");
+                });
+
                 ListView albumsListview = (ListView) findViewById(R.id.drawer_list);
                 ArrayList<String> albumList = new ArrayList<>();
                 ArrayList<PlaylistItem> albumTracks = new ArrayList<>();

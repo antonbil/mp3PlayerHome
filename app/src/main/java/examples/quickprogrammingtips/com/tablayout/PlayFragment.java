@@ -31,6 +31,9 @@ public class PlayFragment extends Fragment implements MpdInterface {
     private PlaylistAdapter playlististAdapter;
     private Logic logic;
     PlayFragment playFragment;
+    public PlayFragment(){
+
+    }
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -46,7 +49,7 @@ public class PlayFragment extends Fragment implements MpdInterface {
             //playlistThread.run();
             View view = inflater.inflate(R.layout.fragment_list, container, false);
             final ListView playlistView = (android.widget.ListView) view.findViewById(R.id.listViewFiles);
-            playlististAdapter = new PlaylistAdapter(this,this, logic.getPlaylistFiles());
+            playlististAdapter = new PlaylistAdapter(this,this, logic.getPlaylistFiles(),getContext());
             playlistView.setAdapter(playlististAdapter);
             //registerForContextMenu(playlistView);
 
