@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -166,73 +165,44 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //Log.d("samba", "Text:3");
 
             logic = new Logic(this);
-            Handler customHandler = new Handler();
-
             //Log.v("samba",""+15);
             setContentView(R.layout.activity_main);
             DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-            mDrawerLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.v("samba", "click");
-                }
-            });
+            //define how to handle right drawer
+            mDrawerLayout.setOnTouchListener((v, event) -> {
 
-            mDrawerLayout.setOnTouchListener(new View.OnTouchListener() {
-
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-
-                    //return super.onInterceptTouchEvent( ev );
-                    if (getThis.drawerActive) {
-                        Log.v("samba", "do nothing");
-                        rightListview.onTouchEvent(event);
-                    switch (event.getAction() & MotionEvent.ACTION_MASK)
-                    {
-                        case MotionEvent.ACTION_DOWN:
-                            shouldClick = true;
-                            xcoord=(int)event.getX();
-                            Log.v("samba","ButtonDown");
-                            //.
-                            //.
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            Log.v("samba","ButtonUp1");
-                            if (shouldClick) {
-                                Rect editTextRect = new Rect();
-                                rightListview.getHitRect(editTextRect);
-                                //if (!editTextRect.contains((int)event.getX(), (int)event.getY())) {
-                                    if ((int)event.getX()>xcoord+100) {
-                                        mDrawerLayout.closeDrawers();
-                                        Log.v("samba", "swipe");
-                                    /*} else
-                                    Log.d("samba", "touch not inside myEditText");
-                                    shouldClick = false;*/
-                                } else {
-                                    rightListview.performClick();
-                                    Log.v("samba", "ButtonUp");
-                                    shouldClick = false;
-                                    return true;
-                                }
+                if (getThis.drawerActive) {
+                    rightListview.onTouchEvent(event);
+                switch (event.getAction() & MotionEvent.ACTION_MASK)
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        shouldClick = true;
+                        xcoord=(int)event.getX();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (shouldClick) {
+                            if ((int)event.getX()>xcoord+100) {
+                                    mDrawerLayout.closeDrawers();
+                            } else {
+                                rightListview.performClick();
+                                shouldClick = false;
+                                return true;
                             }
-                            break;
-                        case MotionEvent.ACTION_POINTER_DOWN:
-                            break;
-                        case MotionEvent.ACTION_POINTER_UP:
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            //Do your stuff
-                            //shouldClick = false;
-                            break;
-                    }
-                    //rootLayout.invalidate();
-                    return false;
-                    } else {
-                        Log.v("samba", "click");
-                    }
-                    return false;
+                        }
+                        break;
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        break;
+                    case MotionEvent.ACTION_POINTER_UP:
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        break;
                 }
+                return false;
+                } else {
+                    Log.v("samba", "no event defined for push");
+                }
+                return false;
             });
 
             //Log.d("samba", "Text:4");
@@ -247,27 +217,21 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 @Override
                 public void onDrawerStateChanged(int newState) {
                     if (newState == DrawerLayout.STATE_SETTLING) {
-                        if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT))
+                        if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT))//if right drawer is opened
                             if (rightListview==null){
-                                Log.v("samba", "Gravity.RIGHT start");
-                                rightListview = (ListView) findViewById(R.id.DrawerListRight);
+                                 rightListview = (ListView) findViewById(R.id.DrawerListRight);
 
                                 adapterMpd = new PlaylistAdapter(playFragment, getThis, getThis.getLogic().getPlaylistFiles(), getThis.getApplicationContext());
                                 rightListview.setAdapter(adapterMpd);
                                 rightListview.setOnItemClickListener((parent, view, position, id) -> {
-                                    Log.v("samba", "click1"+position);
                                     getLogic().getMpc().play(position);
                                 });
                             }
                         getThis.drawerActive = false;
-                        Log.v("samba", "state-settling");
                     } else if (newState == DrawerLayout.STATE_DRAGGING) {
-                        Log.v("samba", "STATE_DRAGGING");
                         getThis.drawerActive = false;
                     } else if (newState == DrawerLayout.STATE_IDLE) {
-                        Log.v("samba", "STATE_IDLE");
                         if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT)) {
-                            Log.v("samba", "Gravity.RIGHT");
                             getThis.drawerActive = true;
                         }
 
@@ -276,7 +240,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 }
 
                 public void onDrawerClosed(View view) {
-                    //customHandler.removeCallbacks(updateTimerThread);
                     albumAdapter = null;
                 }
 
