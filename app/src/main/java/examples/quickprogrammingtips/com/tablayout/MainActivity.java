@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -106,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public ProgressDialog dialog;
     public Bitmap albumBitmap;
     public static boolean filterSpotify;
+    public boolean shouldClick=false;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -121,6 +124,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     static DBFragment         dbFragment;
     SpotifyFragment spotifyFragment;
     public int firstTime=0;
+    private boolean drawerActive=false;
+    private ListView rightListview;
+    public int xcoord=0;
+    private PlaylistAdapter adapterMpd;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -128,371 +135,423 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         h.post(() -> Toast.makeText(getThis, message, Toast.LENGTH_SHORT).show());
     }
 
-    class MyDrawerLayout extends DrawerLayout{
-
-        public MyDrawerLayout(Context context) {
-            super(context);
-        }
-        @Override
-        public boolean onTouchEvent(MotionEvent ev){
-            Log.v("samba","click");
-            super.onTouchEvent(ev); // still prevents transmission of TouchEvent
-            //getThis.onTouchEvent(ev);
-            return true;
-        }    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //try{
-        //Log.d("samba", "Text:1");
-        super.onCreate(savedInstanceState);
+        try {
+            Log.d("samba", "Text:1");
+            super.onCreate(savedInstanceState);
             Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
-        final Intent intent = getIntent();
-        final String action = intent.getAction();
+            final Intent intent = getIntent();
+            final String action = intent.getAction();
 
-        if (Intent.ACTION_VIEW.equals(action)) {
-            final List<String> segments = intent.getData().getPathSegments();
-            if (segments.size() > 1) {
-                //Log.d("MainActivity", "Text:" + segments.get(1));
-                Toast.makeText(getApplicationContext(), "Text:" + segments.get(1),
-                        Toast.LENGTH_SHORT).show();
+            if (Intent.ACTION_VIEW.equals(action)) {
+                final List<String> segments = intent.getData().getPathSegments();
+                if (segments.size() > 1) {
+                    //Log.d("MainActivity", "Text:" + segments.get(1));
+                    Toast.makeText(getApplicationContext(), "Text:" + segments.get(1),
+                            Toast.LENGTH_SHORT).show();
+                }
             }
-        }
-        //Log.d("samba", "Text:2");
+            //Log.d("samba", "Text:2");
 
-        SugarContext.init(this);//init db
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            SugarContext.init(this);//init db
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
-        StrictMode.setThreadPolicy(policy);
-        mainActivity = this;
-        getThis = this;
-        getSpotifyInterface=new SpotifyInterface();
-        dialog = new ProgressDialog(this);//keep it hidden until needed
-        updateBarHandler = new Handler();
-        //Log.d("samba", "Text:3");
+            StrictMode.setThreadPolicy(policy);
+            mainActivity = this;
+            getThis = this;
+            getSpotifyInterface = new SpotifyInterface();
+            dialog = new ProgressDialog(this);//keep it hidden until needed
+            updateBarHandler = new Handler();
+            //Log.d("samba", "Text:3");
 
-        logic = new Logic(this);
-        Handler customHandler = new Handler();
+            logic = new Logic(this);
+            Handler customHandler = new Handler();
 
-        //Log.v("samba",""+15);
-        setContentView(R.layout.activity_main);
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            //Log.v("samba",""+15);
+            setContentView(R.layout.activity_main);
+            DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        mDrawerLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.v("samba","click");
-            }
-        });
+            mDrawerLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.v("samba", "click");
+                }
+            });
 
-        //http://stackoverflow.com/questions/22590247/android-navigation-drawer-doesnt-pass-ontouchevent-to-activity/22596574#22596574
-        /*
-        Last Example - Full Code
-Ok, looking on example number 3, after understanding what exactly I did, we can make it faster by extending the onFinishInflate() method and save it as a global variable for this CustomDrawerLayout for later use. We can also put that first 'if' inside the second one to save some more work. OK here goes:
+            mDrawerLayout.setOnTouchListener(new View.OnTouchListener() {
 
-View mDrawerListView;
-...
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
 
-@Override
-protected void onFinishInflate() {
-    super.onFinishInflate();
-    mDrawerListView = findViewById(R.id.drawer_listview);
-}
+                    //return super.onInterceptTouchEvent( ev );
+                    if (getThis.drawerActive) {
+                        Log.v("samba", "do nothing");
+                        rightListview.onTouchEvent(event);
+                    switch (event.getAction() & MotionEvent.ACTION_MASK)
+                    {
+                        case MotionEvent.ACTION_DOWN:
+                            shouldClick = true;
+                            xcoord=(int)event.getX();
+                            Log.v("samba","ButtonDown");
+                            //.
+                            //.
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            Log.v("samba","ButtonUp1");
+                            if (shouldClick) {
+                                Rect editTextRect = new Rect();
+                                rightListview.getHitRect(editTextRect);
+                                //if (!editTextRect.contains((int)event.getX(), (int)event.getY())) {
+                                    if ((int)event.getX()>xcoord+100) {
+                                        mDrawerLayout.closeDrawers();
+                                        Log.v("samba", "swipe");
+                                    /*} else
+                                    Log.d("samba", "touch not inside myEditText");
+                                    shouldClick = false;*/
+                                } else {
+                                    rightListview.performClick();
+                                    Log.v("samba", "ButtonUp");
+                                    shouldClick = false;
+                                    return true;
+                                }
+                            }
+                            break;
+                        case MotionEvent.ACTION_POINTER_DOWN:
+                            break;
+                        case MotionEvent.ACTION_POINTER_UP:
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            //Do your stuff
+                            //shouldClick = false;
+                            break;
+                    }
+                    //rootLayout.invalidate();
+                    return false;
+                    } else {
+                        Log.v("samba", "click");
+                    }
+                    return false;
+                }
+            });
 
-@Override
-public boolean onTouchEvent(MotionEvent event) {
-    super.onTouchEvent(event);
+            //Log.d("samba", "Text:4");
+            ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
+                    this,
+                    mDrawerLayout,
+                    R.string.hello_world,
+                    R.string.hello_world
+            ) {
+                PlanetAdapter albumAdapter;
 
-    if(event.getX() > 30 && event.getAction() == MotionEvent.ACTION_DOWN){
-        if(isDrawerOpen(mDrawerListView) || isDrawerVisible(mDrawerListView)){
-            return true;
-        } else{
-            return false;
-        }
-    }
+                @Override
+                public void onDrawerStateChanged(int newState) {
+                    if (newState == DrawerLayout.STATE_SETTLING) {
+                        if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT))
+                            if (rightListview==null){
+                                Log.v("samba", "Gravity.RIGHT start");
+                                rightListview = (ListView) findViewById(R.id.DrawerListRight);
 
-    return true;
-}
-         */
-        mDrawerLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                getThis.onTouchEvent( event );
-                //return super.onInterceptTouchEvent( ev );
-                Log.v("samba","click");
-                return false;
-            }
-        });
+                                adapterMpd = new PlaylistAdapter(playFragment, getThis, getThis.getLogic().getPlaylistFiles(), getThis.getApplicationContext());
+                                rightListview.setAdapter(adapterMpd);
+                                rightListview.setOnItemClickListener((parent, view, position, id) -> {
+                                    Log.v("samba", "click1"+position);
+                                    getLogic().getMpc().play(position);
+                                });
+                            }
+                        getThis.drawerActive = false;
+                        Log.v("samba", "state-settling");
+                    } else if (newState == DrawerLayout.STATE_DRAGGING) {
+                        Log.v("samba", "STATE_DRAGGING");
+                        getThis.drawerActive = false;
+                    } else if (newState == DrawerLayout.STATE_IDLE) {
+                        Log.v("samba", "STATE_IDLE");
+                        if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT)) {
+                            Log.v("samba", "Gravity.RIGHT");
+                            getThis.drawerActive = true;
+                        }
 
-        //Log.d("samba", "Text:4");
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
-                this,
-                mDrawerLayout,
-                R.string.hello_world,
-                R.string.hello_world
-        ) {PlanetAdapter albumAdapter;
-            public void onDrawerClosed(View view) {
-                //customHandler.removeCallbacks(updateTimerThread);
-                albumAdapter=null;
-            }
 
-            public void onDrawerOpened(View drawerView) {
-                if (!SpotifyFragment.hasBeen) return;
-                ListView rightListview = (ListView) findViewById(R.id.DrawerListRight);
-                rightListview.setAdapter(new PlaylistAdapter(playFragment,getThis, getThis.getLogic().getPlaylistFiles(), getThis.getApplicationContext()));
-                rightListview.setOnItemClickListener((parent, view, position, id) -> {
-                    Log.v("samba","click");
-                });
+                    }
+                }
 
-                ListView albumsListview = (ListView) findViewById(R.id.drawer_list);
-                ArrayList<String> albumList = new ArrayList<>();
-                ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
-                albumAdapter = new PlanetAdapter(albumList, getThis,albumTracks) {
-                    @Override
-                    public void removeUp(int counter) {
-                        duplicateLists();
+                public void onDrawerClosed(View view) {
+                    //customHandler.removeCallbacks(updateTimerThread);
+                    albumAdapter = null;
+                }
 
-                        SpotifyFragment.removeUplist(this, albumsListview,counter, getThis);
+                public void onDrawerOpened(View drawerView) {
+                    if (!SpotifyFragment.hasBeen||getThis.drawerActive){
+                        adapterMpd.notifyDataSetChanged();
+                        return;
                     }
 
-                    @Override
-                    public void onClickFunc(int counter) {
-                        try {
-                            getSpotifyInterface.previousTrack.id = "";
-                        } catch (Exception e){Log.v("samba","error in starting song");};
+                    ListView albumsListview =  (ListView) findViewById(R.id.drawer_list);
+                    ArrayList<String> albumList = new ArrayList<>();
+                    ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
+                    albumAdapter = new PlanetAdapter(albumList, getThis, albumTracks) {
+                        @Override
+                        public void removeUp(int counter) {
+                            duplicateLists();
+
+                            SpotifyFragment.removeUplist(this, albumsListview, counter, getThis);
+                        }
+
+                        @Override
+                        public void onClickFunc(int counter) {
+                            try {
+                                getSpotifyInterface.previousTrack.id = "";
+                            } catch (Exception e) {
+                                Log.v("samba", "error in starting song");
+                            }
+                            ;
                             //Log.v("samba","a");
                             duplicateLists();
                             //Log.v("samba","b");
                             SpotifyFragment.stopMpd();
                             //Log.v("samba","c");
                             SpotifyFragment.playlistGotoPosition(counter);
-                    }
+                        }
 
-                    @Override
-                    public void removeDown(int counter) {
-                        duplicateLists();
-                        SpotifyFragment.removeDownlist(this, albumsListview,counter,getThis);
+                        @Override
+                        public void removeDown(int counter) {
+                            duplicateLists();
+                            SpotifyFragment.removeDownlist(this, albumsListview, counter, getThis);
 
-                    }
+                        }
 
-                    @Override
-                    public void removeAlbum(int counter) {
-                        duplicateLists();
-                        SpotifyFragment.removeAlbum(this, counter, albumsListview,getThis);
+                        @Override
+                        public void removeAlbum(int counter) {
+                            duplicateLists();
+                            SpotifyFragment.removeAlbum(this, counter, albumsListview, getThis);
 
-                    }
+                        }
 
-                    private void duplicateLists() {
-                        SpotifyFragment.albumList=albumList;
-                        SpotifyFragment.albumTracks=albumTracks;
-                    }
+                        private void duplicateLists() {
+                            SpotifyFragment.albumList = albumList;
+                            SpotifyFragment.albumTracks = albumTracks;
+                        }
 
-                    @Override
-                    public void addAlbumToFavoritesAlbum(int counter) {
+                        @Override
+                        public void addAlbumToFavoritesAlbum(int counter) {
 
-                    }
+                        }
 
-                    @Override
-                    public void addAlbumToFavoritesTrack(int counter) {
-                        duplicateLists();
-                        SpotifyFragment.addAlbumToFavoritesTrackwise(counter);
+                        @Override
+                        public void addAlbumToFavoritesTrack(int counter) {
+                            duplicateLists();
+                            SpotifyFragment.addAlbumToFavoritesTrackwise(counter);
 
-                    }
+                        }
 
-                    @Override
-                    public void removeTrack(int counter) {
-                        duplicateLists();
-                        SpotifyFragment.removeTrackSpotify(counter);
+                        @Override
+                        public void removeTrack(int counter) {
+                            duplicateLists();
+                            SpotifyFragment.removeTrackSpotify(counter);
 
-                    }
+                        }
 
-                    @Override
-                    public void displayArtist(int counter) {
-                        mDrawerLayout.closeDrawers();
-                        getThis.callSpotify(SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name);
+                        @Override
+                        public void displayArtist(int counter) {
+                            mDrawerLayout.closeDrawers();
+                            getThis.callSpotify(SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name);
 
 
-                    }
+                        }
 
-                    @Override
-                    public void displayArtistWikipedia(int counter) {
-                        String s = SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name;
-                        MainActivity.startWikipediaPage(s);
-                    }
+                        @Override
+                        public void displayArtistWikipedia(int counter) {
+                            String s = SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name;
+                            MainActivity.startWikipediaPage(s);
+                        }
 
-                    @Override
-                    public void replaceAndPlayAlbum(int counter) {
+                        @Override
+                        public void replaceAndPlayAlbum(int counter) {
 
-                    }
+                        }
 
-                    @Override
-                    public void addAndPlayAlbum(int counter) {
+                        @Override
+                        public void addAndPlayAlbum(int counter) {
 
-                    }
+                        }
 
-                    @Override
-                    public void albumArtistWikipedia(int counter) {
+                        @Override
+                        public void albumArtistWikipedia(int counter) {
 
-                    }
+                        }
 
-                    @Override
-                    public void addAlbum(int counter) {
-                        SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.tracksPlaylist.get(counter).album.id, SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name
-                                , getThis, this, albumsListview);
+                        @Override
+                        public void addAlbum(int counter) {
+                            SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.tracksPlaylist.get(counter).album.id, SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name
+                                    , getThis, this, albumsListview);
 
-                    }
+                        }
 
-                    @Override
-                    public void addAlbumNoplay(int counter) {
-                    }
-                };
-                albumsListview.setAdapter(albumAdapter);
-                SpotifyFragment.checkAddress();
-                SpotifyFragment.refreshPlaylistFromSpotify(1,albumAdapter, getThis,albumList,albumTracks);
-                LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
-                final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
-                fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(getThis,viewHeader));
+                        @Override
+                        public void addAlbumNoplay(int counter) {
+                        }
+                    };
+                    albumsListview.setAdapter(albumAdapter);
+                    SpotifyFragment.checkAddress();
+                    SpotifyFragment.refreshPlaylistFromSpotify(1, albumAdapter, getThis, albumList, albumTracks);
+                    LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
+                    final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
+                    fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(getThis, viewHeader));
 
-            }
-        };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        //Log.v("samba",""+16);
+                }
+            };
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+            //
+            //Log.v("samba",""+16);
 
-        //Log.d("samba", "Text:5");
-        LinearLayout ll = ((LinearLayout) findViewById(R.id.time_layout));
-        ll.setOnClickListener(v -> playPauseAll());//android:id="@+id/song_title"
-        ll = ((LinearLayout) findViewById(R.id.song_title));
-        ll.setOnClickListener(v -> {
-            mDrawerLayout.closeDrawer(GravityCompat.START,false);
-            callSpotify(currentArtist);
-        });
-        ll.setOnLongClickListener(v -> {
-            MainScreenDialog msDialog = new MainScreenDialog(getThis);
-            msDialog.show();
-            return true;
-        });
-        connectListenersToThumbnail();
-        //Log.d("samba", "Text:6");
+            //Log.d("samba", "Text:5");
+            LinearLayout ll = ((LinearLayout) findViewById(R.id.time_layout));
+            ll.setOnClickListener(v -> playPauseAll());//android:id="@+id/song_title"
+            ll = ((LinearLayout) findViewById(R.id.song_title));
+            ll.setOnClickListener(v -> {
+                mDrawerLayout.closeDrawer(GravityCompat.START, false);
+                callSpotify(currentArtist);
+            });
+            ll.setOnLongClickListener(v -> {
+                MainScreenDialog msDialog = new MainScreenDialog(getThis);
+                msDialog.show();
+                return true;
+            });
+            connectListenersToThumbnail();
+            //Log.d("samba", "Text:6");
             //TODO: make it for-statement (6 times!)
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        for (int i=0;i<7;i++)
-        tabLayout.addTab(tabLayout.newTab());
-        int[] imageResId = {
-                R.drawable.play,
-                R.drawable.smb,
-                R.drawable.ic_sync_black_24dp,
-                R.drawable.mpd,
-                R.drawable.spotifylist,
-                R.drawable.swan1,
-                R.drawable.spf
-        };
-        playFragment = new PlayFragment();
-        for (int i=0;i<tabLayout.getTabCount();i++){
-            tabLayout.getTabAt(i).setIcon(imageResId[i]);
-        }
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                setCurrentTabFragment(tab.getPosition());
+            tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+            tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
+            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+            for (int i = 0; i < 7; i++)
+                tabLayout.addTab(tabLayout.newTab());
+            int[] imageResId = {
+                    R.drawable.play,
+                    R.drawable.smb,
+                    R.drawable.ic_sync_black_24dp,
+                    R.drawable.mpd,
+                    R.drawable.spotifylist,
+                    R.drawable.swan1,
+                    R.drawable.spf
+            };
+            playFragment = new PlayFragment();
+            for (int i = 0; i < tabLayout.getTabCount(); i++) {
+                tabLayout.getTabAt(i).setIcon(imageResId[i]);
             }
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-        new Thread(() -> {
-            selectFragment = new SelectFragment();
-            //Log.d("samba", "Text:9");
+            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    setCurrentTabFragment(tab.getPosition());
+                }
 
-            try{
-                spotifyFragment=new SpotifyFragment();}
-            catch (Exception e){Log.v("samba","error spotify create");}
-            listFragment = new ListFragment();
-            try{
-                spotifyPlaylistFragment = new SpotifyPlaylistFragment();
-            }
-            catch (Exception e){Log.v("samba","error spotify playlist create");}
-            try{
-                dbFragment = new DBFragment();}
-            catch (Exception e){Log.v("samba","error spotify create");}
-            playlistFragment = new PlaylistsFragment();
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                }
 
-            try{
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+                }
+            });
+            new Thread(() -> {
+                selectFragment = new SelectFragment();
+                //Log.d("samba", "Text:9");
 
-                MainActivity.getThis.runOnUiThread(() -> {
-                    tabLayout.getTabAt(SELECTTAB).select();
-                });
+                try {
+                    spotifyFragment = new SpotifyFragment();
+                } catch (Exception e) {
+                    Log.v("samba", "error spotify create");
+                }
+                listFragment = new ListFragment();
+                try {
+                    spotifyPlaylistFragment = new SpotifyPlaylistFragment();
+                } catch (Exception e) {
+                    Log.v("samba", "error spotify playlist create");
+                }
+                try {
+                    dbFragment = new DBFragment();
+                } catch (Exception e) {
+                    Log.v("samba", "error spotify create");
+                }
+                playlistFragment = new PlaylistsFragment();
 
-            } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
+                try {
 
-        }).start();
+                    MainActivity.getThis.runOnUiThread(() -> {
+                        tabLayout.getTabAt(SELECTTAB).select();
+                    });
 
-        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
+
+            }).start();
+
+            tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
 
 
             //Log.d("samba", "Text:7");
-        //Log.v("samba",""+17);
-        this.setTitle("");
-        final LinearLayout footerView = (LinearLayout) findViewById(R.id.footer);
-        footerView.setVisibility(View.GONE);
-        final FloatingActionButton findbutton = (FloatingActionButton) findViewById(R.id.find);
-        findbutton.setOnClickListener(v -> {
-            SpotifyFragment.nextCommand="search artist";
-            startPlaylistSpotify();
-        });        FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
-        findbutton.setVisibility(View.GONE);
-        //Log.d("samba", "Text:8");
-        FAB.setOnClickListener(v -> {
-                        SpotifyFragment.nextCommand="search artist";
-            //Log.v("samba","search"+1);
-                        startPlaylistSpotify();
-        });
+            //Log.v("samba",""+17);
+            this.setTitle("");
+            final LinearLayout footerView = (LinearLayout) findViewById(R.id.footer);
+            footerView.setVisibility(View.GONE);
+            final FloatingActionButton findbutton = (FloatingActionButton) findViewById(R.id.find);
+            findbutton.setOnClickListener(v -> {
+                SpotifyFragment.nextCommand = "search artist";
+                startPlaylistSpotify();
+            });
+            FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
+            findbutton.setVisibility(View.GONE);
+            //Log.d("samba", "Text:8");
+            FAB.setOnClickListener(v -> {
+                SpotifyFragment.nextCommand = "search artist";
+                //Log.v("samba","search"+1);
+                startPlaylistSpotify();
+            });
 
             try {
                 Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
                 //Log.v("samba", "b" + 19);
                 setSupportActionBar(tool);
+            } catch (Exception e) {
+                Log.v("samba", "error in setting up tool");
             }
-            catch (Exception e){Log.v("samba","error in setting up tool");}
             //Log.d("samba", "Text:9");
 
 
-        //Log.v("samba",""+20);
-        new Thread(() -> {
-            try{
-                setListenersForButtons();
+            //Log.v("samba",""+20);
+            new Thread(() -> {
+                try {
+                    setListenersForButtons();
+                } catch (Exception e) {
+                    Log.v("samba", "error setting listeners");
+                }
+                updateDisplay();
+                SpotifyFragment.getOnlyPlaylistFromSpotify(1, SpotifyFragment.albumList, SpotifyFragment.albumTracks);
+
+            }).start();
+            //Log.d("samba", "Text:10");
+
+            try {
+                // ATTENTION: This was auto-generated to implement the App Indexing API.
+                // See https://g.co/AppIndexing/AndroidStudio for more information.
+                client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+                ArtistAutoCompleteAdapter.getAllFilenames();
+                //Log.d("samba", "Text:11");
+                final Handler handler = new Handler();
+                handler.postDelayed(() -> {
+                    if (!Logic.hasbeen)
+                        Toast.makeText(this, "No connection with " + Server.servers.get(Server.getServer(this)).url, Toast.LENGTH_SHORT).show();
+                }, 400);
+            } catch (Exception e) {
+                Log.v("samba", "error setting handler");
             }
-            catch (Exception e){Log.v("samba","error setting listeners");}
-            updateDisplay();
-            SpotifyFragment.getOnlyPlaylistFromSpotify(1, SpotifyFragment.albumList, SpotifyFragment.albumTracks);
+            try {
+                cleanUp();
+            } catch (Exception e) {
+                Log.v("samba", "error cleanup");
+            }
 
-        }).start();
-        //Log.d("samba", "Text:10");
-
-            try{
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-        ArtistAutoCompleteAdapter.getAllFilenames();
-        //Log.d("samba", "Text:11");
-        final Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            if(!Logic.hasbeen)
-            Toast.makeText(this, "No connection with "+ Server.servers.get(Server.getServer(this)).url, Toast.LENGTH_SHORT).show();
-        }, 400);
-        }
-        catch (Exception e){Log.v("samba","error setting handler");}
-            try{
-            cleanUp();
-        }
-        catch (Exception e){Log.v("samba","error cleanup");}
-
+        }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
     }
 
     private void setCurrentTabFragment(int tabPosition)

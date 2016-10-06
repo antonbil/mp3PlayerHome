@@ -10,6 +10,7 @@
     <ListView android:id="@+id/DrawerListRight"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        class="examples.quickprogrammingtips.com.tablayout.MainActivity.MyView"
         android:layout_gravity="end"
         android:clickable="true"
         android:choiceMode="singleChoice"
