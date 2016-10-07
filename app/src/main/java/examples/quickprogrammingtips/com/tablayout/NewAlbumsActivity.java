@@ -57,6 +57,7 @@ public class NewAlbumsActivity extends Activity {
                 findViewById(R.id.fabspotifylist);
         fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
 
+        getDrawerLayout();
         customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
         loadingdialog = ProgressDialog.show(this,
@@ -71,11 +72,8 @@ public class NewAlbumsActivity extends Activity {
                 generateList(newAlbums);
                     runOnUiThread(() -> {
                         try{
-                        loadingdialog.dismiss();
-                        customAdapter.notifyDataSetChanged();
-                            try {
-                                getDrawerLayout();
-                            }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
+                            loadingdialog.dismiss();
+                            customAdapter.notifyDataSetChanged();
                     }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
 
                     });
