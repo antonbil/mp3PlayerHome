@@ -6,6 +6,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -75,21 +77,33 @@ public class NewAlbumsActivity extends Activity {
                 findViewById(R.id.fabspotifylist);
         fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
 
+        Log.d("samba", "Text:7");
         customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
         loadingdialog = ProgressDialog.show(this,
                 "","Loading, please wait",true);
+        Log.d("samba", "Text:8");
         Thread task = new Thread()
         {
             @Override
             public void run()
             {
+                Log.d("samba", "Text:9");
                 yourListView.setAdapter(customAdapter);
                 try{
+                    Log.d("samba", "Text:10");
                 generateList(newAlbums);
+                    Log.d("samba", "Text:11");
                     runOnUiThread(() -> {
+                        try{
+                            Log.d("samba", "Text:12");
                         loadingdialog.dismiss();
                         customAdapter.notifyDataSetChanged();
+                            Log.d("samba", "Text:13");
+                            try {
+                                getDrawerLayout();
+                            }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
+                    }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
 
                     });
                     Log.v("samba", "after generateList");
@@ -261,4 +275,40 @@ public class NewAlbumsActivity extends Activity {
         SpotifyFragment.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this, null, null);
 
     }
+    public DrawerLayout getDrawerLayout() {
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.newalbumsdrawer_layout);
+
+        //define how to handle right drawer
+        Log.d("samba", "Text:3");
+
+
+        Log.d("samba", "Text:4");
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                R.string.hello_world,
+                R.string.hello_world
+        ) {
+            PlanetAdapter albumAdapter;
+
+            public void onDrawerClosed(View view) {
+                albumAdapter = null;
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                ListView albumsListview = (ListView) findViewById(R.id.newalbumsdrawer_list);
+                ArrayList<String> albumList = new ArrayList<>();
+                ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
+                albumAdapter=MainActivity.getTracksAdapter(mDrawerLayout,albumsListview, albumList, albumTracks);
+                albumsListview.setAdapter(albumAdapter);
+                SpotifyFragment.checkAddress();
+                SpotifyFragment.refreshPlaylistFromSpotify(1, albumAdapter, MainActivity.getThis, albumList, albumTracks);
+
+            }
+
+        };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        return mDrawerLayout;
+    }
+
 }

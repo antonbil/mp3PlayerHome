@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     static DBFragment         dbFragment;
     SpotifyFragment spotifyFragment;
     public int firstTime=0;
-    private boolean drawerActive=false;
+    public boolean drawerActive=false;
     private ListView rightListview;
     public int xcoord=0;
     private PlaylistAdapter adapterMpd;
@@ -167,203 +168,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             logic = new Logic(this);
             //Log.v("samba",""+15);
             setContentView(R.layout.activity_main);
-            DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-            //define how to handle right drawer
-            mDrawerLayout.setOnTouchListener((v, event) -> {
-
-                if (getThis.drawerActive) {
-                    rightListview.onTouchEvent(event);
-                switch (event.getAction() & MotionEvent.ACTION_MASK)
-                {
-                    case MotionEvent.ACTION_DOWN:
-                        shouldClick = true;
-                        xcoord=(int)event.getX();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (shouldClick) {
-                            if ((int)event.getX()>xcoord+100) {
-                                    mDrawerLayout.closeDrawers();
-                            } else {
-                                rightListview.performClick();
-                                shouldClick = false;
-                                return true;
-                            }
-                        }
-                        break;
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        break;
-                    case MotionEvent.ACTION_POINTER_UP:
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        break;
-                }
-                return false;
-                } else {
-                    Log.v("samba", "no event defined for push");
-                }
-                return false;
-            });
-
-            //Log.d("samba", "Text:4");
-            ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
-                    this,
-                    mDrawerLayout,
-                    R.string.hello_world,
-                    R.string.hello_world
-            ) {
-                PlanetAdapter albumAdapter;
-
-                @Override
-                public void onDrawerStateChanged(int newState) {
-                    if (newState == DrawerLayout.STATE_SETTLING) {
-                        if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT))//if right drawer is opened
-                            if (rightListview==null){
-                                 rightListview = (ListView) findViewById(R.id.DrawerListRight);
-
-                                adapterMpd = new PlaylistAdapter(playFragment, getThis, getThis.getLogic().getPlaylistFiles(), getThis.getApplicationContext());
-                                rightListview.setAdapter(adapterMpd);
-                                rightListview.setOnItemClickListener((parent, view, position, id) -> {
-                                    getLogic().getMpc().play(position);
-                                });
-                            }
-                        getThis.drawerActive = false;
-                    } else if (newState == DrawerLayout.STATE_DRAGGING) {
-                        getThis.drawerActive = false;
-                    } else if (newState == DrawerLayout.STATE_IDLE) {
-                        if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT)) {
-                            getThis.drawerActive = true;
-                        }
-
-
-                    }
-                }
-
-                public void onDrawerClosed(View view) {
-                    albumAdapter = null;
-                }
-
-                public void onDrawerOpened(View drawerView) {
-                    if (!SpotifyFragment.hasBeen||getThis.drawerActive){
-                        adapterMpd.notifyDataSetChanged();
-                        return;
-                    }
-
-                    ListView albumsListview =  (ListView) findViewById(R.id.drawer_list);
-                    ArrayList<String> albumList = new ArrayList<>();
-                    ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
-                    albumAdapter = new PlanetAdapter(albumList, getThis, albumTracks) {
-                        @Override
-                        public void removeUp(int counter) {
-                            duplicateLists();
-
-                            SpotifyFragment.removeUplist(this, albumsListview, counter, getThis);
-                        }
-
-                        @Override
-                        public void onClickFunc(int counter) {
-                            try {
-                                getSpotifyInterface.previousTrack.id = "";
-                            } catch (Exception e) {
-                                Log.v("samba", "error in starting song");
-                            }
-                            ;
-                            //Log.v("samba","a");
-                            duplicateLists();
-                            //Log.v("samba","b");
-                            SpotifyFragment.stopMpd();
-                            //Log.v("samba","c");
-                            SpotifyFragment.playlistGotoPosition(counter);
-                        }
-
-                        @Override
-                        public void removeDown(int counter) {
-                            duplicateLists();
-                            SpotifyFragment.removeDownlist(this, albumsListview, counter, getThis);
-
-                        }
-
-                        @Override
-                        public void removeAlbum(int counter) {
-                            duplicateLists();
-                            SpotifyFragment.removeAlbum(this, counter, albumsListview, getThis);
-
-                        }
-
-                        private void duplicateLists() {
-                            SpotifyFragment.albumList = albumList;
-                            SpotifyFragment.albumTracks = albumTracks;
-                        }
-
-                        @Override
-                        public void addAlbumToFavoritesAlbum(int counter) {
-
-                        }
-
-                        @Override
-                        public void addAlbumToFavoritesTrack(int counter) {
-                            duplicateLists();
-                            SpotifyFragment.addAlbumToFavoritesTrackwise(counter);
-
-                        }
-
-                        @Override
-                        public void removeTrack(int counter) {
-                            duplicateLists();
-                            SpotifyFragment.removeTrackSpotify(counter);
-
-                        }
-
-                        @Override
-                        public void displayArtist(int counter) {
-                            mDrawerLayout.closeDrawers();
-                            getThis.callSpotify(SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name);
-
-
-                        }
-
-                        @Override
-                        public void displayArtistWikipedia(int counter) {
-                            String s = SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name;
-                            MainActivity.startWikipediaPage(s);
-                        }
-
-                        @Override
-                        public void replaceAndPlayAlbum(int counter) {
-
-                        }
-
-                        @Override
-                        public void addAndPlayAlbum(int counter) {
-
-                        }
-
-                        @Override
-                        public void albumArtistWikipedia(int counter) {
-
-                        }
-
-                        @Override
-                        public void addAlbum(int counter) {
-                            SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.tracksPlaylist.get(counter).album.id, SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name
-                                    , getThis, this, albumsListview);
-
-                        }
-
-                        @Override
-                        public void addAlbumNoplay(int counter) {
-                        }
-                    };
-                    albumsListview.setAdapter(albumAdapter);
-                    SpotifyFragment.checkAddress();
-                    SpotifyFragment.refreshPlaylistFromSpotify(1, albumAdapter, getThis, albumList, albumTracks);
-                    LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
-                    final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
-                    fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(getThis, viewHeader));
-
-                }
-            };
-            mDrawerLayout.setDrawerListener(mDrawerToggle);
+            int drawerListRight = R.id.DrawerListRight;
+            int drawer_layout = R.id.drawer_layout;
+            int drawer_list = R.id.drawer_list;
+            DrawerLayout mDrawerLayout = getDrawerLayout((ListView) findViewById(drawerListRight), (DrawerLayout) findViewById(drawer_layout), (ListView) findViewById(drawer_list));
             //
             //Log.v("samba",""+16);
 
@@ -515,6 +323,108 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
 
         }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
+    }
+
+    @NonNull
+    public DrawerLayout getDrawerLayout(final ListView drawerListRight, DrawerLayout drawer_layout, final ListView drawer_list) {
+        DrawerLayout mDrawerLayout = drawer_layout;
+
+        //define how to handle right drawer
+        Log.d("samba", "Text:3");
+        mDrawerLayout.setOnTouchListener((v, event) -> {
+
+            if (MainActivity.getThis.drawerActive) {
+                rightListview.onTouchEvent(event);
+            switch (event.getAction() & MotionEvent.ACTION_MASK)
+            {
+                case MotionEvent.ACTION_DOWN:
+                    shouldClick = true;
+                    xcoord=(int)event.getX();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (shouldClick) {
+                        if ((int)event.getX()>xcoord+100) {
+                                mDrawerLayout.closeDrawers();
+                        } else {
+                            rightListview.performClick();
+                            shouldClick = false;
+                            return true;
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    break;
+                case MotionEvent.ACTION_POINTER_UP:
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    break;
+            }
+            return false;
+            } else {
+                Log.v("samba", "no event defined for push");
+            }
+            return false;
+        });
+
+        Log.d("samba", "Text:4");
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                R.string.hello_world,
+                R.string.hello_world
+        ) {
+            PlanetAdapter albumAdapter;
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                if (newState == DrawerLayout.STATE_SETTLING) {
+                    if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT))//if right drawer is opened
+                        if (adapterMpd==null){
+                            rightListview = drawerListRight;
+
+                            adapterMpd = new PlaylistAdapter(playFragment, MainActivity.getThis, MainActivity.getThis.getLogic().getPlaylistFiles(), MainActivity.getThis.getApplicationContext());
+                            rightListview.setAdapter(adapterMpd);
+                            rightListview.setOnItemClickListener((parent, view, position, id) -> {
+                                getLogic().getMpc().play(position);
+                            });
+                        }
+                    MainActivity.getThis.drawerActive = false;
+                } else if (newState == DrawerLayout.STATE_DRAGGING) {
+                    MainActivity.getThis.drawerActive = false;
+                } else if (newState == DrawerLayout.STATE_IDLE) {
+                    if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT)) {
+                        MainActivity.getThis.drawerActive = true;
+                    }
+
+
+                }
+            }
+
+            public void onDrawerClosed(View view) {
+                albumAdapter = null;
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                if (!SpotifyFragment.hasBeen|| MainActivity.getThis.drawerActive){
+                    adapterMpd.notifyDataSetChanged();
+                    return;
+                }
+
+                ListView albumsListview =  drawer_list;
+                ArrayList<String> albumList = new ArrayList<>();
+                ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
+                albumAdapter = getTracksAdapter(mDrawerLayout,albumsListview, albumList, albumTracks);
+                albumsListview.setAdapter(albumAdapter);
+                SpotifyFragment.checkAddress();
+                SpotifyFragment.refreshPlaylistFromSpotify(1, albumAdapter, MainActivity.getThis, albumList, albumTracks);
+                LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
+                final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
+                fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(MainActivity.getThis, viewHeader));
+
+            }
+        };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        return mDrawerLayout;
     }
 
     private void setCurrentTabFragment(int tabPosition)
@@ -1210,6 +1120,111 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     }
 
+    public static PlanetAdapter getTracksAdapter(DrawerLayout mDrawerLayout, final ListView albumsListview, final ArrayList<String> albumList, final ArrayList<PlaylistItem> albumTracks) {
+        PlanetAdapter albumAdapter = new PlanetAdapter(albumList, MainActivity.getThis, albumTracks) {
+            @Override
+            public void removeUp(int counter) {
+                duplicateLists();
+
+                SpotifyFragment.removeUplist(this, albumsListview, counter, MainActivity.getThis);
+            }
+
+            @Override
+            public void onClickFunc(int counter) {
+                try {
+                    new SpotifyInterface().previousTrack.id = "";
+                } catch (Exception e) {
+                    Log.v("samba", "error in starting song");
+                }
+                ;
+                //Log.v("samba","a");
+                duplicateLists();
+                //Log.v("samba","b");
+                SpotifyFragment.stopMpd();
+                //Log.v("samba","c");
+                SpotifyFragment.playlistGotoPosition(counter);
+            }
+
+            @Override
+            public void removeDown(int counter) {
+                duplicateLists();
+                SpotifyFragment.removeDownlist(this, albumsListview, counter, MainActivity.getThis);
+
+            }
+
+            @Override
+            public void removeAlbum(int counter) {
+                duplicateLists();
+                SpotifyFragment.removeAlbum(this, counter, albumsListview, MainActivity.getThis);
+
+            }
+
+            private void duplicateLists() {
+                SpotifyFragment.albumList = albumList;
+                SpotifyFragment.albumTracks = albumTracks;
+            }
+
+            @Override
+            public void addAlbumToFavoritesAlbum(int counter) {
+
+            }
+
+            @Override
+            public void addAlbumToFavoritesTrack(int counter) {
+                duplicateLists();
+                SpotifyFragment.addAlbumToFavoritesTrackwise(counter);
+
+            }
+
+            @Override
+            public void removeTrack(int counter) {
+                duplicateLists();
+                SpotifyFragment.removeTrackSpotify(counter);
+
+            }
+
+            @Override
+            public void displayArtist(int counter) {
+                mDrawerLayout.closeDrawers();
+                MainActivity.getThis.callSpotify(SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name);
+
+
+            }
+
+            @Override
+            public void displayArtistWikipedia(int counter) {
+                String s = SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name;
+                MainActivity.startWikipediaPage(s);
+            }
+
+            @Override
+            public void replaceAndPlayAlbum(int counter) {
+
+            }
+
+            @Override
+            public void addAndPlayAlbum(int counter) {
+
+            }
+
+            @Override
+            public void albumArtistWikipedia(int counter) {
+
+            }
+
+            @Override
+            public void addAlbum(int counter) {
+                SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.tracksPlaylist.get(counter).album.id, SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name
+                        , MainActivity.getThis, this, albumsListview);
+
+            }
+
+            @Override
+            public void addAlbumNoplay(int counter) {
+            }
+        };
+        return albumAdapter;
+    }
     private void checkButtons(int prev){
         if (prev!= SpotifyFragment.playingEngine) {
             setListenersForButtons();
