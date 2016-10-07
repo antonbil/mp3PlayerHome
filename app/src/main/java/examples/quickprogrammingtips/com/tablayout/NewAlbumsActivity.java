@@ -42,34 +42,14 @@ public class NewAlbumsActivity extends Activity {
 
 
         super.onStop();
-        Log.v("samba", "stop");
 
     }
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
 
-    @Override
-    protected void onResume() {
-        // TODO Auto-generated method stub
-        super.onResume();
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.x = -100;
-        params.height = 1000;
-        params.width = 800;
-        params.y = -50;
-
-        this.getWindow().setAttributes(params);*/
-
         getThis=this;
         setContentView(R.layout.activity_new_albums);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
         final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
         final FloatingActionButton fab = (FloatingActionButton)
@@ -77,47 +57,34 @@ public class NewAlbumsActivity extends Activity {
                 findViewById(R.id.fabspotifylist);
         fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
 
-        Log.d("samba", "Text:7");
         customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
         loadingdialog = ProgressDialog.show(this,
                 "","Loading, please wait",true);
-        Log.d("samba", "Text:8");
         Thread task = new Thread()
         {
             @Override
             public void run()
             {
-                Log.d("samba", "Text:9");
                 yourListView.setAdapter(customAdapter);
                 try{
-                    Log.d("samba", "Text:10");
                 generateList(newAlbums);
-                    Log.d("samba", "Text:11");
                     runOnUiThread(() -> {
                         try{
-                            Log.d("samba", "Text:12");
                         loadingdialog.dismiss();
                         customAdapter.notifyDataSetChanged();
-                            Log.d("samba", "Text:13");
                             try {
                                 getDrawerLayout();
                             }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
                     }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
 
                     });
-                    Log.v("samba", "after generateList");
                 }catch(Exception e){
-                    //loadingdialog.dismiss();
-
                     Log.v("samba", Log.getStackTraceString(e));}
             }
         };
 
         task.start();
-        Log.v("samba", "task start");
-
-
     }
     public void generateList(ArrayList<NewAlbum> newAlbums){
 
@@ -125,7 +92,6 @@ public class NewAlbumsActivity extends Activity {
             Document doc = Jsoup.connect("http://everynoise.com/spotify_new_albums.html").get();
 
             Elements trackelements = doc.getElementsByClass("album");
-            //ArrayList<String> ids = new ArrayList<String>();
             for (Element element : trackelements) {
                 Elements links = element.select("a[href]"); // a with href
                 String s = links.get(0).attr("href");
@@ -142,10 +108,6 @@ public class NewAlbumsActivity extends Activity {
      public class ListAdapter extends ArrayAdapter<NewAlbum> {
         private Context context;
         ArrayList<NewAlbum> items;
-
-        /*public ListAdapter(Context context, int textViewResourceId) {
-            super(context, textViewResourceId);
-        }*/
 
         public ListAdapter(Context context, int resource, ArrayList<NewAlbum> items) {
             super(context, resource, items);
@@ -275,14 +237,9 @@ public class NewAlbumsActivity extends Activity {
         SpotifyFragment.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this, null, null);
 
     }
-    public DrawerLayout getDrawerLayout() {
+    public void getDrawerLayout() {
         DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.newalbumsdrawer_layout);
 
-        //define how to handle right drawer
-        Log.d("samba", "Text:3");
-
-
-        Log.d("samba", "Text:4");
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,
@@ -308,7 +265,6 @@ public class NewAlbumsActivity extends Activity {
 
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        return mDrawerLayout;
     }
 
 }
