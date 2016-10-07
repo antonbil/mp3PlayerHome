@@ -246,13 +246,13 @@ public class NewAlbumsActivity extends Activity {
                 R.string.hello_world,
                 R.string.hello_world
         ) {
-            PlanetAdapter albumAdapter;
 
-            public void onDrawerClosed(View view) {
+            /*public void onDrawerClosed(View view) {
                 albumAdapter = null;
-            }
+            }*/
 
             public void onDrawerOpened(View drawerView) {
+                PlanetAdapter albumAdapter;
                 ListView albumsListview = (ListView) findViewById(R.id.newalbumsdrawer_list);
                 ArrayList<String> albumList = new ArrayList<>();
                 ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
