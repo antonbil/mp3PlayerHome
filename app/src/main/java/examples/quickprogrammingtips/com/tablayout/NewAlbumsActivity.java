@@ -26,8 +26,9 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.adapters.PlaylistAdapter;
+import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
-public class NewAlbumsActivity extends Activity {
+public class NewAlbumsActivity extends Activity  implements MpdInterface {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
     static Activity getThis;
     public ListAdapter customAdapter;
@@ -108,7 +109,24 @@ public class NewAlbumsActivity extends Activity {
             Log.v("samba", Log.getStackTraceString(e));
         }
     }
-     public class ListAdapter extends ArrayAdapter<NewAlbum> {
+
+    @Override
+    public void playlistCall(ArrayList<Mp3File> playlist, boolean change) {
+
+    }
+
+    @Override
+    public void newMpdCall(Mp3File mp3File, int position, String command) {
+
+        MainActivity.getThis.mpdCall(mp3File, position, command);
+    }
+
+    @Override
+    public void printCover(Bitmap result, ImageView image, String album) {
+
+    }
+
+    public class ListAdapter extends ArrayAdapter<NewAlbum> {
         private Context context;
         ArrayList<NewAlbum> items;
 
@@ -270,7 +288,7 @@ public class NewAlbumsActivity extends Activity {
         albumAdapter= MainActivity.getTracksAdapter(mDrawerLayout, spotifyListview, albumList, albumTracks);
         spotifyListview.setAdapter(albumAdapter);
         SpotifyFragment.checkAddress();
-        SpotifyFragment.refreshPlaylistFromSpotify(1, albumAdapter, MainActivity.getThis, albumList, albumTracks);
+        SpotifyFragment.refreshPlaylistFromSpotify(1, albumAdapter, getThis, albumList, albumTracks);
     }
      public void getDrawerSpotifyLayout() {
          mDrawerLayout = (DrawerLayout) findViewById(R.id.newalbumsdrawer_layout);

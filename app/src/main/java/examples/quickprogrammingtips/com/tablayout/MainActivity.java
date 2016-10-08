@@ -59,10 +59,12 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAdapter;
 import examples.quickprogrammingtips.com.tablayout.adapters.PlaylistAdapter;
@@ -1065,6 +1067,88 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public void newMpdCall(Mp3File mp3File, int position, String command) {
         Log.v("samba","mewMpdCall within mainactivity");
 
+    }
+    public void enqueueSingleCommand(String message) {
+        logic.getMpc().enqueCommands(new ArrayList<String>(Arrays.asList(message)));
+    }
+
+    private void export(int position) {
+        //save current playlist Log.v("samba", "export:" + position);
+        final CopyOnWriteArrayList<Mp3File> copyPlaylist =new CopyOnWriteArrayList<>();
+        CopyOnWriteArrayList<Mp3File> playlist = logic.getPlaylistFiles();
+        for (Mp3File mp:playlist) {
+            copyPlaylist.add(mp);
+        }
+        final int currentSong=logic.mpcStatus.song.intValue();
+        final int currentTime=logic.mpcStatus.time;
+        //stop playing of first server
+        logic.getMpc().pause();
+        //select new server
+        logic.openServer(Server.servers.get(position).url);
+        logic.getMpc().setMPCListener(MainActivity.getThis);
+        Server.setServer(position, MainActivity.getThis);
+
+        //do some commands with delay
+        //create handler to do background task
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                // Change playlist after 1 second
+                ArrayList<String> commands = new ArrayList<>();
+                commands.add("clear");
+                for (Mp3File mp : copyPlaylist) {
+                    String s = "add \"" + mp.getMpcSong().file + "\"";
+                    commands.add(s);
+                }
+                String s = "play " + currentSong;
+                commands.add(s);
+                s = "seek " + currentSong + " "+currentTime;
+                commands.add(s);
+                logic.getMpc().enqueCommands(commands);
+                //set currentSong after one second
+                /*handler.postDelayed(new Runnable() {
+                    public void run() {
+                        MainActivity.getThis.playlistGetContent();
+                        logic.getMpc().play(currentSong);
+                    }
+                }, 1000);*/
+            }
+        }, 1000);
+    }
+
+    public void mpdCall(Mp3File mp3File, int position, String command) {
+        if (command.equals("export"))
+            export(position);
+        if (command.equals(getString(R.string.command_play)))
+            logic.getMpc().play(position);
+        if (command.equals(getString(R.string.playlist_removeall))){
+            logic.getMpc().clearPlaylist();
+        }
+        if (command.equals(getString(R.string.playlist_removetop))){
+            String message = "delete 0:" + (position + 1);
+            Log.v("samba", message);
+            enqueueSingleCommand(message);
+        }
+        if (command.equals(getString(R.string.playlist_removebottom))){
+            String message = "delete " + (position) + ":" + (logic.getPlaylistFiles().size() + 1);
+            Log.v("samba", message);
+            enqueueSingleCommand(message);
+            //logic.getMpc().sendSingleMessage(message);
+        }
+        if (command.equals(getString(R.string.playlist_removesong))){
+            enqueueSingleCommand("delete " + (position));
+        }
+        if (command.equals(getString(R.string.playlist_movebottom))){
+            enqueueSingleCommand("move " + (position) + " " + (logic.getPlaylistFiles().size() - 1));
+        }
+        if (command.equals(getString(R.string.playlist_down))){
+            enqueueSingleCommand("move " + (position) + " " + (position + 1));
+        }
+        if (command.equals(getString(R.string.playlist_removeabum))){
+            String album = mp3File.getAlbum();
+            String artist = mp3File.getArtist();
+            logic.removeAlbum(album, artist);
+        }
     }
 
     @Override
