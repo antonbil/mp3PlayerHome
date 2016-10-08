@@ -1063,6 +1063,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public void newMpdCall(Mp3File mp3File, int position, String command) {
+        Log.v("samba","mewMpdCall within mainactivity");
 
     }
 
