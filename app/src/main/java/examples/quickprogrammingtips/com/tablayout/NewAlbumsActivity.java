@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import examples.quickprogrammingtips.com.tablayout.adapters.PlaylistAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
-public class NewAlbumsActivity extends Activity  implements MpdInterface {
+public class NewAlbumsActivity extends Activity  implements MpdInterface ,HeaderSongInterface{
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
     static Activity getThis;
     public ListAdapter customAdapter;
@@ -57,6 +57,7 @@ public class NewAlbumsActivity extends Activity  implements MpdInterface {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getThis=this;
+        MainActivity.headers.add(this);
         setContentView(R.layout.activity_new_albums);
 
         final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
@@ -317,6 +318,20 @@ public class NewAlbumsActivity extends Activity  implements MpdInterface {
          swapPlaylist.setOnClickListener(view -> {spotifyVisible=!spotifyVisible;
             displayList();
          });
+    }
+    @Override
+    public void setLogo(Bitmap logo) {
+        ((ImageView) findViewById(R.id.thumbnail_top)).setImageBitmap(logo);
+
+    }
+
+    @Override
+    public void setData(String time, String totalTime, String title, String artist) {
+        ((TextView) findViewById(R.id.time_top)).setText(time);
+        ((TextView) findViewById(R.id.totaltime_top)).setText(totalTime);
+        ((TextView) findViewById(R.id.title_top)).setText(title);
+        ((TextView) findViewById(R.id.artist_top)).setText(artist);
+
     }
 
 }

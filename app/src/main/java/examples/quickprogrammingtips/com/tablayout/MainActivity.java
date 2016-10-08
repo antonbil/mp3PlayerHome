@@ -81,7 +81,7 @@ import mpc.MPCSong;
 import mpc.MPCStatus;
 
 
-public class MainActivity extends AppCompatActivity implements MpdInterface, MPCListener, MPCDatabaseListener, OnTaskCompleted{
+public class MainActivity extends AppCompatActivity implements MpdInterface, MPCListener, MPCDatabaseListener, OnTaskCompleted,HeaderSongInterface{
 
     //static final int STATIC_RESULT = 3; //positive > 0 integer.
     //static final int NEWALBUMS_RESULT = 15;
@@ -96,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static int playingStatus= MPD_PLAYING;
     private boolean footerVisible = false;
     private Logic logic;
+    public static ArrayList<HeaderSongInterface>headers =new ArrayList();
+
     public Handler updateBarHandler;
     private int timerTime = 0;
     protected TabLayout tabLayout;
@@ -141,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     protected void onCreate(Bundle savedInstanceState) {
         try {
             Log.d("samba", "Text:1");
+            headers.add(this);
             super.onCreate(savedInstanceState);
             Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
             final Intent intent = getIntent();
@@ -1431,21 +1434,23 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                                 TextView tvName = (TextView) findViewById(R.id.title_top);
                                 final String title = currentSong.getTitle();
-                                tvName.setText(title);
+                                //tvName.setText(title);
                                 vh.title = title;
                                 //Log.v("samba", currentSong.getTitle());
                                 //Log.v("samba", currentSong.getArtist());
                                 TextView time = (TextView) findViewById(R.id.time_top);
                                 final String time1 = Mp3File.niceTime(status.time.intValue());
                                 vh.time = time1;
-                                time.setText(time1);
+                                //time.setText(time1);
                                 TextView totaltime = (TextView) findViewById(R.id.totaltime_top);
+                                String timeNice;
                                 try {
-                                    final String timeNice = currentSong.getTimeNice();
-                                    totaltime.setText(timeNice);
+                                    timeNice = currentSong.getTimeNice();
+                                    //totaltime.setText(timeNice);
                                     vh.totaltime = timeNice;
                                 } catch (Exception e) {
-                                    totaltime.setText("00:00");
+                                    timeNice ="00:00";
+                                            //totaltime.setText(timeNice);
                                 }
                                 String album = "";
                                 TextView artist = (TextView) findViewById(R.id.artist_top);
@@ -1455,10 +1460,16 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                     artist.setText(album);
                                     vh.album = album;
                                 } catch (Exception e) {
-                                    artist.setText("statusupdate");
+                                    album="statusupdate";
+                                            artist.setText(album);
                                 }
                                 final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
                                 String uri = Logic.getUrlFromSongpath(currentSong);
+                                for (HeaderSongInterface header:MainActivity.headers){
+                                    if (header!=null)
+                                    header.setData(time1, timeNice,title, album);
+                                }
+                                MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
 
                                 if (albumPictures.containsKey(album)) {
                                     final Bitmap b = albumPictures.get(album);
@@ -1467,7 +1478,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            image.setImageBitmap(b);
+                                            for (HeaderSongInterface header:MainActivity.headers) {
+                                                if (header!=null)
+                                                header.setLogo(b);
+                                            }
+
+                                                //image.setImageBitmap(b);
                                         }
                                     });
                                 } else {
@@ -1577,6 +1593,21 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
+    }
+
+    @Override
+    public void setLogo(Bitmap logo) {
+        ((ImageView) findViewById(R.id.thumbnail_top)).setImageBitmap(logo);
+
+    }
+
+    @Override
+    public void setData(String time, String totalTime, String title, String artist) {
+        ((TextView) findViewById(R.id.time_top)).setText(time);
+        ((TextView) findViewById(R.id.totaltime_top)).setText(totalTime);
+        ((TextView) findViewById(R.id.title_top)).setText(title);
+        ((TextView) findViewById(R.id.artist_top)).setText(artist);
+
     }
 
     public class ViewHolder {

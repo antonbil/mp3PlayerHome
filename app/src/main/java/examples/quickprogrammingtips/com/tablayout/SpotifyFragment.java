@@ -2504,23 +2504,41 @@ public class SpotifyFragment extends Fragment implements
                                         @Override
                                         public void setImage(Bitmap logo) {
                                             getThis.runOnUiThread(() -> {
-                                                image.setImageBitmap(logo);
+                                                for (HeaderSongInterface header:MainActivity.headers){
+                                                    if (header!=null)
+                                                    header.setLogo(logo);
+                                                }
+                                                //image.setImageBitmap(logo);
                                                 SpotifyFragment.bitmap = logo;
                                             });
                                         }
                                     }.execute(imageurl);
-                            }
+                            } /*else {
+                                if (MainActivity.albumPictures.containsKey(t.album.id)) {
+                                    final Bitmap b = MainActivity.albumPictures.get(t.album.id);
+                                    for (HeaderSongInterface header : MainActivity.headers) {
+                                        if (header != null)
+                                            header.setLogo(b);
+                                    }
+                                }
+                            }*/
 
                         //hours * 60 * 60 + mins * 60 + secs;
                         currentTime = getTime();
                         artistReturn = t.artists.get(0).name;
                         MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
                         MainActivity.getThis.runOnUiThread(() -> {
-                            time.setText(niceTime(currentTime));
-                            int ttimeint = totalTime;// thours * 60 * 60 + tmins * 60 + tsecs;
-                            totaltime.setText(niceTime(ttimeint));
-                            tvName.setText(t.name);
-                            artist.setText(t.artists.get(0).name);
+                            //String text = niceTime(currentTime);
+                            //time.setText(text);
+                            //int ttimeint = totalTime;// thours * 60 * 60 + tmins * 60 + tsecs;
+                            //String totalTime = niceTime(ttimeint);
+                            //totaltime.setText(totalTime);
+                            //tvName.setText(t.name);
+                            //artist.setText(t.artists.get(0).name);
+                            for (HeaderSongInterface header:MainActivity.headers){
+                                if (header!=null)
+                                header.setData(niceTime(currentTime), niceTime(totalTime),t.name, t.artists.get(0).name);
+                            }
                             MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
 
                         });
