@@ -141,7 +141,7 @@ public class PlaylistAdapter extends BaseAdapter {
 
                 @Override
                 public boolean onLongClick(final View v) {
-                            Log.v("test", fileArrayList.get(pos2).getFname());
+                            Log.v("samba", "Longclick"+fileArrayList.get(pos2).getFname());
                             //Toast.makeText(v.getContext(), "click:" + (String) fileArrayList.get(pos2).getName(), Toast.LENGTH_LONG).show();
                             PopupMenu menu = new PopupMenu(v.getContext(), v);
 
@@ -294,11 +294,15 @@ public class PlaylistAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
 
+                        Log.v("samba", "CLick, play "+fname);
                             //Mp3File mp=(Mp3File) mp3File;
                             //mp.getMpcSong()
                             //Toast t = Toast.makeText(v.getContext(), "play:"+mp.getTitle(), Toast.LENGTH_SHORT);
+                        if (caller!=null)
                         caller.newMpdCall(mp3File, position, selectFragmentContext.getString(R.string.command_play));
+                        Log.v("samba", "CLick, play 2 "+fname);
                         MainActivity.getThis.getLogic().getMpc().play();
+                        Log.v("samba", "CLick, play 3 "+fname);
                             //t.show();
                     }
                 });
