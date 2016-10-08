@@ -283,6 +283,8 @@ public class PlaylistAdapter extends BaseAdapter {
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        currentSongInPlaylist=position;
+                        //hier positie veranderen!
 
                         Log.v("samba", "CLick, play "+fname);
                             //Mp3File mp=(Mp3File) mp3File;

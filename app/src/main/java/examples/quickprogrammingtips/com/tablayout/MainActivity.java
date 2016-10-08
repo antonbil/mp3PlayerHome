@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static final int SPOTIFYPLAYLISTTAB = 6;
     public static final int SELECTTAB = 2;
     public static final int PLAYLISTTAB = 5;
-    public static int playingStatus;
+    public static int playingStatus= MPD_PLAYING;
     private boolean footerVisible = false;
     private Logic logic;
     public Handler updateBarHandler;

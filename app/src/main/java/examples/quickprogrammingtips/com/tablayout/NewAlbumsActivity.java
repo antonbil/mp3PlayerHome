@@ -305,6 +305,7 @@ public class NewAlbumsActivity extends Activity  implements MpdInterface {
             }*/
 
             public void onDrawerOpened(View drawerView) {
+                spotifyVisible=MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING;
                 displayList();
 
             }

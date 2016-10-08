@@ -152,7 +152,7 @@ public class SpotifyFragment extends Fragment implements
     public PlanetAdapter albumAdapter;
     protected ListView albumsListview;
     private static ProgressDialog dialog1;//
-    private static Handler updateBarHandler;
+    //private static Handler updateBarHandler;
     private boolean nosearch = false;
     private static TextView artistTitleTextView;
     public static ArrayList<Track> tracksPlaylist=new ArrayList<>();
@@ -522,7 +522,7 @@ public class SpotifyFragment extends Fragment implements
 
             try {
                 dialog1 = new ProgressDialog(activityThis);
-                updateBarHandler = MainActivity.getThis.updateBarHandler;
+//                updateBarHandler = MainActivity.getThis.updateBarHandler;
 
                 memoryHandler_ = new Handler();
                 //Log.d("samba", "Text:2");
