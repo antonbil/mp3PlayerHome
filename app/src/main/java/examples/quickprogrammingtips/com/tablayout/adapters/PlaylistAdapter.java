@@ -298,12 +298,16 @@ public class PlaylistAdapter extends BaseAdapter {
                             //Mp3File mp=(Mp3File) mp3File;
                             //mp.getMpcSong()
                             //Toast t = Toast.makeText(v.getContext(), "play:"+mp.getTitle(), Toast.LENGTH_SHORT);
+                        try{
                         if (caller!=null)
                         caller.newMpdCall(mp3File, position, selectFragmentContext.getString(R.string.command_play));
                         Log.v("samba", "CLick, play 2 "+fname);
+                            //t.show();
+                    }catch(Exception e){
+                        Log.v("samba", Log.getStackTraceString(e));}
+
                         MainActivity.getThis.getLogic().getMpc().play();
                         Log.v("samba", "CLick, play 3 "+fname);
-                            //t.show();
                     }
                 });
             } catch (Exception e) {
