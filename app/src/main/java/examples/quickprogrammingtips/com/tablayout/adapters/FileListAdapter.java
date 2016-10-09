@@ -7,7 +7,6 @@ package examples.quickprogrammingtips.com.tablayout.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -147,14 +146,14 @@ public class FileListAdapter extends BaseAdapter {
                                         });
                                         return true;
                                     }
-                                    Log.v("samba", "p:" + title);
+                                    //Log.v("samba", "p:" + title);
                                     if (title.equals("Spotify")){
                                         final MainActivity context = MainActivity.getThis;
                                         try {
                                             Mp3File mp3File = (Mp3File) fileArrayList.get(position);
                                             context.callSpotify(mp3File.getArtist());
                                         } catch (Exception e) {
-                                            Log.v("samba", "l:" + fname);
+                                            //Log.v("samba", "l:" + fname);
                                             String[] s1 = fname.split("-");
                                             String art = s1[0].trim();
                                             if (isInteger(art)) art = s1[1].trim();

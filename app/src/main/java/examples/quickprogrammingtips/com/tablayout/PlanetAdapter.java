@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -132,6 +131,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         }
         convertView.setOnClickListener(view -> {
             onClickFunc(position);
+            currentItem=position;
             //todo notify does not work!
             MainActivity.getThis.runOnUiThread(new Runnable() {
                 @Override
@@ -140,10 +140,10 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            Log.v("samba","notify adapter");
+                            //Log.v("samba","notify adapter");
                             notifyDataSetChanged();
                         }
-                    }, 3000);
+                    }, 1000);
                 }
             });
 
@@ -202,7 +202,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     }
 
     private void longclick(int position, View v, Bitmap logo){
-        Log.v("samba","ontouch album");
+        //Log.v("samba","ontouch album");
         PopupMenu menu = new PopupMenu(v.getContext(), v);
         if (!isAlbumVisible()) {
 

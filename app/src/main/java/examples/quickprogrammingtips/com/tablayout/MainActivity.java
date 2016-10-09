@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
-            Log.d("samba", "Text:1");
+            //Log.d("samba", "Text:1");
             headers.add(this);
             super.onCreate(savedInstanceState);
             Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
@@ -336,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         DrawerLayout mDrawerLayout = drawer_layout;
 
         //define how to handle right drawer
-        Log.d("samba", "Text:3");
+        //Log.d("samba", "Text:3");
         mDrawerLayout.setOnTouchListener((v, event) -> {
 
             if (MainActivity.getThis.drawerActive) {
@@ -367,12 +367,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
             return false;
             } else {
-                Log.v("samba", "no event defined for push");
+                //Log.v("samba", "no event defined for push");
             }
             return false;
         });
 
-        Log.d("samba", "Text:4");
+        //Log.d("samba", "Text:4");
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,
@@ -1223,7 +1223,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 try {
                     new SpotifyInterface().previousTrack.id = "";
                 } catch (Exception e) {
-                    Log.v("samba", "error in starting song");
+                    //Log.v("samba", "error in starting song");
                 }
                 ;
                 //Log.v("samba","a");

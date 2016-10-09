@@ -1,6 +1,5 @@
 package mpc;
 
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -96,16 +95,17 @@ public class EnqueThread extends Thread {
 					String[] s1 = song.file.split("/");
 					String fname = s1[s1.length - 1];
 					dir = song.file.substring(0, song.file.length() - fname.length() - 1);
-					Log.v("samba",song.file);				}
+					//Log.v("samba",song.file);
+				}
 			if (needsDir) {
 				out.println("add \"" + dir + "\"");
-				Log.v("samba",dir);
-				Log.v("samba", "add \"" + dir + "\"");
+				//Log.v("samba",dir);
+				//Log.v("samba", "add \"" + dir + "\"");
 			} else
 				for (MPCSong song : songs) {
-					Log.v("samba",song.file);
+					//Log.v("samba",song.file);
 					out.println("add \"" + song.file + "\"");
-					Log.v("samba", "add \"" + song.file.replace("'", "\'") + "\"");
+					//Log.v("samba", "add \"" + song.file.replace("'", "\'") + "\"");
 				}
 		}	catch(Exception e){
 			MainActivity.getThis.runOnUiThread(new Runnable()

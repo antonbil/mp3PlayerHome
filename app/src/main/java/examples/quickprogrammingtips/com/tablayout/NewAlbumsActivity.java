@@ -47,42 +47,42 @@ public class NewAlbumsActivity extends LeftDrawerPlaylist  {
     protected void onCreate(Bundle savedInstanceState) {
         try{
         super.onCreate(savedInstanceState);
-            Log.v("samba","1a");
+            //Log.v("samba","1a");
         getThis=this;
         setContentView(R.layout.activity_new_albums);
-            Log.v("samba","2a");
+            //Log.v("samba","2a");
 
         final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifylist);
         fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
             ((ImageView) findViewById(R.id.thumbnail_top)).setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
-            Log.v("samba","3a");
+            //Log.v("samba","3a");
 
         initLeftDrawerPlaylist(this,this,R.id.newalbumsdrawer_layout,R.id.newalbumsdrawer_list,
                 R.id.newalbumsmpddrawer_list,R.id.fabswapplaylist);
-            Log.v("samba","4a");
+            //Log.v("samba","4a");
 
          customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
-            Log.v("samba","5a");
+            //Log.v("samba","5a");
         loadingdialog = ProgressDialog.show(this,"","Loading, please wait",true);
         Thread task = new Thread()
         {
             @Override
             public void run()
             {
-                Log.v("samba","7a");
+                //Log.v("samba","7a");
                 yourListView.setAdapter(customAdapter);
-                Log.v("samba","8a");
+                //Log.v("samba","8a");
                 try{
-                    Log.v("samba","9a");
+                    //Log.v("samba","9a");
                     runOnUiThread(() -> {
                         try{
                             generateList(newAlbums);
                             loadingdialog.dismiss();
-                            Log.v("samba","10a");
+                            //Log.v("samba","10a");
                             customAdapter.notifyDataSetChanged();
-                            Log.v("samba","11a");
+                            //Log.v("samba","11a");
                     }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
 
                     });
@@ -91,7 +91,7 @@ public class NewAlbumsActivity extends LeftDrawerPlaylist  {
             }
         };
 
-            Log.v("samba","6a");
+            //Log.v("samba","6a");
         task.start();
     }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
     }

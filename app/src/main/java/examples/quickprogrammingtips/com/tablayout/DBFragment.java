@@ -1,7 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,14 +50,14 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     }
 
     public void displayContents(String path) {
-        Log.v("samba","get path "+path);
+        //Log.v("samba","get path "+path);
         new DatabaseCommand(logic.getMpc(),"lsinfo \""+path+"\"",this, false).run();
     }
     @Override
     public void displayContentOfDir(SambaInterface si,String path, String id) {
         if (id=="Download"){
             download=true;
-            Log.v("samba","download "+path);
+            //Log.v("samba","download "+path);
         }
         displayContents(path);
     }
@@ -68,7 +67,7 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     }
     @Override
     public void getContentOfDirAndPlay(String path, String id) {
-        Log.v("samba","playa "+path);
+        //Log.v("samba","playa "+path);
         playit=true;
         currentId=id;
         //if path is filename
@@ -76,7 +75,7 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
             String[] pathLines=path.split("/");
             String f=pathLines[pathLines.length-1];
             path=path.substring(0,path.length()-f.length()-1);
-            Log.v("samba","play "+path);
+            //Log.v("samba","play "+path);
         }
         displayContents(path);
     }
@@ -90,7 +89,7 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     public void databaseCallCompleted(final ArrayList<File> files1a) {
 
 
-        Log.v("samba","db-call succeeded");
+        //Log.v("samba","db-call succeeded");
         if (playit){
             logic.sambaCallCompleted(files1a, new ArrayList<File>(),currentId);//chdb
             playit=false;
@@ -103,11 +102,11 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
                     if (f instanceof Mp3File){
                         Mp3File mp=(Mp3File) f;
                         dirName = String.format("%s-%s", mp.getMpcSong().artist, mp.getMpcSong().album);
-                        Log.v("samba","file contains "+mp.getMpcSong().artist+"-"+mp.getMpcSong().album);
+                        //Log.v("samba","file contains "+mp.getMpcSong().artist+"-"+mp.getMpcSong().album);
                     }
                     String path=String.format("%s/%s","/home/wieneke/FamilyLibrary/FamilyMusic",f.getPath());
                     downloadFiles.add(path);
-                    Log.v("samba", "path found:" + f.getPath());
+                    //Log.v("samba", "path found:" + f.getPath());
                 }
                 NetworkShare.copyFile(downloadFiles, dirName);
             }else

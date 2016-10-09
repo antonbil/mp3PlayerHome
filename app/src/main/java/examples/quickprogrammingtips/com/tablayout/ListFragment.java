@@ -1,7 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,7 @@ public class ListFragment extends ListParentFragment {
     public void getContentOfDirAndPlay(String path, String id) {
 
         if (!path.endsWith("/"))path=path+"/";
-        Log.v("samba", "path in smb:" + path);
+        //Log.v("samba", "path in smb:" + path);
         //todo: change next line in mpd-call to play entire dir.
         networkShare.getContent(logic, path, id);
     }

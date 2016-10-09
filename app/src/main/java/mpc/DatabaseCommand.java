@@ -1,7 +1,5 @@
 package mpc;
 
-import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -73,7 +71,7 @@ public class DatabaseCommand extends Thread{
 			//command="find any \"Hotel California\"";
 
 			out.println(command.trim());
-			Log.v("samba", command+";");
+			//Log.v("samba", command+";");
 			String line;
 
 			ArrayList<File> files=new ArrayList<File>();
@@ -81,10 +79,10 @@ public class DatabaseCommand extends Thread{
 			ArrayList<String>list=new ArrayList<String>();
 			String path="";
 			while((line = in.readLine()) != null){
-				Log.v("samba", line);
+				//Log.v("samba", line);
 				//Log.v("samba",line);
 				if (line.startsWith("OK"))break;
-				Log.v("samba", line);
+				//Log.v("samba", line);
 				//directory:
 				//Last-Modified:
 				if (line.startsWith("Last-Modified:")) {

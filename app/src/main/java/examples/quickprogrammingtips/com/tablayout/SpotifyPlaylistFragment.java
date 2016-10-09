@@ -1,6 +1,5 @@
 package examples.quickprogrammingtips.com.tablayout;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -15,7 +14,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
     @Override
     public void onStop(){
         MainActivity.getThis.firstTime= 0;
-        Log.v("samba","onstop");
+        //Log.v("samba","onstop");
         super.onStop();
     }
     @Override

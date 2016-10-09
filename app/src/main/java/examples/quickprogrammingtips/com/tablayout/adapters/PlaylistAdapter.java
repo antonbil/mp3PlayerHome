@@ -287,7 +287,7 @@ public class PlaylistAdapter extends BaseAdapter {
                         currentSongInPlaylist=position;
                         //hier positie veranderen!
 
-                        Log.v("samba", "CLick, play "+fname);
+                        //Log.v("samba", "CLick, play "+fname);
                             //Mp3File mp=(Mp3File) mp3File;
                             //mp.getMpcSong()
                             //Toast t = Toast.makeText(v.getContext(), "play:"+mp.getTitle(), Toast.LENGTH_SHORT);
@@ -307,13 +307,13 @@ public class PlaylistAdapter extends BaseAdapter {
                                     }, 1000);
                                 }
                             });
-                        Log.v("samba", "CLick, play 2 "+fname);
+                        //Log.v("samba", "CLick, play 2 "+fname);
                             //t.show();
                     }catch(Exception e){
                         Log.v("samba", Log.getStackTraceString(e));}
 
                         MainActivity.getThis.getLogic().getMpc().play();
-                        Log.v("samba", "CLick, play 3 "+fname);
+                        //Log.v("samba", "CLick, play 3 "+fname);
                     }
                 });
             } catch (Exception e) {

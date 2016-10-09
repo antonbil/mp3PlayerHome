@@ -75,7 +75,7 @@ public class MPC {
 
 	private void checkIfPlaying(final boolean first) {
 		SpotifyFragment.stopSpotifyPlaying(SpotifyFragment.checkAddress());
-		Log.v("samba","not playing before");
+		//Log.v("samba","not playing before");
 		final MainActivity mainObject = MainActivity.getThis;
 		final Handler handler = new Handler(Looper.getMainLooper());
 		handler.postDelayed(new Runnable() {
@@ -97,14 +97,14 @@ public class MPC {
 			public void run() {
 				MPCStatus s=mainObject.getLogic().getMpc().getStatusSynch();
 				if ((s!=null)&&!s.playing) {
-					Log.v("samba","not playing 2");
+					//Log.v("samba","not playing 2");
 					if (!first) {
 						try {
 							mainObject.runOnUiThread(new Runnable() {
 								@Override
 								public void run() {
 									// remove the retrieving of data from this method and let it just build the views
-									Log.v("samba", "not playing");
+									//Log.v("samba", "not playing");
 									new AlertDialog.Builder(mainObject)
 											.setMessage("Not playing. End spotify playing?")
 											.setCancelable(false)
@@ -127,7 +127,7 @@ public class MPC {
 
 					}
 
-				} else Log.v("samba","playing after");
+				} //else Log.v("samba","playing after");
 				//Do something after 100ms
 			}
 		}, 2000);
