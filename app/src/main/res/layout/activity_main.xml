@@ -18,11 +18,9 @@
         android:dividerHeight="0dp"
         android:background="#111"/>
 
-    <!--</ScrollView>-->
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!--android:layout_height="?attr/actionBarSize"-->
     <android.support.v7.widget.Toolbar
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
@@ -53,16 +51,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-<!--    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/tabLayout"/>
-    <FrameLayout
-        android:id="@+id/frLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/tabLayout">-->
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/find"
@@ -76,7 +64,6 @@
             app:borderWidth="0dp"
             app:fabSize="normal"
             android:layout_gravity="right|bottom" />
-    <!--</FrameLayout>-->
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -97,30 +84,6 @@
         android:background="#333"
         android:orientation="horizontal" >
 
-<!--        <ImageButton
-            style="@style/ToolBarButtonStyle"
-
-            android:id="@+id/playButton"
-            android:src="@drawable/play" />
-        <ImageButton
-            style="@style/ToolBarButtonStyle"
-
-            android:id="@+id/stopButton"
-            android:src="@drawable/stop" />
-        <ImageButton
-            style="@style/ToolBarButtonStyle"
-            android:id="@+id/pauseButton"
-            android:src="@drawable/pause" />
-        <ImageButton
-            style="@style/ToolBarButtonStyle"
-
-            android:id="@+id/backButton"
-            android:src="@drawable/back" />
-        <ImageButton
-            style="@style/ToolBarButtonStyle"
-
-            android:id="@+id/forwardButton"
-            android:src="@drawable/forward" />-->
         <include layout="@layout/play_spotify" />
 
     </LinearLayout>

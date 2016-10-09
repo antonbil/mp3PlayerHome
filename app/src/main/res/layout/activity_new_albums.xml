@@ -5,6 +5,34 @@
     android:clickable="true"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="vertical" >
+
+        <TextView
+            android:text="Erboven"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView" />
+
+        <ListView android:id="@+id/DrawerListRight"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        class="examples.quickprogrammingtips.com.tablayout.MainActivity.MyView"
+        android:clickable="true"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:background="#111"/>
+
+        <TextView
+            android:text="Eronder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView2" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,15 +50,15 @@
             </ListView>
 
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabspotifylist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/spf" />
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabspotifylist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/spf" />
 
     <include layout="@layout/content_left_drawer" />
 

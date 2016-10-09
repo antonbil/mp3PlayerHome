@@ -3,10 +3,9 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.PopupMenu;
-import android.view.MenuItem;
-import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 
 public class WikipediaActivity  extends LeftDrawerPlaylist {
 
@@ -41,25 +40,18 @@ public class WikipediaActivity  extends LeftDrawerPlaylist {
             }
         });
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu menu = new PopupMenu(view.getContext(), view);
+        ((ImageView) findViewById(R.id.thumbnail_top)).setOnClickListener(view -> {
+            PopupMenu menu = new PopupMenu(view.getContext(), view);
 
-                menu.getMenu().add("Album");
-                menu.getMenu().add("Band");
-                menu.getMenu().add("Artist");
-                menu.show();
-                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            menu.getMenu().add("Album");
+            menu.getMenu().add("Band");
+            menu.getMenu().add("Artist");
+            menu.show();
+            menu.setOnMenuItemClickListener(item -> {
+                webView.loadUrl("https://en.m.wikipedia.org/wiki/" + searchString + " (" + item.getTitle().toString()+")");
+                return false;
+            });
 
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        webView.loadUrl("https://en.m.wikipedia.org/wiki/" + searchString + " (" + item.getTitle().toString()+")");
-                        return false;
-                    }
-                });
-
-                }
             });
     }
 
