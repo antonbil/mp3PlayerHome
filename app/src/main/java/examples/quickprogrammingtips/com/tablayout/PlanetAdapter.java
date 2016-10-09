@@ -3,6 +3,7 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -131,6 +132,21 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         }
         convertView.setOnClickListener(view -> {
             onClickFunc(position);
+            //todo notify does not work!
+            MainActivity.getThis.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.v("samba","notify adapter");
+                            notifyDataSetChanged();
+                        }
+                    }, 3000);
+                }
+            });
+
         });
         convertView.setOnLongClickListener(view -> {
             longclick( position,  convertView2,logo1);

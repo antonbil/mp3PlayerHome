@@ -8,8 +8,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
-import android.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -294,6 +295,18 @@ public class PlaylistAdapter extends BaseAdapter {
                         //if (caller!=null)
 
                         caller.newMpdCall(mp3File, position, MainActivity.getThis.getBaseContext().getString(R.string.command_play));
+                            MainActivity.getThis.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    final Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                           notifyDataSetChanged();
+                                        }
+                                    }, 1000);
+                                }
+                            });
                         Log.v("samba", "CLick, play 2 "+fname);
                             //t.show();
                     }catch(Exception e){
