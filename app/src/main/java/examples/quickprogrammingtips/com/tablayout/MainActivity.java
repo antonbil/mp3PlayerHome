@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     protected TabLayout tabLayout;
     private MainActivity mainActivity;
     public static HashMap<String, Bitmap> albumPictures = new HashMap<>();
+    public static HashMap<String, String> albumPicturesIds = new HashMap<>();
     public String currentArtist;
     public ViewHolder viewHolder = new ViewHolder();
 

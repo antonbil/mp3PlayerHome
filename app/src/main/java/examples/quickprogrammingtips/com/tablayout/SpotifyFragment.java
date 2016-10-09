@@ -2500,19 +2500,7 @@ public class SpotifyFragment extends Fragment implements
                                     }
 
                                     DownLoadImageUrlTask.setAlbumPicture(t.album.id, imageurl);
-                                    new DownLoadImageTask() {
-                                        @Override
-                                        public void setImage(Bitmap logo) {
-                                            getThis.runOnUiThread(() -> {
-                                                for (HeaderSongInterface header:MainActivity.headers){
-                                                    if (header!=null)
-                                                    header.setLogo(logo);
-                                                }
-                                                //image.setImageBitmap(logo);
-                                                SpotifyFragment.bitmap = logo;
-                                            });
-                                        }
-                                    }.execute(imageurl);
+                                    MainActivity.albumPicturesIds.put(t.album.id, imageurl);
                             } /*else {
                                 if (MainActivity.albumPictures.containsKey(t.album.id)) {
                                     final Bitmap b = MainActivity.albumPictures.get(t.album.id);
@@ -2522,6 +2510,19 @@ public class SpotifyFragment extends Fragment implements
                                     }
                                 }
                             }*/
+                        new DownLoadImageTask() {
+                            @Override
+                            public void setImage(Bitmap logo) {
+                                getThis.runOnUiThread(() -> {
+                                    for (HeaderSongInterface header:MainActivity.headers){
+                                        if (header!=null)
+                                            header.setLogo(logo);
+                                    }
+                                    //image.setImageBitmap(logo);
+                                    SpotifyFragment.bitmap = logo;
+                                });
+                            }
+                        }.execute(MainActivity.albumPicturesIds.get(t.album.id));
 
                         //hours * 60 * 60 + mins * 60 + secs;
                         currentTime = getTime();
