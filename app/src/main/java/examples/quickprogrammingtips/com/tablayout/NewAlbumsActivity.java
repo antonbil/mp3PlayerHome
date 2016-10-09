@@ -6,8 +6,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,18 +23,12 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-import examples.quickprogrammingtips.com.tablayout.adapters.PlaylistAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
 public class NewAlbumsActivity extends Activity  implements MpdInterface ,HeaderSongInterface{
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
     static Activity getThis;
     public ListAdapter customAdapter;
-    private ListView spotifyListview;
-    private ListView mpdListview;
-    private boolean spotifyVisible=true;
-    private DrawerLayout mDrawerLayout;
-    private FloatingActionButton swapPlaylist;
 
     @Override
     protected void onStop() {
@@ -64,7 +56,8 @@ public class NewAlbumsActivity extends Activity  implements MpdInterface ,Header
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifylist);
         fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
 
-        getDrawerSpotifyLayout();
+        new LeftDrawerPlaylist(this,this,R.id.newalbumsdrawer_layout,R.id.newalbumsdrawer_list,
+                R.id.newalbumsmpddrawer_list,R.id.fabswapplaylist).getDrawerSpotifyLayout();
          customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
         loadingdialog = ProgressDialog.show(this,
@@ -258,74 +251,6 @@ public class NewAlbumsActivity extends Activity  implements MpdInterface ,Header
         //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""); Toast.LENGTH_SHORT).show();
         SpotifyFragment.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this, null, null);
 
-    }
-    public void displayList() {
-        if (spotifyVisible)
-            getSpotifyPlaylist();
-        else getMPDPlaylist();
-    }
-
-    public void getMPDPlaylist() {
-        if (spotifyListview!=null)spotifyListview.setVisibility(View.GONE);
-        PlaylistAdapter adapterMpd = new PlaylistAdapter(MainActivity.getThis.playFragment, MainActivity.getThis, MainActivity.getThis.getLogic().getPlaylistFiles(), MainActivity.getThis.getApplicationContext());
-        mpdListview.setVisibility(View.VISIBLE);
-        mpdListview.setAdapter(adapterMpd);
-
-        mpdListview.setOnItemClickListener((parent, view, position, id) -> {
-            Log.v("samba","Play:"+position);
-            MainActivity.getThis.getLogic().getMpc().play(position);
-        });
-
-    }
-    public void getSpotifyPlaylist() {
-        MainActivity.getThis.runOnUiThread(() -> {
-            try{
-                PlanetAdapter albumAdapter;
-                if (mpdListview!=null)mpdListview.setVisibility(View.GONE);
-                //spotifyListview = null;
-                spotifyListview.setVisibility(View.VISIBLE);
-                ArrayList<String> albumList = new ArrayList<>();
-                ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
-                albumAdapter= MainActivity.getTracksAdapter(mDrawerLayout, spotifyListview, albumList, albumTracks);
-                spotifyListview.setAdapter(albumAdapter);
-                SpotifyFragment.checkAddress();
-                SpotifyFragment.refreshPlaylistFromSpotify(1, albumAdapter, getThis, albumList, albumTracks);
-                albumAdapter.notifyDataSetChanged();
-            }catch(Exception e){
-                Log.v("samba", Log.getStackTraceString(e));}
-        });
-    }
-     public void getDrawerSpotifyLayout() {
-         mDrawerLayout = (DrawerLayout) findViewById(R.id.newalbumsdrawer_layout);
-
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
-                this,
-                mDrawerLayout,
-                R.string.hello_world,
-                R.string.hello_world
-        ) {
-
-            /*public void onDrawerClosed(View view) {
-                albumAdapter = null;
-            }*/
-
-            public void onDrawerOpened(View drawerView) {
-                spotifyVisible=MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING;
-                mpdListview.setVisibility(View.GONE);
-                spotifyListview.setVisibility(View.GONE);
-                displayList();
-
-            }
-
-
-        };
-         spotifyListview = (ListView) findViewById(R.id.newalbumsdrawer_list);
-         mpdListview = (ListView) findViewById(R.id.newalbumsmpddrawer_list);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-         swapPlaylist = (FloatingActionButton) findViewById(R.id.fabswapplaylist);
-         swapPlaylist.setOnClickListener(view -> {spotifyVisible=!spotifyVisible;
-            displayList();
-         });
     }
     @Override
     public void setLogo(Bitmap logo) {
