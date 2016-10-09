@@ -137,7 +137,7 @@ public class SpotifyFragment extends Fragment implements
     private static ArrayList<Track> previousTracksPlaylist= new ArrayList<>();
     public static boolean hasBeen=false;
     private SpotifyHeader spotifyHeader;
-    public FillListviewWithValues fillListviewWithValues;
+    public static FillListviewWithValues fillListviewWithValues;
     public ArrayList<String> artistList = new ArrayList<>();
     public static  ArrayList<String> albumIds = new ArrayList<>();
     public static ArrayList<String> albumList = new ArrayList<>();

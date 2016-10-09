@@ -1,32 +1,32 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class WebActivity extends AppCompatActivity {
+public class WebActivity  extends LeftDrawerPlaylist{
 
     //private WebView webView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wikipedia);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
         Bundle extras = getIntent().getExtras();
         Log.v("samba", "in web-activity");
 
+        initLeftDrawerPlaylist(this,this,R.id.newalbumsdrawer_layout,R.id.newalbumsdrawer_list,
+                R.id.newalbumsmpddrawer_list,R.id.fabswapplaylist);
 
         final String   searchString= extras.getString("url");
-        try {
+        /*try {
             getActionBar().setTitle("URL: " + searchString);
         }catch (Exception e){}
         try {
             getSupportActionBar().setTitle("URL "+searchString);  // provide compatibility to all the versions
-        }catch (Exception e){}
+        }catch (Exception e){}*/
         final WebView webView = (WebView) findViewById(R.id.webView1);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(searchString);

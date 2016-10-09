@@ -23,9 +23,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
-
-public class NewAlbumsActivity extends Activity  implements MpdInterface ,HeaderSongInterface{
+public class NewAlbumsActivity extends LeftDrawerPlaylist  {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
     static Activity getThis;
     public ListAdapter customAdapter;
@@ -49,15 +47,15 @@ public class NewAlbumsActivity extends Activity  implements MpdInterface ,Header
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getThis=this;
-        MainActivity.headers.add(this);
         setContentView(R.layout.activity_new_albums);
 
         final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifylist);
         fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
 
-        new LeftDrawerPlaylist(this,this,R.id.newalbumsdrawer_layout,R.id.newalbumsdrawer_list,
-                R.id.newalbumsmpddrawer_list,R.id.fabswapplaylist).getDrawerSpotifyLayout();
+        initLeftDrawerPlaylist(this,this,R.id.newalbumsdrawer_layout,R.id.newalbumsdrawer_list,
+                R.id.newalbumsmpddrawer_list,R.id.fabswapplaylist);
+
          customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
         loadingdialog = ProgressDialog.show(this,
@@ -102,22 +100,6 @@ public class NewAlbumsActivity extends Activity  implements MpdInterface ,Header
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
-    }
-
-    @Override
-    public void playlistCall(ArrayList<Mp3File> playlist, boolean change) {
-
-    }
-
-    @Override
-    public void newMpdCall(Mp3File mp3File, int position, String command) {
-
-        MainActivity.getThis.mpdCall(mp3File, position, command);
-    }
-
-    @Override
-    public void printCover(Bitmap result, ImageView image, String album) {
-
     }
 
     public class ListAdapter extends ArrayAdapter<NewAlbum> {
@@ -250,20 +232,6 @@ public class NewAlbumsActivity extends Activity  implements MpdInterface ,Header
         SpotifyFragment.artistName=album.artist;
         //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""); Toast.LENGTH_SHORT).show();
         SpotifyFragment.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this, null, null);
-
-    }
-    @Override
-    public void setLogo(Bitmap logo) {
-        ((ImageView) findViewById(R.id.thumbnail_top)).setImageBitmap(logo);
-
-    }
-
-    @Override
-    public void setData(String time, String totalTime, String title, String artist) {
-        ((TextView) findViewById(R.id.time_top)).setText(time);
-        ((TextView) findViewById(R.id.totaltime_top)).setText(totalTime);
-        ((TextView) findViewById(R.id.title_top)).setText(title);
-        ((TextView) findViewById(R.id.artist_top)).setText(artist);
 
     }
 
