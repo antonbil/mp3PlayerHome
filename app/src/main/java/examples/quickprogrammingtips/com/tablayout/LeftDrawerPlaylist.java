@@ -7,6 +7,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -31,8 +33,12 @@ public class LeftDrawerPlaylist extends Activity implements  HeaderSongInterface
     private ListView spotifyListview;
     private ListView mpdListview;
     private boolean spotifyVisible=true;
-    private DrawerLayout mDrawerLayout;
+    protected DrawerLayout mDrawerLayout;
     private FloatingActionButton swapPlaylist;
+    protected boolean drawerActive=false;
+    private boolean shouldClick=false;
+    private int xcoord=0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,8 +115,49 @@ public class LeftDrawerPlaylist extends Activity implements  HeaderSongInterface
                 Log.v("samba", Log.getStackTraceString(e));}
         });
     }
+    public void performTouchEvent(MotionEvent event){
+
+    }
+    public void performClickOnRightDrawer(){
+
+    }
     public void getDrawerSpotifyLayout() {
         mDrawerLayout = (DrawerLayout) activity.findViewById(newalbumsdrawer_layout);
+        mDrawerLayout.setOnTouchListener((v, event) -> {
+
+            if (drawerActive) {
+                performTouchEvent(event);
+                //
+                switch (event.getAction() & MotionEvent.ACTION_MASK)
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        shouldClick = true;
+                        xcoord=(int)event.getX();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (shouldClick) {
+                            if ((int)event.getX()>xcoord+100) {
+                                mDrawerLayout.closeDrawers();
+                            } else {
+                                performClickOnRightDrawer();
+                                shouldClick = false;
+                                return true;
+                            }
+                        }
+                        break;
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        break;
+                    case MotionEvent.ACTION_POINTER_UP:
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        break;
+                }
+                return false;
+            } else {
+                //Log.v("samba", "no event defined for push");
+            }
+            return false;
+        });
 
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 activity,
@@ -127,6 +174,21 @@ public class LeftDrawerPlaylist extends Activity implements  HeaderSongInterface
 
             }
 
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                if (newState == DrawerLayout.STATE_SETTLING) {
+                    if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT))//if right drawer is opened
+                     drawerActive = false;
+                } else if (newState == DrawerLayout.STATE_DRAGGING) {
+                    drawerActive = false;
+                } else if (newState == DrawerLayout.STATE_IDLE) {
+                    if (mDrawerLayout.isDrawerVisible(Gravity.RIGHT)) {
+                        drawerActive = true;
+                    }
+
+
+                }
+            }
 
         };
         spotifyListview = (ListView) activity.findViewById(newalbumsdrawer_list);

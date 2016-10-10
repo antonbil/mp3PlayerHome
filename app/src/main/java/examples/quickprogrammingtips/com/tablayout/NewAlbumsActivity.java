@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -27,6 +28,7 @@ public class NewAlbumsActivity extends LeftDrawerPlaylist  {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
     static Activity getThis;
     public ListAdapter customAdapter;
+    private ListView drawerListRight;
 
     @Override
     protected void onStop() {
@@ -49,9 +51,10 @@ public class NewAlbumsActivity extends LeftDrawerPlaylist  {
         super.onCreate(savedInstanceState);
             //Log.v("samba","1a");
         getThis=this;
+            Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
+                    MainActivity.class));
         setContentView(R.layout.activity_new_albums);
             //Log.v("samba","2a");
-
         final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifylist);
         fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
@@ -61,6 +64,7 @@ public class NewAlbumsActivity extends LeftDrawerPlaylist  {
         initLeftDrawerPlaylist(this,this,R.id.newalbumsdrawer_layout,R.id.newalbumsdrawer_list,
                 R.id.newalbumsmpddrawer_list,R.id.fabswapplaylist);
             //Log.v("samba","4a");
+            setRightDrawer();
 
          customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;
@@ -95,6 +99,23 @@ public class NewAlbumsActivity extends LeftDrawerPlaylist  {
         task.start();
     }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
     }
+
+    public void performTouchEvent(MotionEvent event){
+        drawerListRight.onTouchEvent(event);
+    }
+    public void performClickOnRightDrawer(){
+        drawerListRight.performClick();
+    }
+    private void setRightDrawer() {
+        drawerListRight = (ListView) findViewById(R.id.DrawerListRight);
+        String[] osArray = { "Android", "iOS", "Windows", "OS X", "Linux" };
+        ArrayAdapter<String> drawerListRightAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        drawerListRight.setAdapter(drawerListRightAdapter);
+        drawerListRight.setOnItemClickListener((parent, view, position, id) -> {
+            Log.v("samba","Select"+position);
+        });
+    }
+
     public void generateList(ArrayList<NewAlbum> newAlbums){
 
         try {

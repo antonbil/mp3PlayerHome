@@ -146,7 +146,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //Log.d("samba", "Text:1");
             headers.add(this);
             super.onCreate(savedInstanceState);
-            Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
+            Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
+                    MainActivity.class));
+            trimCache(this);
             final Intent intent = getIntent();
             final String action = intent.getAction();
 
@@ -592,6 +594,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
             @Override
             public void run() {
+                Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(getThis,
+                        MainActivity.class));
                 try {
                     if (statusThread) {
                         statusThread = false;
@@ -1500,7 +1504,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                 //Log.v("samba",uri);
                             } catch (Exception e) {
                                 statusThread=false;
-                                Log.v("samba","statusupdate");
+                                //Log.v("samba","statusupdate");
 
                                 //mpc.connectionFailed("Connection failed, check settings");
                                 //t.stop();

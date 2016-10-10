@@ -150,6 +150,7 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                         try {
                             artistList1 = retrieveFromSambaShare(c1 + "");
                         } catch (Exception e) {
+                            Log.v("samba","error retrieve samba");
                             return;
                         }
                         artistList.addAll(artistList1);

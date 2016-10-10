@@ -139,7 +139,7 @@ public class PlaylistAdapter extends BaseAdapter {
             final View convertView2=convertView;
             convertView.setOnLongClickListener(v -> {
                 try{
-                        Log.v("samba", "Longclick"+fileArrayList.get(pos2).getFname());
+                        //Log.v("samba", "Longclick"+fileArrayList.get(pos2).getFname());
                         //Toast.makeText(v.getContext(), "click:" + (String) fileArrayList.get(pos2).getName(), Toast.LENGTH_LONG).show();
                         PopupMenu menu = new PopupMenu(v.getContext(), v);
 
