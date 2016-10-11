@@ -6,6 +6,10 @@
         <item name="windowActionBar">false</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="CustomListView" parent="@android:style/Widget.ListView">
+        <item name="android:background">#2F3F66</item>
+        <item name="android:fastScrollEnabled">true</item>
+    </style>
 
     <style name="AppTheme.TabStyle" parent="Widget.Design.TabLayout">
         <item name="tabTextAppearance">@style/AppTheme.TextStyle</item>

@@ -22,7 +22,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -133,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     private ListView rightListview;
     public int xcoord=0;
     private PlaylistAdapter adapterMpd;
+    private LeftDrawerPlaylist leftDrawerPlaylist;
+    private ListView drawerListRight;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     protected void onCreate(Bundle savedInstanceState) {
         try {
             //Log.d("samba", "Text:1");
-            headers.add(this);
+            //headers.add(this);
             super.onCreate(savedInstanceState);
             Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
                     MainActivity.class));
@@ -176,21 +177,101 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             logic = new Logic(this);
             //Log.v("samba",""+15);
             setContentView(R.layout.activity_main);
-            int drawerListRight = R.id.DrawerListRight;
-            int drawer_layout = R.id.drawer_layout;
+            //int drawerListRight = R.id.DrawerListRight;
+            //int drawer_layout = R.id.drawer_layout;
             int drawer_list = R.id.drawer_list;
-            DrawerLayout mDrawerLayout = getDrawerLayout((ListView) findViewById(drawerListRight), (DrawerLayout) findViewById(drawer_layout), (ListView) findViewById(drawer_list));
+            //DrawerLayout mDrawerLayout = getDrawerLayout((ListView) findViewById(drawerListRight), (DrawerLayout) findViewById(drawer_layout), (ListView) findViewById(drawer_list));
             //
             //Log.v("samba",""+16);
 
             //Log.d("samba", "Text:5");
+            leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
+                    R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
+                @Override
+                public void performTouchEvent(MotionEvent event){
+                    drawerListRight.onTouchEvent(event);
+                }
+                @Override
+                public void performClickOnRightDrawer(){
+                    drawerListRight.performClick();
+                }
+            };
+            drawerListRight = (ListView) findViewById(R.id.DrawerListRight);
+            ArrayList<String> osArray = new ArrayList<String>(
+                    Arrays.asList("Settings",
+                            "sep","Search mpd", "Search album","sep", "New albums categories" , "Dutch album top 100", "Spotify Album Shortcuts", "sep","Volume" ));
+            //ArrayAdapter<String> drawerListRightAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+            MenuAdapter menuAdapter=new MenuAdapter(this,osArray);
+            drawerListRight.setAdapter(menuAdapter);
+            drawerListRight.setOnItemClickListener((parent, view, position, id) -> {
+                Log.v("samba","Select"+position);
+                switch (osArray.get(position)) {
+                    case "Settings":
+                        doSettings();
+                        break;
+                    case "Search mpd":
+                        searchTerm();
+                        break;
+                    case "Search album":
+                        doSearchAlbum();
+                        break;
+                    case "New albums categories":
+                        doNewAlbumsCategories();
+                        break;
+                    case "Dutch album top 100":
+                        doDutchAlbumTop40();
+                        break;
+                    case "Spotify Album Shortcuts":
+                        doSpotifyAlbumShortcuts();
+                        break;
+                    case "Volume":
+                        setVolume(getThis);
+                        break;
+
+                }
+                /*
+                        if (id == R.id.action_settings) {
+            doSettings();
+            return true;
+        }
+        if (id == R.id.set_volume) {
+            setVolume(getThis);
+        }
+        if (id == R.id.new_albums_categories) {
+            doNewAlbumsCategories();
+            return true;
+        }
+        if (id == R.id.dutch_album_top_100) {
+            doDutchAlbumTop40();
+            return true;
+        }
+        if (id == R.id.spotify_album_shortcuts) {
+            doSpotifyAlbumShortcuts();
+            return true;
+        }
+        if (id == R.id.search_album) {
+            doSearchAlbum();
+            return true;
+        }
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.display_footer) {
+            doDisplayFooter(item);
+            return true;
+        }
+        if ((id == R.id.search_option)) {//playlists_option
+            searchTerm();
+            return true;
+        }
+                 */
+
+            });
             LinearLayout ll = ((LinearLayout) findViewById(R.id.time_layout));
             ll.setOnClickListener(v -> playPauseAll());//android:id="@+id/song_title"
             ll = ((LinearLayout) findViewById(R.id.song_title));
-            ll.setOnClickListener(v -> {
+            /*ll.setOnClickListener(v -> {
                 mDrawerLayout.closeDrawer(GravityCompat.START, false);
                 callSpotify(currentArtist);
-            });
+            });*/
             ll.setOnLongClickListener(v -> {
                 MainScreenDialog msDialog = new MainScreenDialog(getThis);
                 msDialog.show();
@@ -692,39 +773,31 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent myIntent = new Intent(MainActivity.this,
-                    SettingsActivity.class);
-            startActivity(myIntent);
+            doSettings();
             return true;
         }
         if (id == R.id.set_volume) {
             setVolume(getThis);
         }
         if (id == R.id.new_albums_categories) {
-            SpotifyFragment.nextCommand="new_albums_categories";
-            callSpotifyPlaylist();
+            doNewAlbumsCategories();
             return true;
         }
         if (id == R.id.dutch_album_top_100) {
-            SpotifyFragment.nextCommand="dutch_album_top_100";
-            callSpotifyPlaylist();
+            doDutchAlbumTop40();
             return true;
         }
         if (id == R.id.spotify_album_shortcuts) {
-            SpotifyFragment.nextCommand="spotify_album_shortcuts";
-            callSpotifyPlaylist();
+            doSpotifyAlbumShortcuts();
             return true;
         }
         if (id == R.id.search_album) {
-            SpotifyFragment.nextCommand="search album";
-            callSpotifyPlaylist();
+            doSearchAlbum();
             return true;
         }
         //noinspection SimplifiableIfStatement
         if (id == R.id.display_footer) {
-            boolean isChecked = !item.isChecked();
-            item.setChecked(isChecked);
-            setFooterVisibility();
+            doDisplayFooter(item);
             return true;
         }
         if ((id == R.id.search_option)) {//playlists_option
@@ -732,6 +805,38 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void doDisplayFooter(MenuItem item) {
+        boolean isChecked = !item.isChecked();
+        item.setChecked(isChecked);
+        setFooterVisibility();
+    }
+
+    public void doSearchAlbum() {
+        SpotifyFragment.nextCommand="search album";
+        callSpotifyPlaylist();
+    }
+
+    public void doSpotifyAlbumShortcuts() {
+        SpotifyFragment.nextCommand="spotify_album_shortcuts";
+        callSpotifyPlaylist();
+    }
+
+    public void doDutchAlbumTop40() {
+        SpotifyFragment.nextCommand="dutch_album_top_100";
+        callSpotifyPlaylist();
+    }
+
+    public void doNewAlbumsCategories() {
+        SpotifyFragment.nextCommand="new_albums_categories";
+        callSpotifyPlaylist();
+    }
+
+    public void doSettings() {
+        Intent myIntent = new Intent(MainActivity.this,
+                SettingsActivity.class);
+        startActivity(myIntent);
     }
 
     public static void startWikipediaPage(String outsiders) {

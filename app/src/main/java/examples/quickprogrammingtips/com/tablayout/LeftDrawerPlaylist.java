@@ -97,6 +97,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                             if ((int)event.getX()>xcoord+100) {
                                 mDrawerLayout.closeDrawers();
                             } else {
+                                mDrawerLayout.closeDrawers();
                                 performClickOnRightDrawer();
                                 shouldClick = false;
                                 return true;
