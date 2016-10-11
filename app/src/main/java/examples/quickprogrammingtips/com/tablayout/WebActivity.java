@@ -1,11 +1,16 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-public class WebActivity  extends LeftDrawerPlaylist{
+public class WebActivity  extends Activity {
+    private ListView drawerListRight;
 
     //private WebView webView;
     @Override
@@ -17,8 +22,24 @@ public class WebActivity  extends LeftDrawerPlaylist{
         Bundle extras = getIntent().getExtras();
         Log.v("samba", "in web-activity");
 
-        initLeftDrawerPlaylist(this,this,R.id.newalbumsdrawer_layout,R.id.newalbumsdrawer_list,
-                R.id.newalbumsmpddrawer_list,R.id.fabswapplaylist);
+        new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
+                R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
+            @Override
+            public void performTouchEvent(MotionEvent event){
+                drawerListRight.onTouchEvent(event);
+            }
+            @Override
+            public void performClickOnRightDrawer(){
+                drawerListRight.performClick();
+            }
+        };
+        drawerListRight = (ListView) findViewById(R.id.DrawerListRight);
+        String[] osArray = { "Android", "iOS", "Windows", "OS X", "Linux" };
+        ArrayAdapter<String> drawerListRightAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        drawerListRight.setAdapter(drawerListRightAdapter);
+        drawerListRight.setOnItemClickListener((parent, view, position, id) -> {
+            Log.v("samba","Select"+position);
+        });
 
         final String   searchString= extras.getString("url");
         /*try {
