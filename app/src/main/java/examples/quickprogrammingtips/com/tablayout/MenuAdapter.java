@@ -33,6 +33,10 @@ public class MenuAdapter extends ArrayAdapter<String> {
         listItem.setGravity(Gravity.CENTER_VERTICAL);
         listItem.setBackgroundColor(Color.WHITE);
         listItem.setTextColor(Color.BLACK);
+        //if title is url, display only last part
+        String[] segments = user.split("/");
+        user = segments[segments.length-1];
+
         // Populate the data into the template view using the data object
         if (user.equals("sep")){
             user="";

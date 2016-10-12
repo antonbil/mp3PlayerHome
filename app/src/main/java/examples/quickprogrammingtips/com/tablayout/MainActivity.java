@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public int xcoord=0;
     private PlaylistAdapter adapterMpd;
     private LeftDrawerPlaylist leftDrawerPlaylist;
-    private ListView drawerListRight;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -185,86 +184,49 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //Log.v("samba",""+16);
 
             //Log.d("samba", "Text:5");
+            ArrayList<String> menuItemsArray = new ArrayList<String>(
+                    Arrays.asList("Settings",
+                            "sep","Search mpd", "Search album","sep", "New albums categories" , "Dutch album top 100", "Spotify Album Shortcuts", "sep","Volume" ));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                     R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
                 @Override
                 public void performTouchEvent(MotionEvent event){
-                    drawerListRight.onTouchEvent(event);
+
                 }
                 @Override
                 public void performClickOnRightDrawer(){
-                    drawerListRight.performClick();
+
+                }
+
+                @Override
+                protected void doMenuAction(int position) {
+                    switch (menuItemsArray.get(position)) {
+                        case "Settings":
+                            doSettings();
+                            break;
+                        case "Search mpd":
+                            searchTerm();
+                            break;
+                        case "Search album":
+                            doSearchAlbum();
+                            break;
+                        case "New albums categories":
+                            doNewAlbumsCategories();
+                            break;
+                        case "Dutch album top 100":
+                            doDutchAlbumTop40();
+                            break;
+                        case "Spotify Album Shortcuts":
+                            doSpotifyAlbumShortcuts();
+                            break;
+                        case "Volume":
+                            setVolume(getThis);
+                            break;
+
+                    }
                 }
             };
-            drawerListRight = (ListView) findViewById(R.id.DrawerListRight);
-            ArrayList<String> osArray = new ArrayList<String>(
-                    Arrays.asList("Settings",
-                            "sep","Search mpd", "Search album","sep", "New albums categories" , "Dutch album top 100", "Spotify Album Shortcuts", "sep","Volume" ));
-            //ArrayAdapter<String> drawerListRightAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
-            MenuAdapter menuAdapter=new MenuAdapter(this,osArray);
-            drawerListRight.setAdapter(menuAdapter);
-            drawerListRight.setOnItemClickListener((parent, view, position, id) -> {
-                Log.v("samba","Select"+position);
-                switch (osArray.get(position)) {
-                    case "Settings":
-                        doSettings();
-                        break;
-                    case "Search mpd":
-                        searchTerm();
-                        break;
-                    case "Search album":
-                        doSearchAlbum();
-                        break;
-                    case "New albums categories":
-                        doNewAlbumsCategories();
-                        break;
-                    case "Dutch album top 100":
-                        doDutchAlbumTop40();
-                        break;
-                    case "Spotify Album Shortcuts":
-                        doSpotifyAlbumShortcuts();
-                        break;
-                    case "Volume":
-                        setVolume(getThis);
-                        break;
-
-                }
-                /*
-                        if (id == R.id.action_settings) {
-            doSettings();
-            return true;
-        }
-        if (id == R.id.set_volume) {
-            setVolume(getThis);
-        }
-        if (id == R.id.new_albums_categories) {
-            doNewAlbumsCategories();
-            return true;
-        }
-        if (id == R.id.dutch_album_top_100) {
-            doDutchAlbumTop40();
-            return true;
-        }
-        if (id == R.id.spotify_album_shortcuts) {
-            doSpotifyAlbumShortcuts();
-            return true;
-        }
-        if (id == R.id.search_album) {
-            doSearchAlbum();
-            return true;
-        }
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.display_footer) {
-            doDisplayFooter(item);
-            return true;
-        }
-        if ((id == R.id.search_option)) {//playlists_option
-            searchTerm();
-            return true;
-        }
-                 */
-
-            });
+            leftDrawerPlaylist.setMenu(menuItemsArray);
             LinearLayout ll = ((LinearLayout) findViewById(R.id.time_layout));
             ll.setOnClickListener(v -> playPauseAll());//android:id="@+id/song_title"
             ll = ((LinearLayout) findViewById(R.id.song_title));

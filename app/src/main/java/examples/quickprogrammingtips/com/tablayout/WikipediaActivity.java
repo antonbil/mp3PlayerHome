@@ -8,18 +8,22 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class WikipediaActivity  extends Activity {
-    private ListView drawerListRight;
     private LeftDrawerPlaylist leftDrawerPlaylist;
+    private WikipediaActivity getThis;
+    private WebView webView;
+    private String searchString;
 
     //private WebView webView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try{
+            getThis =this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wikipedia);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -27,39 +31,60 @@ public class WikipediaActivity  extends Activity {
         Bundle extras = getIntent().getExtras();
 
             try{
+
+                ArrayList<String> menuItemsArray = new ArrayList<String>(
+                        Arrays.asList("Settings",
+                                "sep","Album", "Band", "Artist","sep","Close","sep"  ));
                 leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                 R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
             @Override
             public void performTouchEvent(MotionEvent event){
-                drawerListRight.onTouchEvent(event);
+
             }
             @Override
             public void performClickOnRightDrawer(){
-                drawerListRight.performClick();
+
             }
-        };
-        drawerListRight = (ListView) findViewById(R.id.DrawerListRight);
-        String[] osArray = { "Android", "iOS", "Windows", "OS X", "Linux" };
-        ArrayAdapter<String> drawerListRightAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
-        drawerListRight.setAdapter(drawerListRightAdapter);
-        drawerListRight.setOnItemClickListener((parent, view, position, id) -> {
-            Log.v("samba","Select"+position);
-        });
+
+                    @Override
+                    protected void doMenuAction(int position) {
+                        String s = menuItemsArray.get(position);
+                        if (s.startsWith("http")){
+                            webView.loadUrl(s);
+                        }else
+                        switch (s) {
+                            case "Settings":
+                                MainActivity.getThis.doSettings();
+                                break;
+                            case "Album":
+                            case "Band":
+                            case "Artist":
+                                webView.loadUrl("https://en.m.wikipedia.org/wiki/" + searchString + " (" + s+")");
+                                break;
+                            case "Close":
+                                getThis.finish();
+                                break;
+                        }
+
+                    }
+                };
+                leftDrawerPlaylist.setMenu(menuItemsArray);
 
         }catch (Exception e){}
-        final String   searchString= extras.getString("searchitem");
+        searchString= extras.getString("searchitem");
         /*try {
             getActionBar().setTitle("Wiki " + searchString);
         }catch (Exception e){}
         try {
             getSupportActionBar().setTitle("Wiki "+searchString);  // provide compatibility to all the versions
         }catch (Exception e){}*/
-        final WebView webView = (WebView) findViewById(R.id.webView1);
+        webView = (WebView) findViewById(R.id.webView1);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl("https://en.m.wikipedia.org/wiki/"+searchString);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                leftDrawerPlaylist.itemsArray.add(url);
                 view.loadUrl(url);
                 return true;
             }

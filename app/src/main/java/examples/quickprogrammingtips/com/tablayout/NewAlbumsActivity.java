@@ -23,12 +23,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class NewAlbumsActivity extends Activity  {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
     static Activity getThis;
     public ListAdapter customAdapter;
-    private ListView drawerListRight;
     private LeftDrawerPlaylist leftDrawerPlaylist;
 
     @Override
@@ -63,24 +63,33 @@ public class NewAlbumsActivity extends Activity  {
             ((ImageView) findViewById(R.id.thumbnail_top)).setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
             //Log.v("samba","3a");
 
+            ArrayList<String> menuItemsArray = new ArrayList<String>(
+                    Arrays.asList("Settings",
+                            "sep","Android", "iOS", "Windows", "OS X", "Linux" ,"sep","Close" ));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                 R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
             @Override
             public void performTouchEvent(MotionEvent event){
-                drawerListRight.onTouchEvent(event);
+
             }
             @Override
             public void performClickOnRightDrawer(){
-                drawerListRight.performClick();
+
             }
-        };
-            drawerListRight = (ListView) findViewById(R.id.DrawerListRight);
-            String[] osArray = { "Android", "iOS", "Windows", "OS X", "Linux" };
-            ArrayAdapter<String> drawerListRightAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
-            drawerListRight.setAdapter(drawerListRightAdapter);
-            drawerListRight.setOnItemClickListener((parent, view, position, id) -> {
-                Log.v("samba","Select"+position);
-            });
+
+                @Override
+                protected void doMenuAction(int position) {
+                    switch (menuItemsArray.get(position)) {
+                        case "Settings":
+                            MainActivity.getThis.doSettings();
+                            break;
+                        case "Close":
+                            getThis.finish();
+                            break;
+                    }
+                }
+            };
+            leftDrawerPlaylist.setMenu(menuItemsArray);
 
          customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         final ProgressDialog loadingdialog;

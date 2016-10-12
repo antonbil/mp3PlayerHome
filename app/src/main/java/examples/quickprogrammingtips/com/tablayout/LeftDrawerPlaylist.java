@@ -46,6 +46,9 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     private TextView titleField;
     private TextView artistField;
     private ImageView imageField;
+    private int position=-1;
+    private ListView drawerListRight;
+    public ArrayList<String> itemsArray;
 
     protected void onStop() {
         for (int i=MainActivity.headers.size()-1;i>=0;i--){
@@ -85,6 +88,8 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
 
             if (drawerActive) {
                 performTouchEvent(event);
+                if (drawerListRight!=null)
+                drawerListRight.onTouchEvent(event);
                 //
                 switch (event.getAction() & MotionEvent.ACTION_MASK)
                 {
@@ -98,6 +103,16 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                                 mDrawerLayout.closeDrawers();
                             } else {
                                 mDrawerLayout.closeDrawers();
+                                /*final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //Do something after 100ms
+                                        performClickOnRightDrawer();
+                                    }
+                                }, 2000);*/
+                                if (drawerListRight!=null)
+                                drawerListRight.performClick();
                                 performClickOnRightDrawer();
                                 shouldClick = false;
                                 return true;
@@ -175,6 +190,16 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                 R.string.hello_world
         ) {
 
+            @Override
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                if (position>-1){
+                    doMenuAction(position);
+                    position=-1;
+                }
+                // Do whatever you want here
+            }
+            @Override
             public void onDrawerOpened(View drawerView) {
                 spotifyVisible=MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING;
                 mpdListview.setVisibility(View.GONE);
@@ -202,6 +227,9 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
+
+    protected abstract void doMenuAction(int position);
+
     @Override
     public void setLogo(Bitmap logo) {
         imageField.setImageBitmap(logo);
@@ -232,4 +260,20 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
 
     }
 
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public void setMenu(ArrayList<String> itemsArray) {
+        this.itemsArray=itemsArray;
+        drawerListRight = (ListView) activity.findViewById(R.id.DrawerListRight);
+        //ArrayAdapter<String> drawerListRightAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        MenuAdapter menuAdapter=new MenuAdapter(activity,itemsArray);
+        drawerListRight.setAdapter(menuAdapter);
+        drawerListRight.setOnItemClickListener((parent, view, position, id) -> {
+            Log.v("samba","Select"+position);
+            setPosition(position);
+        });
+
+    }
 }

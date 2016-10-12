@@ -32,6 +32,11 @@ public class WebActivity  extends Activity {
             public void performClickOnRightDrawer(){
                 drawerListRight.performClick();
             }
+
+            @Override
+            protected void doMenuAction(int position) {
+
+            }
         };
         drawerListRight = (ListView) findViewById(R.id.DrawerListRight);
         String[] osArray = { "Android", "iOS", "Windows", "OS X", "Linux" };
