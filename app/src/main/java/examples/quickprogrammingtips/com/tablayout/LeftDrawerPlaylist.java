@@ -105,25 +105,17 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                                 mDrawerLayout.closeDrawers();
                             } else {
                                 try{
-                                /*final Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //Do something after 100ms
-                                        performClickOnRightDrawer();
-                                    }
-                                }, 2000);*/
                                 if (drawerListRight!=null)
                                 drawerListRight.performClick();
                                 performClickOnRightDrawer();
                                 shouldClick = false;
                                 if (position>=0 &&(!(itemsArray.get(position).equals("sep")))&&itemsArray.get(position).length()>0) {
                                     Log.v("samba","close drawers");
-                                    mDrawerLayout.closeDrawers();
-                                    return true;
+                                    //mDrawerLayout.closeDrawers();
+                                    //return true;
                                 } else {
                                     Log.v("samba","item<0");
-                                    return false;
+                                    return true;
                                 }
                             }catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
                             }
@@ -136,7 +128,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                     case MotionEvent.ACTION_MOVE:
                         break;
                 }
-                return false;
+                return true;
             } else {
                 //Log.v("samba", "no event defined for push");
             }
