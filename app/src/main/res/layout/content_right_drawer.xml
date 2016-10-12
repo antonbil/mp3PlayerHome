@@ -62,6 +62,7 @@
             android:text="PgPlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical|left"
             android:textColor="@android:color/holo_green_dark"
             android:layout_weight="1" />
         <ImageView
@@ -74,7 +75,7 @@
             android:maxHeight="42dp"
             android:maxWidth="42dp"
             android:scaleType="fitCenter"
-            android:layout_marginLeft="3dp"
+
             app:srcCompat="@drawable/swan1"
             android:layout_weight="1" />
     </LinearLayout>

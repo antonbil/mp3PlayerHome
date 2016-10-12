@@ -30,6 +30,7 @@ public class NewAlbumsActivity extends Activity  {
     static Activity getThis;
     public ListAdapter customAdapter;
     private LeftDrawerPlaylist leftDrawerPlaylist;
+    private ProgressDialog loadingdialog;
 
     @Override
     protected void onStop() {
@@ -52,6 +53,7 @@ public class NewAlbumsActivity extends Activity  {
         try{
         super.onCreate(savedInstanceState);
             //Log.v("samba","1a");
+            //Log.v("samba","5a");
         getThis=this;
             Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
                     MainActivity.class));
@@ -93,10 +95,8 @@ public class NewAlbumsActivity extends Activity  {
             };
             leftDrawerPlaylist.setMenu(menuItemsArray);
 
+            loadingdialog = ProgressDialog.show(this,"","Loading, please wait",true);
          customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
-        final ProgressDialog loadingdialog;
-            //Log.v("samba","5a");
-        loadingdialog = ProgressDialog.show(this,"","Loading, please wait",true);
         Thread task = new Thread()
         {
             @Override

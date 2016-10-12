@@ -34,7 +34,7 @@ public class WikipediaActivity  extends Activity {
 
                 ArrayList<String> menuItemsArray = new ArrayList<String>(
                         Arrays.asList("Settings",
-                                "sep","Album", "Band", "Artist","sep","Close","sep"  ));
+                                "sep","Album", "Band", "Artist","sep","Play-Dialog","sep","Close","sep"  ));
                 leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                 R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
             @Override
@@ -60,6 +60,9 @@ public class WikipediaActivity  extends Activity {
                             case "Band":
                             case "Artist":
                                 webView.loadUrl("https://en.m.wikipedia.org/wiki/" + searchString + " (" + s+")");
+                                break;
+                            case "Play-Dialog":
+                                SpotifyFragment.showPlayMenu(getThis);
                                 break;
                             case "Close":
                                 getThis.finish();
