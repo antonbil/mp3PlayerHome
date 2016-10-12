@@ -4,39 +4,8 @@
     android:layout_width="match_parent"
     android:clickable="true"
     android:layout_height="match_parent">
+    <include layout="@layout/content_right_drawer" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:orientation="vertical" >
-
-        <TextView
-            android:text="Erboven"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView" />
-
-        <ListView
-
-            android:id="@+id/DrawerListRight"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:clickable="true"
-            android:choiceMode="singleChoice"
-            android:scrollbarStyle="insideOverlay"
-
-            android:fadingEdgeLength="16dip"
-
-            android:dividerHeight="3dp"
- />
-
-        <TextView
-            android:text="Eronder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView2" />
-    </LinearLayout>
     <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">

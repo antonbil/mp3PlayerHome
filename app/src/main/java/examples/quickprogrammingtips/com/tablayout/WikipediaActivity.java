@@ -84,7 +84,7 @@ public class WikipediaActivity  extends Activity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                leftDrawerPlaylist.itemsArray.add(url);
+                leftDrawerPlaylist.addItem(url);
                 view.loadUrl(url);
                 return true;
             }

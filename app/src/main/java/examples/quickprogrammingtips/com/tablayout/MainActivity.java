@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //Log.d("samba", "Text:5");
             ArrayList<String> menuItemsArray = new ArrayList<String>(
                     Arrays.asList("Settings",
-                            "sep","Search mpd", "Search album","sep", "New albums categories" , "Dutch album top 100", "Spotify Album Shortcuts", "sep","Volume" ));
+                            "sep","Search mpd", "Search album","sep", "New albums categories" , "Dutch album top 100", "Spotify Album Shortcuts", "sep","Volume", "sep","Close" ));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                     R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
                 @Override
@@ -222,7 +222,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         case "Volume":
                             setVolume(getThis);
                             break;
-
+                        case "Close":
+                            getThis.finish();
+                            break;
                     }
                 }
             };
@@ -470,7 +472,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 SpotifyFragment.refreshPlaylistFromSpotify(1, albumAdapter, MainActivity.getThis, albumList, albumTracks);
                 LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
                 final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
-                fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(MainActivity.getThis, viewHeader));
+                fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(MainActivity.getThis));
 
             }
         };

@@ -49,6 +49,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     private int position=-1;
     private ListView drawerListRight;
     public ArrayList<String> itemsArray;
+    private MenuAdapter menuAdapter;
 
     protected void onStop() {
         for (int i=MainActivity.headers.size()-1;i>=0;i--){
@@ -100,9 +101,10 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                     case MotionEvent.ACTION_UP:
                         if (shouldClick) {
                             if ((int)event.getX()>xcoord+100) {
+                                Log.v("samba","close drawers100");
                                 mDrawerLayout.closeDrawers();
                             } else {
-                                mDrawerLayout.closeDrawers();
+                                try{
                                 /*final Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
                                     @Override
@@ -115,7 +117,15 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                                 drawerListRight.performClick();
                                 performClickOnRightDrawer();
                                 shouldClick = false;
-                                return true;
+                                if (position>=0 &&(!(itemsArray.get(position).equals("sep")))&&itemsArray.get(position).length()>0) {
+                                    Log.v("samba","close drawers");
+                                    mDrawerLayout.closeDrawers();
+                                    return true;
+                                } else {
+                                    Log.v("samba","item<0");
+                                    return false;
+                                }
+                            }catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
                             }
                         }
                         break;
@@ -268,12 +278,23 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
         this.itemsArray=itemsArray;
         drawerListRight = (ListView) activity.findViewById(R.id.DrawerListRight);
         //ArrayAdapter<String> drawerListRightAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
-        MenuAdapter menuAdapter=new MenuAdapter(activity,itemsArray);
+        menuAdapter = new MenuAdapter(activity,itemsArray);
         drawerListRight.setAdapter(menuAdapter);
         drawerListRight.setOnItemClickListener((parent, view, position, id) -> {
-            Log.v("samba","Select"+position);
-            setPosition(position);
+            if (!(itemsArray.get(position).equals("sep"))&&itemsArray.get(position).length()>0) {
+                shouldClick = false;
+                setPosition(position);
+                mDrawerLayout.closeDrawers();
+                Log.v("samba","Select"+position+itemsArray.get(position));
+            } else{
+                Log.v("samba","NOT Select"+position);
+            }
         });
 
+    }
+
+    public void addItem(String url) {
+        itemsArray.add(url);
+        menuAdapter.notifyDataSetChanged();
     }
 }

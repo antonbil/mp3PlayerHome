@@ -59,13 +59,12 @@ public class NewAlbumsActivity extends Activity  {
             //Log.v("samba","2a");
         final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifylist);
-        fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
-            ((ImageView) findViewById(R.id.thumbnail_top)).setOnClickListener(view -> SpotifyFragment.showPlayMenu(this,fab));
+        fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this));
+            ((ImageView) findViewById(R.id.thumbnail_top)).setOnClickListener(view -> SpotifyFragment.showPlayMenu(this));
             //Log.v("samba","3a");
-
             ArrayList<String> menuItemsArray = new ArrayList<String>(
                     Arrays.asList("Settings",
-                            "sep","Android", "iOS", "Windows", "OS X", "Linux" ,"sep","Close" ));
+                            "sep","Play-Dialog","sep","Close" ));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                 R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
             @Override
@@ -82,6 +81,9 @@ public class NewAlbumsActivity extends Activity  {
                     switch (menuItemsArray.get(position)) {
                         case "Settings":
                             MainActivity.getThis.doSettings();
+                            break;
+                        case "Play-Dialog":
+                            SpotifyFragment.showPlayMenu(getThis);
                             break;
                         case "Close":
                             getThis.finish();
@@ -198,7 +200,7 @@ public class NewAlbumsActivity extends Activity  {
 
                                 }else
                                 if (item.getTitle().toString().equals("play")) {
-                                    SpotifyFragment.showPlayMenu(getThis,image);
+                                    SpotifyFragment.showPlayMenu(getThis);
                                 }else
                                 if (item.getTitle().toString().equals("wikipedia")) {
                                     MainActivity.startWikipediaPage(items.get(position).artist);

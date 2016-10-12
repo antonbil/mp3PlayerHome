@@ -44,7 +44,8 @@ public class MenuAdapter extends ArrayAdapter<String> {
             listItem.setHeight(20);
         }
         else {
-            listItem.setHeight(100);
+            listItem.setHeight(160);
+            user="   "+user;
         }
         listItem.setText(user);
         // Return the completed view to render on screen

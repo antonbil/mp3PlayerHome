@@ -2778,7 +2778,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
 
-    public static void showPlayMenu(final Activity getThis1,View view) {
+    public static void showPlayMenu(final Activity getThis1) {
 
         LayoutInflater inflater = getThis1.getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.play_spotify, null);
