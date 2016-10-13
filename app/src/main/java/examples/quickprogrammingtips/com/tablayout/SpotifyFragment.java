@@ -762,8 +762,12 @@ public class SpotifyFragment extends Fragment implements
                 @Override
                 public void executeUrl(String s){
                     //todo hier het laatste deel van de url afslopen!?
-                    int index=url.lastIndexOf('/');
-                    s=url.substring(0,index)+s.replace("http://","");
+                    String hurl=url;
+                    while (hurl.endsWith("/"))hurl=hurl.substring(0,hurl.length()-1);
+                    int index=hurl.lastIndexOf('/');
+                    hurl = hurl.substring(0, index);
+                    if (!hurl.endsWith("/"))hurl=hurl+"/";
+                    s= hurl +s.replace("http://","");
                     Log.v("samba","redraw url:"+s);
                     showSpotifyAlbumlistDirectory(s,previousDirectoryListing);
                 };

@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
             //Log.d("samba", "Text:5");
             ArrayList<String> menuItemsArray = new ArrayList<String>(
-                    Arrays.asList("Settings",
+                    Arrays.asList("Settings","Large Display",
                             "sep","Search mpd", "Search album","sep", "New albums categories" , "Dutch album top 100", "Spotify Album Shortcuts", "sep","Volume", "sep","Close" ));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                     R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
@@ -203,6 +203,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     switch (menuItemsArray.get(position)) {
                         case "Settings":
                             doSettings();
+                            break;
+                        case "Large Display":
+                            displayLargeTime();
                             break;
                         case "Search mpd":
                             searchTerm();
@@ -237,8 +240,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 callSpotify(currentArtist);
             });
             ll.setOnLongClickListener(v -> {
-                MainScreenDialog msDialog = new MainScreenDialog(getThis);
-                msDialog.show();
+                displayLargeTime();
                 return true;
             });
             connectListenersToThumbnail();
@@ -376,6 +378,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
 
         }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
+    }
+
+    private void displayLargeTime() {
+        MainScreenDialog msDialog = new MainScreenDialog(getThis);
+        msDialog.show();
     }
 
     @NonNull

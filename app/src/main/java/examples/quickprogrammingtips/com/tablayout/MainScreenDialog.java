@@ -2,28 +2,44 @@ package examples.quickprogrammingtips.com.tablayout;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 /**
  * Created by anton on 24-2-16.
  */
-public class MainScreenDialog extends Dialog  {
+public class MainScreenDialog extends Dialog implements HeaderSongInterface {
     Dialog th;
-    Timer timer;
     TextView time;
     TextView totaltime;
     MainActivity getThis;
+    private ImageView image;
+    private TextView tvName;
+    private TextView artist;
+
     public MainScreenDialog(Context context) {
         super(context);
+    }
+    @Override
+    public void onStop() {
+        try{
+            for (int i=MainActivity.headers.size()-1;i>=0;i--){
+                if (MainActivity.headers.get(i).equals(this)) {
+                    MainActivity.headers.remove(i);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+        super.onStop();
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,45 +61,29 @@ public class MainScreenDialog extends Dialog  {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timer.cancel();
                 th.dismiss();
             }
         });
+        image = (ImageView) findViewById(R.id.mainscreenthumbnail_top);
+        tvName = (TextView) findViewById(R.id.mainscreentitle_top);
+        artist = (TextView) findViewById(R.id.mainscreenartist_top);
 
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                try {
-
-                    getThis.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            MainActivity.ViewHolder vh = getThis.viewHolder;
-                            ImageView image = (ImageView) findViewById(R.id.mainscreenthumbnail_top);
-                            image.setImageBitmap(getThis.albumBitmap);
-                            TextView tvName = (TextView) findViewById(R.id.mainscreentitle_top);
-
-                            tvName.setText(vh.title);
-
-                            time.setText(vh.time);
-                            totaltime.setText(vh.totaltime);
-                            TextView artist = (TextView) findViewById(R.id.mainscreenartist_top);
-                            artist.setText(vh.album);
-                        }
-                    });
-
-                } catch (Exception e) {
-
-                }
-            }
-
-
-        }, 0, 1000);//Update text every second
+        MainActivity.headers.add(this);
 
     }
 
 
+    @Override
+    public void setLogo(Bitmap logo) {
+        image.setImageBitmap(logo);
+    }
 
+    @Override
+    public void setData(String time1, String totalTime, String title, String artist1) {
+        tvName.setText(title);
+
+        time.setText(time1);
+        totaltime.setText(totalTime);
+        artist.setText(artist1);
+    }
 }
