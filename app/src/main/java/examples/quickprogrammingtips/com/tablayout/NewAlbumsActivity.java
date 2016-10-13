@@ -102,7 +102,7 @@ public class NewAlbumsActivity extends Activity  {
             };
             leftDrawerPlaylist.setMenu(menuItemsArray);
 
-            loadingdialog = ProgressDialog.show(this,"","Loading, please wait",true);
+            loadingdialog = ProgressDialog.show(this,"","Loading"+getText()+", please wait",true);
          customAdapter = new ListAdapter(this, R.layout.item_newalbum, newAlbums);
         Thread task = new Thread()
         {
@@ -113,10 +113,10 @@ public class NewAlbumsActivity extends Activity  {
                 yourListView.setAdapter(customAdapter);
                 //Log.v("samba","8a");
                 try{
+                    generateList(newAlbums);
                     //Log.v("samba","9a");
                     runOnUiThread(() -> {
                         try{
-                            generateList(newAlbums);
                             loadingdialog.dismiss();
                             //Log.v("samba","10a");
                             customAdapter.notifyDataSetChanged();
@@ -132,6 +132,10 @@ public class NewAlbumsActivity extends Activity  {
             //Log.v("samba","6a");
         task.start();
     }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
+    }
+
+    protected String getText(){
+        return "";
     }
 
     protected void doAction(String s) {

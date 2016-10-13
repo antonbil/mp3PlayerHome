@@ -23,4 +23,8 @@ public abstract class FillListviewWithValues {
     }
 
     public void executeUrl(String s){};
+
+    public String getText() {
+        return "";
+    }
 }

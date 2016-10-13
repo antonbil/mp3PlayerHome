@@ -20,5 +20,13 @@ public     class NewAlbumsActivityElectronic extends NewAlbumsActivity {
         SpotifyFragment.getThis.fillListviewWithValues.addMenuItems(menuItemsArray);
 
     }
+    @Override
+    protected String getText(){
+        String text = SpotifyFragment.getThis.fillListviewWithValues.getText();
+        if (text.length()>0)
+        text = " " + text + " ";
+        return text;
+    }
+
 }
 

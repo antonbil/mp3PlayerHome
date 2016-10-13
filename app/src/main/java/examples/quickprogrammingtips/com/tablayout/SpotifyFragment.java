@@ -904,6 +904,10 @@ public class SpotifyFragment extends Fragment implements
                     spotifyNewMusic(s);
                 };
                 @Override
+                public String getText(){
+                    return cat;
+                }
+                @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
 
                     //String url = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
