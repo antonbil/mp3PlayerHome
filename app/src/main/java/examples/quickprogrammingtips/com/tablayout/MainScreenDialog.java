@@ -30,12 +30,7 @@ public class MainScreenDialog extends Dialog implements HeaderSongInterface {
     @Override
     public void onStop() {
         try{
-            for (int i=MainActivity.headers.size()-1;i>=0;i--){
-                if (MainActivity.headers.get(i).equals(this)) {
-                    MainActivity.headers.remove(i);
-                    break;
-                }
-            }
+            MainActivity.headers.removeItem(this);
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }

@@ -68,6 +68,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAdapter;
 import examples.quickprogrammingtips.com.tablayout.adapters.PlaylistAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.File;
+import examples.quickprogrammingtips.com.tablayout.model.HeaderHandler;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import examples.quickprogrammingtips.com.tablayout.model.Server;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static int playingStatus= MPD_PLAYING;
     private boolean footerVisible = false;
     private Logic logic;
-    public static ArrayList<HeaderSongInterface>headers =new ArrayList();
+    public static HeaderHandler headers;
 
     public Handler updateBarHandler;
     private int timerTime = 0;
@@ -146,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //Log.d("samba", "Text:1");
             //headers.add(this);
             super.onCreate(savedInstanceState);
+            headers=new HeaderHandler();
             Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
                     MainActivity.class));
             trimCache(this);

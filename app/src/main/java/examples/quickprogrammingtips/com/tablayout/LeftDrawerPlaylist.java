@@ -27,7 +27,6 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     private  int newalbumsdrawer_list;
     private  int newalbumsmpddrawer_list;
     private  int fabswapplaylist;
-    private  MpdInterface mpdInterface;
     private Activity activity;
     private ListView spotifyListview;
     private ListView mpdListview;
@@ -52,12 +51,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     private MenuAdapter menuAdapter;
 
     protected void onStop() {
-        for (int i=MainActivity.headers.size()-1;i>=0;i--){
-            if (MainActivity.headers.get(i).equals(this)) {
-                MainActivity.headers.remove(i);
-                break;
-            }
-        }
+        MainActivity.headers.removeItem(this);
     }
 
     public LeftDrawerPlaylist(Activity activity, /*MpdInterface mpdInterface,*/ int newalbumsdrawer_layout, int newalbumsdrawer_list, int newalbumsmpddrawer_list, int fabswapplaylist) {
@@ -65,7 +59,6 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
         this.newalbumsdrawer_list=newalbumsdrawer_list;
         this.newalbumsmpddrawer_list=newalbumsmpddrawer_list;
         this.fabswapplaylist=fabswapplaylist;
-        this.mpdInterface=mpdInterface;
         albumList = new ArrayList<>();
         albumTracks = new ArrayList<>();
         albumAdapter = MainActivity.getTracksAdapter(mDrawerLayout, spotifyListview, albumList, albumTracks);
@@ -78,7 +71,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
         spotifyListview.setAdapter(albumAdapter);
         SpotifyFragment.checkAddress();
         mpdListview.setOnItemClickListener((parent, view, position, id) -> {
-            Log.v("samba","Play:"+position);
+            //Log.v("samba","Play:"+position);
             MainActivity.getThis.getLogic().getMpc().play(position);
             updatePlaylistMpd(adapterMpd);
         });
@@ -101,7 +94,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                     case MotionEvent.ACTION_UP:
                         if (shouldClick) {
                             if ((int)event.getX()>xcoord+100) {
-                                Log.v("samba","close drawers100");
+                                //Log.v("samba","close drawers100");
                                 mDrawerLayout.closeDrawers();
                             } else {
                                 try{
@@ -110,11 +103,11 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                                 performClickOnRightDrawer();
                                 shouldClick = false;
                                 if (position>=0 &&(!(itemsArray.get(position).equals("sep")))&&itemsArray.get(position).length()>0) {
-                                    Log.v("samba","close drawers");
+                                    //Log.v("samba","close drawers");
                                     //mDrawerLayout.closeDrawers();
                                     //return true;
                                 } else {
-                                    Log.v("samba","item<0");
+                                    //Log.v("samba","item<0");
                                     return true;
                                 }
                             }catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
@@ -277,9 +270,9 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                 shouldClick = false;
                 setPosition(position);
                 mDrawerLayout.closeDrawers();
-                Log.v("samba","Select"+position+itemsArray.get(position));
+                //Log.v("samba","Select"+position+itemsArray.get(position));
             } else{
-                Log.v("samba","NOT Select"+position);
+                //Log.v("samba","NOT Select"+position);
             }
         });
 

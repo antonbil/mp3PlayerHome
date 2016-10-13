@@ -761,14 +761,12 @@ public class SpotifyFragment extends Fragment implements
                 }
                 @Override
                 public void executeUrl(String s){
-                    //todo hier het laatste deel van de url afslopen!?
                     String hurl=url;
                     while (hurl.endsWith("/"))hurl=hurl.substring(0,hurl.length()-1);
                     int index=hurl.lastIndexOf('/');
                     hurl = hurl.substring(0, index);
                     if (!hurl.endsWith("/"))hurl=hurl+"/";
                     s= hurl +s.replace("http://","");
-                    Log.v("samba","redraw url:"+s);
                     showSpotifyAlbumlistDirectory(s,previousDirectoryListing);
                 };
 
@@ -882,68 +880,87 @@ public class SpotifyFragment extends Fragment implements
         builderSingle.setAdapter(
                 arrayAdapter,
                 (dialog, which) -> {
-                    try {
-                        final String cat = arrayAdapter.getItem(which);//title1.replace("new albums ", "");
-                        fillListviewWithValues = new FillListviewWithValues() {
-
-                            @Override
-                            public void generateList(ArrayList<NewAlbum> newAlbums) {
-
-                                //String url = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
-
-                                Favorite.NEWALBUM=Favorite.getCategoryId(cat);
-
-                                Document doc = null;
-                                try {
-                                    //doc = Jsoup.connect(url).get();
-                                    String temp1 = getContentsOfAddress("http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat).replace("<br>", "$$$").replace("<br />", "$$$"); //$$$ instead <br>
-                                    doc = Jsoup.parse(temp1); //Parse again
-                                } catch (IOException e) {
-                                    Log.v("samba", Log.getStackTraceString(e));
-                                }
-
-                                Elements trackelements = doc.getElementsByClass("album");
-                                for (Element element : trackelements) {
-                                    String image1 = "http://www.spotifynewmusic.com/" + element.getElementsByTag("img").get(0).attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
-                                    Elements links = element.getElementsByClass("play").select("a[href]"); // a with href
-                                    String s = links.get(0).attr("href");
-                                    //Log.v("samba", s);
-
-                                    String div = element.children().get(1).text();
-                                    //Log.v("samba", div);
-                                    try {
-                                        String[] list = div.replace("$$$", ";").split(";");
-                                        String artist = list[0];
-                                        String album = "";
-                                        if (list.length > 1)
-                                            album = list[1];
-                                        //ids.add(artist + "-" + album);
-                                        newAlbums.add(new NewAlbum(s, artist, album, image1));
-                                    } catch (Exception e) {
-                                        Log.v("samba", Log.getStackTraceString(e));
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void addToFavorites(NewAlbum newAlbum) {
-                                newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, cat, newAlbum.getImage());
-                                generateLists();
-                            }
-
-                        };
-
-
-                        {
-                            Intent intent = new Intent(getThis.getActivity(), NewAlbumsActivityElectronic.class);
-                            startActivity(intent);
-                        }
-                        // }
-                    } catch (Exception e) {
-                        Log.v("samba", Log.getStackTraceString(e));
-                    }
+                    final String cat = arrayAdapter.getItem(which);//title1.replace("new albums ", "");
+                    spotifyNewMusic(cat);
                 });
         builderSingle.show();
+    }
+
+    public void spotifyNewMusic(final String cat) {
+        try {
+            fillListviewWithValues = new FillListviewWithValues() {
+
+                @Override
+                protected void addMenuItems(ArrayList<String> menuItems){
+                    ArrayList<String> menuItemsadd=new ArrayList<String>();
+                    for (String cat : CATEGORY_IDS) {
+                        menuItemsadd.add("http://"+cat);
+                    }
+                    menuItems.addAll(menuItemsadd);
+                }
+                @Override
+                public void executeUrl(String s){
+                    s= s.replace("http://","");
+                    spotifyNewMusic(s);
+                };
+                @Override
+                public void generateList(ArrayList<NewAlbum> newAlbums) {
+
+                    //String url = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
+
+                    Favorite.NEWALBUM=Favorite.getCategoryId(cat);
+
+                    Document doc = null;
+                    try {
+                        //doc = Jsoup.connect(url).get();
+                        String address = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
+                        //Log.v("samba", "category "+cat+" address:"+address);
+                        String temp1 = getContentsOfAddress(address).replace("<br>", "$$$").replace("<br />", "$$$"); //$$$ instead <br>
+                        doc = Jsoup.parse(temp1); //Parse again
+                    } catch (IOException e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+
+                    Elements trackelements = doc.getElementsByClass("album");
+                    for (Element element : trackelements) {
+                        String image1 = "http://www.spotifynewmusic.com/" + element.getElementsByTag("img").get(0).attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
+                        Elements links = element.getElementsByClass("play").select("a[href]"); // a with href
+                        String s = links.get(0).attr("href");
+                        //Log.v("samba", s);
+
+                        String div = element.children().get(1).text();
+                        //Log.v("samba", div);
+                        try {
+                            String[] list = div.replace("$$$", ";").split(";");
+                            String artist = list[0];
+                            String album = "";
+                            if (list.length > 1)
+                                album = list[1];
+                            //ids.add(artist + "-" + album);
+                            newAlbums.add(new NewAlbum(s, artist, album, image1));
+                        } catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+                        }
+                    }
+                }
+
+                @Override
+                public void addToFavorites(NewAlbum newAlbum) {
+                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, cat, newAlbum.getImage());
+                    generateLists();
+                }
+
+            };
+
+
+            {
+                Intent intent = new Intent(getThis.getActivity(), NewAlbumsActivityElectronic.class);
+                startActivity(intent);
+            }
+            // }
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
     }
 
     public static PlanetAdapter setAdapterForMpd(boolean displayMpd) {
@@ -2310,7 +2327,7 @@ public class SpotifyFragment extends Fragment implements
                 }
             }.invoke();
         else
-            Toast.makeText(activityThis, "aartist not defined",
+            Toast.makeText(activityThis, "artist not defined",
                     Toast.LENGTH_SHORT).show();
     }
 
