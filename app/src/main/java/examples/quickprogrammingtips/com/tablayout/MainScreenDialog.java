@@ -82,11 +82,6 @@ public class MainScreenDialog extends Dialog  {
 
         }, 0, 1000);//Update text every second
 
-        /*yes = (Button) findViewById(R.id.btn_yes);
-        no = (Button) findViewById(R.id.btn_no);
-        yes.setOnClickListener(this);
-        no.setOnClickListener(this);*/
-
     }
 
 
