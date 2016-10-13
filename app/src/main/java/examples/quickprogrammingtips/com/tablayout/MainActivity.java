@@ -232,10 +232,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             LinearLayout ll = ((LinearLayout) findViewById(R.id.time_layout));
             ll.setOnClickListener(v -> playPauseAll());//android:id="@+id/song_title"
             ll = ((LinearLayout) findViewById(R.id.song_title));
-            /*ll.setOnClickListener(v -> {
-                mDrawerLayout.closeDrawer(GravityCompat.START, false);
+            ll.setOnClickListener(v -> {
+                //mDrawerLayout.closeDrawer(GravityCompat.START, false);
                 callSpotify(currentArtist);
-            });*/
+            });
             ll.setOnLongClickListener(v -> {
                 MainScreenDialog msDialog = new MainScreenDialog(getThis);
                 msDialog.show();
