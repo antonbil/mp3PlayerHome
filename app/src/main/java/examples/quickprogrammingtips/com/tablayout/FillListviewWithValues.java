@@ -19,5 +19,8 @@ public abstract class FillListviewWithValues {
     public boolean processChoice(String s, NewAlbumsActivity.ListAdapter listAdapter, ArrayList<NewAlbum> items, int position){
         return false;
     }
+    protected void addMenuItems(ArrayList<String> menuItems){
+    }
 
+    public void executeUrl(String s){};
 }

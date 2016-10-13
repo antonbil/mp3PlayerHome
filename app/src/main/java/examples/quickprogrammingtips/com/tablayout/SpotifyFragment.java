@@ -689,7 +689,7 @@ public class SpotifyFragment extends Fragment implements
         try {
             String url = "http://192.168.2.8/spotify/data";
 
-            showSpotifyAlbumlistDirectory(url);
+            showSpotifyAlbumlistDirectory(url, new ArrayList<String> ());
 
             // }
         } catch (Exception e) {
@@ -698,7 +698,7 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
-    public void showSpotifyAlbumlistDirectory(String url) {
+    public void showSpotifyAlbumlistDirectory(String url,ArrayList<String> previousDirectoryListing) {
         try{
         //DownLoadImageTask.albumPictures=new HashMap<>();
         spotifyShortcutsDoc = null;
@@ -743,7 +743,7 @@ public class SpotifyFragment extends Fragment implements
                     (dialog, which) -> {
                         final String dir = arrayAdapter.getItem(which);
                         //Log.v("samba","show dir "+url + "/" + dir);
-                        showSpotifyAlbumlistDirectory(url + "/" + dir);
+                        showSpotifyAlbumlistDirectory(url + "/" + dir,directoryListing);
                     });
             builderSingle.show();
         } else{
@@ -751,6 +751,19 @@ public class SpotifyFragment extends Fragment implements
            trackelements = spotifyShortcutsDoc.getElementsByClass("spotifyalbum");
             spotifyShortcutsDoc =null;
             fillListviewWithValues = new FillListviewWithValues() {
+
+                @Override
+                protected void addMenuItems(ArrayList<String> menuItems){
+                    ArrayList<String> menuItemsadd=new ArrayList<String>();
+                    for (String item:previousDirectoryListing)
+                        menuItemsadd.add("http://"+item);
+                    menuItems.addAll(menuItemsadd);
+                }
+                @Override
+                public void executeUrl(String s){
+                    s=s.replace("http://",url + "/" + s);
+                    showSpotifyAlbumlistDirectory(s,previousDirectoryListing);
+                };
 
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
@@ -2457,7 +2470,7 @@ public class SpotifyFragment extends Fragment implements
         busyupdateSongInfo=false;
 
         try {
-                if (isPlaying()) {//(speed.doubleValue() > 0) {
+                if (isPlaying()) {
                    if (albumAdapter!=null)
                         playingEngine=1;
                      String[] trid1 = getCurrentTrack();//
@@ -2488,27 +2501,11 @@ public class SpotifyFragment extends Fragment implements
                                 }
                                 albumAdapter.setCurrentItem(currentTrack);
                             } catch (Exception e) {
-                                //busyupdateSongInfo=false;
                                 Log.v("samba", Log.getStackTraceString(e));
                             }
-                            /*
-                                                        switch (MainActivity.getThis.firstTime)
-                            {
 
-                                case 0 :
-                                    albumAdapter.notifyDataSetChanged();
-                                    break;
-                                case SPOTIFY_FIRSTTIME+2 :
-                                    MainActivity.getThis.firstTime=0;
-                                    break;
-                                default:
-                                    MainActivity.getThis.firstTime++;
-                            }
-
-                             */
                             if (changed||(MainActivity.getThis.firstTime)>SPOTIFY_FIRSTTIME+2)//wait for 2 seconds
                             MainActivity.getThis.runOnUiThread(() -> {
-                                //MainActivity.getThis.firstTime=0;
                                 albumAdapter.notifyDataSetChanged();
                             });
                             if ((MainActivity.getThis.firstTime)>=SPOTIFY_FIRSTTIME)
@@ -2530,15 +2527,7 @@ public class SpotifyFragment extends Fragment implements
 
                                     DownLoadImageUrlTask.setAlbumPicture(t.album.id, imageurl);
                                     MainActivity.albumPicturesIds.put(t.album.id, imageurl);
-                            } /*else {
-                                if (MainActivity.albumPictures.containsKey(t.album.id)) {
-                                    final Bitmap b = MainActivity.albumPictures.get(t.album.id);
-                                    for (HeaderSongInterface header : MainActivity.headers) {
-                                        if (header != null)
-                                            header.setLogo(b);
-                                    }
-                                }
-                            }*/
+                            }
                         new DownLoadImageTask() {
                             @Override
                             public void setImage(Bitmap logo) {
@@ -2547,24 +2536,16 @@ public class SpotifyFragment extends Fragment implements
                                         if (header!=null)
                                             header.setLogo(logo);
                                     }
-                                    //image.setImageBitmap(logo);
                                     SpotifyFragment.bitmap = logo;
                                 });
                             }
                         }.execute(MainActivity.albumPicturesIds.get(t.album.id));
 
-                        //hours * 60 * 60 + mins * 60 + secs;
                         currentTime = getTime();
                         artistReturn = t.artists.get(0).name;
                         MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
                         MainActivity.getThis.runOnUiThread(() -> {
-                            //String text = niceTime(currentTime);
-                            //time.setText(text);
-                            //int ttimeint = totalTime;// thours * 60 * 60 + tmins * 60 + tsecs;
-                            //String totalTime = niceTime(ttimeint);
-                            //totaltime.setText(totalTime);
-                            //tvName.setText(t.name);
-                            //artist.setText(t.artists.get(0).name);
+
                             for (HeaderSongInterface header:MainActivity.headers){
                                 if (header!=null)
                                 header.setData(niceTime(currentTime), niceTime(totalTime),t.name, t.artists.get(0).name);

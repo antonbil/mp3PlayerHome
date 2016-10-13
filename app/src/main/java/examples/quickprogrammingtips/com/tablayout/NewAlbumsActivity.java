@@ -31,6 +31,7 @@ public class NewAlbumsActivity extends Activity  {
     public ListAdapter customAdapter;
     private LeftDrawerPlaylist leftDrawerPlaylist;
     private ProgressDialog loadingdialog;
+    protected ArrayList<String> menuItemsArray;
 
     @Override
     protected void onStop() {
@@ -64,9 +65,10 @@ public class NewAlbumsActivity extends Activity  {
         fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this));
             ((ImageView) findViewById(R.id.thumbnail_top)).setOnClickListener(view -> SpotifyFragment.showPlayMenu(this));
             //Log.v("samba","3a");
-            ArrayList<String> menuItemsArray = new ArrayList<String>(
+            menuItemsArray = new ArrayList<String>(
                     Arrays.asList("Settings",
                             "sep","Play-Dialog","sep","Close" ));
+
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                 R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
             @Override
@@ -80,16 +82,21 @@ public class NewAlbumsActivity extends Activity  {
 
                 @Override
                 protected void doMenuAction(int position) {
-                    switch (menuItemsArray.get(position)) {
-                        case "Settings":
-                            MainActivity.getThis.doSettings();
-                            break;
-                        case "Play-Dialog":
-                            SpotifyFragment.showPlayMenu(getThis);
-                            break;
-                        case "Close":
-                            getThis.finish();
-                            break;
+                    String s = menuItemsArray.get(position);
+                    if (s.startsWith("http")){
+                        doAction(s);
+                    }else {
+                        switch (s) {
+                            case "Settings":
+                                MainActivity.getThis.doSettings();
+                                break;
+                            case "Play-Dialog":
+                                SpotifyFragment.showPlayMenu(getThis);
+                                break;
+                            case "Close":
+                                getThis.finish();
+                                break;
+                        }
                     }
                 }
             };
@@ -127,8 +134,9 @@ public class NewAlbumsActivity extends Activity  {
     }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
     }
 
-    private void setRightDrawer() {
+    protected void doAction(String s) {
     }
+
 
     public void generateList(ArrayList<NewAlbum> newAlbums){
 
