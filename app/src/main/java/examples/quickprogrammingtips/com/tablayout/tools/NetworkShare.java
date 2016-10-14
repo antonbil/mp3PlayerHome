@@ -23,6 +23,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -336,6 +337,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                                 }
                             });
                         } catch (Exception e) {
+                             Log.v("samba", Log.getStackTraceString(e));
                             e.printStackTrace();
 
                         }
@@ -349,6 +351,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                         }
                     });
                 } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
                     e.printStackTrace();
                 }
 

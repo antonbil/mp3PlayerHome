@@ -1,11 +1,13 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -19,9 +21,11 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public Bitmap albumBitmap;
     public static boolean filterSpotify;
     public boolean shouldClick=false;
+    private static final int REQUEST_WRITE_STORAGE = 112;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -142,6 +147,22 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode)
+        {
+            case REQUEST_WRITE_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    //reload my activity with permission granted or use the features what required the permission
+                } else
+                {
+                    Toast.makeText(this, "The app was not allowed to write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+    }    @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
             //Log.d("samba", "Text:1");
@@ -151,7 +172,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
                     MainActivity.class));
             trimCache(this);
-            final Intent intent = getIntent();
+            boolean hasPermission = (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+            if (!hasPermission) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_WRITE_STORAGE);
+            }            final Intent intent = getIntent();
             final String action = intent.getAction();
 
             if (Intent.ACTION_VIEW.equals(action)) {
