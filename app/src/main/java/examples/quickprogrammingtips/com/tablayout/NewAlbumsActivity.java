@@ -201,7 +201,7 @@ public class NewAlbumsActivity extends Activity  {
 
                             menu.setOnMenuItemClickListener(item -> {
                                 if (item.getTitle().toString().equals("add album to favorites")) {
-                                    SpotifyFragment.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+                                    MainActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
 
                                 }else
                                 if (item.getTitle().toString().equals("add album")) {
@@ -257,12 +257,12 @@ public class NewAlbumsActivity extends Activity  {
 
          private PopupMenu basicMenu(int position, PopupMenu menu) {
              menu.setOnMenuItemClickListener(item -> {
-                 if (!SpotifyFragment.getThis.fillListviewWithValues.processChoice(item.getTitle().toString(),this,items,position))
+                 if (!MainActivity.getThis.fillListviewWithValues.processChoice(item.getTitle().toString(),this,items,position))
                  if (item.getTitle().toString().equals("add album")) {
                      AddAlbumToPlaylist(position);
                  }else
                  if (item.getTitle().toString().equals("add album to favorites")) {
-                     SpotifyFragment.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+                     MainActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
 
                  }else
                  if (item.getTitle().toString().equals("wikipedia")) {
@@ -271,7 +271,7 @@ public class NewAlbumsActivity extends Activity  {
                  return true;
              });
 
-             ArrayList<String>choices=SpotifyFragment.getThis.fillListviewWithValues.getChoices();
+             ArrayList<String>choices=MainActivity.getThis.fillListviewWithValues.getChoices();
              for (String s:choices){
                  menu.getMenu().add(s);
              }
@@ -285,7 +285,7 @@ public class NewAlbumsActivity extends Activity  {
              String uri = items.get(position).url.replace("spotify:album:", "");
              String prefix="spotify:album:";
              SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
-             SpotifyFragment.refreshPlaylistFromSpotify(1, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.getActivity(), SpotifyFragment.albumList, SpotifyFragment.albumTracks);
+             SpotifyFragment.refreshPlaylistFromSpotify(1, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.getActivity(), SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
          }
      }
     public void processAlbum(NewAlbum album){

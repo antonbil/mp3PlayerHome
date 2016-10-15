@@ -92,7 +92,7 @@ public class ArtistAutoCompleteAdapter extends ArrayAdapter<String> implements F
                         filterResults.count = suggestions.size();
                     }
                     else {
-                        suggestions = SpotifyFragment.searchArtistString;
+                        suggestions = SpotifyFragment.getThis.data.searchArtistString;
                         filterResults.values = suggestions;
                         filterResults.count = suggestions.size();
 

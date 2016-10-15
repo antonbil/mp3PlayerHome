@@ -53,6 +53,9 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.orm.SugarContext;
 
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -110,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static HashMap<String, String> albumPicturesIds = new HashMap<>();
     public String currentArtist;
     public ViewHolder viewHolder = new ViewHolder();
+    public FillListviewWithValues fillListviewWithValues;
+    public Document spotifyShortcutsDoc;
+    public Elements trackelements;
 
 
     public static MainActivity getThis;
@@ -381,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     Log.v("samba", "error setting listeners");
                 }
                 updateDisplay();
-                SpotifyFragment.getOnlyPlaylistFromSpotify(1, SpotifyFragment.albumList, SpotifyFragment.albumTracks);
+                SpotifyFragment.getOnlyPlaylistFromSpotify(1, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
 
             }).start();
             //Log.d("samba", "Text:10");
@@ -819,18 +825,21 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public void doSpotifyAlbumShortcuts() {
-        SpotifyFragment.nextCommand="spotify_album_shortcuts";
-        callSpotifyPlaylist();
+        SpotifyFragment.spotifyAlbumShortcuts();
+        //SpotifyFragment.nextCommand="spotify_album_shortcuts";
+        //callSpotifyPlaylist();
     }
 
     public void doDutchAlbumTop40() {
-        SpotifyFragment.nextCommand="dutch_album_top_100";
-        callSpotifyPlaylist();
+        SpotifyFragment.albumTop100Nl();
+        //SpotifyFragment.nextCommand="dutch_album_top_100";
+        //callSpotifyPlaylist();
     }
 
     public void doNewAlbumsCategories() {
-        SpotifyFragment.nextCommand="new_albums_categories";
-        callSpotifyPlaylist();
+        //SpotifyFragment.nextCommand="new_albums_categories";
+        SpotifyFragment.newAlbumsCategories();
+        //callSpotifyPlaylist();
     }
 
     public void doSettings() {
@@ -1358,8 +1367,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
 
             private void duplicateLists() {
-                SpotifyFragment.albumList = albumList;
-                SpotifyFragment.albumTracks = albumTracks;
+                SpotifyFragment.getThis.data.albumList = albumList;
+                SpotifyFragment.getThis.data.albumTracks = albumTracks;
             }
 
             @Override
@@ -1384,14 +1393,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             @Override
             public void displayArtist(int counter) {
                 mDrawerLayout.closeDrawers();
-                MainActivity.getThis.callSpotify(SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name);
+                MainActivity.getThis.callSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name);
 
 
             }
 
             @Override
             public void displayArtistWikipedia(int counter) {
-                String s = SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name;
+                String s = SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name;
                 MainActivity.startWikipediaPage(s);
             }
 
@@ -1412,7 +1421,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
             @Override
             public void addAlbum(int counter) {
-                SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.tracksPlaylist.get(counter).album.id, SpotifyFragment.tracksPlaylist.get(counter).artists.get(0).name
+                SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.id, SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name
                         , MainActivity.getThis, this, albumsListview);
 
             }
@@ -1472,8 +1481,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         //currentTrack=0;
                         if (SpotifyFragment.getThis!=null){
                         if (SpotifyFragment.getThis.albumAdapter != null)
-                            for (int i = 0; i < SpotifyFragment.tracksPlaylist.size(); i++) {
-                                if (SpotifyFragment.tracksPlaylist.get(i).id.equals(trid)) {
+                            for (int i = 0; i < SpotifyFragment.getThis.data.tracksPlaylist.size(); i++) {
+                                if (SpotifyFragment.getThis.data.tracksPlaylist.get(i).id.equals(trid)) {
                                     if (SpotifyFragment.currentTrack != i)
                                         SpotifyFragment.getThis.albumsListview.setItemChecked(SpotifyFragment.currentTrack, false);
                                     SpotifyFragment.currentTrack = i;

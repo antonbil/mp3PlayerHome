@@ -4,7 +4,20 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     >
-
+    <ListView
+        android:id="@+id/tracks_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:dividerHeight="0dp"
+        android:divider="@null"
+        android:background="#B29090" >
+    </ListView>
+    <LinearLayout
+        android:id="@+id/toplinearlayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        >
     <!--<include layout="@layout/songtitle_layout" />-->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/spotifyscrollviewmiddle"
@@ -87,6 +100,7 @@
             android:fillViewport="true" >
             <include layout="@layout/spotify_header" />
         </ScrollView>
+    </LinearLayout>
     </LinearLayout>
 
 

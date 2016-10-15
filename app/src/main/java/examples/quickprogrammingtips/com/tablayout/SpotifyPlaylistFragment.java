@@ -1,7 +1,9 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -18,47 +20,30 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
         super.onStop();
     }
     @Override
-    public void lastOncreateView() {
-        //currentList = SpotifyList;
+    public void lastOncreateView(View llview) {
+        ListView tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
+        tracksListview.setAdapter(albumAdapter);
+        LinearLayout ll = ((LinearLayout) llview.findViewById(R.id.toplinearlayout));
+        ll.setVisibility(View.GONE);
+        Log.d("samba", "Text:11");
 
-        setAdapterForSpotify();
+        //setAdapterForSpotify();
+        Log.d("samba", "Text:12");
 
-        if (nextCommand.equals("new_albums_categories")){
-            newAlbumsCategories();
-            new Thread(() -> {
-                setCurrentTracklist();
-            }).start();
-
-        }else
-            if (nextCommand.equals("spotify_album_shortcuts")){
-                spotifyAlbumShortcuts();
-                new Thread(() -> {
-                    setCurrentTracklist();
-                }).start();
-
-            }else
-        if (nextCommand.equals("dutch_album_top_100")){
-            albumTop100Nl();
-            new Thread(() -> {
-                setCurrentTracklist();
-            }).start();
-
-        }else
         if (nextCommand.equals("search album")){
             searchAlbum();
 
         }else {
+            Log.d("samba", "Text:12");
             setCurrentTracklist();
+            Log.d("samba", "Text:13");
         }
         nextCommand="";
 
     }
 
     public void setCurrentTracklist() {
-        refreshPlaylistFromSpotify(albumAdapter, albumsListview, MainActivity.getThis);
-        MainActivity.getThis.runOnUiThread(() -> {albumAdapter.notifyDataSetChanged();
-            setVisibility(View.GONE);
-            llview.findViewById(R.id.artist_title).setVisibility(View.GONE);});
+            refreshPlaylistFromSpotify(albumAdapter,  getThis.getActivity());
     }
 
     @Override
