@@ -223,6 +223,7 @@ public class SpotifyFragment extends Fragment implements
             api = new SpotifyApi();
             Log.d("samba", "Text:4");
             spotify = api.getService();
+            dialog1 = new ProgressDialog(activityThis);
 
         onActivityCreated();
         lastOncreateView(llview);
@@ -554,7 +555,6 @@ public class SpotifyFragment extends Fragment implements
             Log.d("samba", "Text:1");
 
             try {
-                dialog1 = new ProgressDialog(activityThis);
 //                updateBarHandler = MainActivity.getThis.updateBarHandler;
 
 
@@ -589,7 +589,7 @@ public class SpotifyFragment extends Fragment implements
 
                         llview.findViewById(R.id.artist_title);//relatedartists_text
 
-                songItems = new SongItems(activityThis);
+                //songItems = new SongItems(activityThis);
 
                 spotifyHeader = new SpotifyHeader(activityThis, artistTitleTextView);
 
