@@ -754,6 +754,7 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 protected void addMenuItems(ArrayList<String> menuItems){
+                    menuItems.add("sep");
                     ArrayList<String> menuItemsadd=new ArrayList<String>();
                     for (String item:previousDirectoryListing)
                         menuItemsadd.add("http://"+item);
@@ -892,6 +893,7 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 protected void addMenuItems(ArrayList<String> menuItems){
+                    menuItems.add("sep");
                     ArrayList<String> menuItemsadd=new ArrayList<String>();
                     for (String cat : CATEGORY_IDS) {
                         menuItemsadd.add("http://"+cat);
