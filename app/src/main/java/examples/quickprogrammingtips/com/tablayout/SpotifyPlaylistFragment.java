@@ -42,6 +42,29 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
 
     }
 
+    @Override
+    public void onActivityCreated() {
+
+        try {
+
+            Log.d("samba", "Text:5");
+
+
+            albumsListview = (ListView) llview.findViewById(R.id.albums_listview2);
+            albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
+            setAdapterForSpotify();
+
+            Log.d("samba", "Text:6");
+
+
+        } catch (Exception e) {
+            Log.getStackTraceString(e);
+        }
+    }
+
+
+
     public void setCurrentTracklist() {
             refreshPlaylistFromSpotify(albumAdapter,  getThis.getActivity());
         Log.v("samba","ik heb alles opgehaald....");    }
