@@ -555,10 +555,7 @@ public class SpotifyFragment extends Fragment implements
             Log.d("samba", "Text:1");
 
             try {
-//                updateBarHandler = MainActivity.getThis.updateBarHandler;
 
-
-                //GetSpotifyToken();
                 if (artistName == null || artistName.equals("")) {
                     artistName = MainActivity.getThis.currentArtist;
                     ;

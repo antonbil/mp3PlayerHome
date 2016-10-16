@@ -45,7 +45,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
 
     public void setCurrentTracklist() {
             refreshPlaylistFromSpotify(albumAdapter,  getThis.getActivity());
-    }
+        Log.v("samba","ik heb alles opgehaald....");    }
 
     @Override
     public void displayAlbums(){
