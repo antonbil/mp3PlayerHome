@@ -163,7 +163,12 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     }
 
     public void getSpotifyPlaylist() {
-        SpotifyFragment.refreshPlaylistFromSpotify(1, albumAdapter, activity, albumList, albumTracks);
+        SpotifyFragment.refreshPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
+            @Override
+            public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
+
+            }
+        },1, albumAdapter, activity, albumList, albumTracks);
         MainActivity.getThis.runOnUiThread(() -> {
             try{
                 if (mpdListview!=null)mpdListview.setVisibility(View.GONE);
@@ -232,7 +237,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     }
 
     @Override
-    public void setData(String time, String totalTime, String title, String artist) {
+    public void setData(String time, String totalTime, String title, String artist, boolean spotifyList, int currentTrack) {
         timeField.setText(time);
         totalField.setText(totalTime);
         titleField.setText(title);

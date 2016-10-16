@@ -285,7 +285,12 @@ public class NewAlbumsActivity extends Activity  {
              String uri = items.get(position).url.replace("spotify:album:", "");
              String prefix="spotify:album:";
              SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
-             SpotifyFragment.refreshPlaylistFromSpotify(1, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.getActivity(), SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
+             SpotifyFragment.refreshPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
+                 @Override
+                 public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
+
+                 }
+             },1, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.getActivity(), SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
          }
      }
     public void processAlbum(NewAlbum album){

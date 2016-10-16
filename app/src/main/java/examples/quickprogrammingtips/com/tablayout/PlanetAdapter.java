@@ -90,6 +90,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         try {
             PlaylistItem t = tracksPlaylist.get(position);
             holder.name.setText(t.text);
+            //Log.v("samba","text:"+t.text);
             if (t.time>0)
             holder.time.setText(Mp3File.niceTime(t.time));
             else holder.time.setVisibility(View.GONE);

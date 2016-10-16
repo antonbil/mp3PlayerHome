@@ -74,7 +74,7 @@ public class MainScreenDialog extends Dialog implements HeaderSongInterface {
     }
 
     @Override
-    public void setData(String time1, String totalTime, String title, String artist1) {
+    public void setData(String time1, String totalTime, String title, String artist1, boolean spotifyList, int currentTrack) {
         tvName.setText(title);
 
         time.setText(time1);

@@ -391,7 +391,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     Log.v("samba", "error setting listeners");
                 }
                 updateDisplay();
-                SpotifyFragment.getOnlyPlaylistFromSpotify(1, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
+                SpotifyFragment.getOnlyPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
+                    @Override
+                    public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
+
+                    }
+                },1, getThis, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
 
             }).start();
             //Log.d("samba", "Text:10");
@@ -515,7 +520,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 albumAdapter = getTracksAdapter(mDrawerLayout,albumsListview, albumList, albumTracks);
                 albumsListview.setAdapter(albumAdapter);
                 SpotifyFragment.checkAddress();
-                SpotifyFragment.refreshPlaylistFromSpotify(1, albumAdapter, MainActivity.getThis, albumList, albumTracks);
+                SpotifyFragment.refreshPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
+                    @Override
+                    public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
+
+                    }
+                },1, albumAdapter, MainActivity.getThis, albumList, albumTracks);
                 LinearLayout viewHeader = (LinearLayout) findViewById(R.id.song_display2);
                 final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifydrawerlist);
                 fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(MainActivity.getThis));
@@ -552,6 +562,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 replaceFragment(playlistFragment);
                 break;
             case SPOTIFYPLAYLISTTAB :
+                if (SpotifyFragment.getThis!=null)
+                if (SpotifyFragment.getThis.albumsListview!=null)
+                    SpotifyFragment.getThis.albumsListview.setAdapter(null);
                 firstTime= SpotifyFragment.SPOTIFY_FIRSTTIME;
                 replaceFragment(spotifyPlaylistFragment);
                 break;
@@ -1590,7 +1603,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                 String uri = Logic.getUrlFromSongpath(currentSong);
                                 for (HeaderSongInterface header:MainActivity.headers){
                                     if (header!=null)
-                                    header.setData(time1, timeNice,title, album);
+                                    header.setData(time1, timeNice,title, album, false, status.song.intValue());
                                 }
                                 MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
 
@@ -1725,7 +1738,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     @Override
-    public void setData(String time, String totalTime, String title, String artist) {
+    public void setData(String time, String totalTime, String title, String artist, boolean spotifyList, int currentTrack) {
         ((TextView) findViewById(R.id.time_top)).setText(time);
         ((TextView) findViewById(R.id.totaltime_top)).setText(totalTime);
         ((TextView) findViewById(R.id.title_top)).setText(title);
@@ -1755,5 +1768,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         public HashMap hm = new HashMap();
         public ArrayList<String> searchArtistString =new ArrayList<>();
 
+        public int keer=0;
     }
 }

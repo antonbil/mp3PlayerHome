@@ -8,5 +8,5 @@ import android.graphics.Bitmap;
 
 public interface HeaderSongInterface {
     public void setLogo(Bitmap logo);
-    public void setData(String time, String totalTime,String title, String artist);
+    public void setData(String time, String totalTime, String title, String artist, boolean spotifyList, int currentTrack);
 }
