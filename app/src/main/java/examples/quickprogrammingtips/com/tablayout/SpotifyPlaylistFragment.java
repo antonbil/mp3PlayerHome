@@ -41,7 +41,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             setCurrentTracklist();
         }
         nextCommand="";
-        MainActivity.headers.add(this);
+        //MainActivity.headers.add(this);
 
     }
 
