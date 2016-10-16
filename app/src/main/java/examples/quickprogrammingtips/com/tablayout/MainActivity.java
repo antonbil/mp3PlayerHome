@@ -80,6 +80,7 @@ import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import examples.quickprogrammingtips.com.tablayout.model.Server;
 import examples.quickprogrammingtips.com.tablayout.tools.ImageLoadTask;
+import kaaes.spotify.webapi.android.models.Track;
 import mpc.DatabaseCommand;
 import mpc.MPC;
 import mpc.MPCDatabaseListener;
@@ -145,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public int xcoord=0;
     private PlaylistAdapter adapterMpd;
     private LeftDrawerPlaylist leftDrawerPlaylist;
+    private SpotifyData data;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -204,6 +206,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             mainActivity = this;
             getThis = this;
             getSpotifyInterface = new SpotifyInterface();
+            data = new SpotifyData();
+            SpotifyFragment.data=data;
             dialog = new ProgressDialog(this);//keep it hidden until needed
             updateBarHandler = new Handler();
             //Log.d("samba", "Text:3");
@@ -1740,5 +1744,16 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void onTaskCompleted(String result, String call) {
         Log.v("samba", result);
+    }
+    public class SpotifyData{//SpotifyFragment.getThis.data.
+        public ArrayList<String> albumIds = new ArrayList<>();
+        public  ArrayList<String> albumList = new ArrayList<>();
+        public  ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
+        public ArrayList<PlaylistItem> previousAlbumTracks=new ArrayList<>();
+        public ArrayList<Track> previousTracksPlaylist= new ArrayList<>();
+        public ArrayList<Track> tracksPlaylist=new ArrayList<>();
+        public HashMap hm = new HashMap();
+        public ArrayList<String> searchArtistString =new ArrayList<>();
+
     }
 }

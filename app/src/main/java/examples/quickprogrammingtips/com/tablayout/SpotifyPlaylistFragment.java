@@ -19,7 +19,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment {
         //Log.v("samba","onstop");
         super.onStop();
     }
-
     @Override
     public void lastOncreateView(View llview) {
         ListView tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);

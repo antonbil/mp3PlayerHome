@@ -134,7 +134,7 @@ public class SpotifyFragment extends Fragment implements
     public static boolean explicitlyCalled=false;
     private static boolean spotifyPaused=false;
     public static boolean hasBeen=false;
-    private SpotifyHeader spotifyHeader;
+    protected SpotifyHeader spotifyHeader;
     public ArrayList<String> artistList = new ArrayList<>();
     public static SpotifyFragment getThis;
     public static SpotifyInterface getSpotifyInterface;
@@ -146,15 +146,15 @@ public class SpotifyFragment extends Fragment implements
     protected ListView albumsListview;
     private static ProgressDialog dialog1;//
     //private static Handler updateBarHandler;
-    private boolean nosearch = false;
-    private static TextView artistTitleTextView;
+    protected boolean nosearch = false;
+    protected static TextView artistTitleTextView;
     public static int currentTrack;
     public static String artistName="";
-    private ArrayAdapter<String> relatedArtistsAdapter;
-    private ListView relatedArtistsListView;
+    protected ArrayAdapter<String> relatedArtistsAdapter;
+    protected ListView relatedArtistsListView;
     private SpotifyApi api;
     private SpotifyService spotify;
-    private AdapterView.OnItemClickListener cl;
+    protected AdapterView.OnItemClickListener cl;
     public static boolean albumVisible = true;
     static Bitmap bitmap;
     //private boolean artistInitiated = false;
@@ -174,24 +174,13 @@ public class SpotifyFragment extends Fragment implements
     private boolean displayMpd;
     //public static int currentList=SpotifyList+1;
     protected String[] lists = new String[]{"albumlist","spotifylist","mpdlist"};;
-    private static Activity activityThis;
+    protected static Activity activityThis;
     View llview;
     public static PopupMenu categoriesMenu;
     private static ProgressDialog progressDialog;
-    private boolean artist_desc_hidden=true;
-    public SpotifyData data;
+    protected boolean artist_desc_hidden=true;
+    public static MainActivity.SpotifyData data;
 
-    public class SpotifyData{//SpotifyFragment.getThis.data.
-        public ArrayList<String> albumIds = new ArrayList<>();
-        public  ArrayList<String> albumList = new ArrayList<>();
-        public  ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
-        private ArrayList<PlaylistItem> previousAlbumTracks=new ArrayList<>();
-        private ArrayList<Track> previousTracksPlaylist= new ArrayList<>();
-        public ArrayList<Track> tracksPlaylist=new ArrayList<>();
-        private HashMap hm = new HashMap();
-        public ArrayList<String> searchArtistString =new ArrayList<>();
-
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -199,7 +188,7 @@ public class SpotifyFragment extends Fragment implements
         try{
         getThis=this;
             activityThis = getActivity();
-        data = new SpotifyData();
+        //data = new SpotifyData();
         SpotifyFragment.hasBeen=true;
         llview = inflater.inflate(R.layout.activity_spotify, container, false);
         if (SpotifyFragment.getThis.data.albumTracks.size()>0 && SpotifyFragment.getThis.data.albumTracks.get(0).time>0)
