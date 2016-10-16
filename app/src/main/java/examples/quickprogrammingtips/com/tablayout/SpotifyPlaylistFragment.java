@@ -29,22 +29,16 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     @Override
     public void onStop(){
         MainActivity.getThis.firstTime= 0;
-        //Log.v("samba","onstop");
         super.onStop();
     }
     @Override
     public void lastOncreateView(View llview) {
         tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
-
-        Log.d("samba", "Text:12");
-
         if (nextCommand.equals("search album")){
             searchAlbum();
 
         }else {
-            //Log.d("samba", "Text:12");
             setCurrentTracklist();
-            //Log.d("samba", "Text:13");
         }
         nextCommand="";
         MainActivity.headers.add(this);
@@ -55,19 +49,12 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     public void onActivityCreated() {
         gettingList=true;
         spotifyWorkingOnPlaylist=true;
-
         try {
-
             albumList1 = new ArrayList<>();
             albumTracks1 = new ArrayList<>();
             tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
-
             tracksAdapter.setDisplayCurrentTrack(false);
             tracksListview.setAdapter(tracksAdapter);
-
-            //Log.d("samba", "Text:6");
-
-
         } catch (Exception e) {
             Log.getStackTraceString(e);
         }
@@ -77,22 +64,15 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         llview = inflater.inflate(R.layout.activity_spotifyplaylist, container, false);
     }
 
-
-
     public void setCurrentTracklist() {
         gettingList=true;
         new Thread(() -> {
             Looper.prepare();
 
             try{
-            //refreshPlaylistFromSpotify(albumAdapter,  MainActivity.getThis);
                 SpotifyFragment.refreshPlaylistFromSpotify(1, new GetSpotifyPlaylistClass(){
                     @Override
                     public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
-                        //Log.v("samba","atEnd");
-                        for (String s:albumList){
-                            //Log.v("samba","is:"+s);
-                        }
                         albumList1=albumList;
                             albumTracks1=albumTracks;
                             MainActivity.getThis.runOnUiThread(() -> {
@@ -107,12 +87,11 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                                     tracksAdapter.notifyDataSetChanged();
                                     previousLength=albumList1.size();
                                     gettingList=false;
+                                    spotifyWorkingOnPlaylist=false;
 
                                 }catch(Exception e){
                                     Log.v("samba", Log.getStackTraceString(e));}
-                            });                            //tracksListview.setAdapter(tracksAdapter);
-
-
+                            });
                     }
                 },tracksAdapter, MainActivity.getThis, albumList1, albumTracks1);
 
@@ -146,14 +125,9 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 try {
                     new SpotifyInterface().previousTrack.id = "";
                 } catch (Exception e) {
-                    //Log.v("samba", "error in starting song");
                 }
-                ;
-                //Log.v("samba","a");
                 duplicateLists();
-                //Log.v("samba","b");
                 SpotifyFragment.stopMpd();
-                //Log.v("samba","c");
                 SpotifyFragment.playlistGotoPosition(counter);
             }
 
