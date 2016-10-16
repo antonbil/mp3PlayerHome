@@ -252,7 +252,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                         Log.v("samba","get updated list");
                         setCurrentTracklist();
                     }else
-                        Log.v("samba","get updated list");
+                        Log.v("samba","do not get updated list, list busy");
                 }else
                 try{
                     //Log.v("samba","set trak to "+currentTrack);
