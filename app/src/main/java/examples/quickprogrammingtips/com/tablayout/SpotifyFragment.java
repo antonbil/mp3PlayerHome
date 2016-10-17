@@ -128,7 +128,7 @@ public class SpotifyFragment extends Fragment implements
     public static final int SpotifyList = 1;
     public static final int AlbumList = 0;
     public static final int MpdList = 2;
-    public static final int SPOTIFY_FIRSTTIME = 20;
+    //public static final int SPOTIFY_FIRSTTIME = 20;
     public static int playingEngine;
     public static boolean busyupdateSongInfo=false;
     public static boolean explicitlyCalled=false;
@@ -1439,19 +1439,6 @@ public class SpotifyFragment extends Fragment implements
             Log.v("samba", Log.getStackTraceString(e));
         }
     }
-    //TODO see if fragment has other method for onTouchEvent
-    /*@Override
-    public boolean onTouchEvent(MotionEvent event){
-        //Log.v("samba","righttoleft2");
-
-        int action = MotionEventCompat.getActionMasked(event);
-
-        if (action == MotionEvent.ACTION_DOWN) {
-            // normal touch events
-            return true;
-        }
-        return true;
-    }*/
 
     public void searchAlbum() {
         try {
@@ -2539,7 +2526,7 @@ public class SpotifyFragment extends Fragment implements
 
         try {
                 if (isPlaying()) {
-                   if (albumAdapter!=null)
+                   //if (albumAdapter!=null)
                         playingEngine=1;
                      String[] trid1 = getCurrentTrack();//
                     String trid = "0";
@@ -2576,8 +2563,8 @@ public class SpotifyFragment extends Fragment implements
                             MainActivity.getThis.runOnUiThread(() -> {
                                 albumAdapter.notifyDataSetChanged();
                             });*/
-                            if ((MainActivity.getThis.firstTime)>=SPOTIFY_FIRSTTIME)
-                                MainActivity.getThis.firstTime++;
+                            //if ((MainActivity.getThis.firstTime)>=SPOTIFY_FIRSTTIME)
+                            //    MainActivity.getThis.firstTime++;
                         }
                         final String trackid = trid;
 

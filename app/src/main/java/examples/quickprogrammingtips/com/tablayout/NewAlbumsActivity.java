@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,7 +38,7 @@ public class NewAlbumsActivity extends Activity  {
         MainActivity.getThis.runOnUiThread(() -> {
             //SpotifyFragment.getThis.albumAdapter.setDisplayCurrentTrack(true);
             try{
-                SpotifyFragment.getThis.albumAdapter.notifyDataSetChanged();
+                SpotifyPlaylistFragment.getThisPlaylist.tracksAdapter.notifyDataSetChanged();
             }catch(Exception e){
                 Log.v("samba", Log.getStackTraceString(e));}
             });
@@ -61,8 +60,8 @@ public class NewAlbumsActivity extends Activity  {
         setContentView(R.layout.activity_new_albums);
             //Log.v("samba","2a");
         final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifylist);
-        fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this));
+        /*final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabspotifylist);
+        fab.setOnClickListener(view -> SpotifyFragment.showPlayMenu(this));*/
             ((ImageView) findViewById(R.id.thumbnail_top)).setOnClickListener(view -> SpotifyFragment.showPlayMenu(this));
             //Log.v("samba","3a");
             menuItemsArray = new ArrayList<String>(

@@ -64,17 +64,11 @@
         app:borderWidth="0dp"
         app:fabSize="normal" />
 
-    <LinearLayout
-        android:id="@+id/footer"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:background="#333"
-        android:orientation="horizontal" >
+
 
         <include layout="@layout/play_spotify" />
 
-    </LinearLayout>
+
 </RelativeLayout>
     <include layout="@layout/content_left_drawer" />
 

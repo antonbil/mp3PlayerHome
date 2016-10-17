@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -37,6 +38,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     private boolean shouldClick=false;
     private int xcoord=0;
     private PlanetAdapter albumAdapter;
+    public boolean footerVisible = true;
     private ArrayList<String> albumList;
     private ArrayList<PlaylistItem> albumTracks;
     private PlaylistAdapter adapterMpd;
@@ -61,8 +63,8 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
         this.fabswapplaylist=fabswapplaylist;
         albumList = new ArrayList<>();
         albumTracks = new ArrayList<>();
-        albumAdapter = MainActivity.getTracksAdapter(mDrawerLayout, spotifyListview, albumList, albumTracks);
         mDrawerLayout = (DrawerLayout) activity.findViewById(newalbumsdrawer_layout);
+        albumAdapter = MainActivity.getTracksAdapter(mDrawerLayout, spotifyListview, albumList, albumTracks);
         spotifyListview = (ListView) activity.findViewById(newalbumsdrawer_list);
         mpdListview = (ListView) activity.findViewById(newalbumsmpddrawer_list);
         adapterMpd = new PlaylistAdapter(MainActivity.getThis.playFragment, this, MainActivity.getThis.getLogic().getPlaylistFiles(), MainActivity.getThis.getApplicationContext());
@@ -132,9 +134,54 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
         titleField = ((TextView) activity.findViewById(R.id.title_top));
         artistField = ((TextView) activity.findViewById(R.id.artist_top));
         imageField = ((ImageView) activity.findViewById(R.id.thumbnail_top));
+        LinearLayout ll = ((LinearLayout) activity.findViewById(R.id.time_layout));
+        ll.setOnClickListener(v -> MainActivity.playPauseAll());
+        ll = ((LinearLayout) activity.findViewById(R.id.song_title));
+
+        ll.setOnLongClickListener(v -> {
+            MainActivity.displayLargeTime(activity);
+            return true;
+        });
+        connectListenersToThumbnail();
+        footerVisible=setFooterVisibility(footerVisible);
+        setListenersForButtons();
         MainActivity.headers.add(this);
         getDrawerSpotifyLayout();
     }
+    void connectListenersToThumbnail() {
+        ImageView im = ((ImageView) activity.findViewById(R.id.thumbnail_top));
+        im.setOnLongClickListener(v -> {
+            footerVisible=setFooterVisibility(footerVisible);
+            return true;
+        });
+        im.setOnClickListener(v -> {
+            footerVisible=setFooterVisibility(footerVisible);
+        });
+    }
+    protected boolean setFooterVisibility(boolean footerVisible) {
+        LinearLayout footerView = (LinearLayout) activity.findViewById(R.id.footer);
+        if (footerVisible)
+            footerView.setVisibility(View.GONE);
+        else
+            footerView.setVisibility(View.VISIBLE);
+        footerVisible = !footerVisible;
+        return footerVisible;
+    }
+
+    private void setListenersForButtons() {
+        //View playbutton = findViewById(R.id.playspotify);
+        View stopbutton = activity.findViewById(R.id.stopspotify);
+        View playpausebutton = activity.findViewById(R.id.pausespotify);
+        View previousbutton = activity.findViewById(R.id.previousspotify);
+        View nextbutton = activity.findViewById(R.id.nextspotify);
+        View volumebutton = activity.findViewById(R.id.volumespotify);
+        View seekbutton = activity.findViewById(R.id.positionspotify);
+        new Thread(() -> {
+            SpotifyFragment.setListenersForButtons(activity, stopbutton, playpausebutton, previousbutton, nextbutton, volumebutton, seekbutton);
+        }).start();
+
+    }
+
 
     public void displayList() {
         try{

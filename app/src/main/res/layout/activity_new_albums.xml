@@ -10,28 +10,25 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
 
         android:orientation="vertical" >
+    <include layout="@layout/songtitle_layout" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <include layout="@layout/songtitle_layout" />
 
             <ListView
                 android:id="@+id/newalbums_listview"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 >
             </ListView>
 
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fabspotifylist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/spf" />
+        <include layout="@layout/play_spotify" />
+    </RelativeLayout>
     </LinearLayout>
 
 
