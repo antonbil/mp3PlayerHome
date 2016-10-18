@@ -2165,16 +2165,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void refreshPlaylistFromSpotify(int i, GetSpotifyPlaylistClass getSpotifyPlaylistClass, final PlanetAdapter albumAdapter1, Activity getThis, ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1) {
-        //Log.d("samba", "Text:3a1");
-        /*MainActivity.getThis.runOnUiThread(() ->{
 
-            progressDialog = new ProgressDialog(getThis);
-            progressDialog.setCancelable(true);
-            progressDialog.setMessage("Get playlist...");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setProgress(0);
-            progressDialog.show();
-        });*/
         albumVisible = false;
         Log.d("samba", "Text:13");
         if (albumAdapter1!=null)
@@ -2200,7 +2191,6 @@ public class SpotifyFragment extends Fragment implements
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
-        //MainActivity.getThis.runOnUiThread(() -> progressDialog.dismiss());
 
     }
 

@@ -1,5 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.Looper;
 import android.util.Log;
@@ -29,7 +30,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     @Override
     public void onStop(){
-        //MainActivity.getThis.firstTime= 0;
         super.onStop();
     }
     @Override
@@ -68,6 +68,17 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     public void setCurrentTracklist() {
         gettingList=true;
+        //Log.d("samba", "Text:3a1");
+        ProgressDialog progressDialog = new ProgressDialog(MainActivity.getThis);
+        MainActivity.getThis.runOnUiThread(() ->{
+
+
+            //progressDialog.setCancelable(true);
+            progressDialog.setMessage("Get playlist...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setProgress(0);
+            progressDialog.show();
+        });
         new Thread(() -> {
             Looper.prepare();
 
@@ -90,6 +101,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                                     previousLength=albumList1.size();
                                     gettingList=false;
                                     spotifyWorkingOnPlaylist=false;
+                                    progressDialog.dismiss();
 
                                 }catch(Exception e){
                                     Log.v("samba", Log.getStackTraceString(e));}
@@ -97,8 +109,8 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                     }
                 },tracksAdapter, MainActivity.getThis, albumList1, albumTracks1);
 
-        }catch(Exception e){
-            Log.v("samba", Log.getStackTraceString(e));}
+            }catch(Exception e){
+                Log.v("samba", Log.getStackTraceString(e));}
         }).start();
 
     }
