@@ -87,9 +87,11 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         convertView.setTag(holder);
 
         holder.pos.setVisibility(View.VISIBLE);
+        int tracknr=-1;
         try {
             PlaylistItem t = tracksPlaylist.get(position);
             holder.name.setText(t.text);
+            tracknr=t.trackNumber;
             //Log.v("samba","text:"+t.text);
             if (t.time>0)
             holder.time.setText(Mp3File.niceTime(t.time));
@@ -180,7 +182,9 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 
         };*/
 
-        holder.pos.setText("" + (mypos));
+        int pos=mypos;
+        if (tracknr>=0)pos=tracknr;
+        holder.pos.setText("" + (pos));
         mypos++;
         /*convertView.setOnTouchListener((v, event) -> {
             if (flingListener.onTouch(v, event)) {

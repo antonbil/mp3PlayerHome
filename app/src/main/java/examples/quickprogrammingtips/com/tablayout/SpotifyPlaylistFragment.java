@@ -142,7 +142,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             MainActivity.getThis.runOnUiThread(() -> {
                 if ((currentTrack>=SpotifyFragment.getThis.data.albumTracks.size())||(SpotifyFragment.getThis.data.albumTracks.size()!=previousLength)){
                     if (!gettingList) {
-                        Log.v("samba","get updated list");
+                        //Log.v("samba","get updated list");
                         setCurrentTracklist();
                     }else
                         Log.v("samba","do not get updated list, list busy");

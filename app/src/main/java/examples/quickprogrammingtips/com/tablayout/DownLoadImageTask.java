@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -72,7 +71,7 @@ public abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> 
             albumPictures.put(urlOfImage, logo);//so image is loaded only once
         } catch (Exception e) { // Catch the download exception
             //albumPictures.clear();
-            Log.v("samba", Log.getStackTraceString(e));
+            //Log.v("samba", Log.getStackTraceString(e));
         }
         return logo;
     }

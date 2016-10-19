@@ -49,7 +49,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     private ImageView imageField;
     private int position=-1;
     private ListView drawerListRight;
-    public ArrayList<String> itemsArray;
+    private ArrayList<String> itemsArray;
     private MenuAdapter menuAdapter;
 
     protected void onStop() {
@@ -104,7 +104,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                                 drawerListRight.performClick();
                                 performClickOnRightDrawer();
                                 shouldClick = false;
-                                if (position>=0 &&(!(itemsArray.get(position).equals("sep")))&&itemsArray.get(position).length()>0) {
+                                if (position>=0 &&(!(getItemsArray().get(position).equals("sep")))&& getItemsArray().get(position).length()>0) {
                                     //Log.v("samba","close drawers");
                                     //mDrawerLayout.closeDrawers();
                                     //return true;
@@ -312,7 +312,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     }
 
     public void setMenu(ArrayList<String> itemsArray) {
-        this.itemsArray=itemsArray;
+        this.setItemsArray(itemsArray);
         drawerListRight = (ListView) activity.findViewById(R.id.DrawerListRight);
         //ArrayAdapter<String> drawerListRightAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
         menuAdapter = new MenuAdapter(activity,itemsArray);
@@ -331,7 +331,15 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     }
 
     public void addItem(String url) {
-        itemsArray.add(url);
+        getItemsArray().add(url);
         menuAdapter.notifyDataSetChanged();
+    }
+
+    public ArrayList<String> getItemsArray() {
+        return itemsArray;
+    }
+
+    public void setItemsArray(ArrayList<String> itemsArray) {
+        this.itemsArray = itemsArray;
     }
 }
