@@ -40,7 +40,8 @@ public class NewAlbumsActivity extends Activity  {
             try{
                 SpotifyPlaylistFragment.getThisPlaylist.tracksAdapter.notifyDataSetChanged();
             }catch(Exception e){
-                Log.v("samba", Log.getStackTraceString(e));}
+                //Log.v("samba", Log.getStackTraceString(e));
+                }
             });
 
 

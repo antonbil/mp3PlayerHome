@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -86,7 +87,7 @@ import mpc.MPCSong;
 import mpc.MPCStatus;
 
 
-public class MainActivity extends AppCompatActivity implements MpdInterface, MPCListener, MPCDatabaseListener, OnTaskCompleted,HeaderSongInterface{
+public class MainActivity extends AppCompatActivity implements MpdInterface, MPCListener, MPCDatabaseListener, OnTaskCompleted,HeaderSongInterface {
 
     //static final int STATIC_RESULT = 3; //positive > 0 integer.
     //static final int NEWALBUMS_RESULT = 15;
@@ -145,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     private LeftDrawerPlaylist leftDrawerPlaylist;
     private SpotifyData data;
     private DrawerLayout mDrawerLayout;
+    private ShutDownReceiver shutDownReceiver;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -168,9 +170,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
         }
 
-    }    @Override
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
+            shutDownReceiver = new ShutDownReceiver();
+            final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+            filter.addAction(Intent.ACTION_SCREEN_OFF);
+            registerReceiver(shutDownReceiver, filter);//shutDownReceiver.wasScreenOn
             //Log.d("samba", "Text:1");
             //headers.add(this);
             super.onCreate(savedInstanceState);
@@ -408,6 +415,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
         }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
     }
+
 
     public static void displayLargeTime(Activity activity) {
         MainScreenDialog msDialog = new MainScreenDialog(activity);
@@ -880,11 +888,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public static void activityResumed() {
+        //getThis.shutDownReceiver.isdown=false;
         activityVisible = true;
     }
 
     public static void activityPaused() {
         activityVisible = false;
+        //getThis.shutDownReceiver.isdown=true;
     }
 
     private static boolean activityVisible=true;
@@ -1201,7 +1211,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void statusUpdate(MPCStatus newStatus) {
 
-        if (statusThread) return;
+        if (statusThread||!shutDownReceiver.wasScreenOn) return;
+        //Log.v("samba","update");
 
         new Thread(() -> {
             statusThread=true;
