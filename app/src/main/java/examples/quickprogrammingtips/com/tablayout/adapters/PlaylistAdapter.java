@@ -115,7 +115,9 @@ public class PlaylistAdapter extends BaseAdapter {
             if ( (position & 1) == 0 ) { convertView.setBackgroundColor(Color.rgb(57, 57, 57)); } else convertView.setBackgroundColor(Color.rgb(64, 64, 64));
 
             if (!mp3File.isStartAlbum()) {
-                String albumId = String.format("%s-%s", mp3File.getTracknr(), mp3File.getTitle());
+                String albumId = mp3File.getTitle();
+                if (mp3File.getTracknr()>0)
+                     albumId = String.format("%s-%s", mp3File.getTracknr(), mp3File.getTitle());
 
                 holder.performer.setText(albumId);
             }
@@ -132,8 +134,14 @@ public class PlaylistAdapter extends BaseAdapter {
                 Bitmap bm1=bm;
                 image.setOnClickListener(arg0 -> MainActivity.displayLargeImage(MainActivity.getThis, bm1));
                 holder.performer.setText(String.format("%s-%s", mp3File.getArtist(), mp3File.getAlbum()));
-                holder.title.setText(String.format("%s-%s", mp3File.getTracknr(), mp3File.getTitle()));
+                if (mp3File.getTracknr()>0)
+                    holder.title.setText(String.format("%s-%s", mp3File.getTracknr(), mp3File.getTitle()));
+                else
+                    holder.title.setText(mp3File.getTitle());
             }
+            if (mp3File.radio){
+                holder.time.setText("radio");
+            } else
             holder.time.setText(mp3File.getTimeNice());
             final int pos2=position;
             final View convertView2=convertView;

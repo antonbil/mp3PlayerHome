@@ -3,6 +3,7 @@ package examples.quickprogrammingtips.com.tablayout.model;
 /**
  * Created by anton on 23-1-16.
  */
+
 import android.graphics.Bitmap;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class Mp3File extends File{
     private MPCSong mpcSong;
     private int year;
     private boolean fromMpd;
+    public boolean radio=false;
 
     public Bitmap getBitmap() {
         return bitmap;
@@ -33,6 +35,7 @@ public class Mp3File extends File{
     public Mp3File(String path,ArrayList<String> s) {
 
         setPath((path));
+        this.setTime(0);
         for (int i=0;i<s.size();i++){
             if (s.get(i).startsWith("file:")){
                 this.setFile(s.get(i).split("file:")[1].trim());
@@ -76,6 +79,9 @@ public class Mp3File extends File{
                     e.printStackTrace();
                 }
             }
+        }
+        if (this.getTime()<=0){
+            this.radio=true;
         }
         this.setMpcSong(new MPCSong(file, 0, artist, title, album, tracknr));
 

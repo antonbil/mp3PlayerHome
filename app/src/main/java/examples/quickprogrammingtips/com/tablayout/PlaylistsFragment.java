@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
+import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 import mpc.MpcPlaylistListener;
 import mpc.PlaylistsCommand;
 
@@ -42,6 +43,12 @@ public class PlaylistsFragment extends Fragment implements MpcPlaylistListener {
                 int total = logic.getPlaylistFiles().size();
                 logic.getMpc().sendSingleMessage("load \"" + item + "\"");
                 logic.commandWithDelay("play " + (total));
+                List<Mp3File> plItems = logic.getPlaylistFiles();
+                Mp3File currentItem=plItems.get(plItems.size()-1);
+                currentItem.setTime(0);
+                currentItem.setAlbum("");
+                currentItem.setArtist("");
+                currentItem.radio=true;
 
             }
 

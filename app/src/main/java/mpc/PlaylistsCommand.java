@@ -10,9 +10,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import examples.quickprogrammingtips.com.tablayout.model.File;
-import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
-
 /**
  * Handles interaction with the MPD server database. Used to fetch all song
  * information as well as to instruct the database on the server to update.
@@ -75,7 +72,6 @@ public class PlaylistsCommand extends Thread{
 				//Log.v("samba", line);
 				//Log.v("samba",line);
 				if (line.startsWith("OK"))break;
-				//Log.v("samba", line);
 				//directory:
 				//Last-Modified:
 				if (line.startsWith("Last-Modified:")) {

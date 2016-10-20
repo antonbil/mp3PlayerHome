@@ -285,10 +285,17 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
 
     @Override
     public void setData(String time, String totalTime, String title, String artist, boolean spotifyList, int currentTrack) {
-        timeField.setText(time);
-        totalField.setText(totalTime);
         titleField.setText(title);
-        artistField.setText(artist);
+        timeField.setText(time);
+        if (!totalTime.equals("00:00")) {
+            totalField.setVisibility(View.VISIBLE);
+            artistField.setVisibility(View.VISIBLE);
+            totalField.setText(totalTime);
+            artistField.setText(artist);
+        } else{
+            totalField.setVisibility(View.GONE);
+            artistField.setVisibility(View.GONE);
+        }
 
     }
     @Override

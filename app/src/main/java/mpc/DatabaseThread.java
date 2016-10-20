@@ -1,5 +1,7 @@
 package mpc;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -117,7 +119,7 @@ public class DatabaseThread extends Thread{
 			while(line != null){
 				String currentLine = line;
 				if(line.equals("OK")){break;}
-				
+				//Log.v("samba", line);
 				if(currentLine.startsWith("directory: ")){
 					line = in.readLine(); continue;} // Skip directory lines
 				else if(currentLine.startsWith("file: ")){

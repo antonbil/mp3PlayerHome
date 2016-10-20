@@ -945,7 +945,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         if (response.startsWith("OK")) break;
                         list.add(response);
                         if (response.startsWith("Id:")) {
+                            //Log.v("samba", response);
                             playlist.add(new Mp3File("", list));
+                            list.clear();
                         }
                     }
                     try {
