@@ -293,6 +293,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
             totalField.setText(totalTime);
             artistField.setText(artist);
         } else{
+            MainActivity.getThis.currentArtist=title.split("-")[0].trim();
             totalField.setVisibility(View.GONE);
             artistField.setVisibility(View.GONE);
         }
