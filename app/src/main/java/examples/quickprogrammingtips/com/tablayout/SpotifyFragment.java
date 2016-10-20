@@ -2928,7 +2928,7 @@ public class SpotifyFragment extends Fragment implements
                                 try{
                                 image = artist.images.get(0);
                             } catch (Exception e) {
-                                Log.v("samba", Log.getStackTraceString(e));
+                                //Log.v("samba", Log.getStackTraceString(e));
                             }
                                 max = name.length();
                             }
