@@ -1667,7 +1667,7 @@ public class SpotifyFragment extends Fragment implements
         ( llview.findViewById(R.id.albumsartist_listview)).setVisibility(visibility);//albumsartist_listview
         //llview.findViewById(R.id.artist_title).setVisibility(visibility);
 
-        ( llview.findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview
+        //( llview.findViewById(R.id.spotifyscrollviewtop)).setVisibility(visibility);//albumsartist_listview
     }
 
     public static void playlistGotoPosition(int position) {
