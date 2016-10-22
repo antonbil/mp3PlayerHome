@@ -168,7 +168,8 @@ public class SpotifyFragment extends Fragment implements
      */
     private SongItems songItems;
     public static final ArrayList<String> CATEGORY_IDS = new ArrayList<>(Arrays.asList("electronic", "progressive", "alternative", "rnb", "soul", "singer-songwriter",
-            "classical","acoustic", "ambient", "americana", "blues", "country", "techno", "shoegaze", "Hip-Hop", "funk", "jazz", "rock", "folk"));
+            "classical","acoustic", "ambient", "americana", "blues", "country", "techno", "shoegaze", "Hip-Hop", "funk", "jazz", "rock", "folk","instrumental","pop","punk","metal"
+            ,"Progressive+rock","indie+rock","indie+pop"));
     private static String searchAlbumString ="";
     private static int totalTime;
     private static int currentTime;
@@ -397,6 +398,7 @@ public class SpotifyFragment extends Fragment implements
     public static JSONObject AddSpotifyItemToPlaylist(String prefix, String uri) {
         String data= String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.tracklist.add\", \"params\": {\"uris\":[\"%s%s\"]}}", prefix,uri);
         String urlString = ipAddress;// + "?PlaylistAdd";
+        //Log.v("samba",urlString+data);
         return GetJsonFromUrl(data, urlString);
 
     }
@@ -1486,7 +1488,7 @@ public class SpotifyFragment extends Fragment implements
 
                     @Override
                     public void processAlbum(SearchItem album) {
-                        getAlbumtracksFromSpotify(album.id, album.artist, activityThis, albumAdapter, albumsListview);
+                        getAlbumtracksFromSpotify(album.id, album.artist, activityThis);
                     }
 
                     ;
@@ -1512,7 +1514,7 @@ public class SpotifyFragment extends Fragment implements
 
     public static void addAlbumStatic(int counter, PlanetAdapter albumAdapter, ListView albumsListview) {
         artistName = SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name;
-        getAlbumtracksFromSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.id, SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.name,activityThis,albumAdapter, albumsListview);
+        getAlbumtracksFromSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.id, SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.name,activityThis);
     }
 
     public static void addAlbumToFavoritesTrackwise(int counter) {//
@@ -1674,17 +1676,17 @@ public class SpotifyFragment extends Fragment implements
 
     public void getAlbumtracksFromSpotify(final int position) {
         String s = SpotifyFragment.getThis.data.albumIds.get(position);
-        getAlbumtracksFromSpotify(s, SpotifyFragment.getThis.data.albumList.get(position),activityThis, albumAdapter, albumsListview,false);
+        getAlbumtracksFromSpotify(s, SpotifyFragment.getThis.data.albumList.get(position),activityThis,false);
     }
-    public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1, PlanetAdapter albumAdapter, ListView albumsListview) {
-        getAlbumtracksFromSpotify(  albumid,   albumname,   getThis1,  albumAdapter,  albumsListview,true);
+    public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1) {
+        getAlbumtracksFromSpotify(  albumid,   albumname,   getThis1,true);
     }
 
-    public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1, PlanetAdapter albumAdapter, ListView albumsListview,boolean display) {
-        if (albumAdapter==null)albumAdapter= SpotifyFragment.getThis.albumAdapter;
-        if (albumsListview==null)albumsListview= SpotifyFragment.getThis.albumsListview;
-        final PlanetAdapter albumAdapter1=albumAdapter;
-        final ListView albumsListview1=albumsListview;
+    public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1,boolean display) {
+        //if (albumAdapter==null)albumAdapter= SpotifyFragment.getThis.albumAdapter;
+        //if (albumsListview==null)albumsListview= SpotifyFragment.getThis.albumsListview;
+        //final PlanetAdapter albumAdapter1=albumAdapter;
+        //final ListView albumsListview1=albumsListview;
         Activity getThis=getThis1;
         //int position = ;
         new SpotifyApi().getService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
@@ -1734,7 +1736,7 @@ public class SpotifyFragment extends Fragment implements
                             @Override
                             public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
                             }
-                        }, albumAdapter1, getThis1, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
+                        }, null, getThis1, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
                     }
 
                 }.run();

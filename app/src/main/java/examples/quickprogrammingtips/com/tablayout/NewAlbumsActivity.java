@@ -281,22 +281,31 @@ public class NewAlbumsActivity extends Activity  {
              return menu;
          }
 
-         public void AddAlbumToPlaylist(int position) {
-             String uri = items.get(position).url.replace("spotify:album:", "");
+
+         public void AddAlbumToPlaylist(int position) {//spotify:user:
+             String uri = getRightSpotifyUri(items.get(position).url);
              String prefix="spotify:album:";
+             Log.v("samba","add "+uri);
              SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
-             SpotifyFragment.refreshPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
+             /*SpotifyFragment.refreshPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
                  @Override
                  public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
 
                  }
-             },1, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.getActivity(), SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
+             },1, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.getActivity(), SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);*/
          }
      }
+    private String getRightSpotifyUri(String s){
+        int p=s.indexOf("playlist");
+        if (p>0)
+            return s.substring(p+9);
+        else
+            return s.replace("spotify:album:", "").replace("spotify:user:", "");
+    }
     public void processAlbum(NewAlbum album){
         SpotifyFragment.artistName=album.artist;
-        //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""); Toast.LENGTH_SHORT).show();
-        SpotifyFragment.getAlbumtracksFromSpotify(album.url.replace("spotify:album:",""), album.album,this, null, null);
+        //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""), Toast.LENGTH_SHORT).show();
+        SpotifyFragment.getAlbumtracksFromSpotify(getRightSpotifyUri(album.url), album.album,this);
 
     }
 
