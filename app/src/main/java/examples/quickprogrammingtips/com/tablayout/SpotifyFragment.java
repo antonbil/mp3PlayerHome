@@ -916,11 +916,8 @@ public class SpotifyFragment extends Fragment implements
 
                     Document doc = null;
                     try {
-                        //doc = Jsoup.connect(url).get();
                         String address = "http://www.spotifynewmusic.com/tagwall3.php?ans=" + cat;
-                        //Log.v("samba", "category "+cat+" address:"+address);
-                        String temp1 = getContentsOfAddress(address).replace("<br>", "$$$").replace("<br />", "$$$"); //$$$ instead <br>
-                        doc = Jsoup.parse(temp1); //Parse again
+                        doc = Jsoup.connect(address).get();
                     } catch (IOException e) {
                         Log.v("samba", Log.getStackTraceString(e));
                     }
@@ -930,17 +927,13 @@ public class SpotifyFragment extends Fragment implements
                         String image1 = "http://www.spotifynewmusic.com/" + element.getElementsByTag("img").get(0).attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
                         Elements links = element.getElementsByClass("play").select("a[href]"); // a with href
                         String s = links.get(0).attr("href");
-                        //Log.v("samba", s);
-
-                        String div = element.children().get(1).text();
-                        //Log.v("samba", div);
+                        String html2 = element.children().get(1).html().replace("<br />", ";").replace("\n", "");
                         try {
-                            String[] list = div.replace("$$$", ";").split(";");
+                            String[] list = html2.split(";");
                             String artist = list[0];
                             String album = "";
                             if (list.length > 1)
                                 album = list[1];
-                            //ids.add(artist + "-" + album);
                             newAlbums.add(new NewAlbum(s, artist, album, image1));
                         } catch (Exception e) {
                             Log.v("samba", Log.getStackTraceString(e));
