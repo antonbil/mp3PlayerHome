@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -200,6 +201,11 @@ public class NewAlbumsActivity extends Activity  {
                             PopupMenu menu = new PopupMenu(v.getContext(), v);
 
                             menu.setOnMenuItemClickListener(item -> {
+                                if (items.get(position).url.indexOf("playlist")>0) {
+                                    Toast.makeText(MainActivity.getThis, "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
+                                    return true;
+                                }
+
                                 if (item.getTitle().toString().equals("add album to favorites")) {
                                     MainActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
 
@@ -283,18 +289,20 @@ public class NewAlbumsActivity extends Activity  {
 
 
          public void AddAlbumToPlaylist(int position) {//spotify:user:
-             String uri = getRightSpotifyUri(items.get(position).url);
-             String prefix="spotify:album:";
-             Log.v("samba","add "+uri);
-             SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
-             /*SpotifyFragment.refreshPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
-                 @Override
-                 public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
-
-                 }
-             },1, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.getActivity(), SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);*/
+             String url = items.get(position).url;
+             String uri = url;
+             NewAlbumsActivity.this.AddAlbumToPlaylist(uri);
          }
      }
+
+    public void AddAlbumToPlaylist(String uri) {
+        Log.v("samba","add before "+uri);
+        String prefix=getRightPrefix(uri);
+        uri = getRightSpotifyUri(uri);
+        Log.v("samba","add "+prefix+" "+uri);
+        SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
+    }
+
     private String getRightSpotifyUri(String s){
         int p=s.indexOf("playlist");
         if (p>0)
@@ -302,10 +310,21 @@ public class NewAlbumsActivity extends Activity  {
         else
             return s.replace("spotify:album:", "").replace("spotify:user:", "");
     }
+    private String getRightPrefix(String s){
+        int p=s.indexOf("playlist");
+        if (p>=0)return s.substring(0,p+9);
+        else return "spotify:album:";
+    }
     public void processAlbum(NewAlbum album){
-        SpotifyFragment.artistName=album.artist;
-        //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""), Toast.LENGTH_SHORT).show();
-        SpotifyFragment.getAlbumtracksFromSpotify(getRightSpotifyUri(album.url), album.album,this);
+        if (album.url.indexOf("playlist")>0) {
+            Toast.makeText(MainActivity.getThis, "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
+            AddAlbumToPlaylist(album.url);
+        }
+        else {
+            SpotifyFragment.artistName = album.artist;
+            //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""), Toast.LENGTH_SHORT).show();
+            SpotifyFragment.getAlbumtracksFromSpotify(getRightSpotifyUri(album.url), album.album, this);//todo playlist not playing, because playlist must be part of uri!
+        }
 
     }
 
