@@ -284,7 +284,7 @@ public class NewAlbumsActivity extends Activity  {
                      builderSingle.setTitle("Select server to play on");
 
                      final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                             MainActivity.getThis,
+                             getThis,
                              android.R.layout.select_dialog_singlechoice);
                      for (int i = 0; i < servers.size(); i++) {
                          arrayAdapter.add(servers.get(i).description);
@@ -302,7 +302,11 @@ public class NewAlbumsActivity extends Activity  {
                                  final String cat = arrayAdapter.getItem(which);
                                  for (int i = 0; i < servers.size(); i++) {
                                      if (servers.get(i).description.equals(cat)) {
-                                         SelectFragment.setAddress(servers.get(i).url);
+                                         SelectFragment.setServerAddress(servers.get(i).url);
+                                         //MainActivity.getThis.getLogic().openServer(servers.get(i).url);
+                                         //MainActivity.getThis.getLogic().getMpc().setMPCListener(MainActivity.getThis);
+                                         //MainActivity.getThis.playlistGetContent();
+
                                          Log.v("samba", servers.get(i).url);
 
                                          Server.setServer(i, SelectFragment.getThis.getActivity());

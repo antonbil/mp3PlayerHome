@@ -315,10 +315,14 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     //}, 2000);
                 }, 400);
             } catch (Exception e){Log.getStackTraceString(e);}
-            MainActivity.getThis.getLogic().openServer(address);
-            MainActivity.getThis.getLogic().getMpc().setMPCListener(MainActivity.getThis);
-            MainActivity.getThis.playlistGetContent();
+            setServerAddress(address);
         }).start();
+    }
+
+    public static void setServerAddress(String address) {
+        MainActivity.getThis.getLogic().openServer(address);
+        MainActivity.getThis.getLogic().getMpc().setMPCListener(MainActivity.getThis);
+        MainActivity.getThis.playlistGetContent();
     }
 
     @Override
