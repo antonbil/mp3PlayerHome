@@ -1885,6 +1885,62 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
+    public static void billboardAlbumTop200() {
+        try {
+            MainActivity.getThis.fillListviewWithValues = new FillListviewWithValues() {
+
+                @Override
+                public void generateList(ArrayList<NewAlbum> newAlbums) {
+
+                    Document doc = null;
+                    try {
+                        doc = Jsoup.connect("http://www.billboard.com/charts/billboard-200").get();
+                    } catch (IOException e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+
+                    Elements trackelements = doc.getElementsByClass("chart-row");
+                    int i=0;
+                    for (Element element : trackelements) {
+                        i++;
+                        try {
+                            String currentWeek=element.getElementsByClass("chart-row__current-week").get(0).text();
+                            String albumTitle=element.getElementsByClass("chart-row__song").get(0).text();
+                            String artistTitle=element.getElementsByClass("chart-row__artist").get(0).text();
+                            String image1=element.getElementsByClass("chart-row__image").get(0).attr("style").replace("background-image: url(","").replace(")","");
+                            String id=element.attr("data-spotifyid");
+
+                            //Log.v("samba",id+currentWeek+artistTitle+albumTitle);
+
+                            newAlbums.add(new NewAlbum(id, artistTitle, currentWeek+"-"+albumTitle, image1));
+                        } catch (Exception e) {
+                            //Log.v("samba", Log.getStackTraceString(e));
+                            Log.v("samba", "billboardalbumTop200 error");
+                        }
+
+                    }
+                }
+
+                @Override
+                public void addToFavorites(NewAlbum newAlbum) {
+                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
+                    generateLists();
+                }
+
+            };
+
+
+            {
+                Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                MainActivity.getThis.startActivity(intent);
+            }
+            // }
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+
+    }
+
     public static class getEntirePlaylistFromSpotify {
         String playlistid;
         Activity getThis;
