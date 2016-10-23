@@ -51,6 +51,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     //private boolean regularFavoritesVisible=false;
     //private ListView favoritespotifyListView;
     private FavoriteListAdapter favoritespotifyListAdapter;
+    private RadioGroup radioGroup;
     //private ArrayList<Favorite> spotifyfavorites;
     //private boolean regularspotifyFavoritesVisible=true;
 
@@ -76,10 +77,9 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
 
             // Get the value for the run counter
-            int server = Server.getServer(getActivity());
-            RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.select_radioGroup);
-            radioGroup.check(servers.get(server).code);
-            for (int i = 0; i < radioGroup .getChildCount(); i++) {
+            radioGroup = (RadioGroup) view.findViewById(R.id.select_radioGroup);
+            setCheck();
+            for (int i = 0; i < radioGroup.getChildCount(); i++) {
                 ((RadioButton) radioGroup.getChildAt(i)).setText(servers.get(i).description);
             }
             radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -152,6 +152,18 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
             return view;
         }
+
+    public void setCheck() {
+        int server = Server.getServer(getActivity());
+        radioGroup.check(servers.get(server).code);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        setCheck();
+
+    }
 
     public void getFavorites() {
 
@@ -290,7 +302,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                                     ContextMenu.ContextMenuInfo menuInfo) {
 
     }
-    public void setAddress(String address) {
+    public static void setAddress(String address) {
         new Thread(() -> {
             try {
                 final Handler handler = new Handler();
@@ -303,8 +315,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     //}, 2000);
                 }, 400);
             } catch (Exception e){Log.getStackTraceString(e);}
-            logic.openServer(address);
-            logic.getMpc().setMPCListener((MainActivity) getActivity());
+            MainActivity.getThis.getLogic().openServer(address);
+            MainActivity.getThis.getLogic().getMpc().setMPCListener(MainActivity.getThis);
             MainActivity.getThis.playlistGetContent();
         }).start();
     }
