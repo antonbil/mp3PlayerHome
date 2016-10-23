@@ -1886,6 +1886,18 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void billboardAlbumTop200() {
+        String url = "http://www.billboard.com/charts/billboard-200";
+        billboardAlbumChart(url);
+
+    }
+
+    public static void billboardClassicalAlbumTop() {
+        String url = "http://www.billboard.com/charts/classical-albums";
+        billboardAlbumChart(url);
+
+    }
+
+    public static void billboardAlbumChart(final String url) {
         try {
             MainActivity.getThis.fillListviewWithValues = new FillListviewWithValues() {
 
@@ -1894,7 +1906,7 @@ public class SpotifyFragment extends Fragment implements
 
                     Document doc = null;
                     try {
-                        doc = Jsoup.connect("http://www.billboard.com/charts/billboard-200").get();
+                        doc = Jsoup.connect(url).get();
                     } catch (IOException e) {
                         Log.v("samba", Log.getStackTraceString(e));
                     }
@@ -1906,11 +1918,15 @@ public class SpotifyFragment extends Fragment implements
                         try {
                             String currentWeek=element.getElementsByClass("chart-row__current-week").get(0).text();
                             String albumTitle=element.getElementsByClass("chart-row__song").get(0).text();
-                            String artistTitle=element.getElementsByClass("chart-row__artist").get(0).text();
-                            String image1=element.getElementsByClass("chart-row__image").get(0).attr("style").replace("background-image: url(","").replace(")","");
+                            String artistTitle=element.getElementsByClass("chart-row__artist").get(0).text();//data-imagesrc
+                            String image1=element.getElementsByClass("chart-row__image").get(0).attr("data-imagesrc");
+                            if (image1.length()==0)
+                             image1=element.getElementsByClass("chart-row__image").get(0).attr("style").replace("background-image: url(","").replace(")","");
                             String id=element.attr("data-spotifyid");
+                            if (id.length()==0)continue;
+                            //todo: check if id valid spotify-link
 
-                            //Log.v("samba",id+currentWeek+artistTitle+albumTitle);
+                            Log.v("samba",":"+id+":"+image1);
 
                             newAlbums.add(new NewAlbum(id, artistTitle, currentWeek+"-"+albumTitle, image1));
                         } catch (Exception e) {
@@ -1938,7 +1954,6 @@ public class SpotifyFragment extends Fragment implements
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
-
     }
 
     public static class getEntirePlaylistFromSpotify {

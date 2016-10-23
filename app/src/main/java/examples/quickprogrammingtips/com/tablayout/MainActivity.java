@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //Log.d("samba", "Text:5");
             ArrayList<String> menuItemsArray = new ArrayList<String>(
                     Arrays.asList("Settings","Large Display",
-                            "sep","Search mpd", "Search album","sep", "New albums categories" , "Dutch album top 100","Billboard album top 200", "Spotify Album Shortcuts", "sep","Volume", "sep","Close" ));
+                            "sep","Search mpd", "Search album","sep", "New albums categories" , "Dutch album top 100","Billboard album top 200", "Billboard classical album list","Spotify Album Shortcuts", "sep","Volume", "sep","Close" ));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                     R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
                 @Override
@@ -258,8 +258,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         case "Dutch album top 100":
                             doDutchAlbumTop40();
                             break;
+                        //
+
                         case "Billboard album top 200":
                             doBillboardAlbumTop200();
+                            break;
+                        case "Billboard classical album list":
+                            doBillboardClassicalAlbumTop200();
                             break;
                         case "Spotify Album Shortcuts":
                             doSpotifyAlbumShortcuts();
@@ -698,6 +703,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     public void doBillboardAlbumTop200() {
         SpotifyFragment.billboardAlbumTop200();
+    }
+    public void doBillboardClassicalAlbumTop200() {
+        SpotifyFragment.billboardClassicalAlbumTop();
     }
     public void doDutchAlbumTop40() {
         SpotifyFragment.albumTop100Nl();
