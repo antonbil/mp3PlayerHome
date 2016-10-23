@@ -2,6 +2,8 @@ package examples.quickprogrammingtips.com.tablayout;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +18,20 @@ import java.util.ArrayList;
  */
 
 public class MenuAdapter extends ArrayAdapter<String> {
+
+    private final int itemHeight;
+    private final int separatorHeight;
+
     public MenuAdapter(Context context, ArrayList<String> list) {
         super(context, 0, list);
+        Display display = MainActivity.getThis.getWindowManager().getDefaultDisplay();
+// get size in pixels
+        Point size = new Point();
+        display.getSize(size);
+        //int width = size.x;
+        int height = size.y;
+        itemHeight = (height/12);
+        separatorHeight =itemHeight/8;
     }
 
     @Override
@@ -41,10 +55,15 @@ public class MenuAdapter extends ArrayAdapter<String> {
         if (user.equals("sep")){
             user="";
             listItem.setBackgroundColor(Color.GREEN);
-            listItem.setHeight(20);
+            listItem.setHeight(separatorHeight);
         }
         else {
-            listItem.setHeight(160);
+            /*
+                    itemHeight = (height/12);
+        separatorHeight =itemHeight/8;
+
+             */
+            listItem.setHeight(itemHeight);
             user="   "+user;
         }
         listItem.setText(user);
