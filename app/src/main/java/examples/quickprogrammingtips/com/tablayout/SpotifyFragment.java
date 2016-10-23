@@ -1902,6 +1902,25 @@ public class SpotifyFragment extends Fragment implements
             MainActivity.getThis.fillListviewWithValues = new FillListviewWithValues() {
 
                 @Override
+                protected void addMenuItems(ArrayList<String> menuItems){
+                    menuItems.add("sep");
+                    ArrayList<String> billboardList = new ArrayList<>(Arrays.asList("classical-albums","greatest-billboard-200-albums","billboard-200","independent-albums"
+                    ,"country-albums","bluegrass-albums","rock-albums","alternative-albums","hard-rock-albums","americana-folk-albums","united-kingdom-albums"
+                            ,"reggae-albums","new-age-albums","jazz-albums","blues-albums","dance-electronic-albums","r-b-hip-hop-albums","r-and-b-albums"
+                            ,"rap-albums","latin-pop-albums","latin-albums","gospel-albums"));
+                    //reggae new-age jazz blues gospel latin latin-pop dance-electronic r-b-hip-hop r-and-b rap
+                    for (String cat : billboardList) {
+                        menuItems.add("http://"+cat);
+                    }
+                    //menuItems.addAll(menuItemsadd);
+                }
+                @Override
+                public void executeUrl(String s){
+                    //http://www.billboard.com/charts/classical-albums
+                    s= s.replace("http://","http://www.billboard.com/charts/");
+                    billboardAlbumChart(s);
+                };
+                @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
 
                     Document doc = null;
@@ -1920,18 +1939,29 @@ public class SpotifyFragment extends Fragment implements
                             String albumTitle=element.getElementsByClass("chart-row__song").get(0).text();
                             String artistTitle=element.getElementsByClass("chart-row__artist").get(0).text();//data-imagesrc
                             String image1=element.getElementsByClass("chart-row__image").get(0).attr("data-imagesrc");
+                            String lastweek="";
+                            try{
+                            lastweek=element.select(".chart-row__last-week>.chart-row__value").first().text();
+                        } catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+                            //Log.v("samba", "billboardalbumTop200 error");
+                        }
+                            String incharts=element.getElementsByClass("chart-row__weeks-on-chart").get(0).getElementsByClass("chart-row__value").get(0).text();
+                            //chart-row__value within chart-row__last-week
+                            //chart-row__value within chart-row__weeks-on-chart
                             if (image1.length()==0)
                              image1=element.getElementsByClass("chart-row__image").get(0).attr("style").replace("background-image: url(","").replace(")","");
                             String id=element.attr("data-spotifyid");
                             if (id.length()==0)continue;
                             //todo: check if id valid spotify-link
+                            String nr=String.format("%s-%s-(%s)-",currentWeek,lastweek,incharts);
 
                             Log.v("samba",":"+id+":"+image1);
 
-                            newAlbums.add(new NewAlbum(id, artistTitle, currentWeek+"-"+albumTitle, image1));
+                            newAlbums.add(new NewAlbum(id, artistTitle, nr+albumTitle, image1));
                         } catch (Exception e) {
-                            //Log.v("samba", Log.getStackTraceString(e));
-                            Log.v("samba", "billboardalbumTop200 error");
+                            Log.v("samba", Log.getStackTraceString(e));
+                            //Log.v("samba", "billboardalbumTop200 error");
                         }
 
                     }
