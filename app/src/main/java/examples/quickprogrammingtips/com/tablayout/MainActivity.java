@@ -1224,7 +1224,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public void statusUpdate(MPCStatus newStatus) {
 
         if (statusThread||!shutDownReceiver.wasScreenOn) return;
-        //Log.v("samba","update");
+        //Log.v("samba","update:"+SpotifyFragment.ipAddress);
 
         new Thread(() -> {
             statusThread=true;
@@ -1234,7 +1234,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             if (SpotifyFragment.isPlaying()){
                 if (SpotifyFragment.getThis!=null)
                 try{
-                if (SpotifyFragment.getThis.albumAdapter!=null)
+                //if (SpotifyFragment.getThis.albumAdapter!=null)
                     SpotifyFragment.playingEngine=1;
             } catch (Exception e) {
             }

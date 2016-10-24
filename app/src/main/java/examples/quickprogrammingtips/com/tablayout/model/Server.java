@@ -3,6 +3,7 @@ package examples.quickprogrammingtips.com.tablayout.model;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,19 +25,23 @@ public class Server {
 
     }
     public static int getServer(Context context){
+        if (context==null)context=MainActivity.getThis;
         final SharedPreferences app_preferences =
                 PreferenceManager.getDefaultSharedPreferences(context);
 
         // Get the value for the run counter
         int server = app_preferences.getInt("server", 0);
+        Log.v("samba","server get: "+server);
         return server;
     }
     public static void setServer(int server, Context context){
+        if (context==null)context=MainActivity.getThis;
         SharedPreferences app_preferences =
                 PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = app_preferences.edit();
         editor.putInt("server", server);
         editor.commit();
+        Log.v("samba","server set to: "+server);
     }
     private static String getPref(String id){
         //String s=MainActivity.getThis.getString(id);

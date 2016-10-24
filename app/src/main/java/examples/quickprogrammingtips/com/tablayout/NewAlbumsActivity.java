@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,8 +24,6 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import examples.quickprogrammingtips.com.tablayout.model.Server;
 
 public class NewAlbumsActivity extends Activity  {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
@@ -278,46 +275,12 @@ public class NewAlbumsActivity extends Activity  {
                      MainActivity.startWikipediaPage(items.get(position).artist);
                  }else
                  if (item.getTitle().toString().equals("play album on server")) {
-                     ArrayList<Server>servers=Server.servers;
-                     AlertDialog.Builder builderSingle = new AlertDialog.Builder(getThis);
-                     builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
-                     builderSingle.setTitle("Select server to play on");
-
-                     final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                             getThis,
-                             android.R.layout.select_dialog_singlechoice);
-                     for (int i = 0; i < servers.size(); i++) {
-                         arrayAdapter.add(servers.get(i).description);
-                     }
-
-                     builderSingle.setNegativeButton(
-                             "cancel",
-                             (dialog, which) -> {
-                                 dialog.dismiss();
-                             });
-
-                     builderSingle.setAdapter(
-                             arrayAdapter,
-                             (dialog, which) -> {
-                                 final String cat = arrayAdapter.getItem(which);
-                                 for (int i = 0; i < servers.size(); i++) {
-                                     if (servers.get(i).description.equals(cat)) {
-                                         SelectFragment.setServerAddress(servers.get(i).url);
-                                         //MainActivity.getThis.getLogic().openServer(servers.get(i).url);
-                                         //MainActivity.getThis.getLogic().getMpc().setMPCListener(MainActivity.getThis);
-                                         //MainActivity.getThis.playlistGetContent();
-
-                                         Log.v("samba", servers.get(i).url);
-
-                                         Server.setServer(i, SelectFragment.getThis.getActivity());
-                                         processAlbum(items.get(position));
-                                     }
-                                 }
-                            });
-                     builderSingle.show();
-
-                     //MainActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
-
+                     new SetAndPlayOnServer(getThis){
+                         @Override
+                         public void atEnd(){
+                             processAlbum(items.get(position));
+                         }
+                     };
                  }
                  return true;
              });

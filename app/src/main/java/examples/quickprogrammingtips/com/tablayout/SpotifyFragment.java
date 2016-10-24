@@ -141,7 +141,7 @@ public class SpotifyFragment extends Fragment implements
     public static SpotifyInterface getSpotifyInterface;
     private static int spotifyStartPosition = 0;
     //private static HashMap<String, String> spotifyToken = new HashMap<>();
-    private static String ipAddress = "";
+    public static String ipAddress = "";
     public static String nextCommand="";
     public PlanetAdapter albumAdapter;
     protected ListView albumsListview;
@@ -326,9 +326,13 @@ public class SpotifyFragment extends Fragment implements
 
     public static String checkAddress() {
         String ip = MainActivity.getThis.getLogic().getMpc().getAddress();
+        checkAddressIp(ip);
+        return ipAddress;
+    }
+
+    public static void checkAddressIp(String ip) {
         ipAddress = //String.format("http://%s:8080/jsonrpc", ip);
                 String.format("http://%s:6680/mopidy/rpc", ip);
-        return ipAddress;
     }
 
     public static void playSpotify(){
@@ -1063,6 +1067,10 @@ public class SpotifyFragment extends Fragment implements
             }
 
             @Override
+            public void transferPlaylist() {
+            }
+
+            @Override
             public void addAlbumNoplay(int counter) {
 
             }
@@ -1221,6 +1229,10 @@ public class SpotifyFragment extends Fragment implements
                         Log.v("samba", Log.getStackTraceString(e));
                     }
 
+            }
+
+            @Override
+            public void transferPlaylist() {
             }
 
             @Override
@@ -1572,6 +1584,7 @@ public class SpotifyFragment extends Fragment implements
 
     public static void seekPositionSpotify(String ipAddress, int position) {
         try {
+            Log.v("samba","ip:"+ipAddress);
             getJsonStringFromUrl(String.format("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.seek\", \"params\": {\"time_position\":%s}}",position),
                     ipAddress);
         } catch (Exception e) {

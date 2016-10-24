@@ -52,6 +52,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void addAndPlayAlbum(int counter);
     public abstract void albumArtistWikipedia(int counter);
     public abstract void addAlbum(int counter);
+    public abstract void transferPlaylist();
     public abstract void addAlbumNoplay(int counter);
 
         Bitmap logo1;
@@ -252,6 +253,9 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
                         displayArtistWikipedia(position);
                     } else if (title.equals("large picture")) {
                         MainActivity.displayLargeImage(getThis, logo);
+                    } else if (item.getTitle().toString().equals("-->transfer")) {
+                        //Log.v("samba","transfer planetadapter");
+                        transferPlaylist();
                     } else if (title.equals("add album to favorites")) {
                         addAlbumToFavoritesTrack(position);
                     }
@@ -265,6 +269,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("add album to favorites");
             menu.getMenu().add("display artist");
             menu.getMenu().add("wikipedia");
+            menu.getMenu().add("-->transfer");
             menu.getMenu().add("large picture");
         } else {
             menu.setOnMenuItemClickListener(item -> {

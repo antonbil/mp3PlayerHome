@@ -52,6 +52,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     //private ListView favoritespotifyListView;
     private FavoriteListAdapter favoritespotifyListAdapter;
     private RadioGroup radioGroup;
+    private int serverCode=-1;
     //private ArrayList<Favorite> spotifyfavorites;
     //private boolean regularspotifyFavoritesVisible=true;
 
@@ -94,8 +95,14 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         if (checkedId == servers.get(i).code) {
                             setAddress(servers.get(i).url);
                             Log.v("samba", servers.get(i).url);
+                            if (serverCode==-1)
 
-                            Server.setServer(i, getActivity());
+                                Server.setServer(i, getActivity());
+                            else {
+                                Log.v("samba","checked id="+checkedId);
+                                radioGroup.check(serverCode);
+                            }
+                            serverCode=-1;
                         }
                     }
 
@@ -155,13 +162,16 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     public void setCheck() {
         int server = Server.getServer(getActivity());
+        Log.v("samba","now set radio-group to "+server);//servers.get(server).code
+        Log.v("samba","now set radio-group to "+servers.get(server).code);//servers.get(server).code
+        this.serverCode=servers.get(server).code;
         radioGroup.check(servers.get(server).code);
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        setCheck();
+        //setCheck();
 
     }
 

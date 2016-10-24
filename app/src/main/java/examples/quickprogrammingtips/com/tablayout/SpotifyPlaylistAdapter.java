@@ -1,8 +1,13 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.util.Log;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * Created by anton on 17-10-16.
@@ -109,6 +114,53 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
         SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.id, SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name
                 , MainActivity.getThis);
 
+    }
+
+    @Override
+    public void transferPlaylist() {
+        //Track a = SpotifyFragment.getThis.data.tracksPlaylist.get(0);
+        ArrayList<Track> tracks=new ArrayList<>();
+        int currentTrack=SpotifyFragment.currentTrack;
+        int trackPosition=SpotifyFragment.getTime();
+        Log.v("samba","trackPosition:"+trackPosition);
+        for (Track t:SpotifyFragment.getThis.data.tracksPlaylist){
+            tracks.add(t);
+        }
+        Log.v("samba","transfer spotifyplaylistadapter");
+        new SetAndPlayOnServer(SpotifyPlaylistFragment.activityThis){
+            @Override
+            public void atFirst(){
+                SpotifyFragment.stopSpotifyPlaying(SpotifyFragment.getThis.ipAddress);
+            }
+            @Override
+            public void atEnd(){
+                try{
+                Log.v("samba","clear");
+                SpotifyFragment.clearSpotifyPlaylist();
+                Log.v("samba","tracks");
+                for (Track t:tracks) {
+                    String prefix = "spotify:track:";
+                    String uri = t.id;
+                    if (uri.startsWith("spotify")) prefix = "";
+                    Log.v("samba","add"+uri);
+                    SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
+                }
+                    SpotifyFragment.playAtPosition(currentTrack);
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            SpotifyFragment.seekPositionSpotify(SpotifyFragment.ipAddress, trackPosition);
+                        }
+                    }, 2000);
+
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+            }
+
+
+                //processAlbum(items.get(position));
+            }
+        };
     }
 
     @Override
