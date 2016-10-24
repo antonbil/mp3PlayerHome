@@ -118,13 +118,14 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
 
     @Override
     public void transferPlaylist() {
+
         ArrayList<Track> tracks=new ArrayList<>();
         int currentTrack=SpotifyFragment.currentTrack;
         int trackPosition=SpotifyFragment.getTime();
         for (Track t:SpotifyFragment.getThis.data.tracksPlaylist){
             tracks.add(t);
         }
-        new SetAndPlayOnServer(SpotifyPlaylistFragment.activityThis){
+        new SetAndPlayOnServer(parent.getContext()/*SpotifyPlaylistFragment.activityThis*/){
             @Override
             public void atFirst(){
                 SpotifyFragment.stopSpotifyPlaying(SpotifyFragment.getThis.ipAddress);

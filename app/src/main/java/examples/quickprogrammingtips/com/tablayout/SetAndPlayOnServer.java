@@ -1,6 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -18,11 +18,11 @@ import examples.quickprogrammingtips.com.tablayout.model.Server;
 
 public class SetAndPlayOnServer {
 
-    public SetAndPlayOnServer(Activity getThis){
+    public SetAndPlayOnServer(Context getThis){
         showDialog(getThis);
     }
 
-    public void showDialog(Activity getThis) {
+    public void showDialog(Context getThis) {
         ArrayList<Server> servers=Server.servers;
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(getThis);
         builderSingle.setIcon(R.drawable.common_ic_googleplayservices);

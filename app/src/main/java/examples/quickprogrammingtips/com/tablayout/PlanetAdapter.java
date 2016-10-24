@@ -24,12 +24,13 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     private boolean displayCurrentTrack = true;
     int currentItem = -1;
     private boolean albumVisible=false;
+    protected ViewGroup parent;
 
     public void setCurrentItem(int i) {
         this.currentItem = i;
     }
 
-    private Context context;
+    protected Context context;
     private Context getThis;
     private int mypos=1;
 
@@ -65,6 +66,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
+        this.parent=parent;
         final ViewHolder holder;
 
 // First let's verify the convertView is not null
