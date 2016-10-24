@@ -2574,12 +2574,13 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static String getState(){
+        //Log.v("samba", "get state from "+ipAddress);
         String s = getState("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.get_state\"}", ipAddress);
         try {
             String s1=new JSONObject(s).getString("result");
             return s1;
         } catch (Exception e) {
-            //e.printStackTrace();
+            Log.v("samba", Log.getStackTraceString(e));
         }
         return "stopped";
     }
@@ -2608,8 +2609,7 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
-    public static String updateSongInfo(TextView time, TextView totaltime, TextView tvName, TextView artist,
-                                        ImageView image, PlanetAdapter albumAdapter, ListView albumsListview, Activity getThis, final SpotifyInterface getSpotifyInterface) {
+    public static String updateSongInfo(Activity getThis, final SpotifyInterface getSpotifyInterface) {
         String artistReturn="";
         if (busyupdateSongInfo)return "";
         busyupdateSongInfo=false;

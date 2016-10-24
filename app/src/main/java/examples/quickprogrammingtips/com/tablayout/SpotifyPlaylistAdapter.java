@@ -118,15 +118,12 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
 
     @Override
     public void transferPlaylist() {
-        //Track a = SpotifyFragment.getThis.data.tracksPlaylist.get(0);
         ArrayList<Track> tracks=new ArrayList<>();
         int currentTrack=SpotifyFragment.currentTrack;
         int trackPosition=SpotifyFragment.getTime();
-        Log.v("samba","trackPosition:"+trackPosition);
         for (Track t:SpotifyFragment.getThis.data.tracksPlaylist){
             tracks.add(t);
         }
-        Log.v("samba","transfer spotifyplaylistadapter");
         new SetAndPlayOnServer(SpotifyPlaylistFragment.activityThis){
             @Override
             public void atFirst(){
@@ -135,30 +132,27 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
             @Override
             public void atEnd(){
                 try{
-                Log.v("samba","clear");
-                SpotifyFragment.clearSpotifyPlaylist();
-                Log.v("samba","tracks");
-                for (Track t:tracks) {
-                    String prefix = "spotify:track:";
-                    String uri = t.id;
-                    if (uri.startsWith("spotify")) prefix = "";
-                    Log.v("samba","add"+uri);
-                    SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
-                }
+                    SpotifyFragment.clearSpotifyPlaylist();
+                    for (Track t:tracks) {
+                        String prefix = "spotify:track:";
+                        String uri = t.id;
+                        if (uri.startsWith("spotify")) prefix = "";
+                        SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
+                    }
+                    MainActivity.getThis.getLogic().getMpc().stop();
+                    SpotifyFragment.busyupdateSongInfo=false;
+                    SpotifyFragment.stopMpd();
                     SpotifyFragment.playAtPosition(currentTrack);
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            SpotifyFragment.seekPositionSpotify(SpotifyFragment.ipAddress, trackPosition);
+                            SpotifyFragment.seekPositionSpotify(SpotifyFragment.ipAddress, trackPosition*1000);
                         }
-                    }, 2000);
+                    }, 400);
 
-            } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
-
-
-                //processAlbum(items.get(position));
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
             }
         };
     }

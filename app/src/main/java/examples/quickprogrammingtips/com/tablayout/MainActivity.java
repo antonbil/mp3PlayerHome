@@ -1223,179 +1223,126 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void statusUpdate(MPCStatus newStatus) {
 
-        if (statusThread||!shutDownReceiver.wasScreenOn) return;
-        //Log.v("samba","update:"+SpotifyFragment.ipAddress);
+        if (statusThread || !shutDownReceiver.wasScreenOn) return;
 
         new Thread(() -> {
-            statusThread=true;
+            statusThread = true;
 
-            int prev= SpotifyFragment.playingEngine;
+            int prev = SpotifyFragment.playingEngine;
 
-            if (SpotifyFragment.isPlaying()){
-                if (SpotifyFragment.getThis!=null)
-                try{
-                //if (SpotifyFragment.getThis.albumAdapter!=null)
-                    SpotifyFragment.playingEngine=1;
-            } catch (Exception e) {
-            }
+            if (SpotifyFragment.isPlaying()) {
+                if (SpotifyFragment.getThis != null)
+                    try {
+                        SpotifyFragment.playingEngine = 1;
+                    } catch (Exception e) {
+                    }
 
-                ImageView viewById = (ImageView) findViewById(R.id.thumbnail_top);
-                 if (SpotifyFragment.busyupdateSongInfo) {
-                     try {
-                         Log.v("samba", "nu binnen2");
-                    String[] trid1 = SpotifyFragment.getCurrentTrack();//
-                    String trid = "0";
+                if (SpotifyFragment.busyupdateSongInfo) {
+                    try {
+                        Log.v("samba", "nu binnen2");
+                        String[] trid1 = SpotifyFragment.getCurrentTrack();//
+                        String trid = "0";
                         trid = trid1[0];
-                    if (trid.length() > 0) {
-                        //currentTrack=0;
-                        if (SpotifyFragment.getThis!=null){
-                        if (SpotifyFragment.getThis.albumAdapter != null)
-                            for (int i = 0; i < SpotifyFragment.getThis.data.tracksPlaylist.size(); i++) {
-                                if (SpotifyFragment.getThis.data.tracksPlaylist.get(i).id.equals(trid)) {
-                                    if (SpotifyFragment.currentTrack != i)
-                                        SpotifyFragment.getThis.albumsListview.setItemChecked(SpotifyFragment.currentTrack, false);
-                                    SpotifyFragment.currentTrack = i;
-                                    //Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
+                        if (trid.length() > 0) {
+                            for (int i = 0; i < SpotifyPlaylistFragment.getThis.data.tracksPlaylist.size(); i++) {
+                                if (SpotifyPlaylistFragment.getThis.data.tracksPlaylist.get(i).id.equals(trid)) {
+                                    if (SpotifyPlaylistFragment.currentTrack != i)
+                                        SpotifyPlaylistFragment.getThis.albumsListview.setItemChecked(SpotifyFragment.currentTrack, false);
+                                    SpotifyPlaylistFragment.currentTrack = i;
                                     break;
                                 }
                             }
-
-                        if (SpotifyFragment.getThis.albumAdapter != null) {
-                            SpotifyFragment.getThis.albumAdapter.setCurrentItem(SpotifyFragment.currentTrack);
                             MainActivity.getThis.runOnUiThread(() -> {
-                                SpotifyFragment.getThis.albumAdapter.notifyDataSetChanged();
+                                SpotifyPlaylistFragment.getThisPlaylist.tracksAdapter.notifyDataSetChanged();
                             });
                         }
-                        }
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
                     }
-                     } catch (Exception e) {
-                         Log.v("samba", Log.getStackTraceString(e));
-                     }
                 } else {
-                     PlanetAdapter albumAdapter = null;
-                     if (SpotifyFragment.getThis!=null)
-                         albumAdapter = SpotifyFragment.getThis.albumAdapter;
-                     ListView albumsListview = null;
-                     if (SpotifyFragment.getThis!=null)
-                         albumsListview = SpotifyFragment.getThis.albumsListview;
-                     currentArtist = SpotifyFragment.updateSongInfo((TextView) findViewById(R.id.time_top),
-                             (TextView) findViewById(R.id.totaltime_top),
-                             (TextView) findViewById(R.id.title_top),
-                             (TextView) findViewById(R.id.artist_top),
-                             viewById,
-                             albumAdapter, albumsListview,getThis,getSpotifyInterface);
-                 }
+                    currentArtist = SpotifyFragment.updateSongInfo(getThis, getSpotifyInterface);
+                }
 
                 checkButtons(prev);
-                MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
-                statusThread=false;
+                MainActivity.playingStatus = MainActivity.SPOTIFY_PLAYING;
+                statusThread = false;
 
                 return;
 
             }
-        //        if (SpotifyActivity.playingEngine==1){SpotifyActivity.getThis.playButtonsAtBottom();}
-            //checkButtons(prev);
 
-            //SpotifyFragment.playingEngine=2;
             final MPCStatus status = newStatus;
             logic.mpcStatus = newStatus;
             if (status.song == null) {
 
-                statusThread=false;
-                return;}
-            if (status.playing){
-                //if (SpotifyFragment.playingEngine==1){setListenersForButtons();}
-                SpotifyFragment.playingEngine=2;
+                statusThread = false;
+                return;
             }
-            //if (MainActivity.activityVisible)
-            {
-                //Handler h = new Handler(Looper.getMainLooper());
-                //h.post(() -> {
-                    //Log.v("samba","tijd:"+newStatus.time.toString());
-
-                    if (status.song.intValue() < logic.getPlaylistFiles().size())
-
-                        runOnUiThread(() -> {
-                            ViewHolder vh = getThis.viewHolder;
-                            try {
-                                Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
-
-                                TextView tvName = (TextView) findViewById(R.id.title_top);
-                                final String title = currentSong.getTitle();
-                                //tvName.setText(title);
-                                vh.title = title;
-                                //Log.v("samba", currentSong.getTitle());
-                                //Log.v("samba", currentSong.getArtist());
-                                TextView time = (TextView) findViewById(R.id.time_top);
-                                final String time1 = Mp3File.niceTime(status.time.intValue());
-                                vh.time = time1;
-                                //time.setText(time1);
-                                TextView totaltime = (TextView) findViewById(R.id.totaltime_top);
-                                String timeNice;
-                                try {
-                                    timeNice = currentSong.getTimeNice();
-                                    //totaltime.setText(timeNice);
-                                    vh.totaltime = timeNice;
-                                } catch (Exception e) {
-                                    timeNice ="00:00";
-                                            //totaltime.setText(timeNice);
-                                }
-                                String album = "";
-                                TextView artist = (TextView) findViewById(R.id.artist_top);
-                                try {
-                                    album = currentSong.niceAlbum();
-                                    currentArtist = currentSong.getArtist();
-                                    artist.setText(album);
-                                    vh.album = album;
-                                } catch (Exception e) {
-                                    album="statusupdate";
-                                            artist.setText(album);
-                                }
-                                final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
-                                String uri = Logic.getUrlFromSongpath(currentSong);
-                                for (HeaderSongInterface header:MainActivity.headers){
-                                    if (header!=null)
-                                    header.setData(time1, timeNice,title, album, false, status.song.intValue());
-                                }
-                                MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
-
-                                if (albumPictures.containsKey(album)) {
-                                    final Bitmap b = albumPictures.get(album);
-                                    albumBitmap = b;
-                                    currentSong.setBitmap(b);
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            for (HeaderSongInterface header:MainActivity.headers) {
-                                                if (header!=null)
-                                                header.setLogo(b);
-                                            }
-
-                                                //image.setImageBitmap(b);
-                                        }
-                                    });
-                                } else {
-                                    albumPictures.put(album, null);
-
-
-                                    new ImageLoadTask(uri, album, mainActivity, image).execute();
-
-
-                                }//
-                                if (playFragment!=null)playFragment.updateCurrentSong();
-                                MainActivity.playingStatus = MainActivity.MPD_PLAYING;
-                                //Log.v("samba",uri);
-                            } catch (Exception e) {
-                                statusThread=false;
-                                //Log.v("samba","statusupdate");
-
-                                //mpc.connectionFailed("Connection failed, check settings");
-                                //t.stop();
-                            }
-                        });
-                //});
+            if (status.playing) {
+                SpotifyFragment.playingEngine = 2;
             }
-            statusThread=false;
+            if (status.song.intValue() < logic.getPlaylistFiles().size())
+
+                runOnUiThread(() -> {
+                    ViewHolder vh = getThis.viewHolder;
+                    try {
+                        Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
+                        final String title = currentSong.getTitle();
+                        vh.title = title;
+
+                        final String time1 = Mp3File.niceTime(status.time.intValue());
+                        vh.time = time1;
+                        String timeNice;
+                        try {
+                            timeNice = currentSong.getTimeNice();
+                            vh.totaltime = timeNice;
+                        } catch (Exception e) {
+                            timeNice = "00:00";
+                        }
+                        String album = "";
+                        TextView artist = (TextView) findViewById(R.id.artist_top);
+                        try {
+                            album = currentSong.niceAlbum();
+                            currentArtist = currentSong.getArtist();
+                            artist.setText(album);
+                            vh.album = album;
+                        } catch (Exception e) {
+                            album = "statusupdate";
+                            artist.setText(album);
+                        }
+                        final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
+                        String uri = Logic.getUrlFromSongpath(currentSong);
+                        for (HeaderSongInterface header : MainActivity.headers) {
+                            if (header != null)
+                                header.setData(time1, timeNice, title, album, false, status.song.intValue());
+                        }
+                        MainActivity.playingStatus = MainActivity.SPOTIFY_PLAYING;
+
+                        if (albumPictures.containsKey(album)) {
+                            final Bitmap b = albumPictures.get(album);
+                            albumBitmap = b;
+                            currentSong.setBitmap(b);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    for (HeaderSongInterface header : MainActivity.headers) {
+                                        if (header != null)
+                                            header.setLogo(b);
+                                    }
+                                }
+                            });
+                        } else {
+                            albumPictures.put(album, null);
+                            new ImageLoadTask(uri, album, mainActivity, image).execute();
+                        }//
+                        if (playFragment != null) playFragment.updateCurrentSong();
+                        MainActivity.playingStatus = MainActivity.MPD_PLAYING;
+                        //Log.v("samba",uri);
+                    } catch (Exception e) {
+                        statusThread = false;
+                    }
+                });
+            statusThread = false;
 
         }).start();
     }

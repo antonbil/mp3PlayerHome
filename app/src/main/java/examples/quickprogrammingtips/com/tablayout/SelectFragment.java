@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import examples.quickprogrammingtips.com.tablayout.adapters.FavoriteListAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
@@ -53,6 +55,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     private FavoriteListAdapter favoritespotifyListAdapter;
     private RadioGroup radioGroup;
     private int serverCode=-1;
+    private RadioGroup.OnCheckedChangeListener radioGroupListener;
     //private ArrayList<Favorite> spotifyfavorites;
     //private boolean regularspotifyFavoritesVisible=true;
 
@@ -60,19 +63,12 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
         getThis=this;
-            servers.toArray();
-            //favorites = new ArrayList<>();
-        //spotifyfavorites = new ArrayList<>();
+        servers.toArray();
 
-            //test records to db
-            /*FavoriteRecord fv=new FavoriteRecord("abc", "abcpath", "2nd edition");
-            fv.save();
-            fv=new FavoriteRecord("abc2", "abcpath2", "2nd edition");
-            fv.save();*/
 
-            // Inflate the layout for this fragment
-            logic =((MainActivity)getActivity()).getLogic();
-            View view = inflater.inflate(R.layout.fragment_select, container, false);
+        // Inflate the layout for this fragment
+        logic =((MainActivity)getActivity()).getLogic();
+        View view = inflater.inflate(R.layout.fragment_select, container, false);
         try{
             final SharedPreferences app_preferences =
                     PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -83,7 +79,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             for (int i = 0; i < radioGroup.getChildCount(); i++) {
                 ((RadioButton) radioGroup.getChildAt(i)).setText(servers.get(i).description);
             }
-            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            radioGroupListener = new RadioGroup.OnCheckedChangeListener() {
 
 
                 @Override
@@ -94,46 +90,15 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     for (int i = 0; i < servers.size(); i++) {
                         if (checkedId == servers.get(i).code) {
                             setAddress(servers.get(i).url);
-                            Log.v("samba", servers.get(i).url);
-                            if (serverCode==-1)
-
-                                Server.setServer(i, getActivity());
-                            else {
-                                Log.v("samba","checked id="+checkedId);
-                                radioGroup.check(serverCode);
-                            }
-                            serverCode=-1;
+                            Server.setServer(i, getActivity());
                         }
                     }
 
                 }
 
-            });
+            };
+            radioGroup.setOnCheckedChangeListener(radioGroupListener);
 
-            /*TextView tv=(TextView)view.findViewById(R.id.favoriteTextlistView);
-            tv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    regularFavoritesVisible = !regularFavoritesVisible;
-                    getFavorites();
-                }
-            });*/
-        /*TextView tv2=(TextView)view.findViewById(R.id.favoritespotifyTextlistView);
-        tv2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                regularspotifyFavoritesVisible = !regularspotifyFavoritesVisible;
-                getFavorites();
-            }
-        });*/
-            /*favoriteListView = (android.widget.ListView) view.findViewById(R.id.selectlistView);
-            favoriteListAdapter = new FavoriteListAdapter(getActivity(), this, false,favorites);
-            favoriteListView.setAdapter(favoriteListAdapter);*/
-        /*favoritespotifyListView = (android.widget.ListView) view.findViewById(R.id.selectspotifylistView);
-        favoritespotifyListAdapter = new FavoriteListAdapter(getActivity(), this, false,spotifyfavorites);
-        favoritespotifyListView.setAdapter(favoriteListAdapter);*/
-
-            //FavoritesListItem favoritesSpotifyListItem = new FavoritesListItem(this, view, "spotify", "sp");
             favoritesListItemArray.add(new FavoritesListItem(this, view, "favorites", "1",false));
             favoritesListItemArray.add(new FavoritesListItem(this, view, "spotify", "2",true));
             for (int i=0;i<Favorite.categoryIdssize();i++) {
@@ -142,30 +107,35 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             }
 
             for (final FavoritesListItem item: favoritesListItemArray) {
-                item.favoriteTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        item.toggleVisible();
-                        getFavorites();
-                    }
+                item.favoriteTextView.setOnClickListener(v -> {
+                    item.toggleVisible();
+                    getFavorites();
                 });
-                //favoritesListItemArray.add(favoritesListItem);
             }
             getFavorites();
-    } catch (Exception e) {
-        Log.v("samba", Log.getStackTraceString(e));
-        //Log.v("samba", Log.getStackTraceString(e));
-    }
-
-            return view;
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
         }
+
+        return view;
+    }
 
     public void setCheck() {
         int server = Server.getServer(getActivity());
-        Log.v("samba","now set radio-group to "+server);//servers.get(server).code
-        Log.v("samba","now set radio-group to "+servers.get(server).code);//servers.get(server).code
-        this.serverCode=servers.get(server).code;
-        radioGroup.check(servers.get(server).code);
+        int id = radioGroup.getChildAt(server).getId();
+        radioGroup.setOnCheckedChangeListener(null);
+        radioGroup.clearCheck();
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                MainActivity.getThis.runOnUiThread(() -> {
+                    radioGroup.check(id);
+                    radioGroup.setOnCheckedChangeListener(radioGroupListener);
+                });
+            }
+        }, 400);
+
     }
 
     @Override
