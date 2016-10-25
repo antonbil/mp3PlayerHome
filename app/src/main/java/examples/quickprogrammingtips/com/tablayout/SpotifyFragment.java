@@ -205,7 +205,7 @@ public class SpotifyFragment extends Fragment implements
             checkAppMemory();
 
 
-            SpotifyFragment.getThis.data.tracksPlaylist = new ArrayList<Track>();
+
 
             String ip = MainActivity.getThis.getLogic().getMpc().getAddress();
             ipAddress = String.format("http://%s:8080/jsonrpc", ip);
@@ -545,7 +545,7 @@ public class SpotifyFragment extends Fragment implements
 
 
         public void onActivityCreated() {
-            SpotifyPlaylistFragment.refresh=true;
+            //SpotifyPlaylistFragment.refresh=true;
             //Log.d("samba", "Text:1");
 
             try {
@@ -2770,7 +2770,7 @@ public class SpotifyFragment extends Fragment implements
         return "";
     }
 
-    private static abstract class DownLoadImageUrlTask extends AsyncTask<String, Void, String> {
+    public static abstract class DownLoadImageUrlTask extends AsyncTask<String, Void, String> {
     public static void setAlbumPicture(String key, String value) {
         DownLoadImageUrlTask.albumPictures.put(key,value);
     }

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * Created by anton on 10-9-16.
@@ -64,29 +65,73 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             searchAlbum();
 
         }else {
-            if (refresh ||(albumList1.size()==0)) {
+            if (refresh ||(SpotifyFragment.data.tracksPlaylist.size()==0)) {
                 Log.v("samba","new list!");
                 setCurrentTracklist();
             }
             else {
                 tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
+                generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList1,albumTracks1);
                 tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
 
                 tracksAdapter.setDisplayCurrentTrack(true);
                 tracksListview.setAdapter(tracksAdapter);
-                //Log.v("samba","currentTrack:"+SpotifyFragment.currentTrack);
-                tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
 
+                tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
+                tracksAdapter.notifyDataSetChanged();
             }
             refresh=false;
         }
         nextCommand="";
-        //MainActivity.headers.add(this);
 
     }
 
+    public static void generateAdapterLists(ArrayList<Track> tracksPlaylist,ArrayList<String> albumList1,ArrayList<PlaylistItem> albumTracks1)
+    {
+        albumList1.clear();
+        albumTracks1.clear();
+        String prevAlbum = "";
+        for (Track t : tracksPlaylist) {
+            final PlaylistItem pi = new PlaylistItem();
+            //check for change in album-name
+            String extra = "";
+            try {
+                String name = t.album.name;
+                if (!prevAlbum.startsWith(name)) {
+                    extra = String.format("(%s-%s)", t.artists.get(0).name, name);
+                    prevAlbum = name;
+                    pi.pictureVisible = true;
+                } else
+                    pi.pictureVisible = false;
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+            }
+            //album-name can become part of title
+            pi.text = t.name + extra;
+            //get image-id
+            new DownLoadImageUrlTask() {
+                @Override
+                public void setUrl(String logo) {
+                    pi.url = logo;
+                }
+            }.execute(t.album.id);
+            //perhaps image-id already present?
+            pi.url = getImageUrl(t.album.images);
+            //rest of properties
+            pi.id = t.id;
+            pi.trackNumber = t.track_number;
+            int time = new Double(t.duration_ms / 1000).intValue();
+            pi.time = time;
+
+            albumList1.add(pi.text);
+            albumTracks1.add(pi);
+
+        }
+    }
     @Override
     public void onActivityCreated() {
+        if (SpotifyFragment.getThis.data.tracksPlaylist==null)
+        SpotifyFragment.getThis.data.tracksPlaylist = new ArrayList<Track>();
         getThisPlaylist=this;
         gettingList=true;
         spotifyWorkingOnPlaylist=true;
