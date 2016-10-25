@@ -2,6 +2,7 @@ package examples.quickprogrammingtips.com.tablayout;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +37,23 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     ListView fileListView;
     private int listViewPosition=0;
 
+    private static Parcelable mListViewScrollPos = null;
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Restore the ListView position
+        if (mListViewScrollPos != null) {
+            fileListView.onRestoreInstanceState(mListViewScrollPos);
+        }
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Save the ListView position
+        mListViewScrollPos = fileListView.onSaveInstanceState();
+    }
     public ListParentFragment() {
         super();
     }
@@ -140,7 +158,10 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                     fileListView.post(new Runnable() {
                         @Override
                         public void run() {
+
+                            if (listViewPosition==0)
                             fileListView.setSelection(listViewPosition);
+                            listViewPosition=-1;
                         }
                     });
                     if (filesToCheck.size()>0){
