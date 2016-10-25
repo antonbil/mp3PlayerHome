@@ -635,22 +635,36 @@ public class SpotifyFragment extends Fragment implements
                     for (Element element : trackelements) {
                         i++;
                         try {
+                            String current=""+i;
+                            String previous=element.children().get(1).text().replace("b-b-b-","").replace("b+b+b+","");
+                            if (previous.length()==0)previous="*";
+                            String nofweeks=element.children().get(3).text();
                             String image1 =//.getElementsByTag("img").get(0)
                             element.children().get(4).getElementsByTag("img").get(0).attr("src");//http://www.spotifynewmusic.com/covers/13903.jpg
-                            String s = element.children().get(7).children().get(0).attr("onclick").replace("playSpotify('https://embed.spotify.com/?uri=","").replace("');","").replace("%3A",":");
+                            Elements aelements = element.getElementsByTag("a");
+                            String s="";
+                            for (Element e : aelements) {
+                                s=e.attr("onclick");
+                                if (s!=null){
+                                    s=s.replace("playSpotify('https://embed.spotify.com/?uri=","").replace("');","").replace("%3A",":");
+                                }
+                            }
+                            if (s.length()==0)current="no Spotify-Album!\n"+current;
+                            Elements navbelements = element.getElementsByClass("navb");
+                            //String s = element.children().get(7).children().get(0).attr("onclick").replace("playSpotify('https://embed.spotify.com/?uri=","").replace("');","").replace("%3A",":");
                             //Log.v("samba", "albumTop100Nl()");
 
-                            String div = element.children().get(5).children().get(0).text();
+                            String div = navbelements.text();
                             //Log.v("samba", div);
                             String[] list = div.replace("$$$", ";").split(";");
                             String artist = list[0].replace("b-b-b-","").replace("b+b+b+","");
                             String album = "";
                             if (list.length > 1)
-                                album = ""+i+"."+list[1].replace("\"","");
+                                album = list[1].replace("\"","");
                             //ids.add(artist + "-" + album);
-                            newAlbums.add(new NewAlbum(s, artist, album, image1));
+                            newAlbums.add(new NewAlbum(s, artist, String.format("%s-%s(%s)-%s",current,previous,nofweeks,album), image1));
                         } catch (Exception e) {
-                            //Log.v("samba", Log.getStackTraceString(e));
+                            Log.v("samba", Log.getStackTraceString(e));
                             Log.v("samba", "albumTop100Nl() error");
                         }
 
