@@ -3,11 +3,9 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -44,80 +42,89 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     public static SelectFragment getThis;
     static final int STATIC_RESULT_SELECT =3; //positive > 0 integer.
     private Logic logic;
-    //ArrayList<Favorite> favorites;
-    //ListView favoriteListView;
-    //FavoriteListAdapter favoriteListAdapter;
-    ArrayList<FavoritesListItem>favoritesListItemArray=new ArrayList<>();
+    private ArrayList<FavoritesListItem>favoritesListItemArray;
 
-    private ArrayList<Server>servers=Server.servers;//Server.servers.get(Server.getServer(getActivity())).url;
-    //private boolean regularFavoritesVisible=false;
-    //private ListView favoritespotifyListView;
-    private FavoriteListAdapter favoritespotifyListAdapter;
+    private ArrayList<Server>servers=Server.servers;
     private RadioGroup radioGroup;
-    private int serverCode=-1;
     private RadioGroup.OnCheckedChangeListener radioGroupListener;
-    //private ArrayList<Favorite> spotifyfavorites;
-    //private boolean regularspotifyFavoritesVisible=true;
+    private View selectView;
 
     @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+        //Log.v("samba", "select create view");
         getThis=this;
         servers.toArray();
 
 
         // Inflate the layout for this fragment
         logic =((MainActivity)getActivity()).getLogic();
-        View view = inflater.inflate(R.layout.fragment_select, container, false);
+        selectView = inflater.inflate(R.layout.fragment_select, container, false);
         try{
-            final SharedPreferences app_preferences =
-                    PreferenceManager.getDefaultSharedPreferences(getActivity());
-
             // Get the value for the run counter
-            radioGroup = (RadioGroup) view.findViewById(R.id.select_radioGroup);
+            radioGroup = (RadioGroup) selectView.findViewById(R.id.select_radioGroup);
             setCheck();
             for (int i = 0; i < radioGroup.getChildCount(); i++) {
                 ((RadioButton) radioGroup.getChildAt(i)).setText(servers.get(i).description);
             }
-            radioGroupListener = new RadioGroup.OnCheckedChangeListener() {
+            radioGroupListener = (group, checkedId) -> {
 
-
-                @Override
-
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-
-                    // find which radio button is selected
-                    for (int i = 0; i < servers.size(); i++) {
-                        if (checkedId == servers.get(i).code) {
-                            setAddress(servers.get(i).url);
-                            Server.setServer(i, getActivity());
-                        }
+                // find which radio button is selected
+                for (int i = 0; i < servers.size(); i++) {
+                    if (checkedId == servers.get(i).code) {
+                        setAddress(servers.get(i).url);
+                        Server.setServer(i, getActivity());
                     }
-
                 }
 
             };
             radioGroup.setOnCheckedChangeListener(radioGroupListener);
 
-            favoritesListItemArray.add(new FavoritesListItem(this, view, "favorites", "1",false));
-            favoritesListItemArray.add(new FavoritesListItem(this, view, "spotify", "2",true));
-            for (int i=0;i<Favorite.categoryIdssize();i++) {
-                final FavoritesListItem favoritesListItem = new FavoritesListItem(this, view, Favorite.getCategoryDescription(i), Favorite.categoryIdsget(i),false);
-                favoritesListItemArray.add(favoritesListItem);
+            if (favoritesListItemArray==null) {
+                initAllFavorites();
+                //set spotify shortcuts by default open
+                favoritesListItemArray.get(1).visible=true;
             }
-
-            for (final FavoritesListItem item: favoritesListItemArray) {
-                item.favoriteTextView.setOnClickListener(v -> {
-                    item.toggleVisible();
-                    getFavorites();
-                });
+            else{
+                ArrayList<Boolean>bs=new ArrayList<>();
+                for (FavoritesListItem f:favoritesListItemArray)
+                bs.add(f.visible);
+                initAllFavorites();
+                int i=0;
+                for (FavoritesListItem f:favoritesListItemArray) {
+                    f.visible = bs.get(i);
+                    i++;
+                }
             }
-            getFavorites();
+            checkVisiblityOfLists();
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
 
-        return view;
+        return selectView;
+    }
+
+    public void initAllFavorites() {
+        View view=this.selectView;
+        favoritesListItemArray=new ArrayList<>();
+
+        favoritesListItemArray.add(new FavoritesListItem(this, view, "favorites", "1",false));
+        //spotify links by default on second row!
+        favoritesListItemArray.add(new FavoritesListItem(this, view, "spotify", "2",false));
+        setStaticLinks();
+
+        for (int i = 0; i< Favorite.categoryIdssize(); i++) {
+            final FavoritesListItem favoritesListItem = new FavoritesListItem(this, view, Favorite.getCategoryDescription(i), Favorite.categoryIdsget(i),false);
+            favoritesListItemArray.add(favoritesListItem);
+        }
+
+        for (final FavoritesListItem item: favoritesListItemArray) {
+            item.favoriteTextView.setOnClickListener(v -> {
+                item.toggleVisible();
+                getFavorites();
+            });
+        }
+        getFavorites();
     }
 
     public void setCheck() {
@@ -140,57 +147,27 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     @Override
     public void onResume(){
+        //Log.v("samba", "select onresume");
         super.onResume();
-        //setCheck();
+        //initAllFavorites();
 
     }
 
     public void getFavorites() {
+        //Log.v("samba", "select get favorites");
 
-        //favorites.clear();
-        //spotifyfavorites.clear();
-        //https://open.spotify.com/user/koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF
-        /*spotifyfavorites.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "Spotify"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
-        spotifyfavorites.add(new Favorite("spotify://redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "Spotify"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
-        spotifyfavorites.add(new Favorite("https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB", "nltop40", "Spotify"));
-        spotifyfavorites.add(new Favorite("https://open.spotify.com/user/redactie_oor/playlist/47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "Spotify"));
-        spotifyfavorites.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/1WCuVrwkQbZZw6qmgockjv", "oor rockt", "Spotify"));
-        spotifyfavorites.add(new Favorite("https://open.spotify.com/user/koenpoolman/playlist/0ucT4Y07hYtIcJrvunGstF", "oor danst", "Spotify"));*/
+        //clear previous items
+        //leave first 2 items intact
+        for (int i=2;i<favoritesListItemArray.size();i++) {
+            FavoritesListItem fi=favoritesListItemArray.get(i);
+            fi.favoritesAdded.clear();
+        }
 
-        //FavoriteRecord book = new FavoriteRecord("", "","");
-        //book.save();
-        List<FavoriteRecord> favoritesDisk = new ArrayList<FavoriteRecord>();
+        List<FavoriteRecord> favoritesDisk = new ArrayList<>();
         try {
             favoritesDisk = FavoriteRecord.listAll(FavoriteRecord.class);
         } catch (Exception e){}
-        for (FavoritesListItem fi:favoritesListItemArray)
-        fi.favoritesAdded.clear();
-        ArrayList<Favorite> favoritesSpotifyListItem = favoritesListItemArray.get(0).favoritesAdded;
-        favoritesSpotifyListItem.add(new Favorite("00tags/favorites", "favorites", "1"));
-        favoritesSpotifyListItem.add(new Favorite("00tags/newest", "newest", "1"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/2014/", "2014", "1"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/2015/", "2015", "1"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/2016/", "2016", "1"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/", "years", "1"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/Soul/", "Soul", "1"));
-        favoritesSpotifyListItem = favoritesListItemArray.get(1).favoritesAdded;
-        //https://open.spotify.com/user/1218062195/playlist/2AxpY5WlA9JAn4Vcpx8GSV
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "2"));
-        //https://open.spotify.com/user/spotify/playlist/3Yrvm5lBgnhzTYTXx2l55x
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"redactie_oor:playlist:3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"nederlandse_top_40:playlist:5lH9NjOeJvctAO92ZrKQNB", "nltop40", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:3Yrvm5lBgnhzTYTXx2l55x", "new releases", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"redactie_oor:playlist:47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"koenpoolman:playlist:1WCuVrwkQbZZw6qmgockjv", "oor rockt", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"koenpoolman:playlist:0ucT4Y07hYtIcJrvunGstF", "oor danst", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"122978137:playlist:3dixZSVLSak9apekDzw8r5", "ambient1", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"1249149618:playlist:5r977N6ZbHTM3Pm5CpzXzJ", "ambient2", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:0lBxkSj5VzRfcy8gxFUB5E", "ambient3", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"1218062195:playlist:2AxpY5WlA9JAn4Vcpx8GSV", "classical", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:024GOC1aaJzcF0YrTGdeSu", "Composer weekly", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases", "2"));
-        //https://open.spotify.com/user/spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE
-        //https://open.spotify.com/user/spotify/playlist/0lBxkSj5VzRfcy8gxFUB5E
+
 
         for (FavoriteRecord fav:favoritesDisk){
             //split hier description voor aparte elementen. scheidingsteken: ;;
@@ -207,67 +184,72 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             favnew.setRecord(fav);
             if (!MainActivity.filterSpotify||(MainActivity.filterSpotify&&favnew.isSpotifyItem()))
             for (FavoritesListItem favItem:favoritesListItemArray){
-                //Log.v("samba", favItem.selectlistViewcode + " vs " + fav.category);
                 if (favItem.selectlistViewcode.equals(fav.category))
                     favItem.favoritesAdded.add(favnew);
             }
 
         }
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (FavoritesListItem fi:favoritesListItemArray)
-                    if(fi.favoritesAdded.size()>0)fi.favoriteTextView.setVisibility(View.VISIBLE); else {fi.favoriteTextView.setVisibility(View.GONE);
-                        fi.setDistance(0);
-                    };
-                /*if (regularFavoritesVisible)
-                    Utils.setDynamicHeight(favoriteListView, 0);
-                    //setHeightListView(favoriteListAdapter, favoriteListView,favorites);
-                    else
-                    setListViewHeight(favoriteListView, 0);*/
-                /*if (regularspotifyFavoritesVisible)
-                    Utils.setDynamicHeight(favoritespotifyListView, 0);
-                    //setHeightListView(favoriteListAdapter, favoriteListView,favorites);
-                else
-                    setListViewHeight(favoritespotifyListView, 0);*/
-                for (FavoritesListItem fi:favoritesListItemArray) {
-                    Collections.sort(fi.favoritesAdded, new Comparator() {
-                        public int compare(Object o1, Object o2) {
-                            Favorite mp1 = (Favorite) o1;
-                            Favorite mp2 = (Favorite) o2;
-                            String s1 = (mp1.getSortkey() + mp1.getDescription()).toLowerCase();
-                            String s2 = (mp2.getSortkey() + mp2.getDescription()).toLowerCase();
-                            return s1.compareTo(s2);
-                        }
-                    });
-                    if (fi.isVisible())
-                    //setHeightListView(fi.favoritesAddedListAdapter, fi.favoritesAddedListView, fi.favoritesAdded);
-                    Utils.setDynamicHeight(fi.favoritesAddedListView, 0);
-                    else setListViewHeight(fi.favoritesAddedListView, 1);
+        getActivity().runOnUiThread(() -> {
+            //Log.v("samba", "select set favorites");
+            for (FavoritesListItem fi:favoritesListItemArray)
+                if(fi.favoritesAdded.size()>0)fi.favoriteTextView.setVisibility(View.VISIBLE); else {fi.favoriteTextView.setVisibility(View.GONE);
+                    fi.setDistance(0);
                 }
-                /*Collections.sort(favoritesListItemArray, new Comparator() {
+
+            for (int i=2;i<favoritesListItemArray.size();i++) {
+                FavoritesListItem fi = favoritesListItemArray.get(i);
+                Collections.sort(fi.favoritesAdded, new Comparator() {
                     public int compare(Object o1, Object o2) {
-                        FavoritesListItem mp1 = (FavoritesListItem) o1;
-                        FavoritesListItem mp2 = (FavoritesListItem) o2;
-                        //String a = mp1.selectlistViewcode;
-                        return (mp1.selectlistViewcode.compareTo((mp2.selectlistViewcode)));
+                        Favorite mp1 = (Favorite) o1;
+                        Favorite mp2 = (Favorite) o2;
+                        String s1 = (mp1.getSortkey() + mp1.getDescription()).toLowerCase();
+                        String s2 = (mp2.getSortkey() + mp2.getDescription()).toLowerCase();
+                        return s1.compareTo(s2);
                     }
-                });*/
-
-
+                });
             }
+            checkVisiblityOfLists();
         });
-        if (!(favoritespotifyListAdapter==null))
-        favoritespotifyListAdapter.notifyDataSetChanged();
-
-
     }
 
-    /*public void setHeightListView(FavoriteListAdapter nyAdapter, ListView myListView, ArrayList<Favorite> favorites) {
-        nyAdapter.notifyDataSetChanged();
-        int height = 130 * favorites.size();
-        setListViewHeight(myListView, height);
-    }*/
+    public void checkVisiblityOfLists() {
+        for (FavoritesListItem fi:favoritesListItemArray){
+            if (fi.isVisible())
+            Utils.setDynamicHeight(fi.favoritesAddedListView, 0);
+            else setListViewHeight(fi.favoritesAddedListView, 1);
+            fi.favoritesAddedListAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void setStaticLinks() {
+        //Log.v("samba", "set static favorites");
+        ArrayList<Favorite> favoritesSpotifyListItem = favoritesListItemArray.get(0).favoritesAdded;
+        favoritesSpotifyListItem.clear();
+        favoritesSpotifyListItem.add(new Favorite("00tags/favorites", "favorites", "1"));
+        favoritesSpotifyListItem.add(new Favorite("00tags/newest", "newest", "1"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/2014/", "2014", "1"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/2015/", "2015", "1"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/2016/", "2016", "1"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/years/", "years", "1"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SMBPREFIX+"192.168.2.8/FamilyLibrary/Soul/", "Soul", "1"));
+
+        //spotify playlists
+        favoritesSpotifyListItem = favoritesListItemArray.get(1).favoritesAdded;
+        favoritesSpotifyListItem.clear();
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"redactie_oor/playlist/3N9rTO6YG7kjWETJGOEvQY", "oor11", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"redactie_oor:playlist:3N9rTO6YG7kjWETJGOEvQY", "oor11Geheel", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"nederlandse_top_40:playlist:5lH9NjOeJvctAO92ZrKQNB", "nltop40", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:3Yrvm5lBgnhzTYTXx2l55x", "new releases", "2"));//"redactie_oor%3Aplaylist%3A3N9rTO6YG7kjWETJGOEvQY"
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"redactie_oor:playlist:47Uk3e6OMl4z1cKjMY4271", "oor: redactie", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"koenpoolman:playlist:1WCuVrwkQbZZw6qmgockjv", "oor rockt", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"koenpoolman:playlist:0ucT4Y07hYtIcJrvunGstF", "oor danst", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"122978137:playlist:3dixZSVLSak9apekDzw8r5", "ambient1", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"1249149618:playlist:5r977N6ZbHTM3Pm5CpzXzJ", "ambient2", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:0lBxkSj5VzRfcy8gxFUB5E", "ambient3", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"1218062195:playlist:2AxpY5WlA9JAn4Vcpx8GSV", "classical", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:024GOC1aaJzcF0YrTGdeSu", "Composer weekly", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases", "2"));
+    }
 
     public void setListViewHeight(ListView myListView, int height) {
         ViewGroup.LayoutParams params = myListView.getLayoutParams();

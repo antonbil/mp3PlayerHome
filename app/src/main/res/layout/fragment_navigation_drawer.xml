@@ -1,5 +1,6 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/left_drawer"
     android:clickable="true"
     android:layout_gravity="start"
@@ -38,5 +39,6 @@ android:layout_height="match_parent">
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/spf" />
+        android:src="@drawable/spf"
+        tools:src="?android:attr/findOnPageNextDrawable" />
 </FrameLayout>
