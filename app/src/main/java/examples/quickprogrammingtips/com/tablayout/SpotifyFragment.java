@@ -197,8 +197,8 @@ public class SpotifyFragment extends Fragment implements
         //data = new SpotifyData();
         SpotifyFragment.hasBeen=true;
             getLayout(inflater, container);
-            if (SpotifyFragment.getThis.data.albumTracks.size()>0 && SpotifyFragment.getThis.data.albumTracks.get(0).time>0)
-            clearAlbums();
+            //if (SpotifyFragment.getThis.data.albumTracks.size()>0 && SpotifyFragment.getThis.data.albumTracks.get(0).time>0)
+            //clearAlbums();
             checkAddress();
             memoryHandler_ = new Handler();
             //Log.d("samba", "Text:2");

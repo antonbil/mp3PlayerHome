@@ -2,7 +2,9 @@ package examples.quickprogrammingtips.com.tablayout;
 
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +24,33 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     private ListView tracksListview;
     public PlanetAdapter tracksAdapter;
-    private ArrayList<String> albumList1;
+    private ArrayList<String> albumList1 = new ArrayList<>();
+
+
     public static SpotifyPlaylistFragment getThisPlaylist;
-    private ArrayList<PlaylistItem> albumTracks1;
+    private ArrayList<PlaylistItem> albumTracks1 = new ArrayList<>();
     private boolean gettingList=true;
     private int previousLength=-1;
+    private static Parcelable mListViewScrollPos = null;
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Restore the ListView position
+        if (mListViewScrollPos != null) {
+            tracksListview.onRestoreInstanceState(mListViewScrollPos);
+        }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Save the ListView position
+        mListViewScrollPos = tracksListview.onSaveInstanceState();
+    }
 
     @Override
     public void onStop(){
@@ -39,7 +63,18 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             searchAlbum();
 
         }else {
+            if (albumList1.size()==0)
             setCurrentTracklist();
+            else {
+                tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
+                tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
+
+                tracksAdapter.setDisplayCurrentTrack(true);
+                tracksListview.setAdapter(tracksAdapter);
+                //Log.v("samba","currentTrack:"+SpotifyFragment.currentTrack);
+                tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
+
+            }
         }
         nextCommand="";
         //MainActivity.headers.add(this);
@@ -52,8 +87,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         gettingList=true;
         spotifyWorkingOnPlaylist=true;
         try {
-            albumList1 = new ArrayList<>();
-            albumTracks1 = new ArrayList<>();
+
             tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
             tracksAdapter.setDisplayCurrentTrack(false);
             tracksListview.setAdapter(tracksAdapter);
