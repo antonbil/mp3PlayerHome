@@ -545,6 +545,7 @@ public class SpotifyFragment extends Fragment implements
 
 
         public void onActivityCreated() {
+            SpotifyPlaylistFragment.refresh=true;
             //Log.d("samba", "Text:1");
 
             try {

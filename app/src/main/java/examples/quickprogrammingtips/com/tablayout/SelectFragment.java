@@ -48,6 +48,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     private RadioGroup radioGroup;
     private RadioGroup.OnCheckedChangeListener radioGroupListener;
     private View selectView;
+    private int currentServer;
 
     @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,6 +75,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     if (checkedId == servers.get(i).code) {
                         setAddress(servers.get(i).url);
                         Server.setServer(i, getActivity());
+                        if (currentServer!=i)
+                            SpotifyPlaylistFragment.refresh=true;
                     }
                 }
 
@@ -128,8 +131,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     }
 
     public void setCheck() {
-        int server = Server.getServer(getActivity());
-        int id = radioGroup.getChildAt(server).getId();
+        currentServer = Server.getServer(getActivity());
+        int id = radioGroup.getChildAt(currentServer).getId();
         radioGroup.setOnCheckedChangeListener(null);
         radioGroup.clearCheck();
 

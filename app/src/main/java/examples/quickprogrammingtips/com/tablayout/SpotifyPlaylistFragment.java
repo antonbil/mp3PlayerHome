@@ -23,6 +23,7 @@ import kaaes.spotify.webapi.android.SpotifyService;
 public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSongInterface {
 
     private ListView tracksListview;
+    public static boolean refresh=true;
     public PlanetAdapter tracksAdapter;
     private ArrayList<String> albumList1 = new ArrayList<>();
 
@@ -63,8 +64,10 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             searchAlbum();
 
         }else {
-            if (albumList1.size()==0)
-            setCurrentTracklist();
+            if (refresh ||(albumList1.size()==0)) {
+                Log.v("samba","new list!");
+                setCurrentTracklist();
+            }
             else {
                 tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
                 tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
@@ -75,6 +78,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
 
             }
+            refresh=false;
         }
         nextCommand="";
         //MainActivity.headers.add(this);
