@@ -31,7 +31,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     public static SpotifyPlaylistFragment getThisPlaylist;
     private ArrayList<PlaylistItem> albumTracks1 = new ArrayList<>();
-    private boolean gettingList=true;
+    public static boolean gettingList=true;
     private int previousLength=-1;
     private static Parcelable mListViewScrollPos = null;
 

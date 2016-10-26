@@ -356,24 +356,12 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             else
             if (favorite.getUri().startsWith(Favorite.SPOTIFYALBUM)){
                 try {
-                    final ProgressDialog loadingdialog;
-                    loadingdialog = ProgressDialog.show(activity,
-                            "","Loading, please wait",true);
-                    SpotifyFragment.clearSpotifyPlaylist();
                     String[] a = favorite.getDescription().split("-");
-                    //SpotifyActivity.artistName=a[0];
-                    new SpotifyFragment.addAlbumWithIdToSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM,""),a[0],a[1],MainActivity.getThis){
-                        @Override
-                        public void atLast() {
-                            loadingdialog.dismiss();
-
-                            //MainActivity.getThis.startPlaylistSpotify();
-
-                        }
-                    }.run();
+                    SpotifyFragment.artistName = a[0];
+                    SpotifyFragment.getAlbumtracksFromSpotify(favorite.getUri().replace(/*Favorite.SPOTIFYALBUM*/"spotifyalbum://",""),a[1],MainActivity.getThis,true);
+                    SpotifyPlaylistFragment.notifyList();
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
-                    //Log.v("samba", Log.getStackTraceString(e));
                 }
 
             }

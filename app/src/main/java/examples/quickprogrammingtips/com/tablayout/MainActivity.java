@@ -147,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     private SpotifyData data;
     private DrawerLayout mDrawerLayout;
     private ShutDownReceiver shutDownReceiver;
+    private Timer secondTimer;
+    private Timer cleanupTimer;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -385,21 +387,17 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
 
             //Log.v("samba",""+20);
-            new Thread(() -> {
-                try {
-                    //setListenersForButtons();
-                } catch (Exception e) {
-                    Log.v("samba", "error setting listeners");
-                }
-                updateDisplay();
-                SpotifyFragment.getOnlyPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
+            //new Thread(() -> {
+
+            setTimerToUpdateDisplay();
+              /*  SpotifyFragment.getOnlyPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
                     @Override
                     public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
 
                     }
-                },1, getThis, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
+                },1, getThis, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);*/
 
-            }).start();
+            //}).start();
             //Log.d("samba", "Text:10");
 
             try {
@@ -417,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 Log.v("samba", "error setting handler");
             }
             try {
-                cleanUp();
+                setCleanupTimer();
             } catch (Exception e) {
                 Log.v("samba", "error cleanup");
             }
@@ -558,19 +556,20 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         }
     }
 
-    private void cleanUp(){
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
+    private void setCleanupTimer(){
+        cleanupTimer = new Timer();
+        cleanupTimer.schedule(new TimerTask() {
 
             @Override
             public void run() {
-                Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(getThis,
-                        MainActivity.class));
+                //Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(getThis,
+                //        MainActivity.class));
                 try {
                     if (statusThread) {
                         statusThread = false;
                         statusUpdate(logic.mpcStatus);
                     }
+                    SpotifyPlaylistFragment.gettingList=false;
                 } catch (Exception e) {
 
                     Log.v("samba","cleanup");
@@ -581,9 +580,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     }
 
-    private void updateDisplay() {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
+    private void setTimerToUpdateDisplay() {
+        secondTimer = new Timer();
+        secondTimer.schedule(new TimerTask() {
 
             @Override
             public void run() {
@@ -600,7 +599,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 }
             }
 
-        }, 0, 1000);//Update text every second
+        }, 0, 800);//Update text every second
     }
 
 
@@ -1228,7 +1227,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
         if (statusThread || !shutDownReceiver.wasScreenOn) return;
 
-        new Thread(() -> {
+        //new Thread(() -> {
             statusThread = true;
 
             int prev = SpotifyFragment.playingEngine;
@@ -1347,7 +1346,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 });
             statusThread = false;
 
-        }).start();
+        //}).start();
     }
 
 
@@ -1358,6 +1357,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         SugarContext.terminate();
         try {
             trimCache(this);
+            secondTimer.cancel();
         } catch (Exception e) {
             // TODO Auto-generated catch block
             Log.v("samba","ondestroy");

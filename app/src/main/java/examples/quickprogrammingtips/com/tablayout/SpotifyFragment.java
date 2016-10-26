@@ -1547,7 +1547,9 @@ public class SpotifyFragment extends Fragment implements
 
     public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1,boolean display) throws Exception {
         boolean alreadyThere=false;
+        Log.v("samba","id:"+albumid);
         for (Track t:SpotifyFragment.getThis.data.tracksPlaylist) {
+            Log.v("samba","id in:"+t.album.id);
             if (t.album.id.equals(albumid)) {
                 alreadyThere = true;
             }
@@ -1565,7 +1567,7 @@ public class SpotifyFragment extends Fragment implements
 
             addSpotifyAlbumToPlaylist(albumid, albumname, getThis1, display);
         } else {
-            Toast.makeText(getThis.getActivity(), "Album already in playlist!",
+            Toast.makeText(getThis1, "Album already in playlist!",
                     Toast.LENGTH_SHORT).show();
             throw new Exception();
         }
