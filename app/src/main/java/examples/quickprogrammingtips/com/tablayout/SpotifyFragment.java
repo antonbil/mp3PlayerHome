@@ -2513,17 +2513,21 @@ public class SpotifyFragment extends Fragment implements
                         currentTime = getTime();
                         artistReturn = t.artists.get(0).name;
                         MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
-                        if (SpotifyPlaylistFragment.getThis!=null)
-                            ((HeaderSongInterface)SpotifyPlaylistFragment.getThis).setData(niceTime(currentTime), niceTime(totalTime),t.name, t.artists.get(0).name,true,currentTrack);
-                        MainActivity.getThis.runOnUiThread(() -> {
+                        try {
+                            if (SpotifyPlaylistFragment.getThis != null)
+                                ((HeaderSongInterface) SpotifyPlaylistFragment.getThis).setData(niceTime(currentTime), niceTime(totalTime), t.name, t.artists.get(0).name, true, currentTrack);
+                            MainActivity.getThis.runOnUiThread(() -> {
 
-                            for (HeaderSongInterface header:MainActivity.headers){
-                                if (header!=null)
-                                header.setData(niceTime(currentTime), niceTime(totalTime),t.name, t.artists.get(0).name,true,currentTrack);
-                            }
-                            MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
+                                for (HeaderSongInterface header : MainActivity.headers) {
+                                    if (header != null)
+                                        header.setData(niceTime(currentTime), niceTime(totalTime), t.name, t.artists.get(0).name, true, currentTrack);
+                                }
+                                MainActivity.playingStatus = MainActivity.SPOTIFY_PLAYING;
 
-                        });
+                            });
+                        } catch (Throwable thr){
+                            busyupdateSongInfo=false;
+                        }
                         busyupdateSongInfo=false;
                     }
                 }

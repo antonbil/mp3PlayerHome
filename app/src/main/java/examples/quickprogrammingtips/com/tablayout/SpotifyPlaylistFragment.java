@@ -3,7 +3,6 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.util.Log;
@@ -235,11 +234,12 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                         //Log.v("samba","get updated list");
                         setCurrentTracklist();
                     }else
-                        new Handler().postDelayed(() -> {
+                        /*new Handler().postDelayed(() -> {
                             //setCurrentTracklist();
                             gettingList=false;
-                        }, 2000);
+                        }, 2000);*/
                         Log.v("samba","do not get updated list, list busy");
+                    //throw new AssertionError();
                 }else
                 try{
                     //Log.v("samba","set trak to "+currentTrack);
