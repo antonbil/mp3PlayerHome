@@ -1018,7 +1018,7 @@ public class SpotifyFragment extends Fragment implements
                 try {
                     getAlbumtracksFromSpotify(counter);
                     SpotifyPlaylistFragment.notifyList();
-                    SpotifyPlaylistFragment.refresh=true;
+                    //SpotifyPlaylistFragment.refresh=true;
                     //todo see why list is not updating
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1546,90 +1546,97 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1,boolean display) throws Exception {
-        //if (albumAdapter==null)albumAdapter= SpotifyFragment.getThis.albumAdapter;
-        //if (albumsListview==null)albumsListview= SpotifyFragment.getThis.albumsListview;
-        //final PlanetAdapter albumAdapter1=albumAdapter;
-        //final ListView albumsListview1=albumsListview;
-        Log.v("samba", "update list:"+albumid+":");
         boolean alreadyThere=false;
         for (Track t:SpotifyFragment.getThis.data.tracksPlaylist) {
             if (t.album.id.equals(albumid)) {
                 alreadyThere = true;
-                Log.v("samba", "update listt:"+t.album.id+"equal");
             }
-            Log.v("samba", "update listt:"+t.album.id+":");
-
         }
+        /*if (alreadyThere)
+        new AlertDialog.Builder(getThis1)
+                .setTitle("Warning")
+                .setMessage("Do you really want to add a duplicate of this album?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, (dialog, whichButton) ->
+                {})
+                .setNegativeButton(android.R.string.no, (dialog, whichButton) ->
+                        addSpotifyAlbumToPlaylist(albumid, albumname, getThis1, display)).show();*/
         if (!alreadyThere) {
-            Activity getThis=getThis1;
-            //int position = ;
-            new SpotifyApi().getService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
 
-                @Override
-                public void success(Pager<Track> trackPager, Response response) {
-                    //albumList.clear();
-                    ArrayList<String> ids = new ArrayList<String>();
-                    for (Track t : trackPager.items) {
-                        try {
-                            Album alb = new Album();
-                            alb.name = albumname;
-                            alb.id = albumid;
-                            final Image im=new Image();
-                            im.url="";
-                            new DownLoadImageUrlTask() {
-                                @Override
-                                public void setUrl(String logo) {
-                                    im.url=logo;
-                                }
-                            }.execute(albumid);
-
-                            List<Image> l = new ArrayList();
-                            l.add(im);
-                            alb.images=l;
-                            t.album = alb;
-                            Artist art = new Artist();
-                            art.name = artistName;
-                            List<ArtistSimple> a = new ArrayList();
-                            a.add(art);
-                            t.artists = a;
-                        } catch (Exception e) {
-                            Log.v("samba", Log.getStackTraceString(e));
-                        }
-                        SpotifyFragment.getThis.data.hm.put(t.id, t);
-                        ids.add(t.id);
-                        //albumList.add(t.name+String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue())));
-                    }
-                    //albumAdapter.notifyDataSetChanged();
-                    //Utils.setDynamicHeight(albumsListview, 0);
-                    new AddTracksToPlaylist(ids, getThis) {
-                        @Override
-                        public void atEnd() {
-                            //Log.v("samba", "einde taak");
-                            if (display)
-                            refreshPlaylistFromSpotify(1, new GetSpotifyPlaylistClass() {
-                                @Override
-                                public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
-                                }
-                            }, null, getThis1, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
-                        }
-
-                    }.run();
-
-                    //addTracksToPlaylist(ids);
-
-                }
-
-
-                @Override
-                public void failure(RetrofitError error) {
-
-                }
-            });
+            addSpotifyAlbumToPlaylist(albumid, albumname, getThis1, display);
         } else {
             Toast.makeText(getThis.getActivity(), "Album already in playlist!",
                     Toast.LENGTH_SHORT).show();
             throw new Exception();
         }
+    }
+
+    public static void addSpotifyAlbumToPlaylist(final String albumid, final String albumname, final Activity getThis1, final boolean display) {
+        Activity getThis=getThis1;
+        //int position = ;
+        new SpotifyApi().getService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
+
+            @Override
+            public void success(Pager<Track> trackPager, Response response) {
+                //albumList.clear();
+                ArrayList<String> ids = new ArrayList<String>();
+                for (Track t : trackPager.items) {
+                    try {
+                        Album alb = new Album();
+                        alb.name = albumname;
+                        alb.id = albumid;
+                        final Image im=new Image();
+                        im.url="";
+                        new DownLoadImageUrlTask() {
+                            @Override
+                            public void setUrl(String logo) {
+                                im.url=logo;
+                            }
+                        }.execute(albumid);
+
+                        List<Image> l = new ArrayList();
+                        l.add(im);
+                        alb.images=l;
+                        t.album = alb;
+                        Artist art = new Artist();
+                        art.name = artistName;
+                        List<ArtistSimple> a = new ArrayList();
+                        a.add(art);
+                        t.artists = a;
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+                    SpotifyFragment.getThis.data.tracksPlaylist.add(t);
+                    SpotifyFragment.getThis.data.hm.put(t.id, t);
+                    ids.add(t.id);
+                    //albumList.add(t.name+String.format("(%s)", Mp3File.niceString(new Double(t.duration_ms / 1000).intValue())));
+                }
+                //albumAdapter.notifyDataSetChanged();
+                //Utils.setDynamicHeight(albumsListview, 0);
+                new AddTracksToPlaylist(ids, getThis) {
+                    @Override
+                    public void atEnd() {
+                        //Log.v("samba", "einde taak");
+                        if (display)
+                        refreshPlaylistFromSpotify(1, new GetSpotifyPlaylistClass() {
+                            @Override
+                            public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
+                            }
+                        }, null, getThis1, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);
+                    }
+
+                }.run();
+
+                //addTracksToPlaylist(ids);
+
+            }
+
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
     }
 
     public void listAlbumsForArtist(String s) {
