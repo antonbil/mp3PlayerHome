@@ -111,8 +111,12 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
 
     @Override
     public void addAlbum(int counter) {
-        SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.id, SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name
-                , MainActivity.getThis);
+        try {
+            SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.id, SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name
+                    , MainActivity.getThis);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

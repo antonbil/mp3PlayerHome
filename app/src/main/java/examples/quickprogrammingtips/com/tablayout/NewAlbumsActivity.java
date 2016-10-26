@@ -323,7 +323,11 @@ public class NewAlbumsActivity extends Activity  {
         else {
             SpotifyFragment.artistName = album.artist;
             //Toast.makeText(MainActivity.getThis, "return:"+album.url.replace("spotify:album:",""), Toast.LENGTH_SHORT).show();
-            SpotifyFragment.getAlbumtracksFromSpotify(getRightSpotifyUri(album.url), album.album, this);//todo playlist not playing, because playlist must be part of uri!
+            try {
+                SpotifyFragment.getAlbumtracksFromSpotify(getRightSpotifyUri(album.url), album.album, this);//todo playlist not playing, because playlist must be part of uri!
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
     }
