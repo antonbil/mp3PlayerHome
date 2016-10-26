@@ -97,7 +97,8 @@ public class Logic  implements SambaInterface {
             }
         };
         //address = "192.168.2.16";
-        //Log.v("samba", address);
+        //DebugLog.log( address);
+        //Log.v("samba", Log.getStackTraceString(new Exception()));
         setMpc(new MPC(address, DEFAULT_PORT, 1000, db));
         new Thread(() -> {
             hasbeen=false;

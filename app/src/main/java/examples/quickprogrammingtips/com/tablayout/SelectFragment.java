@@ -73,10 +73,11 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 // find which radio button is selected
                 for (int i = 0; i < servers.size(); i++) {
                     if (checkedId == servers.get(i).code) {
-                        setAddress(servers.get(i).url);
-                        Server.setServer(i, getActivity());
-                        if (currentServer!=i)
-                            SpotifyPlaylistFragment.refresh=true;
+                        if (currentServer!=i) {
+                            setAddress(servers.get(i).url);
+                            Server.setServer(i, getActivity());
+                            SpotifyPlaylistFragment.refresh = true;
+                        }
                     }
                 }
 
