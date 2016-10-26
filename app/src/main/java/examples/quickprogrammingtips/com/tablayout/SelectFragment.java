@@ -358,7 +358,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 try {
                     String[] a = favorite.getDescription().split("-");
                     SpotifyFragment.artistName = a[0];
-                    SpotifyFragment.getAlbumtracksFromSpotify(favorite.getUri().replace(/*Favorite.SPOTIFYALBUM*/"spotifyalbum://",""),a[1],MainActivity.getThis,true);
+                    SpotifyFragment.getAlbumtracksFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM/*"spotifyalbum://"*/,""),a[1],MainActivity.getThis,true);
                     SpotifyPlaylistFragment.notifyList();
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
