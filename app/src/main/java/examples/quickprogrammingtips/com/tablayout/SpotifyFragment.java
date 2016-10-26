@@ -999,8 +999,7 @@ public class SpotifyFragment extends Fragment implements
                         boolean play=true;
                         ret = playMpdAlbum(s, clear, ret, play);
                         if (!ret) {
-                            getAlbumtracksFromSpotify(counter);
-                            SpotifyPlaylistFragment.notifyList();
+                            updateSpotifyList(counter);
                         }
 
 
@@ -1013,6 +1012,13 @@ public class SpotifyFragment extends Fragment implements
                     //playlistGotoPosition(counter);
                     playAtPosition(counter);
                 }
+            }
+
+            public void updateSpotifyList(int counter) {
+                getAlbumtracksFromSpotify(counter);
+                SpotifyPlaylistFragment.notifyList();
+                SpotifyPlaylistFragment.refresh=true;
+                //todo see why list is not updating
             }
 
             @Override
@@ -1074,8 +1080,7 @@ public class SpotifyFragment extends Fragment implements
                         if (!playMpdAlbum(SpotifyFragment.getThis.data.albumIds.get(counter), true, false, true)) {
                             clearSpotifyPlaylist();
                             //Log.v("samba","end removing");
-                            getAlbumtracksFromSpotify(counter);
-                            SpotifyPlaylistFragment.notifyList();
+                            updateSpotifyList(counter);
                         }
 
 
@@ -1091,8 +1096,7 @@ public class SpotifyFragment extends Fragment implements
                 if (albumVisible)
                     try{
                         if (!playMpdAlbum(SpotifyFragment.getThis.data.albumIds.get(counter), false, false, true)) {
-                            getAlbumtracksFromSpotify(counter);
-                            SpotifyPlaylistFragment.notifyList();
+                            updateSpotifyList(counter);
                         }
                     } catch (Exception e) {
                         Log.v("samba", Log.getStackTraceString(e));
@@ -1111,6 +1115,7 @@ public class SpotifyFragment extends Fragment implements
                     try{
                         if (!playMpdAlbum(SpotifyFragment.getThis.data.albumIds.get(counter), false, false, false)) {
                             addAlbumStatic(counter);
+                            updateSpotifyList(counter);
                         }
 
 
@@ -1352,7 +1357,6 @@ public class SpotifyFragment extends Fragment implements
     public static void addAlbumStatic(int counter) {
         artistName = SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name;
         getAlbumtracksFromSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.id, SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.name,activityThis);
-        SpotifyPlaylistFragment.notifyList();
     }
 
     public static void addAlbumToFavoritesTrackwise(int counter) {//
@@ -1516,6 +1520,10 @@ public class SpotifyFragment extends Fragment implements
     public void getAlbumtracksFromSpotify(final int position) {
         String s = SpotifyFragment.getThis.data.albumIds.get(position);
         getAlbumtracksFromSpotify(s, SpotifyFragment.getThis.data.albumList.get(position),activityThis,false);
+        try {
+            Log.v("samba", "update list");
+            //SpotifyPlaylistFragment.getThisPlaylist.setCurrentTracklist();
+        } catch (Exception e){Log.getStackTraceString(e);}
     }
     public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1) {
         getAlbumtracksFromSpotify(  albumid,   albumname,   getThis1,true);
