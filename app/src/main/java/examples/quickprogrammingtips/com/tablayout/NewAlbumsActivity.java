@@ -36,16 +36,7 @@ public class NewAlbumsActivity extends Activity  {
     @Override
     protected void onStop() {
         leftDrawerPlaylist.onStop();
-        MainActivity.getThis.runOnUiThread(() -> {
-            //SpotifyFragment.getThis.albumAdapter.setDisplayCurrentTrack(true);
-            try{
-                SpotifyPlaylistFragment.getThisPlaylist.tracksAdapter.notifyDataSetChanged();
-            }catch(Exception e){
-                //Log.v("samba", Log.getStackTraceString(e));
-                }
-            });
-
-
+        SpotifyPlaylistFragment.notifyList();
         super.onStop();
 
     }

@@ -3,6 +3,7 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.util.Log;
@@ -198,16 +199,22 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     }
 
-    @Override
-    public void displayAlbums(){
-
-    }
 
         @Override
     public void listAlbumsForArtist(final SpotifyApi api, SpotifyService spotify, final String beatles, final ListView albumsListview, final ListView relatedArtistsListView, final PlanetAdapter albumAdapter, final ArrayAdapter<String> relatedArtistsAdapter) {
 
     }
-
+    public static void notifyList(){
+        try{
+        MainActivity.getThis.runOnUiThread(() -> {
+            Log.v("samba","notify adapter");
+                SpotifyPlaylistFragment.getThisPlaylist.tracksAdapter.notifyDataSetChanged();
+        });
+        }catch(Exception e){
+            Log.v("samba","notify adapter error");
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+    }
     public static PlanetAdapter getTracksAdapter(final ListView albumsListview, final ArrayList<String> albumList, final ArrayList<PlaylistItem> albumTracks) {
         PlanetAdapter albumAdapter = new SpotifyPlaylistAdapter(albumList, MainActivity.getThis, albumTracks,albumsListview) ;
         return albumAdapter;
@@ -228,6 +235,10 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                         //Log.v("samba","get updated list");
                         setCurrentTracklist();
                     }else
+                        new Handler().postDelayed(() -> {
+                            //setCurrentTracklist();
+                            gettingList=false;
+                        }, 2000);
                         Log.v("samba","do not get updated list, list busy");
                 }else
                 try{
