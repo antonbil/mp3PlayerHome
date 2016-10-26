@@ -210,10 +210,10 @@ public class SpotifyFragment extends Fragment implements
             ipAddress = String.format("http://%s:8080/jsonrpc", ip);
             //Log.d("samba", "Text:3");
 
-            //Log.v("samba", "ip:" + ip);
+            //DebugLog.log("ip:" + ip);
 
             getSpotifyInterface = new SpotifyInterface();
-            //Log.v("samba", "nosearch1");
+            //DebugLog.log("nosearch1");
             api = new SpotifyApi();
             //Log.d("samba", "Text:4");
             spotify = api.getService();
@@ -363,7 +363,7 @@ public class SpotifyFragment extends Fragment implements
     private static void AddSpotifyTrack(Activity getThis, ArrayList<String> ids, final int pos) {
         try {
             if (pos < ids.size()) {
-                //Log.v("samba", "before AddSpotifyTrack"+pos);
+                //DebugLog.log("before AddSpotifyTrack"+pos);
                 dialog1.incrementProgressBy(1);
                 //add track to playlist
                 String prefix="spotify:track:";
@@ -373,12 +373,12 @@ public class SpotifyFragment extends Fragment implements
 
                 AddSpotifyTrack(getThis, ids, pos + 1);
             } else {
-                //Log.v("samba", "before AddSpotifyTrack1");
+                //DebugLog.log("before AddSpotifyTrack1");
                 //all tracks added
                 stopMpd();
                 //get playlist from server
                 JSONArray playlist = getPlaylist();
-                //Log.v("samba", "before AddSpotifyTrack");
+                //DebugLog.log("before AddSpotifyTrack");
                 if (playlist!=null&&ids!=null) {
 
                     spotifyStartPosition = playlist.length() - ids.size();
@@ -390,7 +390,7 @@ public class SpotifyFragment extends Fragment implements
                         dialog1.dismiss();
 
                 });
-                //Log.v("samba", "done AddSpotifyTrack");
+                //DebugLog.log("done AddSpotifyTrack");
 
             }
         } catch (Exception e) {
@@ -468,7 +468,7 @@ public class SpotifyFragment extends Fragment implements
             String line;
             try {
                 while ((line = reader.readLine()) != null) {
-                    //Log.v("samba", "line read:" + line);
+                    //DebugLog.log("line read:" + line);
                     sb.append(line).append("\n");
                 }
             } catch (Exception e) {
@@ -557,7 +557,7 @@ public class SpotifyFragment extends Fragment implements
 
                 //Log.d("samba", "Text:5");
 
-                //Log.v("samba", "nosearch2");
+                //DebugLog.log("nosearch2");
 
                 albumsListview = (ListView) llview.findViewById(R.id.albums_listview2);
                 albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -569,7 +569,7 @@ public class SpotifyFragment extends Fragment implements
                 albumsListview.setOnItemClickListener(cl);
                 relatedArtistsListView = (ListView) llview.findViewById(R.id.relatedartists_listview);
 
-                //Log.v("samba", "nosearch3");
+                //DebugLog.log("nosearch3");
                 //Log.d("samba", "Text:6");
 
                 relatedArtistsAdapter = new RelatedArtistAdapter<String>(activityThis, android.R.layout.simple_list_item_1, artistList);
@@ -651,7 +651,7 @@ public class SpotifyFragment extends Fragment implements
                             if (s.length()==0)current="no Spotify-Album!\n"+current;
                             Elements navbelements = element.getElementsByClass("navb");
                             //String s = element.children().get(7).children().get(0).attr("onclick").replace("playSpotify('https://embed.spotify.com/?uri=","").replace("');","").replace("%3A",":");
-                            //Log.v("samba", "albumTop100Nl()");
+                            //DebugLog.log("albumTop100Nl()");
 
                             String div = navbelements.text();
                             //Log.v("samba", div);
@@ -664,7 +664,7 @@ public class SpotifyFragment extends Fragment implements
                             newAlbums.add(new NewAlbum(s, artist, String.format("%s-%s(%s)-%s",current,previous,nofweeks,album), image1));
                         } catch (Exception e) {
                             Log.v("samba", Log.getStackTraceString(e));
-                            Log.v("samba", "albumTop100Nl() error");
+                            DebugLog.log("albumTop100Nl() error");
                         }
 
                     }
@@ -1216,7 +1216,7 @@ public class SpotifyFragment extends Fragment implements
                                     if (artistsPager.artists.items.size()>0) {
                                         for (Artist artist : artistsPager.artists.items) {
                                             String name = artist.name;
-                                            //Log.v("samba", "artist found: " + name);
+                                            //DebugLog.log("artist found: " + name);
                                             if (name.startsWith("The "))
                                                 name = name.substring(4);
 
@@ -1535,7 +1535,7 @@ public class SpotifyFragment extends Fragment implements
         //check if not already in playlist
             getAlbumtracksFromSpotify(s, SpotifyFragment.getThis.data.albumList.get(position), activityThis, false);
             try {
-                Log.v("samba", "update list");
+                DebugLog.log("update list");
                 //SpotifyPlaylistFragment.getThisPlaylist.setCurrentTracklist();
             } catch (Exception e) {
                 Log.getStackTraceString(e);
@@ -1618,7 +1618,7 @@ public class SpotifyFragment extends Fragment implements
                 new AddTracksToPlaylist(ids, getThis) {
                     @Override
                     public void atEnd() {
-                        //Log.v("samba", "einde taak");
+                        //DebugLog.log("einde taak");
                         if (display)
                         refreshPlaylistFromSpotify(1, new GetSpotifyPlaylistClass() {
                             @Override
@@ -1647,7 +1647,7 @@ public class SpotifyFragment extends Fragment implements
 
     public static void removeDownlist(PlanetAdapter albumAdapter, ListView albumsListview, int counter, Activity getThis) {
         for (int i = SpotifyFragment.getThis.data.tracksPlaylist.size()-1;i>= counter;i--) {
-            //Log.v("samba", "remove " + i);
+            //DebugLog.log("remove " + i);
             removeTrackSpotify(i);
         }
         spotifyStartPosition = 0;
@@ -1832,7 +1832,7 @@ public class SpotifyFragment extends Fragment implements
                             lastweek=element.select(".chart-row__last-week>.chart-row__value").first().text();
                         } catch (Exception e) {
                             Log.v("samba", Log.getStackTraceString(e));
-                            //Log.v("samba", "billboardalbumTop200 error");
+                            //DebugLog.log("billboardalbumTop200 error");
                         }
                             String incharts=element.getElementsByClass("chart-row__weeks-on-chart").get(0).getElementsByClass("chart-row__value").get(0).text();
                             //chart-row__value within chart-row__last-week
@@ -1849,7 +1849,7 @@ public class SpotifyFragment extends Fragment implements
                             newAlbums.add(new NewAlbum(id, artistTitle, nr+albumTitle, image1));
                         } catch (Exception e) {
                             Log.v("samba", Log.getStackTraceString(e));
-                            //Log.v("samba", "billboardalbumTop200 error");
+                            //DebugLog.log("billboardalbumTop200 error");
                         }
 
                     }
@@ -2100,7 +2100,7 @@ public class SpotifyFragment extends Fragment implements
 
                 new Thread(new Task(mainids, getThis) {
                     public void atEnd2() {
-                        //Log.v("samba", "einde taak");
+                        //DebugLog.log("einde taak");
                         MainActivity.getThis.runOnUiThread(new Runnable() {
                             public void run() {
 
@@ -2110,7 +2110,7 @@ public class SpotifyFragment extends Fragment implements
                                 atEnd();
                             } catch (Exception e) {
                                 Log.v("samba", Log.getStackTraceString(e));
-                                Log.v("samba", "end thread after at end");
+                                DebugLog.log("end thread after at end");
                             }
 
                             }
@@ -2137,7 +2137,7 @@ public class SpotifyFragment extends Fragment implements
             new AddTracksToPlaylist(ids, activityThis) {
                 @Override
                 public void atEnd() {
-                    //Log.v("samba", "einde taak");
+                    //DebugLog.log("einde taak");
                 }
 
             }.run();
@@ -2173,7 +2173,7 @@ public class SpotifyFragment extends Fragment implements
         try{
             getOnlyPlaylistFromSpotify(getSpotifyPlaylistClass,nr, getThis,albumAdapter1,albumList, albumTracks);
         } catch (Exception e) {
-                Log.v("samba", "error");
+                DebugLog.log("error");
             Log.v("samba", Log.getStackTraceString(e));
         }
     }
@@ -2193,7 +2193,7 @@ public class SpotifyFragment extends Fragment implements
                         SpotifyFragment.getThis.data.keer++;
 
                 } catch (Exception e) {
-                    Log.v("samba", "error2");
+                    DebugLog.log("error2");
                     Log.v("samba", Log.getStackTraceString(e));
                 }
                 //if (getSpotifyPlaylistClass != null)
@@ -2218,7 +2218,7 @@ public class SpotifyFragment extends Fragment implements
             if (getSpotifyPlaylistClass != null)
                 getSpotifyPlaylistClass.atEnd(albumList, albumTracks);
         }catch (Exception e) {
-            Log.v("samba", "error");
+            DebugLog.log("error");
             Log.v("samba", Log.getStackTraceString(e));
         }
 
@@ -2400,7 +2400,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static String getState(){
-        //Log.v("samba", "get state from "+ipAddress);
+        //DebugLog.log("get state from "+ipAddress);
         String s = getState("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.get_state\"}", ipAddress);
         try {
             String s1=new JSONObject(s).getString("result");
@@ -2450,11 +2450,11 @@ public class SpotifyFragment extends Fragment implements
                         trid = trid1[0];
                     } catch (Exception e){ busyupdateSongInfo=false;}
                     totalTime = Integer.parseInt(trid1[1])/1000;
-                    //Log.v("samba", "erbinnen1a");
+                    //DebugLog.log("erbinnen1a");
                     if ((trid.length() > 0)) {
                         //currentTrack=0;
                         if (/*(albumAdapter!=null)&&(albumsListview!=null)*/true) {
-                            //Log.v("samba", "erbinnen2");
+                            //DebugLog.log("erbinnen2");
                             boolean changed = false;
                             try{
                                 for (int i = 0; i < SpotifyFragment.getThis.data.tracksPlaylist.size(); i++) {
@@ -2466,7 +2466,7 @@ public class SpotifyFragment extends Fragment implements
                                             //});
                                         }
                                         currentTrack = i;
-                                        //Log.v("samba", "current track:" + i + "," + tracksPlaylist.get(i).name);
+                                        //DebugLog.log("current track:" + i + "," + tracksPlaylist.get(i).name);
                                         break;
                                     }
                                 }
@@ -2933,7 +2933,7 @@ class SpotifyHeader {
     public void setArtistText(final String artistName, Image image) {
         AsyncTask.execute(() -> {
             try{
-                //Log.v("samba", "1");
+                //DebugLog.log("1");
                     MainActivity.getThis.runOnUiThread(() -> {
                         ((TextView)
 
@@ -2941,7 +2941,7 @@ class SpotifyHeader {
                 });
 
 
-                //Log.v("samba", "2");
+                //DebugLog.log("2");
                 String artistText = "";
 
                 try {
@@ -2951,7 +2951,7 @@ class SpotifyHeader {
                 } catch (JSONException e) {
                     //Log.v("samba", Log.getStackTraceString(e));
                 }
-                //Log.v("samba", "3");
+                //DebugLog.log("3");
                 SpannableString SS = new SpannableString(artistText);
 
                 int scale = 250;
@@ -2960,7 +2960,7 @@ class SpotifyHeader {
                 //Set the icon in R.id.icon
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scale, scale);
 
-                //Log.v("samba", "4");
+                //DebugLog.log("4");
                 if (image!=null)
 
                 try {
@@ -2968,7 +2968,7 @@ class SpotifyHeader {
                         @Override
                         public void setImage(Bitmap logo) {
                             ImageView i = (ImageView) MainActivity.getThis.findViewById(R.id.image);
-                            //Log.v("samba", "image loaded");
+                            //DebugLog.log("image loaded");
                             MainActivity.getThis.runOnUiThread(() -> {
                                 icon.setLayoutParams(layoutParams);
                                 icon.setImageBitmap(logo);
@@ -2978,14 +2978,14 @@ class SpotifyHeader {
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
-                //Log.v("samba", "5");
+                //DebugLog.log("5");
 
                 SS.setSpan(new MyLeadingMarginSpan2(scale / 50, leftMargin), 0, SS.length(), 0);
-                //Log.v("samba", "6");
+                //DebugLog.log("6");
                 MainActivity.getThis.runOnUiThread(() -> {
                     MessageView.setText(SS);
                 });
-                //Log.v("samba", "7");
+                //DebugLog.log("7");
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
             }

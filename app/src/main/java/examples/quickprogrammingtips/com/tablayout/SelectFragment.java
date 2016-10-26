@@ -292,7 +292,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     @Override
     public void favoritesCall(Favorite favorite, String id) {
-        Log.v("samba", favorite.getUri());
+        //Log.v("samba", favorite.getUri());
         //spotify://
         FragmentActivity activity = this.getActivity();
         if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)){
@@ -380,7 +380,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         logic.getMpc().enqueCommands(new ArrayList<>(Collections.singletonList(command)));
                     } else {
                         logic.getHistoryMpd().add(new HistoryListview(uri, 0));
-                        Log.v("samba",uri);
+                        //Log.v("samba",uri);
                         ((MainActivity) getActivity()).selectTab(2);
                     }
                 }
@@ -393,10 +393,10 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.v("samba","in fragment");
+        //Log.v("samba","in fragment");
         if (requestCode == STATIC_RESULT_SELECT) //check if the request code is the one you've sent
         {
-            Log.v("samba","result ok");
+            //Log.v("samba","result ok");
             if (resultCode == Activity.RESULT_OK)
             {
                 // this is successful mission, do with it.

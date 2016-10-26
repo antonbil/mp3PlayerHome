@@ -66,7 +66,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
         }else {
             if (refresh ||(SpotifyFragment.data.tracksPlaylist.size()==0)) {
-                Log.v("samba","new list!");
+                //DebugLog.log("new list!");
                 setCurrentTracklist();
             }
             else {
@@ -178,7 +178,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
                                     tracksAdapter.setDisplayCurrentTrack(true);
                                     tracksListview.setAdapter(tracksAdapter);
-                                    //Log.v("samba","currentTrack:"+SpotifyFragment.currentTrack);
+                                    //DebugLog.log("currentTrack:"+SpotifyFragment.currentTrack);
                                     tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
                                     tracksAdapter.notifyDataSetChanged();
                                     previousLength=albumList1.size();
@@ -206,11 +206,11 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     public static void notifyList(){
         try{
         MainActivity.getThis.runOnUiThread(() -> {
-            Log.v("samba","notify adapter");
+            //DebugLog.log("notify adapter");
                 SpotifyPlaylistFragment.getThisPlaylist.tracksAdapter.notifyDataSetChanged();
         });
         }catch(Exception e){
-            Log.v("samba","notify adapter error");
+            DebugLog.log("notify adapter error");
             Log.v("samba", Log.getStackTraceString(e));
         }
     }
@@ -231,18 +231,18 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             MainActivity.getThis.runOnUiThread(() -> {
                 if ((currentTrack>=SpotifyFragment.getThis.data.albumTracks.size())||(SpotifyFragment.getThis.data.albumTracks.size()!=previousLength)){
                     if (!gettingList) {
-                        //Log.v("samba","get updated list");
+                        //DebugLog.log("get updated list");
                         setCurrentTracklist();
                     }else
                         /*new Handler().postDelayed(() -> {
                             //setCurrentTracklist();
                             gettingList=false;
                         }, 2000);*/
-                        Log.v("samba","do not get updated list, list busy");
+                    DebugLog.log("do not get updated list, list busy");
                     //throw new AssertionError();
                 }else
                 try{
-                    //Log.v("samba","set trak to "+currentTrack);
+                    //DebugLog.log("set trak to "+currentTrack);
                     if (!gettingList) {
                         tracksAdapter.setCurrentItem(currentTrack);
                         tracksAdapter.notifyDataSetChanged();

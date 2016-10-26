@@ -1,7 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout.model;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +44,7 @@ public class Logic  implements SambaInterface {
         }
 
         String message = "delete " + (top) + ":" + (bottom + 1);
-        Log.v("samba", message);
+        //Log.v("samba", message);
         getMpc().enqueCommands(new ArrayList<String>(Arrays.asList(message)));
     }
 
@@ -98,7 +97,7 @@ public class Logic  implements SambaInterface {
             }
         };
         //address = "192.168.2.16";
-        Log.v("samba", address);
+        //Log.v("samba", address);
         setMpc(new MPC(address, DEFAULT_PORT, 1000, db));
         new Thread(() -> {
             hasbeen=false;

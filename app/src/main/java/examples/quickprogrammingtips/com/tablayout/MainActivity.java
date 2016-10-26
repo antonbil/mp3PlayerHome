@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
             registerReceiver(shutDownReceiver, filter);//shutDownReceiver.wasScreenOn
-            //Log.d("samba", "Text:1");
+            //DebugLog.log("Text:1");
             //headers.add(this);
             super.onCreate(savedInstanceState);
             headers=new HeaderHandler();
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                             Toast.LENGTH_SHORT).show();
                 }
             }
-            //Log.d("samba", "Text:2");
+            //DebugLog.log("Text:2");
 
             SugarContext.init(this);//init db
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -217,14 +217,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             SpotifyFragment.data=data;
             dialog = new ProgressDialog(this);//keep it hidden until needed
             updateBarHandler = new Handler();
-            //Log.d("samba", "Text:3");
+            //DebugLog.log("Text:3");
 
             logic = new Logic(this);
-            //Log.v("samba",""+15);
+            //DebugLog.log(""+15);
             setContentView(R.layout.activity_main);
-            //Log.v("samba",""+16);
+            //DebugLog.log(""+16);
 
-            //Log.d("samba", "Text:5");
+            //DebugLog.log("Text:5");
             ArrayList<String> menuItemsArray = new ArrayList<String>(
                     Arrays.asList("Settings","Large Display",
                             "sep","Search mpd", "Search album","sep", "New albums categories" , "Dutch album top 100","Billboard top albums","Spotify Album Shortcuts", "sep","Volume","Refresh Spotify", "sep","Close" ));
@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             ll.setOnClickListener(v -> {
                 callSpotify(currentArtist);
             });
-            //Log.d("samba", "Text:6");
+            //DebugLog.log("Text:6");
             //TODO: make it for-statement (6 times!)
             tabLayout = (TabLayout) findViewById(R.id.tabLayout);
             tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
@@ -322,23 +322,23 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             });
             new Thread(() -> {
                 selectFragment = new SelectFragment();
-                //Log.d("samba", "Text:9");
+                //DebugLog.log("Text:9");
 
                 try {
                     spotifyFragment = new SpotifyFragment();
                 } catch (Exception e) {
-                    Log.v("samba", "error spotify create");
+                    DebugLog.log("error spotify create");
                 }
                 listFragment = new ListFragment();
                 try {
                     spotifyPlaylistFragment = new SpotifyPlaylistFragment();
                 } catch (Exception e) {
-                    Log.v("samba", "error spotify playlist create");
+                    DebugLog.log("error spotify playlist create");
                 }
                 try {
                     dbFragment = new DBFragment();
                 } catch (Exception e) {
-                    Log.v("samba", "error spotify create");
+                    DebugLog.log("error spotify create");
                 }
                 playlistFragment = new PlaylistsFragment();
 
@@ -357,8 +357,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#00FFFF"));
 
 
-            //Log.d("samba", "Text:7");
-            //Log.v("samba",""+17);
+            //DebugLog.log("Text:7");
+            //DebugLog.log(""+17);
             this.setTitle("");
             final LinearLayout footerView = (LinearLayout) findViewById(R.id.footer);
             footerView.setVisibility(View.GONE);
@@ -369,24 +369,24 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             });
             FloatingActionButton FAB = (FloatingActionButton) findViewById(R.id.fab);
             findbutton.setVisibility(View.GONE);
-            //Log.d("samba", "Text:8");
+            //DebugLog.log("Text:8");
             FAB.setOnClickListener(v -> {
                 SpotifyFragment.nextCommand = "search artist";
-                //Log.v("samba","search"+1);
+                //DebugLog.log("search"+1);
                 startPlaylistSpotify();
             });
 
             try {
                 Toolbar tool = (Toolbar) findViewById(R.id.app_bar);//cast it to ToolBar
-                //Log.v("samba", "b" + 19);
+                //DebugLog.log("b" + 19);
                 setSupportActionBar(tool);
             } catch (Exception e) {
-                Log.v("samba", "error in setting up tool");
+                DebugLog.log("error in setting up tool");
             }
-            //Log.d("samba", "Text:9");
+            //DebugLog.log("Text:9");
 
 
-            //Log.v("samba",""+20);
+            //DebugLog.log(""+20);
             //new Thread(() -> {
 
             setTimerToUpdateDisplay();
@@ -398,26 +398,26 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 },1, getThis, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);*/
 
             //}).start();
-            //Log.d("samba", "Text:10");
+            //DebugLog.log("Text:10");
 
             try {
                 // ATTENTION: This was auto-generated to implement the App Indexing API.
                 // See https://g.co/AppIndexing/AndroidStudio for more information.
                 client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
                 ArtistAutoCompleteAdapter.getAllFilenames();
-                //Log.d("samba", "Text:11");
+                //DebugLog.log("Text:11");
                 final Handler handler = new Handler();
                 handler.postDelayed(() -> {
                     if (!Logic.hasbeen)
                         Toast.makeText(this, "No connection with " + Server.servers.get(Server.getServer(this)).url, Toast.LENGTH_SHORT).show();
                 }, 400);
             } catch (Exception e) {
-                Log.v("samba", "error setting handler");
+                DebugLog.log("error setting handler");
             }
             try {
                 setCleanupTimer();
             } catch (Exception e) {
-                Log.v("samba", "error cleanup");
+                DebugLog.log("error cleanup");
             }
 
         }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
@@ -572,7 +572,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     SpotifyPlaylistFragment.gettingList=false;
                 } catch (Exception e) {
 
-                    Log.v("samba","cleanup");
+                    DebugLog.log("cleanup");
                 }
             }
 
@@ -594,7 +594,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     } else timerTime++;
                     mpc.getStatusSynch();
                 } catch (Exception e) {
-                    Log.v("samba","updateDisplay");
+                    DebugLog.log("updateDisplay");
 
                 }
             }
@@ -766,7 +766,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public void searchForItem(String searchString) {
-        //Log.v("samba", "search:" + searchString);
+        //DebugLog.log("search:" + searchString);
         selectTab(MainActivity.MPDTAB);
         new DatabaseCommand(logic.getMpc(), "find any \"" + searchString + "\"", dbFragment, true).run();
     }
@@ -856,15 +856,16 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
 
             String urlString = extras.getString("url");
-            //Log.v("samba", "return:" + urlString);
+            //DebugLog.log("return:" + urlString);
             Toast.makeText(MainActivity.this, "return:" + urlString, Toast.LENGTH_SHORT).show();
 
         }
-        //Log.v("samba", "in hoofd-activity");
-        //Log.v("samba", "requestcode:" + resultCode);
-        if (resultCode == 23) {Log.v("samba", "get favorites");
+        //DebugLog.log("in hoofd-activity");
+        //DebugLog.log("requestcode:" + resultCode);
+        if (resultCode == 23) {
+            //DebugLog.log("get favorites");
             SelectFragment.getThis.getFavorites();return;}
-        //Log.v("samba", "in hoofd-activity erna");
+        //DebugLog.log("in hoofd-activity erna");
         {
             if (resultCode == Activity.RESULT_OK) {
                 //spotify window asks for search of artist
@@ -967,7 +968,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         if (in != null) in.close();
                         if (out != null) out.close();
                     } catch (Exception e) {
-                        Log.v("samba","playlist get content");
+                        DebugLog.log("playlist get content");
                     }
 
                     //see if address has not changed while getting information
@@ -1011,7 +1012,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                 albumPictures.put(niceAlbumName, null);//so image is loaded only once
                                 try {
                                     URL urlConnection = new URL(Logic.getUrlFromSongpath(f).replace(" ", "%20"));
-                                    //Log.v("samba","get:"+url);
+                                    //DebugLog.log("get:"+url);
                                     HttpURLConnection connection = (HttpURLConnection) urlConnection
                                             .openConnection();
                                     connection.setInstanceFollowRedirects(false);
@@ -1028,11 +1029,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                 } catch (Exception e) {
 
                                     albumPictures.remove(niceAlbumName);
-                                    Log.v("samba", "error connect " + Logic.getUrlFromSongpath(f));
+                                    DebugLog.log("error connect " + Logic.getUrlFromSongpath(f));
                                 }
 
                             } catch (Exception e) {
-                                Log.v("samba","playlistgetcontent");
+                                DebugLog.log("playlistgetcontent");
                             }
 
                         }
@@ -1062,7 +1063,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public void newMpdCall(Mp3File mp3File, int position, String command) {
-        Log.v("samba","mewMpdCall within mainactivity");
+        //DebugLog.log("mewMpdCall within mainactivity");
 
     }
     public void enqueueSingleCommand(String message) {
@@ -1070,7 +1071,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     private void export(int position) {
-        //save current playlist Log.v("samba", "export:" + position);
+        //save current playlist DebugLog.log("export:" + position);
         final CopyOnWriteArrayList<Mp3File> copyPlaylist =new CopyOnWriteArrayList<>();
         CopyOnWriteArrayList<Mp3File> playlist = logic.getPlaylistFiles();
         for (Mp3File mp:playlist) {
@@ -1123,12 +1124,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         }
         if (command.equals(getString(R.string.playlist_removetop))){
             String message = "delete 0:" + (position + 1);
-            Log.v("samba", message);
+            //Log.v("samba", message);
             enqueueSingleCommand(message);
         }
         if (command.equals(getString(R.string.playlist_removebottom))){
             String message = "delete " + (position) + ":" + (logic.getPlaylistFiles().size() + 1);
-            Log.v("samba", message);
+            //Log.v("samba", message);
             enqueueSingleCommand(message);
             //logic.getMpc().sendSingleMessage(message);
         }
@@ -1164,7 +1165,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             });
         } else {
 
-            Log.v("samba", "Image Does Not exist or Network Error");
+            DebugLog.log("Image Does Not exist or Network Error");
             Toast.makeText(MainActivity.this, "Image Does Not exist or Network Error", Toast.LENGTH_SHORT).show();
 
         }
@@ -1241,7 +1242,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                 if (SpotifyFragment.busyupdateSongInfo) {
                     try {
-                        Log.v("samba", "nu binnen2");
+                        //DebugLog.log("nu binnen2");
                         String[] trid1 = SpotifyFragment.getCurrentTrack();//
                         String trid = "0";
                         trid = trid1[0];
@@ -1360,7 +1361,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             secondTimer.cancel();
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            Log.v("samba","ondestroy");
+            DebugLog.log("ondestroy");
 
             e.printStackTrace();
         }
@@ -1374,7 +1375,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
         } catch (Exception e) {
             // TODO: handle exception
-            Log.v("samba","trimcache");
+            DebugLog.log("trimcache");
 
         }
     }
@@ -1458,7 +1459,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public void onTaskCompleted(String result, String call) {
-        Log.v("samba", result);
+        //Log.v("samba", result);
     }
     public class SpotifyData{//SpotifyFragment.getThis.data.
         public ArrayList<String> albumIds = new ArrayList<>();

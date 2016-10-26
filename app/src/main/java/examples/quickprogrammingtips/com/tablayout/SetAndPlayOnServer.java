@@ -92,9 +92,9 @@ public class SetAndPlayOnServer {
         MainActivity.getThis.getLogic().openServer(address);
         MainActivity.getThis.getLogic().getMpc().setMPCListener(MainActivity.getThis);
         MainActivity.getThis.playlistGetContent();
-        Log.v("samba","old address:"+SpotifyFragment.ipAddress);
+        //Log.v("samba","old address:"+SpotifyFragment.ipAddress);
         SpotifyFragment.checkAddressIp(address);
-        Log.v("samba","new address:"+SpotifyFragment.ipAddress);
+        //Log.v("samba","new address:"+SpotifyFragment.ipAddress);
     }
 
 }
