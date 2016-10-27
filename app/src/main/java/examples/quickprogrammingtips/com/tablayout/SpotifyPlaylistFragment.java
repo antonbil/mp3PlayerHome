@@ -34,6 +34,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     public static boolean gettingList=true;
     private int previousLength=-1;
     private static Parcelable mListViewScrollPos = null;
+    private ProgressDialog progressDialog;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -71,27 +72,8 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             }
             else {
 
-                new Thread(() -> {
-                    Looper.prepare();
-                    MainActivity.getThis.leftDrawerPlaylist.getDrawerSpotifyPlaylist(new GetSpotifyPlaylistClass(){
-                    @Override
-                    public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
-
-                                //DebugLog.log("atend");
-                                activityThis.runOnUiThread(() -> {
-                                albumTracks1.clear();
-                                albumList1.clear();
-                                for (int i=0;i<albumTracks.size();i++){
-                                    //DebugLog.log(albumTracks.get(i).text);
-                                    albumTracks1.add(albumTracks.get(i));
-                                    albumList1.add(albumList.get(i));
-                                }
-                                tracksAdapter.notifyDataSetChanged();
-                        });
-                    }
-                });
-            }).start();
-            tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
+                refreshSpotifyPlaylistInBackground();
+                tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
                 generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList1,albumTracks1);
                 tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
 
@@ -105,6 +87,30 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         }
         nextCommand="";
 
+    }
+
+    public void refreshSpotifyPlaylistInBackground() {
+        new Thread(() -> {
+            refresh=false;
+            Looper.prepare();
+            MainActivity.getThis.leftDrawerPlaylist.getDrawerSpotifyPlaylist(new GetSpotifyPlaylistClass(){
+                @Override
+                public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
+
+                            //DebugLog.log("atend");
+                            activityThis.runOnUiThread(() -> {
+                            albumTracks1.clear();
+                            albumList1.clear();
+                            for (int i=0;i<albumTracks.size();i++){
+                                //DebugLog.log(albumTracks.get(i).text);
+                                albumTracks1.add(albumTracks.get(i));
+                                albumList1.add(albumList.get(i));
+                            }
+                            tracksAdapter.notifyDataSetChanged();
+                    });
+                }
+            });
+        }).start();
     }
 
     public static void generateAdapterLists(ArrayList<Track> tracksPlaylist,ArrayList<String> albumList1,ArrayList<PlaylistItem> albumTracks1)
@@ -173,7 +179,8 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     public void setCurrentTracklist() {
         gettingList=true;
         //Log.d("samba", "Text:3a1");
-        ProgressDialog progressDialog = new ProgressDialog(MainActivity.getThis);
+        if (progressDialog!=null)progressDialog.dismiss();
+        progressDialog = new ProgressDialog(MainActivity.getThis);
         MainActivity.getThis.runOnUiThread(() ->{
 
 
@@ -182,6 +189,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setProgress(0);
             progressDialog.show();
+            refresh=false;
         });
         new Thread(() -> {
             Looper.prepare();
@@ -206,6 +214,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                                     gettingList=false;
                                     spotifyWorkingOnPlaylist=false;
                                     progressDialog.dismiss();
+                                    progressDialog=null;
 
                                 }catch(Exception e){
                                     Log.v("samba", Log.getStackTraceString(e));}
@@ -253,7 +262,11 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 if ((currentTrack>=SpotifyFragment.getThis.data.albumTracks.size())||(SpotifyFragment.getThis.data.albumTracks.size()!=previousLength)){
                     if (!gettingList) {
                         //DebugLog.log("get updated list");
-                        setCurrentTracklist();
+                        //setCurrentTracklist();
+                        try{
+                            refreshSpotifyPlaylistInBackground();
+                        }catch(Exception e){
+                            Log.v("samba", Log.getStackTraceString(e));}
                     }else
                         /*new Handler().postDelayed(() -> {
                             //setCurrentTracklist();
