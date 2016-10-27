@@ -1017,9 +1017,8 @@ public class SpotifyFragment extends Fragment implements
             public void updateSpotifyList(int counter) {
                 try {
                     getAlbumtracksFromSpotify(counter);
-                    SpotifyPlaylistFragment.notifyList();
+                    //SpotifyPlaylistFragment.notifyList();
                     //SpotifyPlaylistFragment.refresh=true;
-                    //todo see why list is not updating
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

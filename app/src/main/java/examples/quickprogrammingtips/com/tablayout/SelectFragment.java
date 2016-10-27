@@ -359,8 +359,14 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 try {
                     String[] a = favorite.getDescription().split("-");
                     SpotifyFragment.artistName = a[0];
-                    SpotifyFragment.getAlbumtracksFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM/*"spotifyalbum://"*/,""),a[1],MainActivity.getThis,true);
-                    SpotifyPlaylistFragment.notifyList();
+                    if (id.equals("add to playlist")){
+                        String prefix="spotify:album:";
+                        SpotifyFragment.AddSpotifyItemToPlaylist(prefix, favorite.getUri().replace(Favorite.SPOTIFYALBUM/*"spotifyalbum://"*/,""));
+
+                    } else {
+                        SpotifyFragment.getAlbumtracksFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM/*"spotifyalbum://"*/, ""), a[1], MainActivity.getThis, true);
+                        //SpotifyPlaylistFragment.notifyList();
+                    }
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
@@ -382,7 +388,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     } else {
                         logic.getHistoryMpd().add(new HistoryListview(uri, 0));
                         //Log.v("samba",uri);
-                        ((MainActivity) getActivity()).selectTab(2);
+                        ((MainActivity) getActivity()).selectTab(3);
                     }
                 }
             }
