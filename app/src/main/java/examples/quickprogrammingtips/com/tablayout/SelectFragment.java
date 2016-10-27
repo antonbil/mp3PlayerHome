@@ -253,7 +253,13 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:0lBxkSj5VzRfcy8gxFUB5E", "ambient3", "2"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"1218062195:playlist:2AxpY5WlA9JAn4Vcpx8GSV", "classical", "2"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:024GOC1aaJzcF0YrTGdeSu", "Composer weekly", "2"));
-        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases geheel", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases", "2"));
+        //https://play.spotify.com/user/spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE
+
+        //spotify://
+        //https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB
+        //https://open.spotify.com/user/spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE
     }
 
     public void setListViewHeight(ListView myListView, int height) {
@@ -303,7 +309,9 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 loadingdialog = ProgressDialog.show(activity,
                         "","Loading, please wait",true);
                 SpotifyFragment.clearSpotifyPlaylist();
-                new SpotifyFragment.getEntirePlaylistFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST,""),MainActivity.getThis){
+                String uri = favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST, "");
+                DebugLog.log(uri);
+                new SpotifyFragment.getEntirePlaylistFromSpotify(uri,MainActivity.getThis){
                     @Override
                     public void atLast() {
                         loadingdialog.dismiss();
