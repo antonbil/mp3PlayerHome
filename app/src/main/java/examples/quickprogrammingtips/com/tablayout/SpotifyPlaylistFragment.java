@@ -96,18 +96,43 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             MainActivity.getThis.leftDrawerPlaylist.getDrawerSpotifyPlaylist(new GetSpotifyPlaylistClass(){
                 @Override
                 public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
+                    //DebugLog.log("start refresh");
+                    //DebugLog.log("st");
 
+                    int max=albumTracks1.size();
+                    if (albumTracks.size()>max)max=albumTracks.size();
+                    boolean doRefresh=false;
+                    try {
+                        for (int i = 0; i < max; i++) {
+                            //DebugLog.log("st");
+                            if (!albumTracks.get(i).text.equals(albumTracks1.get(i).text)) {
+                                doRefresh = true;
+                                break;
+                            }
+                        }
+                    }catch(Exception e){doRefresh = true;}
                             //DebugLog.log("atend");
-                            activityThis.runOnUiThread(() -> {
+                    if (doRefresh)
+                        activityThis.runOnUiThread(() -> {
+                            DebugLog.log("now refresh!");
                             albumTracks1.clear();
                             albumList1.clear();
                             for (int i=0;i<albumTracks.size();i++){
+                                PlaylistItem pi=new PlaylistItem();
+                                PlaylistItem pi1=albumTracks.get(i);
+                                pi.text=pi1.text;
+                                pi.id=pi1.id;
+                                pi.pictureVisible=pi1.pictureVisible;
+                                pi.time=pi1.time;
+                                pi.trackNumber=pi1.trackNumber;
+                                pi.url=pi1.url;
+
                                 //DebugLog.log(albumTracks.get(i).text);
-                                albumTracks1.add(albumTracks.get(i));
+                                albumTracks1.add(pi);
                                 albumList1.add(albumList.get(i));
                             }
                             tracksAdapter.notifyDataSetChanged();
-                    });
+                        });
                 }
             });
         }).start();
@@ -256,36 +281,41 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     @Override
     public void setData(String time, String totalTime, String title, String artist, boolean spotifyList, int currentTrack) {
-        if (spotifyList)
-        if (tracksAdapter!=null) {
-            MainActivity.getThis.runOnUiThread(() -> {
-                if ((currentTrack>=SpotifyFragment.getThis.data.albumTracks.size())||(SpotifyFragment.getThis.data.albumTracks.size()!=previousLength)){
-                    if (!gettingList) {
-                        //DebugLog.log("get updated list");
-                        //setCurrentTracklist();
-                        try{
-                            refreshSpotifyPlaylistInBackground();
-                        }catch(Exception e){
-                            Log.v("samba", Log.getStackTraceString(e));}
-                    }else
+        if (spotifyList) {
+            //DebugLog.log("spotifylist");
+            if (tracksAdapter != null) {
+                //DebugLog.log("tracksAdapter not null");
+                MainActivity.getThis.runOnUiThread(() -> {
+                    if ((currentTrack >= SpotifyFragment.getThis.data.albumTracks.size()) || (SpotifyFragment.getThis.data.albumTracks.size() != previousLength)) {
+                        if (!gettingList) {
+                            //DebugLog.log("get updated list");
+                            //setCurrentTracklist();
+                            try {
+                                refreshSpotifyPlaylistInBackground();
+                            } catch (Exception e) {
+                                Log.v("samba", Log.getStackTraceString(e));
+                            }
+                        } else
                         /*new Handler().postDelayed(() -> {
                             //setCurrentTracklist();
                             gettingList=false;
                         }, 2000);*/
-                    DebugLog.log("do not get updated list, list busy");
-                    //throw new AssertionError();
-                }else
-                try{
-                    //DebugLog.log("set trak to "+currentTrack);
-                    if (!gettingList) {
-                        tracksAdapter.setCurrentItem(currentTrack);
-                        tracksAdapter.notifyDataSetChanged();
-                    }
+                            DebugLog.log("do not get updated list, list busy");
+                        //throw new AssertionError();
+                    } else
+                        try {
+                            //DebugLog.log("set trak to "+currentTrack);
+                            if (!gettingList) {
+                                tracksAdapter.setCurrentItem(currentTrack);
+                                tracksAdapter.notifyDataSetChanged();
+                            }
 
-                }catch(Exception e){
-                    Log.v("samba", Log.getStackTraceString(e));}
-            });
+                        } catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+                        }
+                });
+            }
+
         }
-
     }
 }
