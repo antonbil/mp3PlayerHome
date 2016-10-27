@@ -35,6 +35,7 @@ import examples.quickprogrammingtips.com.tablayout.model.FavoriteRecord;
 import examples.quickprogrammingtips.com.tablayout.model.HistoryListview;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
 import examples.quickprogrammingtips.com.tablayout.model.Server;
+import examples.quickprogrammingtips.com.tablayout.tools.NetworkShare;
 import examples.quickprogrammingtips.com.tablayout.tools.Utils;
 
 
@@ -53,7 +54,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-        //Log.v("samba", "select create view");
+        //DebugLog.log( "select create view");
         getThis=this;
         servers.toArray();
 
@@ -102,7 +103,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             }
             checkVisiblityOfLists();
         } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
+            DebugLog.log( Log.getStackTraceString(e));
         }
 
         return selectView;
@@ -151,14 +152,14 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     @Override
     public void onResume(){
-        //Log.v("samba", "select onresume");
+        //DebugLog.log( "select onresume");
         super.onResume();
         //initAllFavorites();
 
     }
 
     public void getFavorites() {
-        //Log.v("samba", "select get favorites");
+        //DebugLog.log( "select get favorites");
 
         //clear previous items
         //leave first 2 items intact
@@ -194,7 +195,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
         }
         getActivity().runOnUiThread(() -> {
-            //Log.v("samba", "select set favorites");
+            //DebugLog.log( "select set favorites");
             for (FavoritesListItem fi:favoritesListItemArray)
                 if(fi.favoritesAdded.size()>0)fi.favoriteTextView.setVisibility(View.VISIBLE); else {fi.favoriteTextView.setVisibility(View.GONE);
                     fi.setDistance(0);
@@ -226,7 +227,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     }
 
     public void setStaticLinks() {
-        //Log.v("samba", "set static favorites");
+        //DebugLog.log( "set static favorites");
         ArrayList<Favorite> favoritesSpotifyListItem = favoritesListItemArray.get(0).favoritesAdded;
         favoritesSpotifyListItem.clear();
         favoritesSpotifyListItem.add(new Favorite("00tags/favorites", "favorites", "1"));
@@ -273,9 +274,9 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             try {
                 final Handler handler = new Handler();
                 handler.postDelayed(() -> {
-                    Log.v("samba", "No connection with "+address);
+                    DebugLog.log( "No connection with "+address);
                     if (!Logic.hasbeen)
-                        Log.v("samba", "No connection2 with "+address);
+                        DebugLog.log( "No connection2 with "+address);
                         //handler.postDelayed(() -> {
                         Toast.makeText(MainActivity.getThis, "No connection with " + Server.servers.get(Server.getServer(MainActivity.getThis)).url, Toast.LENGTH_SHORT).show();
                     //}, 2000);
@@ -293,7 +294,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     @Override
     public void favoritesCall(Favorite favorite, String id) {
-        //Log.v("samba", favorite.getUri());
+        //DebugLog.log( favorite.getUri());
         //spotify://
         FragmentActivity activity = this.getActivity();
         if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)){
@@ -312,8 +313,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 }.run();
                 //SpotifyPlaylistFragment.refresh=true;
             } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-                //Log.v("samba", Log.getStackTraceString(e));
+                DebugLog.log( Log.getStackTraceString(e));
+                //DebugLog.log( Log.getStackTraceString(e));
             }
 
         }
@@ -333,8 +334,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 }.run();
                 //SpotifyPlaylistFragment.refresh=true;
             } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-                //Log.v("samba", Log.getStackTraceString(e));
+                DebugLog.log( Log.getStackTraceString(e));
+                //DebugLog.log( Log.getStackTraceString(e));
             }
 
         }
@@ -368,14 +369,19 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         //SpotifyPlaylistFragment.notifyList();
                     }
                 } catch (Exception e) {
-                    Log.v("samba", Log.getStackTraceString(e));
+                    DebugLog.log( Log.getStackTraceString(e));
                 }
 
             }
             else {
                 String uri = favorite.getUri();
                 if (uri.startsWith(Favorite.SMBPREFIX)) {
-                    if (!id.equals("add to playlist")) {//todo add item add to playlist
+                    if (id.equals("add to playlist")) {
+                        NetworkShare networkShare=new NetworkShare();
+                        if (!uri.endsWith("/"))uri=uri+"/";
+                        //DebugLog.log(uri+":add");
+                        networkShare.getContent(logic, uri, "add");
+                    } else {
                         Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
                         logic.getHistory().add(new HistoryListview(uri, 0));
                         ((MainActivity) getActivity()).selectTab(1);
@@ -383,11 +389,11 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 } else {
                     if (id.equals("add to playlist")) {
                         String command = ("add \"" + uri + "\"");
-                        //Log.v("samba",command);
+                        //DebugLog.log(command);
                         logic.getMpc().enqueCommands(new ArrayList<>(Collections.singletonList(command)));
                     } else {
                         logic.getHistoryMpd().add(new HistoryListview(uri, 0));
-                        //Log.v("samba",uri);
+                        //DebugLog.log(uri);
                         ((MainActivity) getActivity()).selectTab(3);
                     }
                 }
@@ -400,10 +406,10 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        //Log.v("samba","in fragment");
+        //DebugLog.log("in fragment");
         if (requestCode == STATIC_RESULT_SELECT) //check if the request code is the one you've sent
         {
-            //Log.v("samba","result ok");
+            //DebugLog.log("result ok");
             if (resultCode == Activity.RESULT_OK)
             {
                 // this is successful mission, do with it.
