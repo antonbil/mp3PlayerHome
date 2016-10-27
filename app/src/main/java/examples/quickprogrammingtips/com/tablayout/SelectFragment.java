@@ -382,7 +382,6 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         //DebugLog.log(uri+":add");
                         networkShare.getContent(logic, uri, "add");
                     } else {
-                        Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_LONG).show();
                         logic.getHistory().add(new HistoryListview(uri, 0));
                         ((MainActivity) getActivity()).selectTab(1);
                     }
