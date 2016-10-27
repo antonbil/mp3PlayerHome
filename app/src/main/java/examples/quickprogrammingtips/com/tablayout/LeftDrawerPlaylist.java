@@ -37,10 +37,10 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     protected boolean drawerActive=false;
     private boolean shouldClick=false;
     private int xcoord=0;
-    private PlanetAdapter albumAdapter;
+    public PlanetAdapter albumAdapter;
     public boolean footerVisible = true;
     private ArrayList<String> albumList;
-    private ArrayList<PlaylistItem> albumTracks;
+    public ArrayList<PlaylistItem> albumTracks;
     private PlaylistAdapter adapterMpd;
     private TextView timeField;
     private TextView totalField;
@@ -208,7 +208,9 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
             adapterMpd.notifyDataSetChanged();
         });
     }
-
+    public void getDrawerSpotifyPlaylist(GetSpotifyPlaylistClass pc) {
+        SpotifyFragment.refreshPlaylistFromSpotify(pc,1, albumAdapter, activity, albumList, albumTracks);
+    }
     public void getSpotifyPlaylist() {
         SpotifyFragment.refreshPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
             @Override

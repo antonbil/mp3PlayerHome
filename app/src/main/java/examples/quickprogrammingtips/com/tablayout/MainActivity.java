@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     private ListView rightListview;
     public int xcoord=0;
     private PlaylistAdapter adapterMpd;
-    private LeftDrawerPlaylist leftDrawerPlaylist;
+    public LeftDrawerPlaylist leftDrawerPlaylist;
     private SpotifyData data;
     private DrawerLayout mDrawerLayout;
     private ShutDownReceiver shutDownReceiver;

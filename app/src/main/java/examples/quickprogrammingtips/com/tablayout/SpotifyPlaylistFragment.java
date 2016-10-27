@@ -70,7 +70,27 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 setCurrentTracklist();
             }
             else {
-                tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
+
+                new Thread(() -> {
+                MainActivity.getThis.leftDrawerPlaylist.getDrawerSpotifyPlaylist(new GetSpotifyPlaylistClass(){
+                    @Override
+                    public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
+
+                                //DebugLog.log("atend");
+                                activityThis.runOnUiThread(() -> {
+                                albumTracks1.clear();
+                                albumList1.clear();
+                                for (int i=0;i<albumTracks.size();i++){
+                                    //DebugLog.log(albumTracks.get(i).text);
+                                    albumTracks1.add(albumTracks.get(i));
+                                    albumList1.add(albumList.get(i));
+                                }
+                                tracksAdapter.notifyDataSetChanged();
+                        });
+                    }
+                });
+            }).start();
+            tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
                 generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList1,albumTracks1);
                 tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
 

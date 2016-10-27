@@ -310,7 +310,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         //MainActivity.getThis.startPlaylistSpotify();
                     }
                 }.run();
-                SpotifyPlaylistFragment.refresh=true;
+                //SpotifyPlaylistFragment.refresh=true;
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
                 //Log.v("samba", Log.getStackTraceString(e));
@@ -331,7 +331,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         //MainActivity.getThis.startPlaylistSpotify();
                     }
                 }.run();
-                SpotifyPlaylistFragment.refresh=true;
+                //SpotifyPlaylistFragment.refresh=true;
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
                 //Log.v("samba", Log.getStackTraceString(e));
