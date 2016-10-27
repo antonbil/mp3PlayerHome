@@ -72,7 +72,8 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             else {
 
                 new Thread(() -> {
-                MainActivity.getThis.leftDrawerPlaylist.getDrawerSpotifyPlaylist(new GetSpotifyPlaylistClass(){
+                    Looper.prepare();
+                    MainActivity.getThis.leftDrawerPlaylist.getDrawerSpotifyPlaylist(new GetSpotifyPlaylistClass(){
                     @Override
                     public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
 
