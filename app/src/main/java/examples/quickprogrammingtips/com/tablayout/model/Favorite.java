@@ -14,6 +14,7 @@ public class Favorite {
     public static final String SMBPREFIX = "smb://";
     public static final String SPOTIFYPLAYLISTPREFIX = "https://open.spotify.com/user/";
     public static final String SPOTIFYALBUM = "spotifyalbum://";
+    public static final String NEW_LINKS = "New Links";
     public static  String NEWALBUM = "2nd edition";
     public static final String SPOTIFYPRIVATEPLAYLIST = "spotify://";
     /*
@@ -69,7 +70,7 @@ public class Favorite {
     }
 
     public static void generateLists() {
-        Favorite.categoryDescriptions=new ArrayList<>(Arrays.asList("New Links"));//categoryIds
+        Favorite.categoryDescriptions=new ArrayList<>(Arrays.asList(NEW_LINKS));//categoryIds
         for (int j = 0; j< SpotifyFragment.CATEGORY_IDS.size(); j++)Favorite.categoryDescriptions.add(SpotifyFragment.CATEGORY_IDS.get(j));
         for (int j = Favorite.categoryIds.size(); j< Favorite.categoryDescriptions.size(); j++)Favorite.categoryIds.add("2"+j);
     }

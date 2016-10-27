@@ -251,6 +251,8 @@ public class EditFavoriteActivity extends AppCompatActivity{
     }
 
     public static void editAndSaveFavorite(Activity a, int id, String imageurl, String uri, String sortkey, String description, String category) {
+        //DebugLog.log("category:"+category);
+        if (category.equals(Favorite.NEWALBUM))category=Favorite.NEW_LINKS;
         Intent intent = new Intent(a, EditFavoriteActivity.class);
         intent.putExtra("id", id);
         intent.putExtra("url", uri);
