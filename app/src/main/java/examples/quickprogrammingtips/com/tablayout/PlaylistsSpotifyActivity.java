@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import examples.quickprogrammingtips.com.tablayout.model.Favorite;
+
 public class PlaylistsSpotifyActivity extends Activity {
     private LeftDrawerPlaylist leftDrawerPlaylist;
     private PlaylistsSpotifyActivity getThis;
@@ -87,6 +89,7 @@ public class PlaylistsSpotifyActivity extends Activity {
                     ArrayList<String> choices=new ArrayList<>();
                     choices.add("first 30 tracks");
                     choices.add("entire list");
+                    choices.add("add to favorites");
                     AlertDialog.Builder builderSingle = new AlertDialog.Builder(getThis);
                     builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
                     builderSingle.setTitle("Play entire playlist?");
@@ -113,7 +116,12 @@ public class PlaylistsSpotifyActivity extends Activity {
                                 } else if (title1.equals("entire list")) {
                                     SelectFragment.executeExternalSpotifyPlaylist(getThis, url);
 
-                                }
+                                }else if (title1.equals("add to favorites")) {
+                                    String[] parts=url.split(":");
+                                    SpotifyFragment.addAlbumToFavorites(
+                                            Favorite.SPOTIFYPRIVATEPLAYLIST+url, parts[parts.length-1], null);
+
+                                        }
                             });
                     builderSingle.show();
 

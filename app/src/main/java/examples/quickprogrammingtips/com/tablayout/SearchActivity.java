@@ -119,27 +119,6 @@ public class SearchActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 MainActivity.displayLargeImage(getThis, logo);
-                                /*PopupMenu menu = new PopupMenu(v.getContext(), v);
-
-                                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                                    @Override
-                                    public boolean onMenuItemClick(MenuItem item) {
-                                        if (item.getTitle().toString().equals("add album to favorites")) {
-                                            //SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
-
-                                        }
-                                        if (item.getTitle().toString().equals("large image")) {
-                                            MainActivity.displayLargeImage(getThis, logo);
-
-                                        }
-                                        return true;
-                                    }
-                                });
-
-                                menu.getMenu().add("add album to favorites");//submenu
-                                menu.getMenu().add("large image");//submenu
-                                menu.show();*/
                             }
                         });
                     }
@@ -154,51 +133,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 }
             });
-            /*image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    PopupMenu menu = new PopupMenu(v.getContext(), v);
 
-                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            if (item.getTitle().toString().equals("add album to favorites")) {
-                                //SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
-
-                            }
-                            return true;
-                        }
-                    });
-
-                    menu.getMenu().add("add album to favorites");//submenu
-                    menu.show();
-                }
-            });*/
-            /*rowView.setOnLongClickListener(new AdapterView.OnLongClickListener() {
-
-                @Override
-                public boolean onLongClick(final View v) {
-                    PopupMenu menu = new PopupMenu(v.getContext(), v);
-
-                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getTitle().toString().equals("add album to favorites")) {
-                                    //SpotifyActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
-
-                                }
-                                return true;
-                            }
-                        });
-
-                        menu.getMenu().add("add album to favorites");//submenu
-                    menu.show();
-                    return true;
-                }
-                                           }
-            );*/
                     return rowView;
         }    }
     public void processAlbum(SearchItem album){

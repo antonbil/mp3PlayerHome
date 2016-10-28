@@ -115,7 +115,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
         });
         save.setOnClickListener(v -> {
             String tempfavorite = getCategoryDescription();
-            Log.v("samba","id:"+idString);
+            DebugLog.log("id:"+idString);
             if (idString<0){
                 try{
                     FavoriteRecord fv=new FavoriteRecord(url.getText().toString(),
@@ -123,7 +123,10 @@ public class EditFavoriteActivity extends AppCompatActivity{
                     long a = fv.save();
                     finish(); //finish the startNewOne activity
                 }
-                catch (Exception e){}
+                catch (Exception e){
+                    DebugLog.log("error saving favorite");
+                    Log.v("samba",Log.getStackTraceString(e));
+                }
             }else
             try {
                 FavoriteRecord favorite = FavoriteRecord.findById(FavoriteRecord.class, idString);
@@ -251,16 +254,21 @@ public class EditFavoriteActivity extends AppCompatActivity{
     }
 
     public static void editAndSaveFavorite(Activity a, int id, String imageurl, String uri, String sortkey, String description, String category) {
-        //DebugLog.log("category:"+category);
-        if (category.equals(Favorite.NEWALBUM))category=Favorite.NEW_LINKS;
-        Intent intent = new Intent(a, EditFavoriteActivity.class);
-        intent.putExtra("id", id);
-        intent.putExtra("url", uri);
-        intent.putExtra("description", description);
-        intent.putExtra("category", category);
-        intent.putExtra("sortkey", sortkey);
-        intent.putExtra("imageurl", imageurl);
-        a.startActivityForResult(intent, STATIC_RESULT_SELECT);
+        try {
+            DebugLog.log("category:" + category);
+            if (category.equals(Favorite.NEWALBUM)) category = Favorite.NEW_LINKS;
+            Intent intent = new Intent(a, EditFavoriteActivity.class);
+            intent.putExtra("id", id);
+            intent.putExtra("url", uri);
+            intent.putExtra("description", description);
+            intent.putExtra("category", category);
+            intent.putExtra("sortkey", sortkey);
+            intent.putExtra("imageurl", imageurl);
+            a.startActivityForResult(intent, STATIC_RESULT_SELECT);
+        }catch(Exception e){
+            DebugLog.log("error saving");
+            Log.v("samba",Log.getStackTraceString(e));
+        }
     }
 }
 
