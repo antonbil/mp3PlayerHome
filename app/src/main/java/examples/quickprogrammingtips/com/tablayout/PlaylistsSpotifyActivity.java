@@ -30,7 +30,7 @@ public class PlaylistsSpotifyActivity extends Activity {
 
                 ArrayList<String> menuItemsArray = new ArrayList<>(
                         Arrays.asList("Settings",
-                                "sep","Topsify", "Spotibot", "Playlists.net","sep","Play-Dialog","sep","Close","sep"  ));
+                                "sep","Topsify", "Dutch Playlists", "Playlists.net","sep","Play-Dialog","sep","Close","sep"  ));
                 leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                 R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
             @Override
@@ -52,8 +52,8 @@ public class PlaylistsSpotifyActivity extends Activity {
                             case "Topsify":
                                 webView.loadUrl("http://topsify.com");
                                 break;
-                            case "Spotibot":
-                                webView.loadUrl("https://www.spotibot.com");
+                            case "Dutch Playlists":
+                                webView.loadUrl("http://topsify.com/nl");
                                 break;
                             case "Playlists.net":
                                 webView.loadUrl("http://playlists.net");
