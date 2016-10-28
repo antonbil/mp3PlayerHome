@@ -44,6 +44,10 @@
             android:name=".WikipediaActivity"
             android:label="@string/title_activity_wikpedia"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".PlaylistsSpotifyActivity"
+            android:label="PlaylistminerActivity"
+            android:theme="@style/AppTheme" />
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.

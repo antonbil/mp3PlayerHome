@@ -50,6 +50,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     private RadioGroup.OnCheckedChangeListener radioGroupListener;
     private View selectView;
     private int currentServer;
+    private static ProgressDialog loadingdialog;
 
     @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -255,11 +256,14 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:024GOC1aaJzcF0YrTGdeSu", "Composer weekly", "2"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPRIVATEPLAYLIST+"spotify:playlist:4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases geheel", "2"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"pureclassical/playlist/3BFUsfko9tiABDX4D211sE", "Pure Classical", "2"));
+        favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"naxosofficial/playlist/15zSadmJPYq07xXoPg4am1", "Naxos Official", "2"));
         //https://play.spotify.com/user/spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE
 
         //spotify://
         //https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB
         //https://open.spotify.com/user/spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE
+        //spotify:user:pureclassical:playlist:3BFUsfko9tiABDX4D211sE spotify:user:naxosofficial:playlist:15zSadmJPYq07xXoPg4am1 http://static.echonest.com/playlistminer/index.html​
     }
 
     public void setListViewHeight(ListView myListView, int height) {
@@ -305,20 +309,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         FragmentActivity activity = this.getActivity();
         if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)){
             try {
-                final ProgressDialog loadingdialog;
-                loadingdialog = ProgressDialog.show(activity,
-                        "","Loading, please wait",true);
-                SpotifyFragment.clearSpotifyPlaylist();
                 String uri = favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST, "");
-                DebugLog.log(uri);
-                new SpotifyFragment.getEntirePlaylistFromSpotify(uri,MainActivity.getThis){
-                    @Override
-                    public void atLast() {
-                        loadingdialog.dismiss();
-                        SpotifyFragment.playSpotify();
-                        //MainActivity.getThis.startPlaylistSpotify();
-                    }
-                }.run();
+                executeExternalSpotifyPlaylist(activity, uri);
                 //SpotifyPlaylistFragment.refresh=true;
             } catch (Exception e) {
                 DebugLog.log( Log.getStackTraceString(e));
@@ -329,17 +321,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         else
         if (favorite.getUri().startsWith(Favorite.SPOTIFYPLAYLISTPREFIX)){
             try {
-                final ProgressDialog loadingdialog;
-                loadingdialog = ProgressDialog.show(activity,
-                        "","Loading, please wait",true);
-                SpotifyFragment.clearSpotifyPlaylist();
-                new SpotifyFragment.addExternalPlaylistToSpotify(favorite.getUri(),MainActivity.getThis){
-                    @Override
-                    public void atLast() {
-                        loadingdialog.dismiss();
-                        //MainActivity.getThis.startPlaylistSpotify();
-                    }
-                }.run();
+                String uri = favorite.getUri();
+                executeExternalSpotifyPlaylist30Songs(activity, uri);
                 //SpotifyPlaylistFragment.refresh=true;
             } catch (Exception e) {
                 DebugLog.log( Log.getStackTraceString(e));
@@ -407,6 +390,43 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             }
         }
 
+    }
+
+    public static void executeExternalSpotifyPlaylist30Songs(Activity activity, final String uri) {
+        if (activity!=null) {
+
+            loadingdialog = ProgressDialog.show(activity,
+                    "", "Loading, please wait", true);
+        }
+        SpotifyFragment.clearSpotifyPlaylist();
+        new SpotifyFragment.addExternalPlaylistToSpotify(uri, MainActivity.getThis){
+            @Override
+            public void atLast() {
+                if (activity!=null) {
+                    loadingdialog.dismiss();
+                } else
+                    Toast.makeText(MainActivity.getThis, "All tracks added", Toast.LENGTH_SHORT).show();
+                //MainActivity.getThis.startPlaylistSpotify();
+            }
+        }.run();
+    }
+
+    public static void executeExternalSpotifyPlaylist(Activity activity, final String uri) {
+        if (activity!=null) {
+            loadingdialog = ProgressDialog.show(activity,
+                    "", "Loading, please wait", true);
+        }
+        SpotifyFragment.clearSpotifyPlaylist();
+        DebugLog.log(uri);
+        new SpotifyFragment.getEntirePlaylistFromSpotify(uri, MainActivity.getThis){
+            @Override
+            public void atLast() {
+                if (activity!=null)
+                loadingdialog.dismiss();
+                SpotifyFragment.playSpotify();
+                //MainActivity.getThis.startPlaylistSpotify();
+            }
+        }.run();
     }
 
 

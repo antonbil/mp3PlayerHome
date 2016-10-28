@@ -360,10 +360,10 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
-    private static void AddSpotifyTrack(Activity getThis, ArrayList<String> ids, final int pos) {
+    private static void AddSpotifyTrack(ArrayList<String> ids, final int pos) {
         try {
             if (pos < ids.size()) {
-                //DebugLog.log("before AddSpotifyTrack"+pos);
+                DebugLog.log("before AddSpotifyTrack"+pos);
                 dialog1.incrementProgressBy(1);
                 //add track to playlist
                 String prefix="spotify:track:";
@@ -371,7 +371,7 @@ public class SpotifyFragment extends Fragment implements
                 if (uri.startsWith("spotify"))prefix="";
                 AddSpotifyItemToPlaylist(prefix, uri);
 
-                AddSpotifyTrack(getThis, ids, pos + 1);
+                AddSpotifyTrack(ids, pos + 1);
             } else {
                 //DebugLog.log("before AddSpotifyTrack1");
                 //all tracks added
@@ -1890,6 +1890,7 @@ public class SpotifyFragment extends Fragment implements
                 String prefix="spotify:user:";
                 if (playlistid.startsWith("spotify"))prefix="";
                 ids.add(prefix+playlistid);
+                DebugLog.log("play "+prefix+playlistid);
                 new AddTracksToPlaylist(ids, getThis) {
                     @Override
                     public void atEnd() {
@@ -1998,6 +1999,12 @@ public class SpotifyFragment extends Fragment implements
         Activity getThis;
 
         addExternalPlaylistToSpotify(String url, Activity getThis) {
+            DebugLog.log(url);
+            /*try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
             this.url = url;
             this.getThis = getThis;
         }
@@ -2018,7 +2025,7 @@ public class SpotifyFragment extends Fragment implements
                 int startIndex = s.indexOf("track/") + 6;
                 ids.add(element.attr("content").substring(startIndex));
 
-                //Log.v("samba", element.attr("content").substring(startIndex));
+                Log.v("samba", element.attr("content").substring(startIndex));
             }
             new AddTracksToPlaylist(ids, getThis) {
                 @Override
@@ -2057,7 +2064,7 @@ public class SpotifyFragment extends Fragment implements
 
         public void run() {
 
-            AddSpotifyTrack(getThis, mainids, 0);
+            AddSpotifyTrack(mainids, 0);
             //Log.v("samba","end run");
             atEnd2();
 
@@ -2088,13 +2095,15 @@ public class SpotifyFragment extends Fragment implements
                 checkAddress();
                 //if (mainids.size() > 0)
                 //    if (spotifyToken.get(ipAddress) == null) GetSpotifyTokenSync();
-                dialog1 = new ProgressDialog(getThis);
-                dialog1.setTitle("spotify-playlist");
-                dialog1.setMessage("Adding to list");
-                dialog1.setProgressStyle(dialog1.STYLE_HORIZONTAL);
-                dialog1.setProgress(0);
-                dialog1.setMax(mainids.size());
-                dialog1.show();
+                if (getThis!=null) {
+                    dialog1 = new ProgressDialog(getThis);
+                    dialog1.setTitle("spotify-playlist");
+                    dialog1.setMessage("Adding to list");
+                    dialog1.setProgressStyle(dialog1.STYLE_HORIZONTAL);
+                    dialog1.setProgress(0);
+                    dialog1.setMax(mainids.size());
+                    dialog1.show();
+                }
 
 
                 new Thread(new Task(mainids, getThis) {
@@ -2105,7 +2114,9 @@ public class SpotifyFragment extends Fragment implements
 
 
                                 try{
-                                dialog1.dismiss();
+                                    if (getThis!=null) {
+                                        dialog1.dismiss();
+                                    }
                                 atEnd();
                             } catch (Exception e) {
                                 Log.v("samba", Log.getStackTraceString(e));
@@ -2405,7 +2416,7 @@ public class SpotifyFragment extends Fragment implements
             String s1=new JSONObject(s).getString("result");
             return s1;
         } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
+            //Log.v("samba", Log.getStackTraceString(e));
         }
         return "stopped";
     }
