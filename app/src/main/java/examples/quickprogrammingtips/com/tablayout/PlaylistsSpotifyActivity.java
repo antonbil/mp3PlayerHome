@@ -75,7 +75,9 @@ public class PlaylistsSpotifyActivity extends Activity {
 
         webView = (WebView) findViewById(R.id.webView1);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("http://playlists.net/charts");
+            String url = "http://playlists.net/charts";
+            leftDrawerPlaylist.addItem(url);
+            webView.loadUrl(url);
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -118,8 +120,10 @@ public class PlaylistsSpotifyActivity extends Activity {
                 }else
                 if (url.startsWith("https://open.spotify.com"))
                     SelectFragment.executeExternalSpotifyPlaylist30Songs(getThis,url);
-                else
+                else {
+                    leftDrawerPlaylist.addItem(url);
                     view.loadUrl(url);
+                }
                 return true;
             }
         });
