@@ -406,7 +406,6 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     loadingdialog.dismiss();
                 } else
                     Toast.makeText(MainActivity.getThis, "All tracks added", Toast.LENGTH_SHORT).show();
-                //MainActivity.getThis.startPlaylistSpotify();
             }
         }.run();
     }
@@ -424,7 +423,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 if (activity!=null)
                 loadingdialog.dismiss();
                 SpotifyFragment.playSpotify();
-                //MainActivity.getThis.startPlaylistSpotify();
+                SpotifyPlaylistFragment.gettingList=false;
             }
         }.run();
     }

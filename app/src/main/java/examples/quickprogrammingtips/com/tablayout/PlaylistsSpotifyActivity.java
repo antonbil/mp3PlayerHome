@@ -16,22 +16,17 @@ public class PlaylistsSpotifyActivity extends Activity {
     private LeftDrawerPlaylist leftDrawerPlaylist;
     private PlaylistsSpotifyActivity getThis;
     private WebView webView;
-    private String searchString;
 
-    //private WebView webView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DebugLog.log("playlistminer");
         try{
             getThis =this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wikipedia);
 
-        Bundle extras = getIntent().getExtras();
-
             try{
 
-                ArrayList<String> menuItemsArray = new ArrayList<String>(
+                ArrayList<String> menuItemsArray = new ArrayList<>(
                         Arrays.asList("Settings",
                                 "sep","Topsify", "Spotibot", "Playlists.net","sep","Play-Dialog","sep","Close","sep"  ));
                 leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
@@ -77,7 +72,6 @@ public class PlaylistsSpotifyActivity extends Activity {
                 leftDrawerPlaylist.setMenu(menuItemsArray);
 
         }catch (Exception e){}
-        //searchString= extras.getString("searchitem");
 
         webView = (WebView) findViewById(R.id.webView1);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -95,7 +89,7 @@ public class PlaylistsSpotifyActivity extends Activity {
                     builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
                     builderSingle.setTitle("Play entire playlist?");
 
-                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                             getThis,
                             android.R.layout.select_dialog_singlechoice);
                     for (int i = 0; i < choices.size(); i++) {
@@ -121,23 +115,6 @@ public class PlaylistsSpotifyActivity extends Activity {
                             });
                     builderSingle.show();
 
-
-                        /*PopupMenu menu = new PopupMenu(view.getContext(), view);
-                        menu.getMenu().add("first 30 tracks");
-                        menu.getMenu().add("entire list");
-                        menu.show();
-                        menu.setOnMenuItemClickListener(item1 -> {
-                            String title1 = item1.getTitle().toString();
-                            if (title1.equals("first 30 tracks")) {
-                                SelectFragment.executeExternalSpotifyPlaylist30Songs(getThis,"https://open.spotify.com/"+url.substring(8).replace(":","/"));
-                            } else if (title1.equals("entire list")) {
-                                SelectFragment.executeExternalSpotifyPlaylist(getThis, url);
-
-                            }
-                            //
-                            return true;
-                        });*/
-
                 }else
                 if (url.startsWith("https://open.spotify.com"))
                     SelectFragment.executeExternalSpotifyPlaylist30Songs(getThis,url);
@@ -153,15 +130,11 @@ public class PlaylistsSpotifyActivity extends Activity {
     protected void onStop() {
         leftDrawerPlaylist.onStop();
         MainActivity.getThis.runOnUiThread(() -> {
-            //SpotifyFragment.getThis.albumAdapter.setDisplayCurrentTrack(true);
             try{
                 SpotifyFragment.getThis.albumAdapter.notifyDataSetChanged();
             }catch(Exception e){
-                //Log.v("samba", Log.getStackTraceString(e));
                 }
         });
-
-
         super.onStop();
 
     }

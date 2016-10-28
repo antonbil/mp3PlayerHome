@@ -70,7 +70,8 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 //DebugLog.log("new list!");
                 setCurrentTracklist();
             }
-            else {
+            else
+            if (!gettingList){
 
                 refreshSpotifyPlaylistInBackground();
                 tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);

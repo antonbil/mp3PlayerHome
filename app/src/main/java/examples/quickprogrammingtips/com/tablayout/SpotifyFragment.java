@@ -363,7 +363,7 @@ public class SpotifyFragment extends Fragment implements
     private static void AddSpotifyTrack(ArrayList<String> ids, final int pos) {
         try {
             if (pos < ids.size()) {
-                DebugLog.log("before AddSpotifyTrack"+pos);
+                //DebugLog.log("before AddSpotifyTrack"+pos);
                 dialog1.incrementProgressBy(1);
                 //add track to playlist
                 String prefix="spotify:track:";
@@ -1884,8 +1884,9 @@ public class SpotifyFragment extends Fragment implements
 
         public void run() {
 
+            SpotifyPlaylistFragment.gettingList=true;
             try {
-                ArrayList<String> ids = new ArrayList<String>();
+                ArrayList<String> ids = new ArrayList<>();
 
                 String prefix="spotify:user:";
                 if (playlistid.startsWith("spotify"))prefix="";
@@ -1895,7 +1896,6 @@ public class SpotifyFragment extends Fragment implements
                     @Override
                     public void atEnd() {
                         atLast();
-
                     }
 
                 }.run();
@@ -1906,7 +1906,7 @@ public class SpotifyFragment extends Fragment implements
         }
 
         public void atLast() {
-
+            SpotifyPlaylistFragment.gettingList=false;
         }
     }
 
@@ -1999,17 +1999,12 @@ public class SpotifyFragment extends Fragment implements
         Activity getThis;
 
         addExternalPlaylistToSpotify(String url, Activity getThis) {
-            DebugLog.log(url);
-            /*try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
             this.url = url;
             this.getThis = getThis;
         }
 
         public void run() {
+            SpotifyPlaylistFragment.gettingList=true;
             stopMpd();
 
             Document doc = null;
@@ -2024,8 +2019,6 @@ public class SpotifyFragment extends Fragment implements
                 String s = element.attr("content");
                 int startIndex = s.indexOf("track/") + 6;
                 ids.add(element.attr("content").substring(startIndex));
-
-                Log.v("samba", element.attr("content").substring(startIndex));
             }
             new AddTracksToPlaylist(ids, getThis) {
                 @Override
@@ -2034,11 +2027,10 @@ public class SpotifyFragment extends Fragment implements
                 }
 
             }.run();
-            //addTracksToPlaylist(ids);
         }
 
         public void atLast() {
-
+            SpotifyPlaylistFragment.gettingList=false;
         }
     }
 

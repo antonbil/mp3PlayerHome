@@ -274,12 +274,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                             setVolume(getThis);
                             break;
                         case "Playlists":
-                            DebugLog.log("miner");
+                            //DebugLog.log("miner");
                             Intent myIntent = new Intent(getThis, PlaylistsSpotifyActivity.class);
                             //myIntent.putExtra("searchitem", outsiders);
-                            DebugLog.log("miner");
+                            //DebugLog.log("miner");
                             getThis.startActivity(myIntent);
-                            DebugLog.log("miner");
+                            //DebugLog.log("miner");
 
                             break;
                         case "Refresh Spotify":
