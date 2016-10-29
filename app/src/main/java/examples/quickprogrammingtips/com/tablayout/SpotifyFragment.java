@@ -406,7 +406,7 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
-    private static JSONArray getPlaylist() {
+    public static JSONArray getPlaylist() {
         JSONArray jsonArray = GetJsonArrayFromUrl(
                 "{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.get_tl_tracks\", \"id\": 1}",
                 ipAddress);
@@ -2207,13 +2207,13 @@ public class SpotifyFragment extends Fragment implements
                 SpotifyPlaylistFragment.generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList,albumTracks);
             }
             //save new list to previous lists
-            SpotifyFragment.getThis.data.previousAlbumTracks.clear();
+            /*SpotifyFragment.getThis.data.previousAlbumTracks.clear();
             for (PlaylistItem pi : albumTracks) {
                 SpotifyFragment.getThis.data.previousAlbumTracks.add(pi);
             }
             SpotifyFragment.getThis.data.previousTracksPlaylist.clear();
             for (Track t : SpotifyFragment.getThis.data.tracksPlaylist)
-                SpotifyFragment.getThis.data.previousTracksPlaylist.add(t);
+                SpotifyFragment.getThis.data.previousTracksPlaylist.add(t);*/
             //notify caller that list is updated
             if (albumAdapter1 != null)
                 getThis1.runOnUiThread(() -> albumAdapter1.notifyDataSetChanged());
@@ -2221,7 +2221,7 @@ public class SpotifyFragment extends Fragment implements
                 getSpotifyPlaylistClass.atEnd(albumList, albumTracks);
         }catch (Exception e) {
             DebugLog.log("error");
-            Log.v("samba", Log.getStackTraceString(e));
+            //Log.v("samba", Log.getStackTraceString(e));
         }
 
     }
@@ -2239,6 +2239,7 @@ public class SpotifyFragment extends Fragment implements
                 if (pi.id.equals(trackid)) {
                     pi2 = pi;
                     SpotifyFragment.getThis.data.tracksPlaylist.add(SpotifyFragment.getThis.data.previousTracksPlaylist.get(j));
+                    break;
                 }
             }
             if (pi2 == null) {
@@ -2474,7 +2475,7 @@ public class SpotifyFragment extends Fragment implements
                                 }
                                 //albumAdapter.setCurrentItem(currentTrack);
                             } catch (Exception e) {
-                                Log.v("samba", Log.getStackTraceString(e));
+                                //Log.v("samba", Log.getStackTraceString(e));
                             }
 
                             /*if (changed||(MainActivity.getThis.firstTime)>SPOTIFY_FIRSTTIME+2)//wait for 2 seconds
@@ -2577,7 +2578,7 @@ public class SpotifyFragment extends Fragment implements
                 SpotifyFragment.getThis.data.hm.put(nt.id, nt);
             }
         } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
+            //Log.v("samba", Log.getStackTraceString(e));
         }
         return nt;
     }
@@ -2596,7 +2597,7 @@ public class SpotifyFragment extends Fragment implements
                 sb.append(inputStr);
             return sb.toString();
         } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
+            //Log.v("samba", Log.getStackTraceString(e));
         }
         return "";
     }
@@ -2646,7 +2647,7 @@ public class SpotifyFragment extends Fragment implements
                 imageUrl = new JSONObject(getResult).getJSONArray("images").getJSONObject(0).getString("url");
                 albumPictures.put(albumId, imageUrl);//so image is loaded only once
             } catch (Exception e) { // Catch the download exception
-                Log.v("samba", Log.getStackTraceString(e));
+                //Log.v("samba", Log.getStackTraceString(e));
             }
             return imageUrl;
         }

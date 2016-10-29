@@ -22,7 +22,7 @@ import kaaes.spotify.webapi.android.models.Track;
 /**
  * Created by anton on 10-9-16.
  */
-public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSongInterface {
+public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSongInterface, SpotifyPlaylistInterface {
 
     private ListView tracksListview;
     public static boolean refresh=true;
@@ -69,6 +69,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         }else {
             if (refresh ||(SpotifyFragment.data.tracksPlaylist.size()==0)) {
                 //DebugLog.log("new list!");
+                //TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
                 setCurrentTracklist();
             }
             else
@@ -92,6 +93,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     }
 
     public void refreshSpotifyPlaylistInBackground() {
+        TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
         new Thread(() -> {
             refresh=false;
             Looper.prepare();
@@ -116,24 +118,29 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                             //DebugLog.log("atend");
                     if (doRefresh)
                         activityThis.runOnUiThread(() -> {
-                            DebugLog.log("now refresh!");
-                            albumTracks1.clear();
-                            albumList1.clear();
-                            for (int i=0;i<albumTracks.size();i++){
-                                PlaylistItem pi=new PlaylistItem();
-                                PlaylistItem pi1=albumTracks.get(i);
-                                pi.text=pi1.text;
-                                pi.id=pi1.id;
-                                pi.pictureVisible=pi1.pictureVisible;
-                                pi.time=pi1.time;
-                                pi.trackNumber=pi1.trackNumber;
-                                pi.url=pi1.url;
+                            try {
+                                DebugLog.log("now refresh!");
+                                albumTracks1.clear();
+                                albumList1.clear();
+                                for (int i = 0; i < albumTracks.size(); i++) {
+                                    PlaylistItem pi = new PlaylistItem();
+                                    PlaylistItem pi1 = albumTracks.get(i);
+                                    pi.text = pi1.text;
+                                    pi.id = pi1.id;
+                                    pi.pictureVisible = pi1.pictureVisible;
+                                    pi.time = pi1.time;
+                                    pi.trackNumber = pi1.trackNumber;
+                                    pi.url = pi1.url;
 
-                                //DebugLog.log(albumTracks.get(i).text);
-                                albumTracks1.add(pi);
-                                albumList1.add(albumList.get(i));
+                                    //DebugLog.log(albumTracks.get(i).text);
+                                    albumTracks1.add(pi);
+                                    albumList1.add(albumList.get(i));
+                                }
+                                activityThis.runOnUiThread(() -> {
+                                    tracksAdapter.notifyDataSetChanged();
+                                });
+                            } catch(Exception e){DebugLog.log("error refresh");
                             }
-                            tracksAdapter.notifyDataSetChanged();
                         });
                 }
             });
@@ -158,7 +165,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 } else
                     pi.pictureVisible = false;
             } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
+                //Log.v("samba", Log.getStackTraceString(e));
             }
             //album-name can become part of title
             pi.text = t.name + extra;
@@ -319,5 +326,47 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             }
 
         }
+    }
+
+    @Override
+    public void spotifyPlaylistReturn(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
+        int max=albumTracks1.size();
+        if (albumTracks.size()>max)max=albumTracks.size();
+        boolean doRefresh=false;
+        try {
+            for (int i = 0; i < max; i++) {
+                //DebugLog.log("st");
+                if (!albumTracks.get(i).text.equals(albumTracks1.get(i).text)) {
+                    doRefresh = true;
+                    break;
+                }
+            }
+        }catch(Exception e){doRefresh = true;}
+        //DebugLog.log("atend");
+        if (doRefresh)
+            activityThis.runOnUiThread(() -> {
+                DebugLog.log("now refresh!");
+                albumTracks1.clear();
+                albumList1.clear();
+                for (int i=0;i<albumTracks.size();i++){
+                    PlaylistItem pi=new PlaylistItem();
+                    PlaylistItem pi1=albumTracks.get(i);
+                    pi.text=pi1.text;
+                    pi.id=pi1.id;
+                    pi.pictureVisible=pi1.pictureVisible;
+                    pi.time=pi1.time;
+                    pi.trackNumber=pi1.trackNumber;
+                    pi.url=pi1.url;
+
+                    //DebugLog.log(albumTracks.get(i).text);
+                    albumTracks1.add(pi);
+                    albumList1.add(albumList.get(i));
+                }
+                activityThis.runOnUiThread(() -> {
+                    tracksAdapter.notifyDataSetChanged();
+                    progressDialog.dismiss();
+                    progressDialog=null;
+                });
+            });
     }
 }
