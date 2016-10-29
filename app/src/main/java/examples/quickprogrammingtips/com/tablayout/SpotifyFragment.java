@@ -1553,15 +1553,15 @@ public class SpotifyFragment extends Fragment implements
                 alreadyThere = true;
             }
         }
-        /*if (alreadyThere)
+        if (alreadyThere)
         new AlertDialog.Builder(getThis1)
                 .setTitle("Warning")
                 .setMessage("Do you really want to add a duplicate of this album?")
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, (dialog, whichButton) ->
-                {})
+                {addSpotifyAlbumToPlaylist(albumid, albumname, getThis1, display);})
                 .setNegativeButton(android.R.string.no, (dialog, whichButton) ->
-                        addSpotifyAlbumToPlaylist(albumid, albumname, getThis1, display)).show();*/
+                {}).show();
         if (!alreadyThere) {
 
             addSpotifyAlbumToPlaylist(albumid, albumname, getThis1, display);
