@@ -39,7 +39,7 @@ public class TracksSpotifyPlaylist {
 
                 @Override
                 public void run() {
-                    DebugLog.log("start refresh");
+                    //DebugLog.log("start refresh");
                     gettingTracks=true;
                     ArrayList<String> albumList1=new ArrayList<>();
                     ArrayList<PlaylistItem> albumTracks1=new ArrayList<>();
@@ -67,8 +67,6 @@ public class TracksSpotifyPlaylist {
                     {
                         //save items to new playlist
                         tracks.clear();
-                        //albumList1.clear();
-                        //albumTracks1.clear();
                         String prevAlbum = "";
                         for (int i = 0; i < items.length(); i++) {
                             try {
@@ -83,48 +81,12 @@ public class TracksSpotifyPlaylist {
                                     if (pi.id.equals(trackid)) {
                                         pi2 = pi;
                                         tracks.add(SpotifyFragment.getThis.data.previousTracksPlaylist.get(j));
+                                        albumList1.add(pi.text);
+                                        albumTracks1.add(pi);
                                     }
                                 }
                                 if (pi2 == null) {
-                                    if (trackid.length() > 0) {
-                                        Track t = SpotifyFragment.getTrack(trackid);
-                                        tracks.add(t);
-                                        SpotifyFragment.getThis.data.previousTracksPlaylist.add(t);
-                                        final PlaylistItem pi = new PlaylistItem();
-                                        //check for change in album-name
-                                        String extra = "";
-                                        try {
-                                            String name = t.album.name;
-                                            if (!prevAlbum.startsWith(name)) {
-                                                extra = String.format("(%s-%s)", t.artists.get(0).name, name);
-                                                prevAlbum = name;
-                                                pi.pictureVisible = true;
-                                            } else
-                                                pi.pictureVisible = false;
-                                        } catch (Exception e) {
-                                            Log.v("samba", Log.getStackTraceString(e));
-                                        }
-                                        //album-name can become part of title
-                                        pi.text = t.name + extra;
-                                        //get image-id
-                                        new SpotifyFragment.DownLoadImageUrlTask() {
-                                            @Override
-                                            public void setUrl(String logo) {
-                                                pi.url = logo;
-                                            }
-                                        }.execute(t.album.id);
-                                        //perhaps image-id already present?
-                                        pi.url = SpotifyFragment.getImageUrl(t.album.images);
-                                        //rest of properties
-                                        pi.id = t.id;
-                                        pi.trackNumber = t.track_number;
-                                        int time = new Double(t.duration_ms / 1000).intValue();
-                                        pi.time = time;
-
-                                        albumList1.add(pi.text);
-                                        albumTracks1.add(pi);
-                                        SpotifyFragment.getThis.data.previousAlbumTracks.add(pi);
-                                    }
+                                    prevAlbum = createNewTrack(albumList1, albumTracks1, prevAlbum, trackid);
                                 }
 
                             } catch (JSONException e) {
@@ -138,10 +100,53 @@ public class TracksSpotifyPlaylist {
                     gettingTracks=false;
                     if (spotifyPlaylistInterface!=null)
                         spotifyPlaylistInterface.spotifyPlaylistReturn(albumList1,albumTracks1);
-                    DebugLog.log("end refresh");
+                    //DebugLog.log("end refresh");
                 }
             }.start();
 
+    }
+
+    public String createNewTrack(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1, String prevAlbum, String trackid) {
+        if (trackid.length() > 0) {
+            Track t = SpotifyFragment.getTrack(trackid);
+            tracks.add(t);
+            SpotifyFragment.getThis.data.previousTracksPlaylist.add(t);
+            final PlaylistItem pi = new PlaylistItem();
+            //check for change in album-name
+            String extra = "";
+            try {
+                String name = t.album.name;
+                if (!prevAlbum.startsWith(name)) {
+                    extra = String.format("(%s-%s)", t.artists.get(0).name, name);
+                    prevAlbum = name;
+                    pi.pictureVisible = true;
+                } else
+                    pi.pictureVisible = false;
+            } catch (Exception e) {
+                Log.v("samba", Log.getStackTraceString(e));
+            }
+            //album-name can become part of title
+            pi.text = t.name + extra;
+            //get image-id
+            new SpotifyFragment.DownLoadImageUrlTask() {
+                @Override
+                public void setUrl(String logo) {
+                    pi.url = logo;
+                }
+            }.execute(t.album.id);
+            //perhaps image-id already present?
+            pi.url = SpotifyFragment.getImageUrl(t.album.images);
+            //rest of properties
+            pi.id = t.id;
+            pi.trackNumber = t.track_number;
+            int time = new Double(t.duration_ms / 1000).intValue();
+            pi.time = time;
+
+            albumList1.add(pi.text);
+            albumTracks1.add(pi);
+            SpotifyFragment.getThis.data.previousAlbumTracks.add(pi);
+        }
+        return prevAlbum;
     }
 
     private List<Track> tracks;

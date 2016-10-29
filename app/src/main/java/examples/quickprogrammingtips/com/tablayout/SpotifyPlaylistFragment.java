@@ -298,18 +298,13 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                     if ((currentTrack >= SpotifyFragment.getThis.data.albumTracks.size()) || (SpotifyFragment.getThis.data.albumTracks.size() != previousLength)) {
                         if (!gettingList) {
                             //DebugLog.log("get updated list");
-                            //setCurrentTracklist();
                             try {
                                 refreshSpotifyPlaylistInBackground();
                             } catch (Exception e) {
                                 Log.v("samba", Log.getStackTraceString(e));
                             }
-                        } else
-                        /*new Handler().postDelayed(() -> {
-                            //setCurrentTracklist();
-                            gettingList=false;
-                        }, 2000);*/
-                            DebugLog.log("do not get updated list, list busy");
+                        }// else
+                        //    DebugLog.log("do not get updated list, list busy");
                         //throw new AssertionError();
                     } else
                         try {
@@ -330,43 +325,50 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     @Override
     public void spotifyPlaylistReturn(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
-        int max=albumTracks1.size();
-        if (albumTracks.size()>max)max=albumTracks.size();
-        boolean doRefresh=false;
         try {
-            for (int i = 0; i < max; i++) {
-                //DebugLog.log("st");
-                if (!albumTracks.get(i).text.equals(albumTracks1.get(i).text)) {
-                    doRefresh = true;
-                    break;
+            int max = albumTracks1.size();
+            if (albumTracks.size() > max) max = albumTracks.size();
+            //DebugLog.log(""+albumTracks.size()+":"+albumTracks1.size());
+            boolean doRefresh = (max!=albumTracks.size());/*false;
+            try {
+                for (int i = 0; i < max; i++) {
+                    //DebugLog.log("st");
+                    if (!albumTracks.get(i).text.equals(albumTracks1.get(i).text)) {
+                        doRefresh = true;
+                        break;
+                    }
                 }
-            }
-        }catch(Exception e){doRefresh = true;}
-        //DebugLog.log("atend");
-        if (doRefresh)
-            activityThis.runOnUiThread(() -> {
-                DebugLog.log("now refresh!");
-                albumTracks1.clear();
-                albumList1.clear();
-                for (int i=0;i<albumTracks.size();i++){
-                    PlaylistItem pi=new PlaylistItem();
-                    PlaylistItem pi1=albumTracks.get(i);
-                    pi.text=pi1.text;
-                    pi.id=pi1.id;
-                    pi.pictureVisible=pi1.pictureVisible;
-                    pi.time=pi1.time;
-                    pi.trackNumber=pi1.trackNumber;
-                    pi.url=pi1.url;
-
-                    //DebugLog.log(albumTracks.get(i).text);
-                    albumTracks1.add(pi);
-                    albumList1.add(albumList.get(i));
-                }
+            } catch (Exception e) {
+                doRefresh = true;
+            }*/
+            //DebugLog.log("atend");
+            if (doRefresh)
                 activityThis.runOnUiThread(() -> {
-                    tracksAdapter.notifyDataSetChanged();
-                    progressDialog.dismiss();
-                    progressDialog=null;
+                    //DebugLog.log("now refresh!");
+                    albumTracks1.clear();
+                    albumList1.clear();
+                    for (int i = 0; i < albumTracks.size(); i++) {
+                        PlaylistItem pi = new PlaylistItem();
+                        PlaylistItem pi1 = albumTracks.get(i);
+                        pi.text = pi1.text;
+                        pi.id = pi1.id;
+                        pi.pictureVisible = pi1.pictureVisible;
+                        pi.time = pi1.time;
+                        pi.trackNumber = pi1.trackNumber;
+                        pi.url = pi1.url;
+
+                        //DebugLog.log(albumTracks.get(i).text);
+                        albumTracks1.add(pi);
+                        albumList1.add(albumList.get(i));
+                    }
+                    activityThis.runOnUiThread(() -> {
+                        tracksAdapter.notifyDataSetChanged();
+                        try {
+                            progressDialog.dismiss();
+                            progressDialog = null;
+                        } catch (Exception e){DebugLog.log("error notify");}
+                    });
                 });
-            });
+        } catch (Exception e){DebugLog.log("error refreshing");}
     }
 }
