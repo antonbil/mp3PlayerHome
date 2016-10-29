@@ -64,6 +64,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -1477,7 +1478,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         public  ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
         public ArrayList<PlaylistItem> previousAlbumTracks=new ArrayList<>();
         public ArrayList<Track> previousTracksPlaylist= new ArrayList<>();
-        public ArrayList<Track> tracksPlaylist=new ArrayList<>();
+        public List<Track> tracksPlaylist= Collections.synchronizedList(new ArrayList<>());
         public HashMap hm = new HashMap();
         public ArrayList<String> searchArtistString =new ArrayList<>();
 

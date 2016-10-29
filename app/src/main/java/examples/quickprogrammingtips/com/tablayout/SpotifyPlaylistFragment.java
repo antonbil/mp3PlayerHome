@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
@@ -71,7 +72,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 setCurrentTracklist();
             }
             else
-            if (!gettingList){
+            {
 
                 refreshSpotifyPlaylistInBackground();
                 tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
@@ -139,7 +140,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         }).start();
     }
 
-    public static void generateAdapterLists(ArrayList<Track> tracksPlaylist,ArrayList<String> albumList1,ArrayList<PlaylistItem> albumTracks1)
+    public static void generateAdapterLists(List<Track> tracksPlaylist, ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1)
     {
         albumList1.clear();
         albumTracks1.clear();

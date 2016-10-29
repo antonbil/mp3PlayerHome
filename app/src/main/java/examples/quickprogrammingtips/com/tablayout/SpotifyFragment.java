@@ -2518,8 +2518,8 @@ public class SpotifyFragment extends Fragment implements
                         artistReturn = t.artists.get(0).name;
                         MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
                         try {
-                            if (SpotifyPlaylistFragment.getThis != null)
-                                ((HeaderSongInterface) SpotifyPlaylistFragment.getThis).setData(niceTime(currentTime), niceTime(totalTime), t.name, t.artists.get(0).name, true, currentTrack);
+                            if (SpotifyPlaylistFragment.getThisPlaylist != null)
+                                ((HeaderSongInterface) SpotifyPlaylistFragment.getThisPlaylist).setData(niceTime(currentTime), niceTime(totalTime), t.name, t.artists.get(0).name, true, currentTrack);
                             MainActivity.getThis.runOnUiThread(() -> {
 
                                 for (HeaderSongInterface header : MainActivity.headers) {
