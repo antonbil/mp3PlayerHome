@@ -3,7 +3,6 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.util.Log;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -31,15 +30,22 @@ public class TracksSpotifyPlaylist {
         return tracks;
     }
     private boolean gettingTracks;
-
+    private int inbetween=5000;
     public void triggerPlaylist(SpotifyPlaylistInterface spotifyPlaylistInterface){
+        triggerPlaylist(spotifyPlaylistInterface,5000);
+
+    }
+        public void triggerPlaylist(SpotifyPlaylistInterface spotifyPlaylistInterface, int inbetween)
+    {
+        this.inbetween=inbetween;
+
         this.spotifyPlaylistInterface=spotifyPlaylistInterface;
         if (!gettingTracks)
             new Thread() {
 
                 @Override
                 public void run() {
-                    //DebugLog.log("start refresh");
+                    DebugLog.log("start refresh");
                     gettingTracks=true;
                     ArrayList<String> albumList1=new ArrayList<>();
                     ArrayList<PlaylistItem> albumTracks1=new ArrayList<>();
@@ -70,6 +76,7 @@ public class TracksSpotifyPlaylist {
                         String prevAlbum = "";
                         for (int i = 0; i < items.length(); i++) {
                             try {
+                                Thread.sleep(20);
                                 String trackid = "";
                                 PlaylistItem pi2 = null;
                                 JSONObject o = null;
@@ -88,22 +95,31 @@ public class TracksSpotifyPlaylist {
                                 if (pi2 == null) {
                                     prevAlbum = createNewTrack(albumList1, albumTracks1, prevAlbum, trackid);
                                 }
+                                //DebugLog.log("nr:"+i);
+                                if (i==inbetween) {
+                                    updateListview(albumList1, albumTracks1, spotifyPlaylistInterface);
+                                }
 
-                            } catch (JSONException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
                     }
-                        for (Track t : tracks) {
-
-                        }
                     gettingTracks=false;
-                    if (spotifyPlaylistInterface!=null)
-                        spotifyPlaylistInterface.spotifyPlaylistReturn(albumList1,albumTracks1);
-                    //DebugLog.log("end refresh");
+                    updateListview(albumList1, albumTracks1, spotifyPlaylistInterface);
+                    DebugLog.log("end refresh");
                 }
             }.start();
 
+    }
+
+    public void updateListview(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1, SpotifyPlaylistInterface spotifyPlaylistInterface) {
+        List<Track> mylist = SpotifyFragment.data.tracksPlaylist;
+        mylist.clear();
+        for (Track t:tracks)
+        mylist.add(t);
+        if (spotifyPlaylistInterface != null)
+            spotifyPlaylistInterface.spotifyPlaylistReturn(albumList1, albumTracks1);
     }
 
     public String createNewTrack(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1, String prevAlbum, String trackid) {
@@ -114,16 +130,18 @@ public class TracksSpotifyPlaylist {
             final PlaylistItem pi = new PlaylistItem();
             //check for change in album-name
             String extra = "";
+            pi.pictureVisible = false;
             try {
                 String name = t.album.name;
                 if (!prevAlbum.startsWith(name)) {
                     extra = String.format("(%s-%s)", t.artists.get(0).name, name);
                     prevAlbum = name;
                     pi.pictureVisible = true;
-                } else
-                    pi.pictureVisible = false;
+                }
             } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
+                //DebugLog.log("error createNewTrack");
+                //Log.v("samba", Log.getStackTraceString(e));
+                return prevAlbum;
             }
             //album-name can become part of title
             pi.text = t.name + extra;

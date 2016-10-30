@@ -67,15 +67,44 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             searchAlbum();
 
         }else {
+
+            //working for small playlist:
+                        tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
+            generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList1,albumTracks1);
+            tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
+
+            tracksAdapter.setDisplayCurrentTrack(true);
+            tracksListview.setAdapter(tracksAdapter);
+
+            tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
+            tracksAdapter.notifyDataSetChanged();
             if (refresh ||(SpotifyFragment.data.tracksPlaylist.size()==0)) {
+                DebugLog.log("new list!");
+                startDialog();
+                refresh=false;
+                TracksSpotifyPlaylist.getInstance().triggerPlaylist(this,40);
+                //setCurrentTracklist();
+            }
+            else
+            {
+
+                TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
+                //refreshSpotifyPlaylistInBackground();
+            }
+
+
+            /*if (refresh ||(SpotifyFragment.data.tracksPlaylist.size()==0)) {
                 //DebugLog.log("new list!");
+                //startDialog();
+                //refresh=false;
                 //TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
                 setCurrentTracklist();
             }
             else
             {
 
-                refreshSpotifyPlaylistInBackground();
+                TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
+                //refreshSpotifyPlaylistInBackground();
                 tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
                 generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList1,albumTracks1);
                 tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
@@ -86,7 +115,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
                 tracksAdapter.notifyDataSetChanged();
             }
-            refresh=false;
+            refresh=false;*/
         }
         nextCommand="";
 
@@ -170,22 +199,26 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             //album-name can become part of title
             pi.text = t.name + extra;
             //get image-id
-            new DownLoadImageUrlTask() {
-                @Override
-                public void setUrl(String logo) {
-                    pi.url = logo;
-                }
-            }.execute(t.album.id);
-            //perhaps image-id already present?
-            pi.url = getImageUrl(t.album.images);
-            //rest of properties
-            pi.id = t.id;
-            pi.trackNumber = t.track_number;
-            int time = new Double(t.duration_ms / 1000).intValue();
-            pi.time = time;
+            pi.url ="";
+            try {
+                new DownLoadImageUrlTask() {
+                    @Override
+                    public void setUrl(String logo) {
+                        pi.url = logo;
+                    }
+                }.execute(t.album.id);
+               //perhaps image-id already present?
+                pi.url = getImageUrl(t.album.images);
+             //rest of properties
+                pi.id = t.id;
+                pi.trackNumber = t.track_number;
+                int time = new Double(t.duration_ms / 1000).intValue();
+                pi.time = time;
 
-            albumList1.add(pi.text);
-            albumTracks1.add(pi);
+                //not added if error somewhere....
+                albumList1.add(pi.text);
+                albumTracks1.add(pi);
+            }catch (Exception e){}
 
         }
     }
@@ -213,18 +246,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     public void setCurrentTracklist() {
         gettingList=true;
         //Log.d("samba", "Text:3a1");
-        if (progressDialog!=null)progressDialog.dismiss();
-        progressDialog = new ProgressDialog(MainActivity.getThis);
-        MainActivity.getThis.runOnUiThread(() ->{
-
-
-            //progressDialog.setCancelable(true);
-            progressDialog.setMessage("Get playlist...");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setProgress(0);
-            progressDialog.show();
-            refresh=false;
-        });
+        startDialog();
         new Thread(() -> {
             Looper.prepare();
 
@@ -262,8 +284,23 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     }
 
+    public void startDialog() {
+        if (progressDialog!=null)progressDialog.dismiss();
+        progressDialog = new ProgressDialog(MainActivity.getThis);
+        MainActivity.getThis.runOnUiThread(() ->{
 
-        @Override
+
+            //progressDialog.setCancelable(true);
+            progressDialog.setMessage("Get playlist...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setProgress(0);
+            progressDialog.show();
+            refresh=false;
+        });
+    }
+
+
+    @Override
     public void listAlbumsForArtist(final SpotifyApi api, SpotifyService spotify, final String beatles, final ListView albumsListview, final ListView relatedArtistsListView, final PlanetAdapter albumAdapter, final ArrayAdapter<String> relatedArtistsAdapter) {
 
     }
@@ -329,7 +366,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             int max = albumTracks1.size();
             if (albumTracks.size() > max) max = albumTracks.size();
             //DebugLog.log(""+albumTracks.size()+":"+albumTracks1.size());
-            boolean doRefresh = (max!=albumTracks.size());/*false;
+            boolean doRefresh = (max != albumTracks.size());/*false;
             try {
                 for (int i = 0; i < max; i++) {
                     //DebugLog.log("st");
@@ -342,33 +379,43 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 doRefresh = true;
             }*/
             //DebugLog.log("atend");
-            if (doRefresh)
-                activityThis.runOnUiThread(() -> {
-                    //DebugLog.log("now refresh!");
-                    albumTracks1.clear();
-                    albumList1.clear();
-                    for (int i = 0; i < albumTracks.size(); i++) {
-                        PlaylistItem pi = new PlaylistItem();
-                        PlaylistItem pi1 = albumTracks.get(i);
-                        pi.text = pi1.text;
-                        pi.id = pi1.id;
-                        pi.pictureVisible = pi1.pictureVisible;
-                        pi.time = pi1.time;
-                        pi.trackNumber = pi1.trackNumber;
-                        pi.url = pi1.url;
+            //if (doRefresh)
+                MainActivity.getThis.runOnUiThread(() -> {
+                    try {
+                        //DebugLog.log("now refresh!");
+                        albumTracks1.clear();
+                        albumList1.clear();
+                        for (int i = 0; i < albumTracks.size(); i++) {
+                            PlaylistItem pi = new PlaylistItem();
+                            PlaylistItem pi1 = albumTracks.get(i);
+                            pi.text = pi1.text;
+                            pi.id = pi1.id;
+                            pi.pictureVisible = pi1.pictureVisible;
+                            pi.time = pi1.time;
+                            pi.trackNumber = pi1.trackNumber;
+                            pi.url = pi1.url;
 
-                        //DebugLog.log(albumTracks.get(i).text);
-                        albumTracks1.add(pi);
-                        albumList1.add(albumList.get(i));
-                    }
-                    activityThis.runOnUiThread(() -> {
+                            //DebugLog.log(albumTracks.get(i).text);
+                            albumTracks1.add(pi);
+                            albumList1.add(albumList.get(i));
+                        }
+
                         tracksAdapter.notifyDataSetChanged();
-                        try {
-                            progressDialog.dismiss();
-                            progressDialog = null;
-                        } catch (Exception e){DebugLog.log("error notify");}
-                    });
+                    } catch (Exception e) {
+                        DebugLog.log("error notify");
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+                    try {
+                        progressDialog.dismiss();
+                        progressDialog = null;
+                    } catch (Exception e) {
+                        DebugLog.log("error dismass");
+                        //Log.v("samba", Log.getStackTraceString(e));
+                    }
+
                 });
-        } catch (Exception e){DebugLog.log("error refreshing");}
+        } catch (Exception e) {
+            DebugLog.log("error refreshing");
+        }
     }
 }
