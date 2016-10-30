@@ -402,13 +402,13 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                         tracksAdapter.notifyDataSetChanged();
                     } catch (Exception e) {
                         DebugLog.log("error notify");
-                        Log.v("samba", Log.getStackTraceString(e));
+                        //Log.v("samba", Log.getStackTraceString(e));
                     }
                     try {
                         progressDialog.dismiss();
                         progressDialog = null;
                     } catch (Exception e) {
-                        DebugLog.log("error dismass");
+                        //DebugLog.log("error dismass");
                         //Log.v("samba", Log.getStackTraceString(e));
                     }
 

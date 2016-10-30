@@ -37,15 +37,15 @@ public class TracksSpotifyPlaylist {
     }
         public void triggerPlaylist(SpotifyPlaylistInterface spotifyPlaylistInterface, int inbetween)
     {
-        this.inbetween=inbetween;
-
-        this.spotifyPlaylistInterface=spotifyPlaylistInterface;
         if (!gettingTracks)
+            this.inbetween=inbetween;
+
+            this.spotifyPlaylistInterface=spotifyPlaylistInterface;
             new Thread() {
 
                 @Override
                 public void run() {
-                    DebugLog.log("start refresh");
+                    //DebugLog.log("start refresh");
                     gettingTracks=true;
                     ArrayList<String> albumList1=new ArrayList<>();
                     ArrayList<PlaylistItem> albumTracks1=new ArrayList<>();
@@ -74,9 +74,10 @@ public class TracksSpotifyPlaylist {
                         //save items to new playlist
                         tracks.clear();
                         String prevAlbum = "";
-                        for (int i = 0; i < items.length(); i++) {
+                        int i=0;
+                        while( (i < items.length())&&gettingTracks) {
                             try {
-                                Thread.sleep(20);
+                                //Thread.sleep(20);
                                 String trackid = "";
                                 PlaylistItem pi2 = null;
                                 JSONObject o = null;
@@ -103,11 +104,12 @@ public class TracksSpotifyPlaylist {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            i++;
                         }
                     }
                     gettingTracks=false;
                     updateListview(albumList1, albumTracks1, spotifyPlaylistInterface);
-                    DebugLog.log("end refresh");
+                    //DebugLog.log("end refresh");
                 }
             }.start();
 
@@ -138,22 +140,25 @@ public class TracksSpotifyPlaylist {
                     prevAlbum = name;
                     pi.pictureVisible = true;
                 }
+                //get image-id
+                new SpotifyFragment.DownLoadImageUrlTask() {
+                    @Override
+                    public void setUrl(String logo) {
+                        pi.url = logo;
+                    }
+                }.execute(t.album.id);
+                //perhaps image-id already present?
+                pi.url = SpotifyFragment.getImageUrl(t.album.images);
+
             } catch (Exception e) {
-                //DebugLog.log("error createNewTrack");
-                //Log.v("samba", Log.getStackTraceString(e));
+                DebugLog.log("error createNewTrack");
+                //gettingTracks=false;
                 return prevAlbum;
+                //Log.v("samba", Log.getStackTraceString(e));
+                //return prevAlbum;
             }
             //album-name can become part of title
             pi.text = t.name + extra;
-            //get image-id
-            new SpotifyFragment.DownLoadImageUrlTask() {
-                @Override
-                public void setUrl(String logo) {
-                    pi.url = logo;
-                }
-            }.execute(t.album.id);
-            //perhaps image-id already present?
-            pi.url = SpotifyFragment.getImageUrl(t.album.images);
             //rest of properties
             pi.id = t.id;
             pi.trackNumber = t.track_number;
