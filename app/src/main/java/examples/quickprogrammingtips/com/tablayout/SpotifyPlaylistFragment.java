@@ -209,16 +209,15 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 }.execute(t.album.id);
                //perhaps image-id already present?
                 pi.url = getImageUrl(t.album.images);
-             //rest of properties
-                pi.id = t.id;
-                pi.trackNumber = t.track_number;
-                int time = new Double(t.duration_ms / 1000).intValue();
-                pi.time = time;
-
-                //not added if error somewhere....
-                albumList1.add(pi.text);
-                albumTracks1.add(pi);
             }catch (Exception e){}
+            //rest of properties
+            pi.id = t.id;
+            pi.trackNumber = t.track_number;
+            int time = new Double(t.duration_ms / 1000).intValue();
+            pi.time = time;
+
+            albumList1.add(pi.text);
+            albumTracks1.add(pi);
 
         }
     }
