@@ -240,7 +240,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                 spotifyVisible=MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING;
                 mpdListview.setVisibility(View.GONE);
                 spotifyListview.setVisibility(View.GONE);
-                DebugLog.log("opened");
+                //DebugLog.log("opened");
                 displayList();
 
             }

@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -18,15 +18,14 @@ import java.util.List;
 
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
-public abstract class PlanetAdapter extends ArrayAdapter<String> {
-    public static boolean longclicked=false;
+abstract class PlanetAdapter extends ArrayAdapter<String> {
     private final ArrayList<PlaylistItem> tracksPlaylist;
     private boolean displayCurrentTrack = true;
     int currentItem = -1;
     private boolean albumVisible=false;
     protected ViewGroup parent;
 
-    public void setCurrentItem(int i) {
+    void setCurrentItem(int i) {
         this.currentItem = i;
     }
 
@@ -56,9 +55,9 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void transferPlaylist();
     public abstract void addAlbumNoplay(int counter);
 
-        Bitmap logo1;
+        private Bitmap logo1;
 
-    public PlanetAdapter(List<String> planetList, Context ctx, ArrayList<PlaylistItem> tracksPlaylist) {
+    PlanetAdapter(List<String> planetList, Context ctx, ArrayList<PlaylistItem> tracksPlaylist) {
         super(ctx, R.layout.spotifylist, planetList);
         this.tracksPlaylist=tracksPlaylist;
         this.context = ctx;
@@ -66,6 +65,7 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
+        try{
         this.parent=parent;
         final ViewHolder holder;
 
@@ -74,31 +74,32 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
 // This a new view we inflate the new layout
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.spotifylist, parent, false);
+            holder = new ViewHolder();
+            convertView.setTag(holder);
+        }
+        else {
+            holder = (ViewHolder) convertView.getTag();
         }
         final View convertView2=convertView;
 // Now we can fill the layout with the right values
-        holder = new ViewHolder();
         holder.pos = (TextView) convertView.findViewById(R.id.number);
 
         holder.image = (ImageView) convertView.findViewById(R.id.spotifylistimageView);
         holder.name = (TextView) convertView.findViewById(R.id.name);
         holder.time = (TextView) convertView.findViewById(R.id.spotifytime);
-        holder.pos.setOnClickListener(view -> {
-            longclick( position,  convertView2,logo1);
-        });
+        holder.pos.setOnClickListener(view -> longclick( position,  convertView2,logo1));
 
         convertView.setTag(holder);
 
         holder.pos.setVisibility(View.VISIBLE);
-        int tracknr=-1;
-        try {
             PlaylistItem t = tracksPlaylist.get(position);
             holder.name.setText(t.text);
-            tracknr=t.trackNumber;
+        int tracknr=t.trackNumber;
             //Log.v("samba","text:"+t.text);
             if (t.time>0)
             holder.time.setText(Mp3File.niceTime(t.time));
             else holder.time.setVisibility(View.GONE);
+        try {
             if(t.pictureVisible) {
                 holder.image.setVisibility(View.VISIBLE);
                 holder.pos.setVisibility(View.GONE);
@@ -129,28 +130,23 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         else if ((position & 1) == 0) {
             convertView.setBackgroundColor(Color.rgb(57, 57, 57));
         } else convertView.setBackgroundColor(Color.rgb(64, 64, 64));
+            try{
         if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")&&!displayCurrentTrack){
             holder.name.setTextColor(Color.YELLOW);
         } else {
             holder.name.setTextColor(textcolor);
             holder.time.setTextColor(textcolor);
         }
+        } catch (Exception e) {
+                holder.name.setTextColor(textcolor);
+                holder.time.setTextColor(textcolor);
+        }
         convertView.setOnClickListener(view -> {
             onClickFunc(position);
             currentItem=position;
-            //todo notify does not work!
-            MainActivity.getThis.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Log.v("samba","notify adapter");
-                            notifyDataSetChanged();
-                        }
-                    }, 1000);
-                }
+            MainActivity.getThis.runOnUiThread(() -> {
+                final Handler handler = new Handler();
+                handler.postDelayed(this::notifyDataSetChanged, 1000);
             });
 
         });
@@ -158,112 +154,70 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             longclick( position,  convertView2,logo1);
             return false;
         });
-        /*OnFlingGestureListener flingListener;
-        flingListener = new OnFlingGestureListener() {
-            @Override
-            public void onRightToLeft() {
-                SpotifyFragment.getThis.previousList();
-            }
-
-            @Override
-            public void onLeftToRight() {
-                SpotifyFragment.getThis.nextList();
-            }
-
-
-            @Override
-            public void onTapUp() {
-                onClickFunc(position);
-            }
-
-            @Override
-            public void onLongTapUp() {
-                PlanetAdapter.longclicked=true;
-                longclick( position,  convertView2);
-
-            }
-
-        };*/
 
         int pos=mypos;
         if (tracknr>=0)pos=tracknr;
         holder.pos.setText("" + (pos));
         mypos++;
-        /*convertView.setOnTouchListener((v, event) -> {
-            if (flingListener.onTouch(v, event)) {
-                // if gesture detected, ignore other touch events
-                return true;
-            } //else {
-                //Log.v("samba","nofling");
-
-            int action = MotionEventCompat.getActionMasked(event);
-            if (action == MotionEvent.ACTION_DOWN) {
-                // normal touch events
-                onClickFunc(position);
-                return false;
-            }
-            return true;
-        });*/
-
+    } catch (Exception e) {
+        DebugLog.log("error in adapter");
+            Log.v("samba", Log.getStackTraceString(e));
+    }
 
         return convertView;
     }
 
     private void longclick(int position, View v, Bitmap logo){
-        //Log.v("samba","ontouch album");
         PopupMenu menu = new PopupMenu(v.getContext(), v);
         if (!isAlbumVisible()) {
 
-            //Toast.makeText(v.getContext(), "click:" + (String) fileArrayList.get(pos2).getName(), Toast.LENGTH_LONG).show();
-            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            menu.setOnMenuItemClickListener(item -> {
+                String title = item.getTitle().toString();
+                if (title.equals("remove->")) {
+                    //submenu
+                    PopupMenu menu1 = new PopupMenu(v.getContext(), v);
+                    menu1.getMenu().add("remove top");
+                    menu1.getMenu().add("remove bottom");
+                    menu1.getMenu().add("remove track");
+                    menu1.getMenu().add("remove album");
 
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    String title = item.getTitle().toString();
-                    if (title.equals("remove->")) {
-                        //submenu
-                        PopupMenu menu = new PopupMenu(v.getContext(), v);
-                        menu.getMenu().add("remove top");
-                        menu.getMenu().add("remove bottom");
-                        menu.getMenu().add("remove track");
-                        menu.getMenu().add("remove album");
+                    menu1.show();
+                    menu1.setOnMenuItemClickListener(item1 -> {
+                        String title1 = item1.getTitle().toString();
+                                switch (title1) {
+                                    case "remove top":
+                                        removeUp(position);
+                                        break;
+                                    case "remove bottom":
+                                        removeDown(position);
 
-                        menu.show();
-                        menu.setOnMenuItemClickListener(item1 -> {
-                            String title1 = item1.getTitle().toString();
-                            if (title1.equals("remove top")) {
-                                removeUp(position);
-                            } else if (title1.equals("remove bottom")) {
-                                removeDown(position);
-
-                            } else if (title1.equals("remove album")) {
-                                removeAlbum(position);
-                            } else if (title1.equals("remove track")) {
-                                removeTrack(position);
-                            }
-                            //
-                            return true;
-                        }
-
-
-                        );
-                    }else if (title.equals("add album")) {
-                        addAlbum(position);
-                    } else if (title.equals("display artist")) {
-                        displayArtist(position);
-                    } else if (title.equals("wikipedia")) {
-                        displayArtistWikipedia(position);
-                    } else if (title.equals("large picture")) {
-                        MainActivity.displayLargeImage(getThis, logo);
-                    } else if (item.getTitle().toString().equals("-->transfer")) {
-                        //Log.v("samba","transfer planetadapter");
-                        transferPlaylist();
-                    } else if (title.equals("add album to favorites")) {
-                        addAlbumToFavoritesTrack(position);
-                    }
-
-                    return true;
+                                        break;
+                                    case "remove album":
+                                        removeAlbum(position);
+                                        break;
+                                    case "remove track":
+                                        removeTrack(position);
+                                        break;
+                                }
+                        //
+                        return true;
+                    });
+                }else if (title.equals("add album")) {
+                    addAlbum(position);
+                } else if (title.equals("display artist")) {
+                    displayArtist(position);
+                } else if (title.equals("wikipedia")) {
+                    displayArtistWikipedia(position);
+                } else if (title.equals("large picture")) {
+                    MainActivity.displayLargeImage(getThis, logo);
+                } else if (item.getTitle().toString().equals("-->transfer")) {
+                    //Log.v("samba","transfer planetadapter");
+                    transferPlaylist();
+                } else if (title.equals("add album to favorites")) {
+                    addAlbumToFavoritesTrack(position);
                 }
+
+                return true;
             });
 
             menu.getMenu().add("remove->");
@@ -275,29 +229,28 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("large picture");
         } else {
             menu.setOnMenuItemClickListener(item -> {
-                /*if (tracksPlaylist.get(position).url.startsWith("http://192.168.2.8:8081")){
-                    Toast.makeText(v.getContext(), "not implemented yet", Toast.LENGTH_LONG).show();
-                    return false;
-                }*/
 
-                if (item.getTitle().toString().equals("replace and play")) {
-                    replaceAndPlayAlbum(position);
-                } else if (item.getTitle().toString().equals("add and play")) {
-                    addAndPlayAlbum(position);
-                } else if (item.getTitle().toString().equals("wikipedia artist")) {
-                    albumArtistWikipedia(position);
-                } else if (item.getTitle().toString().equals("large picture")) {
-                    MainActivity.displayLargeImage(getThis, logo);
-                } else if (item.getTitle().toString().equals("add")) {
-                    //Toast.makeText(getThis.getApplicationContext(), "Not implemented yet",
-                    //        Toast.LENGTH_SHORT).show();
-                    addAlbumNoplay(position);
-
-                    //addAlbum(position);
-                }
-                else if (item.getTitle().toString().equals("add album to favorites")) {
-                    //tracksPlaylist.get(position).url
-                    addAlbumToFavoritesAlbum(position);
+                String title1 = item.getTitle().toString();
+                switch (title1) {
+                    case "replace and play":
+                        replaceAndPlayAlbum(position);
+                        break;
+                    case "add and play":
+                        addAndPlayAlbum(position);
+                        break;
+                    case "wikipedia artist":
+                        albumArtistWikipedia(position);
+                        break;
+                    case "large picture":
+                        MainActivity.displayLargeImage(getThis, logo);
+                        break;
+                    case "add":
+                        addAlbumNoplay(position);
+                        break;
+                    case "add album to favorites":
+                        //tracksPlaylist.get(position).url
+                        addAlbumToFavoritesAlbum(position);
+                        break;
                 }
 
                 return true;
@@ -313,24 +266,19 @@ public abstract class PlanetAdapter extends ArrayAdapter<String> {
         }
         menu.show();
     }
-    public boolean isDisplayCurrentTrack() {
-        return displayCurrentTrack;
-    }
-
-    public void setDisplayCurrentTrack(boolean displayCurrentTrack) {
-        //Log.v("samba",""+displayCurrentTrack);
+    void setDisplayCurrentTrack(boolean displayCurrentTrack) {
         this.displayCurrentTrack = displayCurrentTrack;
     }
 
-    public boolean isAlbumVisible() {
+    private boolean isAlbumVisible() {
         return albumVisible;
     }
 
-    public void setAlbumVisible(boolean albumVisible) {
+    void setAlbumVisible(boolean albumVisible) {
         this.albumVisible = albumVisible;
     }
 
-    class ViewHolder {
+    private class ViewHolder {
         TextView pos, name,time;
         public ImageView image;
     }

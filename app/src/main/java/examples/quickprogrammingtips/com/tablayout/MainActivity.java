@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                             break;
                         case "Refresh Spotify":
-                            try{SpotifyPlaylistFragment.getThisPlaylist.setCurrentTracklist();} catch (Exception e) {        }
+                            try{SpotifyPlaylistFragment.getInstance().setCurrentTracklist();} catch (Exception e) {        }
                             break;
                         case "Close":
                             getThis.finish();
@@ -1267,7 +1267,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                 }
                             }
                             MainActivity.getThis.runOnUiThread(() -> {
-                                SpotifyPlaylistFragment.getThisPlaylist.tracksAdapter.notifyDataSetChanged();
+                                SpotifyPlaylistFragment.getInstance().tracksAdapter.notifyDataSetChanged();
                             });
                         }
                     } catch (Exception e) {

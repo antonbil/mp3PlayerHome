@@ -21,6 +21,7 @@ import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * Created by anton on 10-9-16.
+ * class to display Spotify Playlist
  */
 public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSongInterface, SpotifyPlaylistInterface {
 
@@ -28,9 +29,12 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     public static boolean refresh=true;
     public PlanetAdapter tracksAdapter;
     private ArrayList<String> albumList1 = new ArrayList<>();
+    public static SpotifyPlaylistFragment getInstance() {
+        return instance;
+    }
 
 
-    public static SpotifyPlaylistFragment getThisPlaylist;
+    private static SpotifyPlaylistFragment instance;// automatically initialized to null
     private ArrayList<PlaylistItem> albumTracks1 = new ArrayList<>();
     public static boolean gettingList=true;
     private int previousLength=-1;
@@ -76,19 +80,14 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             tracksAdapter.setDisplayCurrentTrack(true);
             tracksListview.setAdapter(tracksAdapter);
 
-            //tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
-            //tracksAdapter.notifyDataSetChanged();
             if (refresh ||(SpotifyFragment.data.tracksPlaylist.size()==0)) {
-                //DebugLog.log("new list!");
                 startDialog();
                 refresh=false;
                 TracksSpotifyPlaylist.getInstance().triggerPlaylist(this,40);
-                //setCurrentTracklist();
             }
             else
             {
                 TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
-                //refreshSpotifyPlaylistInBackground();
             }
         }
         nextCommand="";
@@ -97,57 +96,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     public void refreshSpotifyPlaylistInBackground() {
         TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
-        /*new Thread(() -> {
-            refresh=false;
-            Looper.prepare();
-            MainActivity.getThis.leftDrawerPlaylist.getDrawerSpotifyPlaylist(new GetSpotifyPlaylistClass(){
-                @Override
-                public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
-                    //DebugLog.log("start refresh");
-                    //DebugLog.log("st");
-
-                    int max=albumTracks1.size();
-                    if (albumTracks.size()>max)max=albumTracks.size();
-                    boolean doRefresh=false;
-                    try {
-                        for (int i = 0; i < max; i++) {
-                            //DebugLog.log("st");
-                            if (!albumTracks.get(i).text.equals(albumTracks1.get(i).text)) {
-                                doRefresh = true;
-                                break;
-                            }
-                        }
-                    }catch(Exception e){doRefresh = true;}
-                            //DebugLog.log("atend");
-                    if (doRefresh)
-                        activityThis.runOnUiThread(() -> {
-                            try {
-                                DebugLog.log("now refresh!");
-                                albumTracks1.clear();
-                                albumList1.clear();
-                                for (int i = 0; i < albumTracks.size(); i++) {
-                                    PlaylistItem pi = new PlaylistItem();
-                                    PlaylistItem pi1 = albumTracks.get(i);
-                                    pi.text = pi1.text;
-                                    pi.id = pi1.id;
-                                    pi.pictureVisible = pi1.pictureVisible;
-                                    pi.time = pi1.time;
-                                    pi.trackNumber = pi1.trackNumber;
-                                    pi.url = pi1.url;
-
-                                    //DebugLog.log(albumTracks.get(i).text);
-                                    albumTracks1.add(pi);
-                                    albumList1.add(albumList.get(i));
-                                }
-                                activityThis.runOnUiThread(() -> {
-                                    tracksAdapter.notifyDataSetChanged();
-                                });
-                            } catch(Exception e){DebugLog.log("error refresh");
-                            }
-                        });
-                }
-            });
-        }).start();*/
     }
 
     public static void generateAdapterLists(List<Track> tracksPlaylist, ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1)
@@ -183,12 +131,11 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 }.execute(t.album.id);
                //perhaps image-id already present?
                 pi.url = getImageUrl(t.album.images);
-            }catch (Exception e){}
+            }catch (Exception e){pi.url="";}
             //rest of properties
             pi.id = t.id;
             pi.trackNumber = t.track_number;
-            int time = new Double(t.duration_ms / 1000).intValue();
-            pi.time = time;
+            pi.time = Double.valueOf(t.duration_ms / 1000).intValue();
 
             albumList1.add(pi.text);
             albumTracks1.add(pi);
@@ -197,9 +144,9 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     }
     @Override
     public void onActivityCreated() {
-        if (SpotifyFragment.getThis.data.tracksPlaylist==null)
-        SpotifyFragment.getThis.data.tracksPlaylist = new ArrayList<Track>();
-        getThisPlaylist=this;
+        if (SpotifyFragment.data.tracksPlaylist==null)
+        SpotifyFragment.data.tracksPlaylist = new ArrayList<>();
+        instance =this;
         gettingList=true;
         spotifyWorkingOnPlaylist=true;
         try {
@@ -218,7 +165,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     public void setCurrentTracklist() {
         gettingList=true;
-        //Log.d("samba", "Text:3a1");
         startDialog();
         new Thread(() -> {
             Looper.prepare();
@@ -261,9 +207,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         if (progressDialog!=null)progressDialog.dismiss();
         progressDialog = new ProgressDialog(MainActivity.getThis);
         MainActivity.getThis.runOnUiThread(() ->{
-
-
-            //progressDialog.setCancelable(true);
             progressDialog.setMessage("Get playlist...");
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setProgress(0);
@@ -280,8 +223,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     public static void notifyList(){
         try{
         MainActivity.getThis.runOnUiThread(() -> {
-            //DebugLog.log("notify adapter");
-                SpotifyPlaylistFragment.getThisPlaylist.tracksAdapter.notifyDataSetChanged();
+            SpotifyPlaylistFragment.getInstance().tracksAdapter.notifyDataSetChanged();
         });
         }catch(Exception e){
             DebugLog.log("notify adapter error");
@@ -289,8 +231,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         }
     }
     public static PlanetAdapter getTracksAdapter(final ListView albumsListview, final ArrayList<String> albumList, final ArrayList<PlaylistItem> albumTracks) {
-        PlanetAdapter albumAdapter = new SpotifyPlaylistAdapter(albumList, MainActivity.getThis, albumTracks,albumsListview) ;
-        return albumAdapter;
+        return new SpotifyPlaylistAdapter(albumList, MainActivity.getThis, albumTracks,albumsListview);
     }
 
     @Override
@@ -301,28 +242,20 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     @Override
     public void setData(String time, String totalTime, String title, String artist, boolean spotifyList, int currentTrack) {
         if (spotifyList) {
-            //DebugLog.log("spotifylist");
             if (tracksAdapter != null) {
-                //DebugLog.log("tracksAdapter not null");
                 MainActivity.getThis.runOnUiThread(() -> {
-                    if ((currentTrack >= SpotifyFragment.getThis.data.albumTracks.size()) || (SpotifyFragment.getThis.data.albumTracks.size() != previousLength)) {
+                    tracksAdapter.currentItem=currentTrack;
+                    if ((currentTrack >= SpotifyFragment.data.albumTracks.size()) || (SpotifyFragment.data.albumTracks.size() != previousLength)) {
                         if (!gettingList) {
-                            //DebugLog.log("get updated list");
                             try {
                                 refreshSpotifyPlaylistInBackground();
                             } catch (Exception e) {
                                 Log.v("samba", Log.getStackTraceString(e));
                             }
-                        }// else
-                        //    DebugLog.log("do not get updated list, list busy");
-                        //throw new AssertionError();
-                    } else
+                        }
+                    }
                         try {
-                            //DebugLog.log("set trak to "+currentTrack);
-                            if (!gettingList) {
-                                tracksAdapter.setCurrentItem(currentTrack);
                                 tracksAdapter.notifyDataSetChanged();
-                            }
 
                         } catch (Exception e) {
                             Log.v("samba", Log.getStackTraceString(e));
@@ -338,11 +271,9 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         try {
             int max = albumTracks1.size();
             if (albumTracks.size() > max) max = albumTracks.size();
-            //DebugLog.log(""+albumTracks.size()+":"+albumTracks1.size());
             boolean doRefresh = /*(max != albumTracks.size());*/false;
             try {
                 for (int i = 0; i < max; i++) {
-                    //DebugLog.log("st");
                     if (!albumTracks.get(i).text.equals(albumTracks1.get(i).text)) {
                         doRefresh = true;
                         break;
@@ -351,11 +282,9 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             } catch (Exception e) {
                 doRefresh = true;
             }
-            //DebugLog.log("atend");
-            //if (doRefresh)
+            if (doRefresh)
                 MainActivity.getThis.runOnUiThread(() -> {
                     try {
-                        //DebugLog.log("now refresh!");
                         albumTracks1.clear();
                         albumList1.clear();
                         for (int i = 0; i < albumTracks.size(); i++) {
@@ -376,7 +305,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                         tracksAdapter.notifyDataSetChanged();
                     } catch (Exception e) {
                         DebugLog.log("error notify");
-                        //Log.v("samba", Log.getStackTraceString(e));
                     }
                     try {
                         progressDialog.dismiss();
