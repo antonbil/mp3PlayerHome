@@ -2157,12 +2157,14 @@ public class SpotifyFragment extends Fragment implements
         albumAdapter1.setAlbumVisible(false);
         //Log.d("samba", "Text:14");
         try {
-            refreshPlaylistFromSpotify(getSpotifyPlaylistClass,1,albumAdapter1,getThis,SpotifyFragment.getThis.data.albumList,SpotifyFragment.getThis.data.albumTracks);
+            TracksSpotifyPlaylist.getInstance().triggerPlaylist((albumList, albumTracks, force) -> {
+                //for (String s:albumList)DebugLog.log(s);
+                if (albumAdapter1!=null) {
+                    albumAdapter1.setDisplayCurrentTrack(true);
+                    //Log.d("samba", "Text:16");
+                }
+            });
             //Log.d("samba", "Text:15");
-            if (albumAdapter1!=null) {
-                albumAdapter1.setDisplayCurrentTrack(true);
-                //Log.d("samba", "Text:16");
-            }
 
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
@@ -2172,7 +2174,6 @@ public class SpotifyFragment extends Fragment implements
 
     public static void refreshPlaylistFromSpotify(GetSpotifyPlaylistClass getSpotifyPlaylistClass,int nr, final PlanetAdapter albumAdapter1, Activity getThis,ArrayList<String> albumList,ArrayList<PlaylistItem> albumTracks) {
         try{
-            getOnlyPlaylistFromSpotify(getSpotifyPlaylistClass,nr, getThis,albumAdapter1,albumList, albumTracks);
         } catch (Exception e) {
                 DebugLog.log("error");
             Log.v("samba", Log.getStackTraceString(e));
@@ -2181,9 +2182,6 @@ public class SpotifyFragment extends Fragment implements
 
     public static void getOnlyPlaylistFromSpotify(GetSpotifyPlaylistClass getSpotifyPlaylistClass,final int nr, Activity getThis1, PlanetAdapter albumAdapter1, final ArrayList<String> albumList, final ArrayList<PlaylistItem> albumTracks){
         try {
-            TracksSpotifyPlaylist.getInstance().triggerPlaylist((albumList1, albumTracks1, force) -> {
-                for (String s:albumList1)DebugLog.log(s);
-            });
             /*JSONArray playlist = getPlaylist();
             JSONArray items = playlist;
             if ((items == null) && (nr < 3)) {
