@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -2182,7 +2181,10 @@ public class SpotifyFragment extends Fragment implements
 
     public static void getOnlyPlaylistFromSpotify(GetSpotifyPlaylistClass getSpotifyPlaylistClass,final int nr, Activity getThis1, PlanetAdapter albumAdapter1, final ArrayList<String> albumList, final ArrayList<PlaylistItem> albumTracks){
         try {
-            JSONArray playlist = getPlaylist();
+            TracksSpotifyPlaylist.getInstance().triggerPlaylist((albumList1, albumTracks1, force) -> {
+                for (String s:albumList1)DebugLog.log(s);
+            });
+            /*JSONArray playlist = getPlaylist();
             JSONArray items = playlist;
             if ((items == null) && (nr < 3)) {
                 try {
@@ -2206,19 +2208,12 @@ public class SpotifyFragment extends Fragment implements
                 fillTracksSpotifyPlaylist(items);
                 SpotifyPlaylistFragment.generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList,albumTracks);
             }
-            //save new list to previous lists
-            /*SpotifyFragment.getThis.data.previousAlbumTracks.clear();
-            for (PlaylistItem pi : albumTracks) {
-                SpotifyFragment.getThis.data.previousAlbumTracks.add(pi);
-            }
-            SpotifyFragment.getThis.data.previousTracksPlaylist.clear();
-            for (Track t : SpotifyFragment.getThis.data.tracksPlaylist)
-                SpotifyFragment.getThis.data.previousTracksPlaylist.add(t);*/
+
             //notify caller that list is updated
             if (albumAdapter1 != null)
                 getThis1.runOnUiThread(() -> albumAdapter1.notifyDataSetChanged());
             if (getSpotifyPlaylistClass != null)
-                getSpotifyPlaylistClass.atEnd(albumList, albumTracks);
+                getSpotifyPlaylistClass.atEnd(albumList, albumTracks);*/
         }catch (Exception e) {
             DebugLog.log("error");
             //Log.v("samba", Log.getStackTraceString(e));

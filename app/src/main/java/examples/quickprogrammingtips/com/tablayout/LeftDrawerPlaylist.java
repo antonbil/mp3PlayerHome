@@ -23,7 +23,7 @@ import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
  * Created by anton on 9-10-16.
  */
 
-public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInterface{
+public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInterface, SpotifyPlaylistInterface {
     private  int newalbumsdrawer_layout;
     private  int newalbumsdrawer_list;
     private  int newalbumsmpddrawer_list;
@@ -209,24 +209,11 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
         });
     }
     public void getDrawerSpotifyPlaylist(GetSpotifyPlaylistClass pc) {
-        SpotifyFragment.refreshPlaylistFromSpotify(pc,1, albumAdapter, activity, albumList, albumTracks);
+        TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
     }
     public void getSpotifyPlaylist() {
-        SpotifyFragment.refreshPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
-            @Override
-            public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
-
-            }
-        },1, albumAdapter, activity, albumList, albumTracks);
-        MainActivity.getThis.runOnUiThread(() -> {
-            try{
-                if (mpdListview!=null)mpdListview.setVisibility(View.GONE);
-                spotifyListview.setVisibility(View.VISIBLE);
-                albumAdapter.setCurrentItem(SpotifyFragment.currentTrack);
-                albumAdapter.notifyDataSetChanged();
-            }catch(Exception e){
-                Log.v("samba", Log.getStackTraceString(e));}
-        });
+        TracksSpotifyPlaylist.getInstance().triggerPlaylist(this,true);
+        TracksSpotifyPlaylist.getInstance().triggerPlaylist(this,40);
     }
     public abstract void performTouchEvent(MotionEvent event);
     public abstract void performClickOnRightDrawer();
@@ -253,6 +240,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                 spotifyVisible=MainActivity.playingStatus==MainActivity.SPOTIFY_PLAYING;
                 mpdListview.setVisibility(View.GONE);
                 spotifyListview.setVisibility(View.GONE);
+                DebugLog.log("opened");
                 displayList();
 
             }
@@ -352,4 +340,41 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     public void setItemsArray(ArrayList<String> itemsArray) {
         this.itemsArray = itemsArray;
     }
+
+    @Override
+    public void spotifyPlaylistReturn(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1, boolean force) {
+
+        activity.runOnUiThread(() -> {
+            //if (albumList1.size()==0)DebugLog.log("empty"); else
+            if (albumList1.size()!=albumList.size()||force)
+            try{
+                albumTracks.clear();
+                albumList.clear();
+                for (int i = 0; i < albumTracks1.size(); i++) {
+                    PlaylistItem pi = new PlaylistItem();
+                    PlaylistItem pi1 = albumTracks1.get(i);
+                    pi.text = pi1.text;
+                    pi.id = pi1.id;
+                    pi.pictureVisible = pi1.pictureVisible;
+                    pi.time = pi1.time;
+                    pi.trackNumber = pi1.trackNumber;
+                    pi.url = pi1.url;
+
+                    //DebugLog.log(albumTracks.get(i).text);
+                    albumTracks.add(pi);
+                    albumList.add(albumList1.get(i));
+                }
+
+                //tracksAdapter.notifyDataSetChanged();
+                if (mpdListview!=null)mpdListview.setVisibility(View.GONE);
+                spotifyListview.setVisibility(View.VISIBLE);
+                albumAdapter.setCurrentItem(SpotifyFragment.currentTrack);
+                albumAdapter.notifyDataSetChanged();
+            }catch(Exception e){
+                Log.v("samba", Log.getStackTraceString(e));}
+            try{
+            //albumAdapter.notifyDataSetChanged();
+        }catch(Exception e){
+            Log.v("samba", Log.getStackTraceString(e));}
+        });    }
 }

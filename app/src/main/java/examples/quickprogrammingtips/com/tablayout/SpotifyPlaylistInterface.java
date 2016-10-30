@@ -7,5 +7,5 @@ import java.util.ArrayList;
  */
 public interface SpotifyPlaylistInterface {
     //void playlistCall(ArrayList<Mp3File> playlist);
-    void spotifyPlaylistReturn(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks);
+    void spotifyPlaylistReturn(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks, boolean force);
 }

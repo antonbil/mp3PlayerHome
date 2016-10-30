@@ -91,31 +91,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
                 //refreshSpotifyPlaylistInBackground();
             }
-
-
-            /*if (refresh ||(SpotifyFragment.data.tracksPlaylist.size()==0)) {
-                //DebugLog.log("new list!");
-                //startDialog();
-                //refresh=false;
-                //TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
-                setCurrentTracklist();
-            }
-            else
-            {
-
-                TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
-                //refreshSpotifyPlaylistInBackground();
-                tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
-                generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList1,albumTracks1);
-                tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
-
-                tracksAdapter.setDisplayCurrentTrack(true);
-                tracksListview.setAdapter(tracksAdapter);
-
-                tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
-                tracksAdapter.notifyDataSetChanged();
-            }
-            refresh=false;*/
         }
         nextCommand="";
 
@@ -123,7 +98,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     public void refreshSpotifyPlaylistInBackground() {
         TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
-        new Thread(() -> {
+        /*new Thread(() -> {
             refresh=false;
             Looper.prepare();
             MainActivity.getThis.leftDrawerPlaylist.getDrawerSpotifyPlaylist(new GetSpotifyPlaylistClass(){
@@ -173,7 +148,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                         });
                 }
             });
-        }).start();
+        }).start();*/
     }
 
     public static void generateAdapterLists(List<Track> tracksPlaylist, ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1)
@@ -360,7 +335,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     }
 
     @Override
-    public void spotifyPlaylistReturn(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
+    public void spotifyPlaylistReturn(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks, boolean force) {
         try {
             int max = albumTracks1.size();
             if (albumTracks.size() > max) max = albumTracks.size();

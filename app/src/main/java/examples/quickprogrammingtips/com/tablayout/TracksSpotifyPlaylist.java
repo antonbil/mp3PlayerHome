@@ -17,6 +17,9 @@ import kaaes.spotify.webapi.android.models.Track;
 public class TracksSpotifyPlaylist {
     private static TracksSpotifyPlaylist ourInstance = new TracksSpotifyPlaylist();
     private SpotifyPlaylistInterface spotifyPlaylistInterface;
+    private boolean changed=false;
+    private ArrayList<String> albumList1 = new ArrayList<>();
+    private ArrayList<PlaylistItem> albumTracks1 = new ArrayList<>();
 
     public static TracksSpotifyPlaylist getInstance() {
         return ourInstance;
@@ -29,34 +32,45 @@ public class TracksSpotifyPlaylist {
     public List<Track> getTracks() {
         return tracks;
     }
-    private boolean gettingTracks;
+    private static boolean gettingTracks;
+    private ArrayList<SpotifyPlaylistInterface> listeners=new ArrayList<>();
     private int inbetween=5000;
+    public void triggerPlaylist(SpotifyPlaylistInterface spotifyPlaylistInterface, boolean forceDisplay){
+        if (forceDisplay&&albumList1.size()>0)
+            spotifyPlaylistInterface.spotifyPlaylistReturn(albumList1, albumTracks1,true);
+        triggerPlaylist(spotifyPlaylistInterface,5000);
+
+    }
     public void triggerPlaylist(SpotifyPlaylistInterface spotifyPlaylistInterface){
         triggerPlaylist(spotifyPlaylistInterface,5000);
 
     }
         public void triggerPlaylist(SpotifyPlaylistInterface spotifyPlaylistInterface, int inbetween)
     {
-        if (!gettingTracks)
-            this.inbetween=inbetween;
+        this.spotifyPlaylistInterface=spotifyPlaylistInterface;
+        boolean there=false;
+        for (SpotifyPlaylistInterface spi:listeners)
+            if (spotifyPlaylistInterface==spi)there=true;
+        if (!there){
+            this.changed=true;
+            listeners.add(spotifyPlaylistInterface);
+        }
+        if (!gettingTracks) {
+            gettingTracks = true;
+            this.inbetween = inbetween;
 
-            this.spotifyPlaylistInterface=spotifyPlaylistInterface;
             new Thread() {
 
                 @Override
                 public void run() {
                     //DebugLog.log("start refresh");
-                    gettingTracks=true;
-                    ArrayList<String> albumList1=new ArrayList<>();
-                    ArrayList<PlaylistItem> albumTracks1=new ArrayList<>();
                     int nr = 0;
-                    JSONArray items=null;
-                    while (((items == null) && (nr < 3)))
-                    {
+                    JSONArray items = null;
+                    while (((items == null) && (nr < 3))) {
 
                         JSONArray playlist = SpotifyFragment.getPlaylist();
                         items = playlist;
-                        if (items==null)
+                        if (items == null)
 
                             try {
                                 Thread.sleep(1000);
@@ -73,9 +87,11 @@ public class TracksSpotifyPlaylist {
                     {
                         //save items to new playlist
                         tracks.clear();
+                        albumList1.clear();
+                        albumTracks1.clear();
                         String prevAlbum = "";
-                        int i=0;
-                        while( (i < items.length())&&gettingTracks) {
+                        int i = 0;
+                        while ((i < items.length()) && gettingTracks) {
                             try {
                                 //Thread.sleep(20);
                                 String trackid = "";
@@ -97,8 +113,8 @@ public class TracksSpotifyPlaylist {
                                     prevAlbum = createNewTrack(albumList1, albumTracks1, prevAlbum, trackid);
                                 }
                                 //DebugLog.log("nr:"+i);
-                                if (i==inbetween) {
-                                    updateListview(albumList1, albumTracks1, spotifyPlaylistInterface);
+                                if (i == inbetween) {
+                                    updateListview(albumList1, albumTracks1);
                                 }
 
                             } catch (Exception e) {
@@ -107,21 +123,35 @@ public class TracksSpotifyPlaylist {
                             i++;
                         }
                     }
-                    gettingTracks=false;
-                    updateListview(albumList1, albumTracks1, spotifyPlaylistInterface);
+                    gettingTracks = false;
+                    updateListview(albumList1, albumTracks1);
                     //DebugLog.log("end refresh");
                 }
             }.start();
+        }
 
     }
 
-    public void updateListview(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1, SpotifyPlaylistInterface spotifyPlaylistInterface) {
-        List<Track> mylist = SpotifyFragment.data.tracksPlaylist;
-        mylist.clear();
-        for (Track t:tracks)
-        mylist.add(t);
-        if (spotifyPlaylistInterface != null)
-            spotifyPlaylistInterface.spotifyPlaylistReturn(albumList1, albumTracks1);
+    public void updateListview(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1) {
+        if (changed) {
+
+            //update global tracks
+            List<Track> mylist = SpotifyFragment.data.tracksPlaylist;
+            mylist.clear();
+            for (Track t:tracks)
+                mylist.add(t);
+            //update listeners
+            if (spotifyPlaylistInterface != null)
+                spotifyPlaylistInterface.spotifyPlaylistReturn(albumList1, albumTracks1,false);
+                else
+            for (SpotifyPlaylistInterface listener:listeners){
+                try{
+                    if (listener!=null)listener.spotifyPlaylistReturn(albumList1, albumTracks1,false);
+                }catch (Exception e){}
+            }
+
+            changed=false;
+        }
     }
 
     public String createNewTrack(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1, String prevAlbum, String trackid) {
@@ -168,6 +198,7 @@ public class TracksSpotifyPlaylist {
             albumList1.add(pi.text);
             albumTracks1.add(pi);
             SpotifyFragment.getThis.data.previousAlbumTracks.add(pi);
+            changed=true;
         }
         return prevAlbum;
     }
