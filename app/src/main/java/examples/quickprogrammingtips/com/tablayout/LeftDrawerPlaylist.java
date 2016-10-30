@@ -346,9 +346,10 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
 
         activity.runOnUiThread(() -> {
             //if (albumList1.size()==0)DebugLog.log("empty"); else
-            if (albumList1.size()!=albumList.size()||force)
+            //if (albumList1.size()!=albumList.size()||force)
             try{
-                albumTracks.clear();
+                SpotifyPlaylistFragment.generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList,albumTracks);
+                /*albumTracks.clear();
                 albumList.clear();
                 for (int i = 0; i < albumTracks1.size(); i++) {
                     PlaylistItem pi = new PlaylistItem();
@@ -363,7 +364,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                     //DebugLog.log(albumTracks.get(i).text);
                     albumTracks.add(pi);
                     albumList.add(albumList1.get(i));
-                }
+                }*/
 
                 //tracksAdapter.notifyDataSetChanged();
                 if (mpdListview!=null)mpdListview.setVisibility(View.GONE);

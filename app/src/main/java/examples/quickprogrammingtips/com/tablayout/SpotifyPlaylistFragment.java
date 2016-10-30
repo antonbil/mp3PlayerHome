@@ -68,18 +68,18 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
         }else {
 
-            //working for small playlist:
-                        tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
+            //setup playlist and adapter
+            tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
             generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList1,albumTracks1);
             tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
 
             tracksAdapter.setDisplayCurrentTrack(true);
             tracksListview.setAdapter(tracksAdapter);
 
-            tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
-            tracksAdapter.notifyDataSetChanged();
+            //tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
+            //tracksAdapter.notifyDataSetChanged();
             if (refresh ||(SpotifyFragment.data.tracksPlaylist.size()==0)) {
-                DebugLog.log("new list!");
+                //DebugLog.log("new list!");
                 startDialog();
                 refresh=false;
                 TracksSpotifyPlaylist.getInstance().triggerPlaylist(this,40);
@@ -87,7 +87,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             }
             else
             {
-
                 TracksSpotifyPlaylist.getInstance().triggerPlaylist(this);
                 //refreshSpotifyPlaylistInBackground();
             }
@@ -340,7 +339,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             int max = albumTracks1.size();
             if (albumTracks.size() > max) max = albumTracks.size();
             //DebugLog.log(""+albumTracks.size()+":"+albumTracks1.size());
-            boolean doRefresh = (max != albumTracks.size());/*false;
+            boolean doRefresh = /*(max != albumTracks.size());*/false;
             try {
                 for (int i = 0; i < max; i++) {
                     //DebugLog.log("st");
@@ -351,7 +350,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 }
             } catch (Exception e) {
                 doRefresh = true;
-            }*/
+            }
             //DebugLog.log("atend");
             //if (doRefresh)
                 MainActivity.getThis.runOnUiThread(() -> {
