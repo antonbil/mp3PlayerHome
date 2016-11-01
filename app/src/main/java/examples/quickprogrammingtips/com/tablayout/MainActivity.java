@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             getThis = this;
             getSpotifyInterface = new SpotifyInterface();
             data = new SpotifyData();
-            SpotifyFragment.data=data;
+            SpotifyFragment.setData(data);
             dialog = new ProgressDialog(this);//keep it hidden until needed
             updateBarHandler = new Handler();
             //DebugLog.log("Text:3");
@@ -1223,7 +1223,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
-                MainActivity.getThis.callSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name);
+                MainActivity.getThis.callSpotify(SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).artists.get(0).name);
             }
         };
         return albumAdapter;
@@ -1252,14 +1252,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     }
 
                 if (SpotifyFragment.busyupdateSongInfo) {
+                    //todo: busyupdateSongInfo is always false!
                     try {
                         //DebugLog.log("nu binnen2");
                         String[] trid1 = SpotifyFragment.getCurrentTrack();//
                         String trid = "0";
                         trid = trid1[0];
                         if (trid.length() > 0) {
-                            for (int i = 0; i < SpotifyPlaylistFragment.getThis.data.tracksPlaylist.size(); i++) {
-                                if (SpotifyPlaylistFragment.getThis.data.tracksPlaylist.get(i).id.equals(trid)) {
+                            for (int i = 0; i < SpotifyPlaylistFragment.getThis.getData().tracksPlaylist.size(); i++) {
+                                if (SpotifyPlaylistFragment.getThis.getData().tracksPlaylist.get(i).id.equals(trid)) {
                                     if (SpotifyPlaylistFragment.currentTrack != i)
                                         SpotifyPlaylistFragment.getThis.albumsListview.setItemChecked(SpotifyFragment.currentTrack, false);
                                     SpotifyPlaylistFragment.currentTrack = i;

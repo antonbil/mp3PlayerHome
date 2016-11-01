@@ -11,13 +11,14 @@ import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * Created by anton on 17-10-16.
+ * Adapter to access playlist of Spotify
  */
-public class SpotifyPlaylistAdapter extends PlanetAdapter {
+class SpotifyPlaylistAdapter extends PlanetAdapter {
     private ListView albumsListview;
     private ArrayList<String> albumList;
     private ArrayList<PlaylistItem> albumTracks;
 
-    public SpotifyPlaylistAdapter(ArrayList<String> albumList, MainActivity getThis, ArrayList<PlaylistItem> albumTracks,ListView albumsListview) {
+    SpotifyPlaylistAdapter(ArrayList<String> albumList, MainActivity getThis, ArrayList<PlaylistItem> albumTracks, ListView albumsListview) {
 
         super(albumList,getThis,albumTracks);
         this.albumList=albumList;
@@ -37,6 +38,7 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
         try {
             new SpotifyInterface().previousTrack.id = "";
         } catch (Exception e) {
+            //
         }
         duplicateLists();
         SpotifyFragment.stopMpd();
@@ -46,7 +48,7 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
         @Override
         public void removeDown(int counter) {
         duplicateLists();
-        SpotifyFragment.removeDownlist(this, albumsListview, counter, MainActivity.getThis);
+        SpotifyFragment.removeDownlist(this, counter, MainActivity.getThis);
 
     }
 
@@ -58,8 +60,8 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
     }
 
     private void duplicateLists() {
-        SpotifyFragment.getThis.data.albumList = albumList;
-        SpotifyFragment.getThis.data.albumTracks = albumTracks;
+        SpotifyFragment.getData().albumList = albumList;
+        SpotifyFragment.getData().albumTracks = albumTracks;
     }
 
     @Override
@@ -83,14 +85,14 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
 
     @Override
     public void displayArtist(int counter) {
-        MainActivity.getThis.callSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name);
+        MainActivity.getThis.callSpotify(SpotifyFragment.getData().tracksPlaylist.get(counter).artists.get(0).name);
 
 
     }
 
     @Override
     public void displayArtistWikipedia(int counter) {
-        String s = SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name;
+        String s = SpotifyFragment.getData().tracksPlaylist.get(counter).artists.get(0).name;
         MainActivity.startWikipediaPage(s);
     }
 
@@ -112,7 +114,7 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
     @Override
     public void addAlbum(int counter) {
         try {
-            SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.getThis.data.tracksPlaylist.get(counter).album.id, SpotifyFragment.getThis.data.tracksPlaylist.get(counter).artists.get(0).name
+            SpotifyFragment.getAlbumtracksFromSpotify(SpotifyFragment.getData().tracksPlaylist.get(counter).album.id, SpotifyFragment.getData().tracksPlaylist.get(counter).artists.get(0).name
                     , MainActivity.getThis);
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,13 +128,13 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
         ArrayList<Track> tracks=new ArrayList<>();
         int currentTrack=SpotifyFragment.currentTrack;
         int trackPosition=SpotifyFragment.getTime();
-        for (Track t:SpotifyFragment.getThis.data.tracksPlaylist){
+        for (Track t: SpotifyFragment.getData().tracksPlaylist){
             tracks.add(t);
         }
         new SetAndPlayOnServer(parent.getContext()/*SpotifyPlaylistFragment.activityThis*/){
             @Override
             public void atFirst(){
-                SpotifyFragment.stopSpotifyPlaying(SpotifyFragment.getThis.ipAddress);
+                SpotifyFragment.stopSpotifyPlaying(SpotifyFragment.ipAddress);
             }
             @Override
             public void atEnd(){
@@ -145,7 +147,7 @@ public class SpotifyPlaylistAdapter extends PlanetAdapter {
                         SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
                     }
                     MainActivity.getThis.getLogic().getMpc().stop();
-                    SpotifyFragment.busyupdateSongInfo=false;
+                    //SpotifyFragment.busyupdateSongInfo=false;
                     SpotifyFragment.stopMpd();
                     SpotifyFragment.playAtPosition(currentTrack);
                     new Timer().schedule(new TimerTask() {

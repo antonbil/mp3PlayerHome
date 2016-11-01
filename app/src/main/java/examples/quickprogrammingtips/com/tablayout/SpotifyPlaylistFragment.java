@@ -74,13 +74,13 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
             //setup playlist and adapter
             tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
-            generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList1,albumTracks1);
+            generateAdapterLists(SpotifyFragment.getData().tracksPlaylist,albumList1,albumTracks1);
             tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
 
             tracksAdapter.setDisplayCurrentTrack(true);
             tracksListview.setAdapter(tracksAdapter);
 
-            if (refresh ||(SpotifyFragment.data.tracksPlaylist.size()==0)) {
+            if (refresh ||(SpotifyFragment.getData().tracksPlaylist.size()==0)) {
                 startDialog();
                 refresh=false;
                 TracksSpotifyPlaylist.getInstance().triggerPlaylist(this,40);
@@ -144,8 +144,8 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     }
     @Override
     public void onActivityCreated() {
-        if (SpotifyFragment.data.tracksPlaylist==null)
-        SpotifyFragment.data.tracksPlaylist = new ArrayList<>();
+        if (SpotifyFragment.getData().tracksPlaylist==null)
+        SpotifyFragment.getData().tracksPlaylist = new ArrayList<>();
         instance =this;
         gettingList=true;
         spotifyWorkingOnPlaylist=true;
@@ -245,7 +245,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             if (tracksAdapter != null) {
                 MainActivity.getThis.runOnUiThread(() -> {
                     tracksAdapter.currentItem=currentTrack;
-                    if ((currentTrack >= SpotifyFragment.data.albumTracks.size()) || (SpotifyFragment.data.albumTracks.size() != previousLength)) {
+                    if ((currentTrack >= SpotifyFragment.getData().albumTracks.size()) || (SpotifyFragment.getData().albumTracks.size() != previousLength)) {
                         if (!gettingList) {
                             try {
                                 refreshSpotifyPlaylistInBackground();

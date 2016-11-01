@@ -348,7 +348,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
             //if (albumList1.size()==0)DebugLog.log("empty"); else
             //if (albumList1.size()!=albumList.size()||force)
             try{
-                SpotifyPlaylistFragment.generateAdapterLists(SpotifyFragment.data.tracksPlaylist,albumList,albumTracks);
+                SpotifyPlaylistFragment.generateAdapterLists(SpotifyFragment.getData().tracksPlaylist,albumList,albumTracks);
                 /*albumTracks.clear();
                 albumList.clear();
                 for (int i = 0; i < albumTracks1.size(); i++) {

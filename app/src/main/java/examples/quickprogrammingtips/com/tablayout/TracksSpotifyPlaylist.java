@@ -95,11 +95,11 @@ class TracksSpotifyPlaylist {
                                 JSONObject o = items.getJSONObject(i);
                                 trackid = o.getJSONObject("track").getString("uri").replace("spotify:track:", "");
                                 if (trackid.length() == 0) continue;
-                                for (int j = 0; j < SpotifyFragment.data.previousAlbumTracks.size(); j++) {
-                                    PlaylistItem pi = SpotifyFragment.data.previousAlbumTracks.get(j);
+                                for (int j = 0; j < SpotifyFragment.getData().previousAlbumTracks.size(); j++) {
+                                    PlaylistItem pi = SpotifyFragment.getData().previousAlbumTracks.get(j);
                                     if (pi.id.equals(trackid)) {
                                         pi2 = pi;
-                                        tracks.add(SpotifyFragment.data.previousTracksPlaylist.get(j));
+                                        tracks.add(SpotifyFragment.getData().previousTracksPlaylist.get(j));
                                         albumList1.add(pi.text);
                                         albumTracks1.add(pi);
                                     }
@@ -129,7 +129,7 @@ class TracksSpotifyPlaylist {
     private void updateListview(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1) {
         if (changed) {
             //update global tracks
-            List<Track> mylist = SpotifyFragment.data.tracksPlaylist;
+            List<Track> mylist = SpotifyFragment.getData().tracksPlaylist;
             mylist.clear();
             mylist.addAll(tracks);
             //update listeners
@@ -150,7 +150,7 @@ class TracksSpotifyPlaylist {
         if (trackid.length() > 0) {
             Track t = SpotifyFragment.getTrack(trackid);
             tracks.add(t);
-            SpotifyFragment.data.previousTracksPlaylist.add(t);
+            SpotifyFragment.getData().previousTracksPlaylist.add(t);
             final PlaylistItem pi = new PlaylistItem();
             //check for change in album-name
             String extra = "";
@@ -184,7 +184,7 @@ class TracksSpotifyPlaylist {
 
             albumList1.add(pi.text);
             albumTracks1.add(pi);
-            SpotifyFragment.data.previousAlbumTracks.add(pi);
+            SpotifyFragment.getData().previousAlbumTracks.add(pi);
             changed=true;
         }
         return prevAlbum;
