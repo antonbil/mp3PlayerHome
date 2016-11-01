@@ -1399,6 +1399,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             trimCache(this);
             secondTimer.cancel();
         } catch (Exception e) {
+            // TODO Auto-generated catch block
             DebugLog.log("ondestroy");
 
             e.printStackTrace();

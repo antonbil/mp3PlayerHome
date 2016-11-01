@@ -126,7 +126,6 @@ public class SpotifyFragment extends Fragment implements
     public static final int SpotifyList = 1;
     public static final int AlbumList = 0;
     public static final int MpdList = 2;
-    //public static final int SPOTIFY_FIRSTTIME = 20;
     public static int playingEngine;
     private static boolean busyupdateSongInfo=false;
     public static boolean explicitlyCalled=false;
@@ -135,7 +134,7 @@ public class SpotifyFragment extends Fragment implements
     protected SpotifyHeader spotifyHeader;
     public ArrayList<String> artistList = new ArrayList<>();
     private static SpotifyFragment instance;
-    public static SpotifyInterface getSpotifyInterface;
+    private SpotifyInterface getSpotifyInterface;
     private static int spotifyStartPosition = 0;
     //private static HashMap<String, String> spotifyToken = new HashMap<>();
     public static String ipAddress = "";
@@ -143,7 +142,6 @@ public class SpotifyFragment extends Fragment implements
     public PlanetAdapter albumAdapter;
     protected ListView albumsListview;
     private static ProgressDialog dialog1;//
-    //private static Handler updateBarHandler;
     protected boolean nosearch = false;
     protected static TextView artistTitleTextView;
     public static int currentTrack;
@@ -155,7 +153,6 @@ public class SpotifyFragment extends Fragment implements
     protected AdapterView.OnItemClickListener cl;
     public static boolean albumVisible = true;
     static Bitmap bitmap;
-    //private boolean artistInitiated = false;
     private final float CHECK_MEMORY_FREQ_SECONDS = 3.0f;
     private final float LOW_MEMORY_THRESHOLD_PERCENT = 5.0f; // Available %
     private Handler memoryHandler_;
@@ -163,24 +160,18 @@ public class SpotifyFragment extends Fragment implements
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private SongItems songItems;
     public static final ArrayList<String> CATEGORY_IDS = new ArrayList<>(Arrays.asList("electronic", "progressive", "alternative", "rnb", "soul", "singer-songwriter",
             "classical","acoustic", "ambient", "americana", "blues", "country", "techno", "shoegaze", "Hip-Hop", "funk", "jazz", "rock", "folk","instrumental","pop","punk","metal"
             ,"Progressive+rock","indie+rock","indie+pop"));
     private static String searchAlbumString ="";
     private static int totalTime;
     private static int currentTime;
-    private boolean displayMpd;
-    //public static int currentList=SpotifyList+1;
-    protected String[] lists = new String[]{"albumlist","spotifylist","mpdlist"};;
     protected static Activity activityThis;
     View llview;
     public static PopupMenu categoriesMenu;
-    private static ProgressDialog progressDialog;
     protected boolean artist_desc_hidden=true;
     private static MainActivity.SpotifyData data;
     protected boolean spotifyWorkingOnPlaylist=false;
-    static Handler handler = new Handler();
 
     public static MainActivity.SpotifyData getData() {
         return data;
@@ -196,6 +187,10 @@ public class SpotifyFragment extends Fragment implements
 
     public static void setInstance(SpotifyFragment getThis) {
         SpotifyFragment.instance = getThis;
+    }
+
+    public static void setSpotifyInterface(SpotifyInterface getSpotifyInterface) {
+        getInstance().getSpotifyInterface = getSpotifyInterface;
     }
 
     @Override
@@ -226,7 +221,7 @@ public class SpotifyFragment extends Fragment implements
 
             //DebugLog.log("ip:" + ip);
 
-            getSpotifyInterface = new SpotifyInterface();
+            setSpotifyInterface(new SpotifyInterface());
             //DebugLog.log("nosearch1");
             api = new SpotifyApi();
             //Log.d("samba", "Text:4");
@@ -279,11 +274,11 @@ public class SpotifyFragment extends Fragment implements
 
     public void clearAlbums() {
         //Log.d("samba", "Text:12a");
-        SpotifyFragment.getInstance().getData().albumIds.clear();
+        getData().albumIds.clear();
         //Log.d("samba", "Text:12b");
-        SpotifyFragment.getInstance().getData().albumList.clear();
+        getData().albumList.clear();
         //Log.d("samba", "Text:12c");
-        SpotifyFragment.getInstance().getData().albumTracks.clear();
+        getData().albumTracks.clear();
         //Log.d("samba", "Text:12d");
     }
 
