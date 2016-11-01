@@ -24,7 +24,7 @@ public class MenuAdapter extends ArrayAdapter<String> {
 
     public MenuAdapter(Context context, ArrayList<String> list) {
         super(context, 0, list);
-        Display display = MainActivity.getThis.getWindowManager().getDefaultDisplay();
+        Display display = MainActivity.getInstance().getWindowManager().getDefaultDisplay();
 // get size in pixels
         Point size = new Point();
         display.getSize(size);

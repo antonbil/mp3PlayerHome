@@ -50,7 +50,7 @@ public class WikipediaActivity  extends Activity {
                         }else
                         switch (s) {
                             case "Settings":
-                                MainActivity.getThis.doSettings();
+                                MainActivity.getInstance().doSettings();
                                 break;
                             case "Album":
                             case "Band":
@@ -89,10 +89,10 @@ public class WikipediaActivity  extends Activity {
     @Override
     protected void onStop() {
         leftDrawerPlaylist.onStop();
-        MainActivity.getThis.runOnUiThread(() -> {
+        MainActivity.getInstance().runOnUiThread(() -> {
             //SpotifyFragment.getThis.albumAdapter.setDisplayCurrentTrack(true);
             try{
-                SpotifyFragment.getThis.albumAdapter.notifyDataSetChanged();
+                SpotifyFragment.getInstance().albumAdapter.notifyDataSetChanged();
             }catch(Exception e){
                 Log.v("samba", Log.getStackTraceString(e));}
         });

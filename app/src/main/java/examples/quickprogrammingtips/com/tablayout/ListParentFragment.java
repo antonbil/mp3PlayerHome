@@ -166,7 +166,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                     });
                     if (filesToCheck.size()>0){
                         String fname=filesToCheck.remove(0).trim().replace("'", "\'");
-                        new DatabaseCommand(MainActivity.getThis.getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
+                        new DatabaseCommand(MainActivity.getInstance().getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
                         //Log.v("samba", "now search " + fname);
                     }
 
@@ -211,7 +211,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                         String[] ss=path.split("/");
                         path=path.substring(0,path.length()-ss[ss.length-1].length());
                     }
-                    Logic logic = MainActivity.getThis.getLogic();
+                    Logic logic = MainActivity.getInstance().getLogic();
                     int toplay = logic.getToplay(id);
                     boolean clear = logic.isClear(id);
                         //logic.getMpc().clearPlaylist();
@@ -305,7 +305,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
         if (filesToCheck.size()>0){
             String fname=filesToCheck.remove(0).trim().replace("'","\'");
             //Log.v("samba","now search "+fname);
-            new DatabaseCommand(MainActivity.getThis.getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
+            new DatabaseCommand(MainActivity.getInstance().getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
         } else
             Collections.sort(files, new CustomComparator());
     }

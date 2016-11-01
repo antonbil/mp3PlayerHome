@@ -175,7 +175,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                     public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
                         albumList1=albumList;
                             albumTracks1=albumTracks;
-                            MainActivity.getThis.runOnUiThread(() -> {
+                            MainActivity.getInstance().runOnUiThread(() -> {
                                 try{
                                     tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
                                     tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
@@ -195,7 +195,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                                     Log.v("samba", Log.getStackTraceString(e));}
                             });
                     }
-                },tracksAdapter, MainActivity.getThis, albumList1, albumTracks1);
+                },tracksAdapter, MainActivity.getInstance(), albumList1, albumTracks1);
 
             }catch(Exception e){
                 Log.v("samba", Log.getStackTraceString(e));}
@@ -205,8 +205,8 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     public void startDialog() {
         if (progressDialog!=null)progressDialog.dismiss();
-        progressDialog = new ProgressDialog(MainActivity.getThis);
-        MainActivity.getThis.runOnUiThread(() ->{
+        progressDialog = new ProgressDialog(MainActivity.getInstance());
+        MainActivity.getInstance().runOnUiThread(() ->{
             progressDialog.setMessage("Get playlist...");
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setProgress(0);
@@ -222,7 +222,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     }
     public static void notifyList(){
         try{
-        MainActivity.getThis.runOnUiThread(() -> {
+        MainActivity.getInstance().runOnUiThread(() -> {
             SpotifyPlaylistFragment.getInstance().tracksAdapter.notifyDataSetChanged();
         });
         }catch(Exception e){
@@ -231,7 +231,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         }
     }
     public static PlanetAdapter getTracksAdapter(final ListView albumsListview, final ArrayList<String> albumList, final ArrayList<PlaylistItem> albumTracks) {
-        return new SpotifyPlaylistAdapter(albumList, MainActivity.getThis, albumTracks,albumsListview);
+        return new SpotifyPlaylistAdapter(albumList, MainActivity.getInstance(), albumTracks,albumsListview);
     }
 
     @Override
@@ -243,7 +243,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     public void setData(String time, String totalTime, String title, String artist, boolean spotifyList, int currentTrack) {
         if (spotifyList) {
             if (tracksAdapter != null) {
-                MainActivity.getThis.runOnUiThread(() -> {
+                MainActivity.getInstance().runOnUiThread(() -> {
                     tracksAdapter.currentItem=currentTrack;
                     if ((currentTrack >= SpotifyFragment.getData().albumTracks.size()) || (SpotifyFragment.getData().albumTracks.size() != previousLength)) {
                         if (!gettingList) {
@@ -283,7 +283,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 doRefresh = true;
             }
             if (doRefresh)
-                MainActivity.getThis.runOnUiThread(() -> {
+                MainActivity.getInstance().runOnUiThread(() -> {
                     try {
                         albumTracks1.clear();
                         albumList1.clear();

@@ -144,7 +144,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
         convertView.setOnClickListener(view -> {
             onClickFunc(position);
             currentItem=position;
-            MainActivity.getThis.runOnUiThread(() -> {
+            MainActivity.getInstance().runOnUiThread(() -> {
                 final Handler handler = new Handler();
                 handler.postDelayed(this::notifyDataSetChanged, 1000);
             });

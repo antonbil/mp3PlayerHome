@@ -72,7 +72,6 @@ import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAdapter;
-import examples.quickprogrammingtips.com.tablayout.adapters.PlaylistAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.HeaderHandler;
 import examples.quickprogrammingtips.com.tablayout.model.Logic;
@@ -103,27 +102,25 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static int playingStatus= MPD_PLAYING;
 
     private Logic logic;
-    public static HeaderHandler headers;
+    private HeaderHandler headers;
 
     public Handler updateBarHandler;
     private int timerTime = 0;
     protected TabLayout tabLayout;
     private MainActivity mainActivity;
-    public static HashMap<String, Bitmap> albumPictures = new HashMap<>();
-    public static HashMap<String, String> albumPicturesIds = new HashMap<>();
+    private HashMap<String, Bitmap> albumPictures = new HashMap<>();
+    private HashMap<String, String> albumPicturesIds = new HashMap<>();
     public String currentArtist;
     public ViewHolder viewHolder = new ViewHolder();
     public FillListviewWithValues fillListviewWithValues;
     public Document spotifyShortcutsDoc;
     public Elements trackelements;
 
-
-    public static MainActivity getThis;
-    public static SpotifyInterface getSpotifyInterface;
+    private static MainActivity instance;
+    private SpotifyInterface getSpotifyInterface;
     public ProgressDialog dialog;
     public Bitmap albumBitmap;
     public static boolean filterSpotify;
-    public boolean shouldClick=false;
     private static final int REQUEST_WRITE_STORAGE = 112;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -137,16 +134,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     PlaylistsFragment playlistFragment;
     PlayFragment playFragment;
     ListFragment listFragment;
-    static DBFragment         dbFragment;
-    SpotifyFragment spotifyFragment;
-    //public int firstTime=0;
-    public boolean drawerActive=false;
-    private ListView rightListview;
-    public int xcoord=0;
-    private PlaylistAdapter adapterMpd;
+    private DBFragment         dbFragment;
+    private SpotifyFragment spotifyFragment;
     public LeftDrawerPlaylist leftDrawerPlaylist;
     private SpotifyData data;
-    private DrawerLayout mDrawerLayout;
     private ShutDownReceiver shutDownReceiver;
     private Timer secondTimer;
     private Timer cleanupTimer;
@@ -154,7 +145,43 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
         Handler h = new Handler(Looper.getMainLooper());
-        h.post(() -> Toast.makeText(getThis, message, Toast.LENGTH_SHORT).show());
+        h.post(() -> Toast.makeText(getInstance(), message, Toast.LENGTH_SHORT).show());
+    }
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
+
+    public static HashMap<String, Bitmap> getAlbumPictures() {
+        return getInstance().albumPictures;
+    }
+
+    public static HashMap<String, String> getAlbumPicturesIds() {
+        return getInstance().albumPicturesIds;
+    }
+
+    public static HeaderHandler getHeaders() {
+        return getInstance().headers;
+    }
+
+    public static void setHeaders(HeaderHandler headers) {
+        getInstance().headers = headers;
+    }
+
+    public static DBFragment getDbFragment() {
+        return getInstance().dbFragment;
+    }
+
+    public static void setDbFragment(DBFragment dbFragment) {
+        getInstance().dbFragment = dbFragment;
+    }
+
+    public static SpotifyInterface getSpotifyInterface() {
+        return getInstance().getSpotifyInterface;
+    }
+
+    public static void setSpotifyInterface(SpotifyInterface getSpotifyInterface) {
+        getInstance().getSpotifyInterface = getSpotifyInterface;
     }
 
     @Override
@@ -177,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
+            mainActivity = this;
+            instance = this;
             shutDownReceiver = new ShutDownReceiver();
             final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -184,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //DebugLog.log("Text:1");
             //headers.add(this);
             super.onCreate(savedInstanceState);
-            headers=new HeaderHandler();
+            setHeaders(new HeaderHandler());
             Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
                     MainActivity.class));
             trimCache(this);
@@ -211,9 +240,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
             StrictMode.setThreadPolicy(policy);
-            mainActivity = this;
-            getThis = this;
-            getSpotifyInterface = new SpotifyInterface();
+            setSpotifyInterface(new SpotifyInterface());
             data = new SpotifyData();
             SpotifyFragment.setData(data);
             dialog = new ProgressDialog(this);//keep it hidden until needed
@@ -248,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                             doSettings();
                             break;
                         case "Large Display":
-                            displayLargeTime(MainActivity.getThis);
+                            displayLargeTime(MainActivity.getInstance());
                             break;
                         case "Search mpd":
                             searchTerm();
@@ -272,14 +299,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                             doSpotifyAlbumShortcuts();
                             break;
                         case "Volume":
-                            setVolume(getThis);
+                            setVolume(getInstance());
                             break;
                         case "Playlists":
                             //DebugLog.log("miner");
-                            Intent myIntent = new Intent(getThis, PlaylistsSpotifyActivity.class);
+                            Intent myIntent = new Intent(getInstance(), PlaylistsSpotifyActivity.class);
                             //myIntent.putExtra("searchitem", outsiders);
                             //DebugLog.log("miner");
-                            getThis.startActivity(myIntent);
+                            getInstance().startActivity(myIntent);
                             //DebugLog.log("miner");
 
                             break;
@@ -287,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                             try{SpotifyPlaylistFragment.getInstance().setCurrentTracklist();} catch (Exception e) {        }
                             break;
                         case "Close":
-                            getThis.finish();
+                            getInstance().finish();
                             break;
                     }
                 }
@@ -347,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     DebugLog.log("error spotify playlist create");
                 }
                 try {
-                    dbFragment = new DBFragment();
+                    setDbFragment(new DBFragment());
                 } catch (Exception e) {
                     DebugLog.log("error spotify create");
                 }
@@ -355,7 +382,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                 try {
 
-                    MainActivity.getThis.runOnUiThread(() -> {
+                    MainActivity.getInstance().runOnUiThread(() -> {
                         tabLayout.getTabAt(SELECTTAB).select();
                     });
 
@@ -457,7 +484,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 replaceFragment(spotifyFragment);
                 break;
             case MPDTAB :
-                replaceFragment(dbFragment);
+                replaceFragment(getDbFragment());
                 break;
             case PLAYLISTTAB:
                 replaceFragment(playlistFragment);
@@ -477,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         if (SpotifyFragment.playingEngine==1){
             SpotifyFragment.playPauseSpotify();
         }else
-        MainActivity.getThis.playPause();
+        MainActivity.getInstance().playPause();
     }
 
     public void startPlaylistSpotify() {
@@ -538,15 +565,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         try {
             id="spotify:station:artist:"+id;
             final ProgressDialog loadingdialog;
-            loadingdialog = ProgressDialog.show(getThis,
+            loadingdialog = ProgressDialog.show(getInstance(),
                     "","Loading, please wait",true);
             SpotifyFragment.clearSpotifyPlaylist();
-            new SpotifyFragment.getEntirePlaylistFromSpotify(id,MainActivity.getThis){
+            new SpotifyFragment.getEntirePlaylistFromSpotify(id, MainActivity.getInstance()){
                 @Override
                 public void atLast() {
                     loadingdialog.dismiss();
                     SpotifyFragment.playAtPosition(0);
-                    MainActivity.getThis.startPlaylistSpotify();
+                    MainActivity.getInstance().startPlaylistSpotify();
                 }
             }.run();
         } catch (Exception e) {
@@ -600,7 +627,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 try {
                     MPC mpc = logic.getMpc();
                     if (timerTime >= 3) {
-                        playlistGetContent(mpc, MainActivity.getThis);
+                        playlistGetContent(mpc, MainActivity.getInstance());
                         timerTime = 0;
                     } else timerTime++;
                     mpc.getStatusSynch();
@@ -640,7 +667,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         if ((tabSelected== SMBTAB)||(tabSelected==MPDTAB)) {
             if (tabSelected == SMBTAB)
                 listFragment.back();
-            if (tabSelected == MPDTAB) dbFragment.back();
+            if (tabSelected == MPDTAB) getDbFragment().back();
         }
         else
         new AlertDialog.Builder(this)
@@ -667,7 +694,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             return true;
         }
         if (id == R.id.set_volume) {
-            setVolume(getThis);
+            setVolume(getInstance());
         }
         if (id == R.id.new_albums_categories) {
             doNewAlbumsCategories();
@@ -731,10 +758,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public static void startWikipediaPage(String outsiders) {
-        Intent myIntent = new Intent(getThis,//MainActivity.this,
+        Intent myIntent = new Intent(getInstance(),//MainActivity.this,
                 WikipediaActivity.class);
         myIntent.putExtra("searchitem", outsiders);
-        getThis.startActivity(myIntent);
+        getInstance().startActivity(myIntent);
     }
 
     public void searchTerm() {
@@ -749,7 +776,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             @Override
             public void run() {
                 selectTab(2);
-                getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, dbFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, getDbFragment()).commit();
             }
         }, 100);
 
@@ -779,7 +806,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public void searchForItem(String searchString) {
         //DebugLog.log("search:" + searchString);
         selectTab(MainActivity.MPDTAB);
-        new DatabaseCommand(logic.getMpc(), "find any \"" + searchString + "\"", dbFragment, true).run();
+        new DatabaseCommand(logic.getMpc(), "find any \"" + searchString + "\"", getDbFragment(), true).run();
     }
 
     public void setVolume(Activity activity) {
@@ -886,7 +913,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     public void run() {
                         selectTab(MainActivity.MPDTAB);
                         //give the program time to restore saved instance
-                        getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, dbFragment).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, getDbFragment()).commit();
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -938,7 +965,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public void playlistGetContent() {
-        playlistGetContent(logic.getMpc(), MainActivity.getThis);
+        playlistGetContent(logic.getMpc(), MainActivity.getInstance());
     }
 
     public void playlistGetContent(final MPC mpc, final MpdInterface mpdInterface) {
@@ -1016,11 +1043,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                             final String niceAlbumName = f.niceAlbum();
                             if (previousAlbumName.equals(niceAlbumName))continue;
                             previousAlbumName=niceAlbumName;
-                            if (albumPictures.containsKey(niceAlbumName)) {
-                                if (albumPictures.get(niceAlbumName) != null)
-                                    f.setBitmap(albumPictures.get(niceAlbumName));
+                            if (getAlbumPictures().containsKey(niceAlbumName)) {
+                                if (getAlbumPictures().get(niceAlbumName) != null)
+                                    f.setBitmap(getAlbumPictures().get(niceAlbumName));
                             } else try {
-                                albumPictures.put(niceAlbumName, null);//so image is loaded only once
+                                getAlbumPictures().put(niceAlbumName, null);//so image is loaded only once
                                 try {
                                     URL urlConnection = new URL(Logic.getUrlFromSongpath(f).replace(" ", "%20"));
                                     //DebugLog.log("get:"+url);
@@ -1031,7 +1058,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                     connection.connect();
                                     InputStream input = connection.getInputStream();
                                     Bitmap bitmap = BitmapFactory.decodeStream(input);
-                                    albumPictures.put(niceAlbumName, bitmap);
+                                    getAlbumPictures().put(niceAlbumName, bitmap);
                                     for (Mp3File f1 : logic.getPlaylistFiles()) {
                                         if (f1.niceAlbum().equals(niceAlbumName))
                                             f1.setBitmap(bitmap);
@@ -1039,7 +1066,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                     connection.disconnect();
                                 } catch (Exception e) {
 
-                                    albumPictures.remove(niceAlbumName);
+                                    getAlbumPictures().remove(niceAlbumName);
                                     DebugLog.log("error connect " + Logic.getUrlFromSongpath(f));
                                 }
 
@@ -1094,8 +1121,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         logic.getMpc().pause();
         //select new server
         logic.openServer(Server.servers.get(position).url);
-        logic.getMpc().setMPCListener(MainActivity.getThis);
-        Server.setServer(position, MainActivity.getThis);
+        logic.getMpc().setMPCListener(MainActivity.getInstance());
+        Server.setServer(position, MainActivity.getInstance());
 
         //do some commands with delay
         //create handler to do background task
@@ -1164,7 +1191,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public void printCover(final Bitmap result, final ImageView image, String album) {
         if (result != null) {
 
-            albumPictures.put(album, result);
+            getAlbumPictures().put(album, result);
 
 
             runOnUiThread(new Runnable() {
@@ -1190,7 +1217,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void databaseCallCompleted(ArrayList<File> files) {
 
-        dbFragment.databaseCallCompleted(files);
+        getDbFragment().databaseCallCompleted(files);
 
 
     }
@@ -1215,7 +1242,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public static PlanetAdapter getTracksAdapter(final DrawerLayout mDrawerLayout, final ListView albumsListview, final ArrayList<String> albumList, final ArrayList<PlaylistItem> albumTracks) {
-        PlanetAdapter albumAdapter = new SpotifyPlaylistAdapter(albumList, MainActivity.getThis, albumTracks,albumsListview){
+        PlanetAdapter albumAdapter = new SpotifyPlaylistAdapter(albumList, MainActivity.getInstance(), albumTracks,albumsListview){
             @Override
             public void displayArtist(int counter) {
                 try{
@@ -1223,7 +1250,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
-                MainActivity.getThis.callSpotify(SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).artists.get(0).name);
+                MainActivity.getInstance().callSpotify(SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).artists.get(0).name);
             }
         };
         return albumAdapter;
@@ -1245,13 +1272,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             int prev = SpotifyFragment.playingEngine;
 
             if (SpotifyFragment.isPlaying()) {
-                if (SpotifyFragment.getThis != null)
+                if (SpotifyFragment.getInstance() != null)
                     try {
                         SpotifyFragment.playingEngine = 1;
                     } catch (Exception e) {
                     }
 
-                if (SpotifyFragment.busyupdateSongInfo) {
+                /*if (SpotifyFragment.busyupdateSongInfo) {
                     //todo: busyupdateSongInfo is always false!
                     try {
                         //DebugLog.log("nu binnen2");
@@ -1273,10 +1300,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         }
                     } catch (Exception e) {
                         Log.v("samba", Log.getStackTraceString(e));
-                    }
-                } else {
-                    currentArtist = SpotifyFragment.updateSongInfo(getThis, getSpotifyInterface);
-                }
+                    }*/
+                //} else {
+                    currentArtist = SpotifyFragment.updateSongInfo(getInstance(), getSpotifyInterface());
+                //}
 
                 checkButtons(prev);
                 MainActivity.playingStatus = MainActivity.SPOTIFY_PLAYING;
@@ -1299,7 +1326,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             if (status.song.intValue() < logic.getPlaylistFiles().size())
 
                 runOnUiThread(() -> {
-                    ViewHolder vh = getThis.viewHolder;
+                    ViewHolder vh = getInstance().viewHolder;
                     try {
                         Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
                         final String title = currentSong.getTitle();
@@ -1327,27 +1354,27 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         }
                         final ImageView image = (ImageView) findViewById(R.id.thumbnail_top);
                         String uri = Logic.getUrlFromSongpath(currentSong);
-                        for (HeaderSongInterface header : MainActivity.headers) {
+                        for (HeaderSongInterface header : MainActivity.getHeaders()) {
                             if (header != null)
                                 header.setData(time1, timeNice, title, album, false, status.song.intValue());
                         }
                         MainActivity.playingStatus = MainActivity.SPOTIFY_PLAYING;
 
-                        if (albumPictures.containsKey(album)) {
-                            final Bitmap b = albumPictures.get(album);
+                        if (getAlbumPictures().containsKey(album)) {
+                            final Bitmap b = getAlbumPictures().get(album);
                             albumBitmap = b;
                             currentSong.setBitmap(b);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    for (HeaderSongInterface header : MainActivity.headers) {
+                                    for (HeaderSongInterface header : MainActivity.getHeaders()) {
                                         if (header != null)
                                             header.setLogo(b);
                                     }
                                 }
                             });
                         } else {
-                            albumPictures.put(album, null);
+                            getAlbumPictures().put(album, null);
                             new ImageLoadTask(uri, album, mainActivity, image).execute();
                         }//
                         if (playFragment != null) playFragment.updateCurrentSong();
@@ -1372,11 +1399,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             trimCache(this);
             secondTimer.cancel();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             DebugLog.log("ondestroy");
 
             e.printStackTrace();
         }
+        instance=null;
     }
 
     public static void trimCache(Context context) {

@@ -62,8 +62,8 @@ public class PlayFragment extends Fragment implements MpdInterface {
             {
                 // this is successful mission, do with it.
                 Toast.makeText(getContext(), "succesfully returned!"+data.getExtras().getString("artist"), Toast.LENGTH_SHORT).show();
-                MainActivity.getThis.tabLayout.getTabAt(2).select();
-                new DatabaseCommand(logic.getMpc(),"find artist \""+data.getExtras().getString("artist")+"\"",MainActivity.getThis.dbFragment,true).run();
+                MainActivity.getInstance().tabLayout.getTabAt(2).select();
+                new DatabaseCommand(logic.getMpc(),"find artist \""+data.getExtras().getString("artist")+"\"", MainActivity.getInstance().getDbFragment(),true).run();
 //                favorites.clear();
 //                getFavorites();
 
@@ -109,7 +109,7 @@ public class PlayFragment extends Fragment implements MpdInterface {
             //MainActivity.panicMessage("PlayFragment is detached from Activity");
             return;
         }
-        MainActivity.getThis.mpdCall(mp3File, position, command);
+        MainActivity.getInstance().mpdCall(mp3File, position, command);
     }
 
 

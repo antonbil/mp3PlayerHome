@@ -80,7 +80,7 @@ public class NewAlbumsActivity extends Activity  {
                     }else {
                         switch (s) {
                             case "Settings":
-                                MainActivity.getThis.doSettings();
+                                MainActivity.getInstance().doSettings();
                                 break;
                             case "Play-Dialog":
                                 SpotifyFragment.showPlayMenu(getThis);
@@ -193,12 +193,12 @@ public class NewAlbumsActivity extends Activity  {
 
                             menu.setOnMenuItemClickListener(item -> {
                                 if (items.get(position).url.indexOf("playlist")>0) {
-                                    Toast.makeText(MainActivity.getThis, "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.getInstance(), "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
                                     return true;
                                 }
 
                                 if (item.getTitle().toString().equals("add album to favorites")) {
-                                    MainActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+                                    MainActivity.getInstance().fillListviewWithValues.addToFavorites(items.get(position));
 
                                 }else
                                 if (item.getTitle().toString().equals("add album")) {
@@ -254,12 +254,12 @@ public class NewAlbumsActivity extends Activity  {
 
          private PopupMenu basicMenu(int position, PopupMenu menu) {
              menu.setOnMenuItemClickListener(item -> {
-                 if (!MainActivity.getThis.fillListviewWithValues.processChoice(item.getTitle().toString(),this,items,position))
+                 if (!MainActivity.getInstance().fillListviewWithValues.processChoice(item.getTitle().toString(),this,items,position))
                  if (item.getTitle().toString().equals("add album")) {
                      AddAlbumToPlaylist(position);
                  }else
                  if (item.getTitle().toString().equals("add album to favorites")) {
-                     MainActivity.getThis.fillListviewWithValues.addToFavorites(items.get(position));
+                     MainActivity.getInstance().fillListviewWithValues.addToFavorites(items.get(position));
 
                  }else
                  if (item.getTitle().toString().equals("wikipedia")) {
@@ -276,7 +276,7 @@ public class NewAlbumsActivity extends Activity  {
                  return true;
              });
 
-             ArrayList<String>choices=MainActivity.getThis.fillListviewWithValues.getChoices();
+             ArrayList<String>choices= MainActivity.getInstance().fillListviewWithValues.getChoices();
              for (String s:choices){
                  menu.getMenu().add(s);
              }
@@ -317,7 +317,7 @@ public class NewAlbumsActivity extends Activity  {
     }
     public void processAlbum(NewAlbum album){
         if (album.url.indexOf("playlist")>0) {
-            Toast.makeText(MainActivity.getThis, "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.getInstance(), "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
             AddAlbumToPlaylist(album.url);
         }
         else {

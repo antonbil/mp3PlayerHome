@@ -76,7 +76,7 @@ public class MPC {
 	private void checkIfPlaying(final boolean first) {
 		SpotifyFragment.stopSpotifyPlaying(SpotifyFragment.checkAddress());
 		//Log.v("samba","not playing before");
-		final MainActivity mainObject = MainActivity.getThis;
+		final MainActivity mainObject = MainActivity.getInstance();
 		final Handler handler = new Handler(Looper.getMainLooper());
 		handler.postDelayed(new Runnable() {
 			private void delay12() {

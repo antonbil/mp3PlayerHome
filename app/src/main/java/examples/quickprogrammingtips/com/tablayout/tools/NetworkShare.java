@@ -195,7 +195,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                 if (!waitForCallBack)
                     caller.sambaCallCompleted(files,filesMp3, id);
                 else
-                    new DatabaseCommand(MainActivity.getThis.getLogic().getMpc(),"find title \""+mp3FileForDatabaseCommand+"\"",networkShare,false,true).run();
+                    new DatabaseCommand(MainActivity.getInstance().getLogic().getMpc(),"find title \""+mp3FileForDatabaseCommand+"\"",networkShare,false,true).run();
             }
         });
         thread.start();
@@ -243,8 +243,8 @@ public class NetworkShare  implements MPCDatabaseListener{
 
         new AsyncTask<Void, Void, Void>(){
 
-            ProgressDialog dialog1 = MainActivity.getThis.dialog;
-            Handler updateBarHandler = MainActivity.getThis.updateBarHandler;
+            ProgressDialog dialog1 = MainActivity.getInstance().dialog;
+            Handler updateBarHandler = MainActivity.getInstance().updateBarHandler;
 
             @Override
             protected void onPostExecute(Void result) {
@@ -287,7 +287,7 @@ public class NetworkShare  implements MPCDatabaseListener{
                     updateBarHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            dialog1=new ProgressDialog(MainActivity.getThis);
+                            dialog1=new ProgressDialog(MainActivity.getInstance());
                             dialog1.setTitle("Downloading to " + destinationDirNameToUse);
                             dialog1.setMessage("To:" + destinationDirNameToUse);
                             dialog1.setProgressStyle(dialog1.STYLE_HORIZONTAL);

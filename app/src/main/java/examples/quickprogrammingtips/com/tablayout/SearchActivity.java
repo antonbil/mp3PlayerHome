@@ -73,7 +73,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void generateList(ArrayList<SearchItem> newAlbums) {
-        MainActivity.getThis.fillListviewWithValues.generateListSearch(newAlbums);
+        MainActivity.getInstance().fillListviewWithValues.generateListSearch(newAlbums);
 
     }
      public class ListAdapter extends ArrayAdapter<SearchItem> {
@@ -137,7 +137,7 @@ public class SearchActivity extends AppCompatActivity {
                     return rowView;
         }    }
     public void processAlbum(SearchItem album){
-        MainActivity.getThis.fillListviewWithValues.processAlbum(album);
+        MainActivity.getInstance().fillListviewWithValues.processAlbum(album);
         //SpotifyActivity.getThis.listAlbumsForArtistId(album.id, null, album.artist, new SpotifyApi());
         //SpotifyActivity.getThis.listAlbumsForArtist(album.artist);
         this.finish();

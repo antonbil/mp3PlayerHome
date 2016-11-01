@@ -59,7 +59,7 @@ public class PlaylistsSpotifyActivity extends Activity {
                                 webView.loadUrl("http://playlists.net");
                                 break;
                             case "Settings":
-                                MainActivity.getThis.doSettings();
+                                MainActivity.getInstance().doSettings();
                                 break;
                             case "Play-Dialog":
                                 SpotifyFragment.showPlayMenu(getThis);
@@ -141,9 +141,9 @@ public class PlaylistsSpotifyActivity extends Activity {
     @Override
     protected void onStop() {
         leftDrawerPlaylist.onStop();
-        MainActivity.getThis.runOnUiThread(() -> {
+        MainActivity.getInstance().runOnUiThread(() -> {
             try{
-                SpotifyFragment.getThis.albumAdapter.notifyDataSetChanged();
+                SpotifyFragment.getInstance().albumAdapter.notifyDataSetChanged();
             }catch(Exception e){
                 }
         });

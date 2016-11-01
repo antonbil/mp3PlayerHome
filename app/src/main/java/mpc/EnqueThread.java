@@ -108,11 +108,11 @@ public class EnqueThread extends Thread {
 					//Log.v("samba", "add \"" + song.file.replace("'", "\'") + "\"");
 				}
 		}	catch(Exception e){
-			MainActivity.getThis.runOnUiThread(new Runnable()
+			MainActivity.getInstance().runOnUiThread(new Runnable()
 			{
 				public void run()
 				{
-					Toast.makeText(MainActivity.getThis, "Error adding songs", Toast.LENGTH_LONG).show();;
+					Toast.makeText(MainActivity.getInstance(), "Error adding songs", Toast.LENGTH_LONG).show();;
 				}
 			});
 			}

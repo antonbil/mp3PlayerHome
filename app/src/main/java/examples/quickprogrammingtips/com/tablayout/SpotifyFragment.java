@@ -128,14 +128,13 @@ public class SpotifyFragment extends Fragment implements
     public static final int MpdList = 2;
     //public static final int SPOTIFY_FIRSTTIME = 20;
     public static int playingEngine;
-    public static boolean busyupdateSongInfo=false;
+    private static boolean busyupdateSongInfo=false;
     public static boolean explicitlyCalled=false;
     private static boolean spotifyPaused=false;
     public static boolean hasBeen=false;
-    private static int keer=0;
     protected SpotifyHeader spotifyHeader;
     public ArrayList<String> artistList = new ArrayList<>();
-    public static SpotifyFragment getThis;
+    private static SpotifyFragment instance;
     public static SpotifyInterface getSpotifyInterface;
     private static int spotifyStartPosition = 0;
     //private static HashMap<String, String> spotifyToken = new HashMap<>();
@@ -191,12 +190,20 @@ public class SpotifyFragment extends Fragment implements
         SpotifyFragment.data = data;
     }
 
+    public static SpotifyFragment getInstance() {
+        return instance;
+    }
+
+    public static void setInstance(SpotifyFragment getThis) {
+        SpotifyFragment.instance = getThis;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //Log.d("samba", "Text:a1");
         try{
-        getThis=this;
+        setInstance(this);
 
             spotifyWorkingOnPlaylist=false;
             activityThis = getActivity();
@@ -213,7 +220,7 @@ public class SpotifyFragment extends Fragment implements
 
 
 
-            String ip = MainActivity.getThis.getLogic().getMpc().getAddress();
+            String ip = MainActivity.getInstance().getLogic().getMpc().getAddress();
             ipAddress = String.format("http://%s:8080/jsonrpc", ip);
             //Log.d("samba", "Text:3");
 
@@ -272,11 +279,11 @@ public class SpotifyFragment extends Fragment implements
 
     public void clearAlbums() {
         //Log.d("samba", "Text:12a");
-        SpotifyFragment.getThis.getData().albumIds.clear();
+        SpotifyFragment.getInstance().getData().albumIds.clear();
         //Log.d("samba", "Text:12b");
-        SpotifyFragment.getThis.getData().albumList.clear();
+        SpotifyFragment.getInstance().getData().albumList.clear();
         //Log.d("samba", "Text:12c");
-        SpotifyFragment.getThis.getData().albumTracks.clear();
+        SpotifyFragment.getInstance().getData().albumTracks.clear();
         //Log.d("samba", "Text:12d");
     }
 
@@ -331,7 +338,7 @@ public class SpotifyFragment extends Fragment implements
     }*/
 
     public static String checkAddress() {
-        String ip = MainActivity.getThis.getLogic().getMpc().getAddress();
+        String ip = MainActivity.getInstance().getLogic().getMpc().getAddress();
         checkAddressIp(ip);
         return ipAddress;
     }
@@ -392,7 +399,7 @@ public class SpotifyFragment extends Fragment implements
                     playAtPosition(spotifyStartPosition);
                 }
 
-                MainActivity.getThis.runOnUiThread(() -> {
+                MainActivity.getInstance().runOnUiThread(() -> {
                     if (dialog1.isShowing())
                         dialog1.dismiss();
 
@@ -436,17 +443,22 @@ public class SpotifyFragment extends Fragment implements
     }
 
     private static JSONObject GetJsonFromUrl(String data, String urlString) {
+        if (busyupdateSongInfo)return null;
+        busyupdateSongInfo=true;
+
         JSONObject jsonRootObject = null;
+        try {
 
         //Log.v("samba", data);
-        String sb = getJsonStringFromUrl(data, urlString);
+            String sb = getJsonStringFromUrl(data, urlString);
         //Log.v("samba", sb);
-        try {
             jsonRootObject = new JSONObject(sb);
+            busyupdateSongInfo=false;
             return jsonRootObject.getJSONObject("result");
-        } catch (JSONException e) {
-            // Log.v("samba", Log.getStackTraceString(e));
+        } catch (Exception e) {
+            busyupdateSongInfo=false;
         }
+        busyupdateSongInfo=false;
         return jsonRootObject;
     }
     @NonNull
@@ -557,7 +569,7 @@ public class SpotifyFragment extends Fragment implements
             try {
 
                 if (artistName == null || artistName.equals("")) {
-                    artistName = MainActivity.getThis.currentArtist;
+                    artistName = MainActivity.getInstance().currentArtist;
                     ;
                 }
                 if (nosearch) artistName = "The Beatles";
@@ -619,7 +631,7 @@ public class SpotifyFragment extends Fragment implements
 
     public static void albumTop100Nl(){
         try {
-            MainActivity.getThis.fillListviewWithValues = new FillListviewWithValues() {
+            MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
 
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
@@ -687,8 +699,8 @@ public class SpotifyFragment extends Fragment implements
 
 
             {
-                Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
-                MainActivity.getThis.startActivity(intent);
+                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
+                MainActivity.getInstance().startActivity(intent);
             }
             // }
         } catch (Exception e) {
@@ -726,13 +738,13 @@ public class SpotifyFragment extends Fragment implements
     public static void showSpotifyAlbumlistDirectory(String url,ArrayList<String> previousDirectoryListing) {
         try{
         //DownLoadImageTask.albumPictures=new HashMap<>();
-            MainActivity.getThis.spotifyShortcutsDoc = null;
+            MainActivity.getInstance().spotifyShortcutsDoc = null;
         try {
-            MainActivity.getThis.spotifyShortcutsDoc = Jsoup.connect(url).get();
+            MainActivity.getInstance().spotifyShortcutsDoc = Jsoup.connect(url).get();
         } catch (IOException e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
-        Elements links = MainActivity.getThis.spotifyShortcutsDoc.select("body a");
+        Elements links = MainActivity.getInstance().spotifyShortcutsDoc.select("body a");
         ArrayList<String> directoryListing=new ArrayList();
         for (Element link : links)
         {
@@ -745,13 +757,13 @@ public class SpotifyFragment extends Fragment implements
         links=null;
         if (directoryListing.size()>0) {
 
-            MainActivity.getThis.spotifyShortcutsDoc =null;
-            AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getThis);
+            MainActivity.getInstance().spotifyShortcutsDoc =null;
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
             builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
             builderSingle.setTitle("Select Directory");
 
             final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                    MainActivity.getThis,
+                    MainActivity.getInstance(),
                     android.R.layout.select_dialog_singlechoice);
             for (String cat : directoryListing) {
                 arrayAdapter.add(cat);
@@ -773,9 +785,9 @@ public class SpotifyFragment extends Fragment implements
             builderSingle.show();
         } else{
             try{
-                MainActivity.getThis.trackelements = MainActivity.getThis.spotifyShortcutsDoc.getElementsByClass("spotifyalbum");
-                MainActivity.getThis.spotifyShortcutsDoc =null;
-                MainActivity.getThis.fillListviewWithValues = new FillListviewWithValues() {
+                MainActivity.getInstance().trackelements = MainActivity.getInstance().spotifyShortcutsDoc.getElementsByClass("spotifyalbum");
+                MainActivity.getInstance().spotifyShortcutsDoc =null;
+                MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
 
                 @Override
                 protected void addMenuItems(ArrayList<String> menuItems){
@@ -800,7 +812,7 @@ public class SpotifyFragment extends Fragment implements
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
                     try{
                     int i=0;
-                        for (Element element : MainActivity.getThis.trackelements) {
+                        for (Element element : MainActivity.getInstance().trackelements) {
                             //if (i>20) break;;
                             String artist="";
                             String album="";
@@ -875,9 +887,9 @@ public class SpotifyFragment extends Fragment implements
 
 
             {
-                Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
+                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
                 //Log.v("samba","start activity ");
-                MainActivity.getThis.startActivity(intent);
+                MainActivity.getInstance().startActivity(intent);
             }
 
         }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
@@ -886,12 +898,12 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void newAlbumsCategories() {
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getThis);
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
         builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
         builderSingle.setTitle("Select Category");
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                MainActivity.getThis,
+                MainActivity.getInstance(),
                 android.R.layout.select_dialog_singlechoice);
         for (String cat : CATEGORY_IDS) {
             arrayAdapter.add(cat);
@@ -914,7 +926,7 @@ public class SpotifyFragment extends Fragment implements
 
     public static void spotifyNewMusic(final String cat) {
         try {
-            MainActivity.getThis.fillListviewWithValues = new FillListviewWithValues() {
+            MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
 
                 @Override
                 protected void addMenuItems(ArrayList<String> menuItems){
@@ -978,8 +990,8 @@ public class SpotifyFragment extends Fragment implements
 
 
             {
-                Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
-                MainActivity.getThis.startActivity(intent);
+                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
+                MainActivity.getInstance().startActivity(intent);
             }
             // }
         } catch (Exception e) {
@@ -989,7 +1001,7 @@ public class SpotifyFragment extends Fragment implements
 
 
     protected PlanetAdapter setAdapterForSpotify() {
-        albumAdapter = new PlanetAdapter(SpotifyFragment.getThis.getData().albumList, activityThis, SpotifyFragment.getThis.getData().albumTracks) {
+        albumAdapter = new PlanetAdapter(SpotifyFragment.getInstance().getData().albumList, activityThis, SpotifyFragment.getInstance().getData().albumTracks) {
             @Override
             public void removeUp(int counter) {
                 removeUplist(albumAdapter, albumsListview,counter,activityThis);
@@ -1000,7 +1012,7 @@ public class SpotifyFragment extends Fragment implements
                 currentTrack=counter;
                 if (albumVisible)
                     try{
-                        String s = SpotifyFragment.getThis.getData().albumIds.get(counter);
+                        String s = SpotifyFragment.getInstance().getData().albumIds.get(counter);
                         boolean clear=false;
                         boolean ret=false;
                         boolean play=true;
@@ -1043,7 +1055,7 @@ public class SpotifyFragment extends Fragment implements
 
             @Override
             public void addAlbumToFavoritesAlbum(int counter) {
-                addAlbumToFavorites(Favorite.SPOTIFYALBUM + SpotifyFragment.getThis.getData().albumIds.get(counter), artistName + "-" + SpotifyFragment.getThis.getData().albumList.get(counter), SpotifyFragment.getThis.getData().albumTracks.get(counter).url);
+                addAlbumToFavorites(Favorite.SPOTIFYALBUM + SpotifyFragment.getInstance().getData().albumIds.get(counter), artistName + "-" + SpotifyFragment.getInstance().getData().albumList.get(counter), SpotifyFragment.getInstance().getData().albumTracks.get(counter).url);
 
             }
 
@@ -1060,16 +1072,16 @@ public class SpotifyFragment extends Fragment implements
                     @Override
                     public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
                     }
-                }, albumAdapter, activityThis, SpotifyFragment.getThis.getData().albumList, SpotifyFragment.getThis.getData().albumTracks);
+                }, albumAdapter, activityThis, SpotifyFragment.getInstance().getData().albumList, SpotifyFragment.getInstance().getData().albumTracks);
             }
 
             @Override
             public void displayArtist(int counter) {
                 try{
-                    String s = SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).artists.get(0).name;
+                    String s = SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).artists.get(0).name;
                     SpotifyFragment.artistName=s;
                     //Log.v("samba","search"+2+s);
-                    MainActivity.getThis.tabLayout.getTabAt(MainActivity.SPOTIFYTAB).select();
+                    MainActivity.getInstance().tabLayout.getTabAt(MainActivity.SPOTIFYTAB).select();
                     //setVisibility(View.VISIBLE);
                     //listAlbumsForArtist(s);
                 } catch (Exception e) {
@@ -1079,7 +1091,7 @@ public class SpotifyFragment extends Fragment implements
 
             @Override
             public void displayArtistWikipedia(int counter) {
-                    String s = SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).artists.get(0).name;
+                    String s = SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).artists.get(0).name;
                     MainActivity.startWikipediaPage(s);
             }
 
@@ -1087,7 +1099,7 @@ public class SpotifyFragment extends Fragment implements
             public void replaceAndPlayAlbum(int counter) {
                 if (albumVisible)
                     try{
-                        if (!playMpdAlbum(SpotifyFragment.getThis.getData().albumIds.get(counter), true, false, true)) {
+                        if (!playMpdAlbum(SpotifyFragment.getInstance().getData().albumIds.get(counter), true, false, true)) {
                             clearSpotifyPlaylist();
                             //Log.v("samba","end removing");
                             updateSpotifyList(counter);
@@ -1105,7 +1117,7 @@ public class SpotifyFragment extends Fragment implements
             public void addAndPlayAlbum(int counter) {
                 if (albumVisible)
                     try{
-                        if (!playMpdAlbum(SpotifyFragment.getThis.getData().albumIds.get(counter), false, false, true)) {
+                        if (!playMpdAlbum(SpotifyFragment.getInstance().getData().albumIds.get(counter), false, false, true)) {
                             updateSpotifyList(counter);
                         }
                     } catch (Exception e) {
@@ -1123,7 +1135,7 @@ public class SpotifyFragment extends Fragment implements
             public void addAlbum(int counter) {
                 if (albumVisible)
                     try{
-                        if (!playMpdAlbum(SpotifyFragment.getThis.getData().albumIds.get(counter), false, false, false)) {
+                        if (!playMpdAlbum(SpotifyFragment.getInstance().getData().albumIds.get(counter), false, false, false)) {
                             addAlbumStatic(counter);
                             updateSpotifyList(counter);
                         }
@@ -1142,7 +1154,7 @@ public class SpotifyFragment extends Fragment implements
 
             @Override
             public void addAlbumNoplay(int counter) {
-                String uri = SpotifyFragment.getThis.getData().albumIds.get(counter);
+                String uri = SpotifyFragment.getInstance().getData().albumIds.get(counter);
                 //Log.v("samba","add"+uri);
                 String prefix="spotify:album:";
                 AddSpotifyItemToPlaylist(prefix, uri);
@@ -1167,8 +1179,8 @@ public class SpotifyFragment extends Fragment implements
             //Log.v("samba","command:"+s);
 
             commands.add(s1);
-            Logic logic = MainActivity.getThis.getLogic();
-            String id=getThis.getString(R.string.addandplay_filelist);
+            Logic logic = MainActivity.getInstance().getLogic();
+            String id= getInstance().getString(R.string.addandplay_filelist);
             logic.getMpc().enqueCommands(commands);
             if (play) {
                 int toplay = logic.getToplay(id);
@@ -1206,11 +1218,11 @@ public class SpotifyFragment extends Fragment implements
                     return;
                 }
                 boolean add=true;
-                for (String s: SpotifyFragment.getThis.getData().searchArtistString)
+                for (String s: SpotifyFragment.getInstance().getData().searchArtistString)
                     if (s.equals(artistString))add=false;
                 if (add)
-                    SpotifyFragment.getThis.getData().searchArtistString.add(artistString);
-                MainActivity.getThis.fillListviewWithValues = new FillListviewWithValues() {
+                    SpotifyFragment.getInstance().getData().searchArtistString.add(artistString);
+                MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
 
                     @Override
                     public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
@@ -1270,7 +1282,7 @@ public class SpotifyFragment extends Fragment implements
                     ;
                 };
 
-                Intent intent = new Intent(MainActivity.getThis, SearchActivity.class);
+                Intent intent = new Intent(MainActivity.getInstance(), SearchActivity.class);
                 startActivity(intent);
 
             });
@@ -1290,7 +1302,7 @@ public class SpotifyFragment extends Fragment implements
     public void searchAlbum() {
         try {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.getThis);
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.getInstance());
             builder.setTitle("Search album");
 
             // Set up the input
@@ -1309,7 +1321,7 @@ public class SpotifyFragment extends Fragment implements
                     return;
                 }
                 //SearchActivity.artistName=artist;
-                MainActivity.getThis.fillListviewWithValues = new FillListviewWithValues() {
+                MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
 
                     @Override
                     public void generateListSearch(final ArrayList<SearchItem> newAlbums) {
@@ -1351,7 +1363,7 @@ public class SpotifyFragment extends Fragment implements
 
                 };
 
-                Intent intent = new Intent(MainActivity.getThis, SearchActivity.class);
+                Intent intent = new Intent(MainActivity.getInstance(), SearchActivity.class);
                 startActivity(intent);
 
             });
@@ -1369,26 +1381,26 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void addAlbumStatic(int counter) {
-        artistName = SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).artists.get(0).name;
+        artistName = SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).artists.get(0).name;
         try {
-            getAlbumtracksFromSpotify(SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).album.id, SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).album.name,activityThis);
+            getAlbumtracksFromSpotify(SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).album.id, SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).album.name,activityThis);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void addAlbumToFavoritesTrackwise(int counter) {//
-        String url = Favorite.SPOTIFYALBUM + SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).album.id;
-        String name = SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).artists.get(0).name;
-        String album = SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).album.name;
+        String url = Favorite.SPOTIFYALBUM + SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).album.id;
+        String name = SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).artists.get(0).name;
+        String album = SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).album.name;
         //Log.v("samba","add "+url+name+"-"+album);
         String description = name + "-" + album;
         String newalbum = Favorite.NEWALBUM;
-        newFavorite(url, description, newalbum, SpotifyFragment.getThis.getData().albumTracks.get(counter).url);
+        newFavorite(url, description, newalbum, SpotifyFragment.getInstance().getData().albumTracks.get(counter).url);
     }
 
     public static void newFavorite(String url, String description, String newalbum, String imageurl) {
-        EditFavoriteActivity.editAndSaveFavorite(MainActivity.getThis,-1, imageurl, url, "", description, newalbum);
+        EditFavoriteActivity.editAndSaveFavorite(MainActivity.getInstance(),-1, imageurl, url, "", description, newalbum);
         //FavoriteRecord fv=new FavoriteRecord(url,
         //        description, newalbum);
         //long a = fv.save();
@@ -1401,9 +1413,9 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void removeAlbum(PlanetAdapter albumAdapter, int counter, ListView albumsListview, Activity getThis) {
-        String albumid = SpotifyFragment.getThis.getData().tracksPlaylist.get(counter).album.id;
-        for (int i = SpotifyFragment.getThis.getData().tracksPlaylist.size() - 1; i >= 0; i--) {
-            if (SpotifyFragment.getThis.getData().tracksPlaylist.get(i).album.id.equals(albumid)) removeTrackSpotify(i);
+        String albumid = SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).album.id;
+        for (int i = SpotifyFragment.getInstance().getData().tracksPlaylist.size() - 1; i >= 0; i--) {
+            if (SpotifyFragment.getInstance().getData().tracksPlaylist.get(i).album.id.equals(albumid)) removeTrackSpotify(i);
             //Log.v("samba","remove "+i);
             //removeTrackSpotify(counter);
         }
@@ -1411,7 +1423,7 @@ public class SpotifyFragment extends Fragment implements
             @Override
             public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
             }
-        }, albumAdapter,  getThis, SpotifyFragment.getThis.getData().albumList, SpotifyFragment.getThis.getData().albumTracks);
+        }, albumAdapter,  getThis, SpotifyFragment.getInstance().getData().albumList, SpotifyFragment.getInstance().getData().albumTracks);
     }
 
     public static int getVolumeSpotify(String ipAddress) {
@@ -1536,10 +1548,10 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public void getAlbumtracksFromSpotify(final int position) throws Exception {
-        String s = SpotifyFragment.getThis.getData().albumIds.get(position);
+        String s = SpotifyFragment.getInstance().getData().albumIds.get(position);
 
         //check if not already in playlist
-            getAlbumtracksFromSpotify(s, SpotifyFragment.getThis.getData().albumList.get(position), activityThis, false);
+            getAlbumtracksFromSpotify(s, SpotifyFragment.getInstance().getData().albumList.get(position), activityThis, false);
             try {
                 DebugLog.log("update list");
                 //SpotifyPlaylistFragment.getThisPlaylist.setCurrentTracklist();
@@ -1554,7 +1566,7 @@ public class SpotifyFragment extends Fragment implements
     public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1,boolean display) throws Exception {
         boolean alreadyThere=false;
         //Log.v("samba","id:"+albumid);
-        for (Track t: SpotifyFragment.getThis.getData().tracksPlaylist) {
+        for (Track t: SpotifyFragment.getInstance().getData().tracksPlaylist) {
             //Log.v("samba","id in:"+t.album.id);
             if (t.album.id.equals(albumid)) {
                 alreadyThere = true;
@@ -1770,7 +1782,7 @@ public class SpotifyFragment extends Fragment implements
             Log.v("samba", Log.getStackTraceString(e));
         }
 
-        MainActivity.getThis.runOnUiThread(() -> {
+        MainActivity.getInstance().runOnUiThread(() -> {
             albumAdapter.notifyDataSetChanged();
             Utils.setDynamicHeight(albumsListview, 0);
 
@@ -1787,7 +1799,7 @@ public class SpotifyFragment extends Fragment implements
 
     public static void billboardAlbumChart(final String url) {
         try {
-            MainActivity.getThis.fillListviewWithValues = new FillListviewWithValues() {
+            MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
 
                 @Override
                 protected void addMenuItems(ArrayList<String> menuItems){
@@ -1865,8 +1877,8 @@ public class SpotifyFragment extends Fragment implements
 
 
             {
-                Intent intent = new Intent(MainActivity.getThis, NewAlbumsActivityElectronic.class);
-                MainActivity.getThis.startActivity(intent);
+                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
+                MainActivity.getInstance().startActivity(intent);
             }
             // }
         } catch (Exception e) {
@@ -2037,8 +2049,8 @@ public class SpotifyFragment extends Fragment implements
 
     public static void stopMpd() {
         try {
-            if (MainActivity.getThis.getLogic().mpcStatus.playing) {
-                MainActivity.getThis.getLogic().getMpc().stop();
+            if (MainActivity.getInstance().getLogic().mpcStatus.playing) {
+                MainActivity.getInstance().getLogic().getMpc().stop();
             }
         } catch (Exception e){}
     }
@@ -2102,7 +2114,7 @@ public class SpotifyFragment extends Fragment implements
                 new Thread(new Task(mainids, getThis) {
                     public void atEnd2() {
                         //DebugLog.log("einde taak");
-                        MainActivity.getThis.runOnUiThread(new Runnable() {
+                        MainActivity.getInstance().runOnUiThread(new Runnable() {
                             public void run() {
 
 
@@ -2256,7 +2268,7 @@ public class SpotifyFragment extends Fragment implements
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
-                MainActivity.getThis.runOnUiThread(() -> {
+                MainActivity.getInstance().runOnUiThread(() -> {
                     relatedArtistsAdapter.notifyDataSetChanged();
                     Utils.setDynamicHeight(relatedArtistsListView, 0);
                 });
@@ -2303,11 +2315,11 @@ public class SpotifyFragment extends Fragment implements
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
-                MainActivity.getThis.runOnUiThread(() -> {
+                MainActivity.getInstance().runOnUiThread(() -> {
                             albumAdapter.notifyDataSetChanged();
                             Utils.setDynamicHeight(albumsListview, 0);
                 });
-                DatabaseListThread a=new DatabaseListThread(MainActivity.getThis.getLogic().getMpc(),String.format("find \"artist\" \"%s\"",beatles),getThis);
+                DatabaseListThread a=new DatabaseListThread(MainActivity.getInstance().getLogic().getMpc(),String.format("find \"artist\" \"%s\"",beatles), getInstance());
                 a.start();
 
             }
@@ -2376,8 +2388,6 @@ public class SpotifyFragment extends Fragment implements
 
     public static String updateSongInfo(Activity getThis, final SpotifyInterface getSpotifyInterface) {
         String artistReturn="";
-        if (busyupdateSongInfo)return "";
-        busyupdateSongInfo=true;
 
         try {
                 if (isPlaying()) {
@@ -2420,20 +2430,20 @@ public class SpotifyFragment extends Fragment implements
                                     }
 
                                     DownLoadImageUrlTask.setAlbumPicture(t.album.id, imageurl);
-                                    MainActivity.albumPicturesIds.put(t.album.id, imageurl);
+                                    MainActivity.getAlbumPicturesIds().put(t.album.id, imageurl);
                             }
                         new DownLoadImageTask() {
                             @Override
                             public void setImage(Bitmap logo) {
                                 getThis.runOnUiThread(() -> {
-                                    for (HeaderSongInterface header:MainActivity.headers){
+                                    for (HeaderSongInterface header: MainActivity.getHeaders()){
                                         if (header!=null)
                                             header.setLogo(logo);
                                     }
                                     SpotifyFragment.bitmap = logo;
                                 });
                             }
-                        }.execute(MainActivity.albumPicturesIds.get(t.album.id));
+                        }.execute(MainActivity.getAlbumPicturesIds().get(t.album.id));
 
                         currentTime = getTime();
                         artistReturn = t.artists.get(0).name;
@@ -2441,9 +2451,9 @@ public class SpotifyFragment extends Fragment implements
                         try {
                             if (SpotifyPlaylistFragment.getInstance() != null)
                                 (SpotifyPlaylistFragment.getInstance()).setData(niceTime(currentTime), niceTime(totalTime), t.name, t.artists.get(0).name, true, currentTrack);
-                            MainActivity.getThis.runOnUiThread(() -> {
+                            MainActivity.getInstance().runOnUiThread(() -> {
 
-                                for (HeaderSongInterface header : MainActivity.headers) {
+                                for (HeaderSongInterface header : MainActivity.getHeaders()) {
                                     if (header != null)
                                         header.setData(niceTime(currentTime), niceTime(totalTime), t.name, t.artists.get(0).name, true, currentTrack);
                                 }
@@ -2461,7 +2471,6 @@ public class SpotifyFragment extends Fragment implements
             //busyupdateSongInfo=false;
             //Log.v("samba", Log.getStackTraceString(e));
             }
-        busyupdateSongInfo=false;
         return artistReturn;
 
     }
@@ -2469,7 +2478,7 @@ public class SpotifyFragment extends Fragment implements
 
 
     public static Track getTrack(String trackid) {
-        Track nt = (Track) SpotifyFragment.getThis.getData().hm.get(trackid);
+        Track nt = (Track) SpotifyFragment.getInstance().getData().hm.get(trackid);
         try {
             if (nt == null) {
                 nt = new Track();
@@ -2495,7 +2504,7 @@ public class SpotifyFragment extends Fragment implements
                 alb.images.add(im);
                 nt.duration_ms = o.optLong("duration_ms");//
                 nt.album = alb;
-                SpotifyFragment.getThis.getData().hm.put(nt.id, nt);
+                SpotifyFragment.getInstance().getData().hm.put(nt.id, nt);
             }
         } catch (Exception e) {
             //Log.v("samba", Log.getStackTraceString(e));
@@ -2597,7 +2606,7 @@ public class SpotifyFragment extends Fragment implements
 
     }
     public static void seekPlayMpd(Activity getThis) {
-        Logic logic = MainActivity.getThis.getLogic();
+        Logic logic = MainActivity.getInstance().getLogic();
         MPCStatus status = logic.mpcStatus;
         if (!status.playing) return;
         int songnr = status.song.intValue();
@@ -2607,7 +2616,7 @@ public class SpotifyFragment extends Fragment implements
             @Override
             void seekPos(int progress) {
                 String message = "seekcur " + (progress);
-                MainActivity.getThis.getLogic().getMpc().enqueCommands(new ArrayList<String>(Arrays.asList(message)));
+                MainActivity.getInstance().getLogic().getMpc().enqueCommands(new ArrayList<String>(Arrays.asList(message)));
             }
         }.run();
     }
@@ -2698,8 +2707,8 @@ public class SpotifyFragment extends Fragment implements
             try{
             if (SpotifyFragment.playingEngine==1) stopSpotifyPlaying(ipAddress);
             else {
-                MainActivity.getThis.getLogic().getMpc().pause();
-                MainActivity.getThis.getLogic().setPaused(true);
+                MainActivity.getInstance().getLogic().getMpc().pause();
+                MainActivity.getInstance().getLogic().setPaused(true);
             }
         }catch (Exception e){
                 Log.v("samba","Error starting stop!");
@@ -2710,19 +2719,19 @@ public class SpotifyFragment extends Fragment implements
                 playPauseSpotify(ipAddress);
                 spotifyPaused=!spotifyPaused;
             }
-            else MainActivity.getThis.playPause();
+            else MainActivity.getInstance().playPause();
         });
         previousbutton.setOnClickListener(v -> {
             if (SpotifyFragment.playingEngine==1) previousSpotifyPlaying(ipAddress);
-            else MainActivity.getThis.getLogic().getMpc().previous();
+            else MainActivity.getInstance().getLogic().getMpc().previous();
         });
         nextbutton.setOnClickListener(v -> {
             if (SpotifyFragment.playingEngine==1) nextSpotifyPlaying(ipAddress);
-            else MainActivity.getThis.getLogic().getMpc().next();
+            else MainActivity.getInstance().getLogic().getMpc().next();
         });
         volumebutton.setOnClickListener(v -> {
             if (SpotifyFragment.playingEngine==1) setVolume(getThis1);
-            else MainActivity.getThis.setVolume(getThis1);
+            else MainActivity.getInstance().setVolume(getThis1);
         });
         seekbutton.setOnClickListener(v -> {
             if (SpotifyFragment.playingEngine==1) seekPlay(getThis1);
@@ -2742,7 +2751,7 @@ public class SpotifyFragment extends Fragment implements
 
         public MpcStatus invoke() {
             try {
-                logic = MainActivity.getThis.getLogic();
+                logic = MainActivity.getInstance().getLogic();
                 MPCStatus status = logic.mpcStatus;
                 mpdPlaying = status.playing;
                 return this;
@@ -2844,23 +2853,23 @@ class SpotifyHeader {
     public void connectVarsToFront() {
         icon = (ImageView)
 
-                SpotifyFragment.getThis.llview.findViewById(R.id.icon2);
+                SpotifyFragment.getInstance().llview.findViewById(R.id.icon2);
 
 
         //RelativeLayout mainLayout = (RelativeLayout) getThis.findViewById(R.id.spotifylayouttop);
         MessageView = (TextView)
 
-                SpotifyFragment.getThis.llview.findViewById(R.id.artist_content);        //Expose the indent for the first three rows
+                SpotifyFragment.getInstance().llview.findViewById(R.id.artist_content);        //Expose the indent for the first three rows
     }
 
     public void setArtistText(final String artistName, Image image) {
         AsyncTask.execute(() -> {
             try{
                 //DebugLog.log("1");
-                    MainActivity.getThis.runOnUiThread(() -> {
+                    MainActivity.getInstance().runOnUiThread(() -> {
                         ((TextView)
 
-                                SpotifyFragment.getThis.llview.findViewById(R.id.albumsartist_listview)).setText(artistName);
+                                SpotifyFragment.getInstance().llview.findViewById(R.id.albumsartist_listview)).setText(artistName);
                 });
 
 
@@ -2890,9 +2899,9 @@ class SpotifyHeader {
                     new DownLoadImageTask() {
                         @Override
                         public void setImage(Bitmap logo) {
-                            ImageView i = (ImageView) MainActivity.getThis.findViewById(R.id.image);
+                            ImageView i = (ImageView) MainActivity.getInstance().findViewById(R.id.image);
                             //DebugLog.log("image loaded");
-                            MainActivity.getThis.runOnUiThread(() -> {
+                            MainActivity.getInstance().runOnUiThread(() -> {
                                 icon.setLayoutParams(layoutParams);
                                 icon.setImageBitmap(logo);
                             });
@@ -2905,7 +2914,7 @@ class SpotifyHeader {
 
                 SS.setSpan(new MyLeadingMarginSpan2(scale / 50, leftMargin), 0, SS.length(), 0);
                 //DebugLog.log("6");
-                MainActivity.getThis.runOnUiThread(() -> {
+                MainActivity.getInstance().runOnUiThread(() -> {
                     MessageView.setText(SS);
                 });
                 //DebugLog.log("7");

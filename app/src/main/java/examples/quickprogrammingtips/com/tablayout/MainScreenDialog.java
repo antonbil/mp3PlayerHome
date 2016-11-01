@@ -30,7 +30,7 @@ public class MainScreenDialog extends Dialog implements HeaderSongInterface {
     @Override
     public void onStop() {
         try{
-            MainActivity.headers.removeItem(this);
+            MainActivity.getHeaders().removeItem(this);
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
@@ -39,7 +39,7 @@ public class MainScreenDialog extends Dialog implements HeaderSongInterface {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getThis = MainActivity.getThis;
+        getThis = MainActivity.getInstance();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.mainscreen_dialog);
         Button b=(Button) findViewById(R.id.okbutton);
@@ -63,7 +63,7 @@ public class MainScreenDialog extends Dialog implements HeaderSongInterface {
         tvName = (TextView) findViewById(R.id.mainscreentitle_top);
         artist = (TextView) findViewById(R.id.mainscreenartist_top);
 
-        MainActivity.headers.add(this);
+        MainActivity.getHeaders().add(this);
 
     }
 

@@ -77,7 +77,7 @@ public class SetAndPlayOnServer {
                     if (!Logic.hasbeen)
                         Log.v("samba", "No connection2 with "+address);
                     //handler.postDelayed(() -> {
-                    Toast.makeText(MainActivity.getThis, "No connection with " + Server.servers.get(Server.getServer(MainActivity.getThis)).url, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.getInstance(), "No connection with " + Server.servers.get(Server.getServer(MainActivity.getInstance())).url, Toast.LENGTH_SHORT).show();
                     //}, 2000);
                 }, 400);
             } catch (Exception e){Log.getStackTraceString(e);}
@@ -89,9 +89,9 @@ public class SetAndPlayOnServer {
     }
 
     public void setServerAddress(String address) {
-        MainActivity.getThis.getLogic().openServer(address);
-        MainActivity.getThis.getLogic().getMpc().setMPCListener(MainActivity.getThis);
-        MainActivity.getThis.playlistGetContent();
+        MainActivity.getInstance().getLogic().openServer(address);
+        MainActivity.getInstance().getLogic().getMpc().setMPCListener(MainActivity.getInstance());
+        MainActivity.getInstance().playlistGetContent();
         //Log.v("samba","old address:"+SpotifyFragment.ipAddress);
         SpotifyFragment.checkAddressIp(address);
         //Log.v("samba","new address:"+SpotifyFragment.ipAddress);

@@ -53,7 +53,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     private MenuAdapter menuAdapter;
 
     protected void onStop() {
-        MainActivity.headers.removeItem(this);
+        MainActivity.getHeaders().removeItem(this);
     }
 
     public LeftDrawerPlaylist(Activity activity, /*MpdInterface mpdInterface,*/ int newalbumsdrawer_layout, int newalbumsdrawer_list, int newalbumsmpddrawer_list, int fabswapplaylist) {
@@ -67,14 +67,14 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
         albumAdapter = MainActivity.getTracksAdapter(mDrawerLayout, spotifyListview, albumList, albumTracks);
         spotifyListview = (ListView) activity.findViewById(newalbumsdrawer_list);
         mpdListview = (ListView) activity.findViewById(newalbumsmpddrawer_list);
-        adapterMpd = new PlaylistAdapter(MainActivity.getThis.playFragment, this, MainActivity.getThis.getLogic().getPlaylistFiles(), MainActivity.getThis.getApplicationContext());
+        adapterMpd = new PlaylistAdapter(MainActivity.getInstance().playFragment, this, MainActivity.getInstance().getLogic().getPlaylistFiles(), MainActivity.getInstance().getApplicationContext());
         mpdListview.setAdapter(adapterMpd);
         swapPlaylist = (FloatingActionButton) activity.findViewById(fabswapplaylist);
         spotifyListview.setAdapter(albumAdapter);
         SpotifyFragment.checkAddress();
         mpdListview.setOnItemClickListener((parent, view, position, id) -> {
             //Log.v("samba","Play:"+position);
-            MainActivity.getThis.getLogic().getMpc().play(position);
+            MainActivity.getInstance().getLogic().getMpc().play(position);
             updatePlaylistMpd(adapterMpd);
         });
         swapPlaylist.setOnClickListener(view -> {spotifyVisible=!spotifyVisible;
@@ -145,7 +145,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
         connectListenersToThumbnail();
         footerVisible=setFooterVisibility(footerVisible);
         setListenersForButtons();
-        MainActivity.headers.add(this);
+        MainActivity.getHeaders().add(this);
         getDrawerSpotifyLayout();
     }
     void connectListenersToThumbnail() {
@@ -200,9 +200,9 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     }
 
     public void updatePlaylistMpd(PlaylistAdapter adapterMpd) {
-        MainActivity.getThis.runOnUiThread(() -> {
+        MainActivity.getInstance().runOnUiThread(() -> {
             try {
-                adapterMpd.setCurrentSong(MainActivity.getThis.getLogic().mpcStatus.song.intValue());
+                adapterMpd.setCurrentSong(MainActivity.getInstance().getLogic().mpcStatus.song.intValue());
             } catch (Exception e) {
             }
             adapterMpd.notifyDataSetChanged();
@@ -283,7 +283,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
             totalField.setText(totalTime);
             artistField.setText(artist);
         } else{
-            MainActivity.getThis.currentArtist=title.split("-")[0].trim();
+            MainActivity.getInstance().currentArtist=title.split("-")[0].trim();
             totalField.setVisibility(View.GONE);
             artistField.setVisibility(View.GONE);
         }
@@ -297,7 +297,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
     @Override
     public void newMpdCall(Mp3File mp3File, int position, String command) {
 
-        MainActivity.getThis.mpdCall(mp3File, position, command);
+        MainActivity.getInstance().mpdCall(mp3File, position, command);
     }
 
     @Override

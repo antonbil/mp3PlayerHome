@@ -24,7 +24,7 @@ public class Server {
 
     }
     public static int getServer(Context context){
-        if (context==null)context=MainActivity.getThis;
+        if (context==null)context= MainActivity.getInstance();
         final SharedPreferences app_preferences =
                 PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -34,7 +34,7 @@ public class Server {
         return server;
     }
     public static void setServer(int server, Context context){
-        if (context==null)context=MainActivity.getThis;
+        if (context==null)context= MainActivity.getInstance();
         SharedPreferences app_preferences =
                 PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = app_preferences.edit();
@@ -45,7 +45,7 @@ public class Server {
     private static String getPref(String id){
         //String s=MainActivity.getThis.getString(id);
         try {
-            return PreferenceManager.getDefaultSharedPreferences(MainActivity.getThis).getString(id, "");
+            return PreferenceManager.getDefaultSharedPreferences(MainActivity.getInstance()).getString(id, "");
         } catch (Exception e){return "";}
 
 

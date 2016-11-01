@@ -124,7 +124,7 @@ public class FileListAdapter extends BaseAdapter {
                                             @Override
                                             public boolean onMenuItemClick(MenuItem item) {
                                                 Mp3File mp3File=(Mp3File)fileArrayList.get(position);
-                                                final MainActivity context = MainActivity.getThis;
+                                                final MainActivity context = MainActivity.getInstance();
                                                 if (item.getTitle().toString().equals("spotify")) {
                                                     context.callSpotify(mp3File.getArtist());
                                                 }else
@@ -148,7 +148,7 @@ public class FileListAdapter extends BaseAdapter {
                                     }
                                     //Log.v("samba", "p:" + title);
                                     if (title.equals("Spotify")){
-                                        final MainActivity context = MainActivity.getThis;
+                                        final MainActivity context = MainActivity.getInstance();
                                         try {
                                             Mp3File mp3File = (Mp3File) fileArrayList.get(position);
                                             context.callSpotify(mp3File.getArtist());

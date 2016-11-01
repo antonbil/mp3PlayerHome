@@ -142,7 +142,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                MainActivity.getThis.runOnUiThread(() -> {
+                MainActivity.getInstance().runOnUiThread(() -> {
                     radioGroup.check(id);
                     radioGroup.setOnCheckedChangeListener(radioGroupListener);
                 });
@@ -288,7 +288,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     if (!Logic.hasbeen)
                         DebugLog.log( "No connection2 with "+address);
                         //handler.postDelayed(() -> {
-                        Toast.makeText(MainActivity.getThis, "No connection with " + Server.servers.get(Server.getServer(MainActivity.getThis)).url, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.getInstance(), "No connection with " + Server.servers.get(Server.getServer(MainActivity.getInstance())).url, Toast.LENGTH_SHORT).show();
                     //}, 2000);
                 }, 400);
             } catch (Exception e){Log.getStackTraceString(e);}
@@ -297,9 +297,9 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     }
 
     public static void setServerAddress(String address) {
-        MainActivity.getThis.getLogic().openServer(address);
-        MainActivity.getThis.getLogic().getMpc().setMPCListener(MainActivity.getThis);
-        MainActivity.getThis.playlistGetContent();
+        MainActivity.getInstance().getLogic().openServer(address);
+        MainActivity.getInstance().getLogic().getMpc().setMPCListener(MainActivity.getInstance());
+        MainActivity.getInstance().playlistGetContent();
     }
 
     @Override
@@ -356,7 +356,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                         SpotifyFragment.AddSpotifyItemToPlaylist(prefix, favorite.getUri().replace(Favorite.SPOTIFYALBUM/*"spotifyalbum://"*/,""));
 
                     } else {
-                        SpotifyFragment.getAlbumtracksFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM/*"spotifyalbum://"*/, ""), a[1], MainActivity.getThis, true);
+                        SpotifyFragment.getAlbumtracksFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM/*"spotifyalbum://"*/, ""), a[1], MainActivity.getInstance(), true);
                         //SpotifyPlaylistFragment.notifyList();
                     }
                 } catch (Exception e) {
@@ -399,13 +399,13 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     "", "Loading, please wait", true);
         }
         SpotifyFragment.clearSpotifyPlaylist();
-        new SpotifyFragment.addExternalPlaylistToSpotify(uri, MainActivity.getThis){
+        new SpotifyFragment.addExternalPlaylistToSpotify(uri, MainActivity.getInstance()){
             @Override
             public void atLast() {
                 if (activity!=null) {
                     loadingdialog.dismiss();
                 } else
-                    Toast.makeText(MainActivity.getThis, "All tracks added", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.getInstance(), "All tracks added", Toast.LENGTH_SHORT).show();
             }
         }.run();
     }
@@ -417,7 +417,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         }
         SpotifyFragment.clearSpotifyPlaylist();
         DebugLog.log(uri);
-        new SpotifyFragment.getEntirePlaylistFromSpotify(uri, MainActivity.getThis){
+        new SpotifyFragment.getEntirePlaylistFromSpotify(uri, MainActivity.getInstance()){
             @Override
             public void atLast() {
                 if (activity!=null)

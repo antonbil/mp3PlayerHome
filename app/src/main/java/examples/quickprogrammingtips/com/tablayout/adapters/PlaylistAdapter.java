@@ -124,15 +124,15 @@ public class PlaylistAdapter extends BaseAdapter {
             else {
                 ImageView image=(ImageView) (convertView.findViewById(R.id.thumbnail_playlist));
                 String niceAlbum = mp3File.niceAlbum();
-                Bitmap bm = MainActivity.albumPictures.get(niceAlbum);
-                if (MainActivity.albumPictures.containsKey(niceAlbum)&& bm !=null)
+                Bitmap bm = MainActivity.getAlbumPictures().get(niceAlbum);
+                if (MainActivity.getAlbumPictures().containsKey(niceAlbum)&& bm !=null)
                     image.setImageBitmap(bm);
                 else {
                     bm=BitmapFactory.decodeResource(convertView.getResources(), R.drawable.pause);
                     image.setImageBitmap(bm);
                 }
                 Bitmap bm1=bm;
-                image.setOnClickListener(arg0 -> MainActivity.displayLargeImage(MainActivity.getThis, bm1));
+                image.setOnClickListener(arg0 -> MainActivity.displayLargeImage(MainActivity.getInstance(), bm1));
                 holder.performer.setText(String.format("%s-%s", mp3File.getArtist(), mp3File.getAlbum()));
                 if (mp3File.getTracknr()>0)
                     holder.title.setText(String.format("%s-%s", mp3File.getTracknr(), mp3File.getTitle()));
@@ -163,7 +163,7 @@ public class PlaylistAdapter extends BaseAdapter {
                 final View v1 = v;
                         menu.setOnMenuItemClickListener(item -> {
                             if (item.getTitle().toString().equals("spotify")) {
-                                MainActivity.getThis.callSpotify(mp3File.getArtist());
+                                MainActivity.getInstance().callSpotify(mp3File.getArtist());
 
                             } else
                             if (item.getTitle().toString().equals("transfer->")) {
@@ -225,17 +225,17 @@ public class PlaylistAdapter extends BaseAdapter {
                                     @Override
                                     public boolean onMenuItemClick(MenuItem item) {
                                         if (item.getTitle().toString().equals("spotify")) {
-                                            MainActivity.getThis.callSpotify(mp3File.getArtist());
+                                            MainActivity.getInstance().callSpotify(mp3File.getArtist());
                                             /*Intent intent = new Intent(selectFragmentContext.getContext(), SpotifyActivity.class);
                                             intent.putExtra("artist", mp3File.getArtist());
 
                                             selectFragmentContext.startActivity(intent);*/
                                         }else
                                         if (item.getTitle().toString().equals("artist-wikipedia")) {
-                                            MainActivity.getThis.startWikipediaPage(mp3File.getArtist());
+                                            MainActivity.getInstance().startWikipediaPage(mp3File.getArtist());
                                         }else
                                         if (item.getTitle().toString().equals("album-wikipedia")) {
-                                            MainActivity.getThis.startWikipediaPage(mp3File.getAlbum());
+                                            MainActivity.getInstance().startWikipediaPage(mp3File.getAlbum());
                                         }else
                                             if (item.getTitle().toString().equals("info")) {
                                                 int length=0;
@@ -302,8 +302,8 @@ public class PlaylistAdapter extends BaseAdapter {
                         try{
                         //if (caller!=null)
 
-                        caller.newMpdCall(mp3File, position, MainActivity.getThis.getBaseContext().getString(R.string.command_play));
-                            MainActivity.getThis.runOnUiThread(new Runnable() {
+                        caller.newMpdCall(mp3File, position, MainActivity.getInstance().getBaseContext().getString(R.string.command_play));
+                            MainActivity.getInstance().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     final Handler handler = new Handler();
@@ -320,7 +320,7 @@ public class PlaylistAdapter extends BaseAdapter {
                     }catch(Exception e){
                         Log.v("samba", Log.getStackTraceString(e));}
 
-                        MainActivity.getThis.getLogic().getMpc().play();
+                        MainActivity.getInstance().getLogic().getMpc().play();
                         //Log.v("samba", "CLick, play 3 "+fname);
                     }
                 });

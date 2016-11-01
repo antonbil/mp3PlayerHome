@@ -32,14 +32,14 @@ public class PlaylistsFragment extends Fragment implements MpcPlaylistListener {
         final ArrayAdapter adapter = new ArrayAdapter(getActivity(),
                 android.R.layout.simple_list_item_1, playlists);
         listview.setAdapter(adapter);
-        new PlaylistsCommand(MainActivity.getThis.getLogic().getMpc(),"listplaylists",this).run();
+        new PlaylistsCommand(MainActivity.getInstance().getLogic().getMpc(),"listplaylists",this).run();
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
-                Logic logic = MainActivity.getThis.getLogic();
+                Logic logic = MainActivity.getInstance().getLogic();
                 int total = logic.getPlaylistFiles().size();
                 logic.getMpc().sendSingleMessage("load \"" + item + "\"");
                 logic.commandWithDelay("play " + (total));
