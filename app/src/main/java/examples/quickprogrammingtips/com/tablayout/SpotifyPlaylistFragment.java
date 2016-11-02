@@ -3,7 +3,6 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -166,9 +165,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
     public void setCurrentTracklist() {
         gettingList=true;
         startDialog();
-        new Thread(() -> {
-            Looper.prepare();
-
             try{
                 SpotifyFragment.refreshPlaylistFromSpotify(1, new GetSpotifyPlaylistClass(){
                     @Override
@@ -199,8 +195,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
             }catch(Exception e){
                 Log.v("samba", Log.getStackTraceString(e));}
-        }).start();
-
     }
 
     public void startDialog() {
@@ -271,7 +265,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         try {
             int max = albumTracks1.size();
             if (albumTracks.size() > max) max = albumTracks.size();
-            boolean doRefresh = /*(max != albumTracks.size());*/false;
+            boolean doRefresh = false;
             try {
                 for (int i = 0; i < max; i++) {
                     if (!albumTracks.get(i).text.equals(albumTracks1.get(i).text)) {
@@ -282,7 +276,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             } catch (Exception e) {
                 doRefresh = true;
             }
-            if (doRefresh)
+            if (doRefresh||max==0)
                 MainActivity.getInstance().runOnUiThread(() -> {
                     try {
                         albumTracks1.clear();
@@ -297,7 +291,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                             pi.trackNumber = pi1.trackNumber;
                             pi.url = pi1.url;
 
-                            //DebugLog.log(albumTracks.get(i).text);
                             albumTracks1.add(pi);
                             albumList1.add(albumList.get(i));
                         }
@@ -306,15 +299,15 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                     } catch (Exception e) {
                         DebugLog.log("error notify");
                     }
-                    try {
-                        progressDialog.dismiss();
-                        progressDialog = null;
-                    } catch (Exception e) {
-                        //DebugLog.log("error dismass");
-                        //Log.v("samba", Log.getStackTraceString(e));
-                    }
 
                 });
+            try {
+                progressDialog.dismiss();
+                progressDialog = null;
+            } catch (Exception e) {
+                //DebugLog.log("error dismass");
+                //Log.v("samba", Log.getStackTraceString(e));
+            }
         } catch (Exception e) {
             DebugLog.log("error refreshing");
         }

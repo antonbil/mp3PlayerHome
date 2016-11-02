@@ -41,6 +41,11 @@ class TracksSpotifyPlaylist {
         triggerPlaylist(spotifyPlaylistInterface,5000);
 
     }
+    public void clearTracks(){
+        tracks.clear();
+        albumList1.clear();
+        albumTracks1.clear();
+    }
     void triggerPlaylist(SpotifyPlaylistInterface spotifyPlaylistInterface){
         triggerPlaylist(spotifyPlaylistInterface,5000);
 
@@ -62,31 +67,30 @@ class TracksSpotifyPlaylist {
 
                 @Override
                 public void run() {
-                    //DebugLog.log("start refresh");
                     int nr = 0;
                     JSONArray items = null;
                     while (((items == null) && (nr < 3))) {
 
                         items = SpotifyFragment.getPlaylist();
+                        nr++;
                         if (items == null)
 
                             try {
                                 Thread.sleep(1000);
-                                nr++;
                             } catch (Exception e) {
                                 DebugLog.log("error2");
                                 Log.v("samba", Log.getStackTraceString(e));
                             }
                     }
 
+                    tracks.clear();
+                    albumList1.clear();
+                    albumTracks1.clear();
                     if (items != null)
 
                     {
                         //save items to new playlist
-                        tracks.clear();
-                        albumList1.clear();
-                        albumTracks1.clear();
-                        String prevAlbum = "";
+                         String prevAlbum = "";
                         int i = 0;
                         while ((i < items.length()) && gettingTracks) {
                             try {
@@ -116,18 +120,22 @@ class TracksSpotifyPlaylist {
                             }
                             i++;
                         }
+                    }else {
+
                     }
                     gettingTracks = false;
                     updateListview(albumList1, albumTracks1);
-                    //DebugLog.log("end refresh");
                 }
             }.start();
+        } else{
+            updateListview(albumList1, albumTracks1);
+
         }
 
     }
 
     private void updateListview(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1) {
-        if (changed) {
+        //if (changed) {
             //update global tracks
             List<Track> mylist = SpotifyFragment.getData().tracksPlaylist;
             mylist.clear();
@@ -143,7 +151,7 @@ class TracksSpotifyPlaylist {
             }
 
             changed=false;
-        }
+        //}
     }
 
     private String createNewTrack(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1, String prevAlbum, String trackid) {
