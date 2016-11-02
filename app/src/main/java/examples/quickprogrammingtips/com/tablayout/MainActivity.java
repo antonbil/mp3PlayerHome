@@ -1405,6 +1405,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             e.printStackTrace();
         }
         instance=null;
+        //now really exit; clear all static variables too!
+        System.exit(0);
     }
 
     public static void trimCache(Context context) {
