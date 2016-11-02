@@ -18,7 +18,7 @@ import kaaes.spotify.webapi.android.models.Track;
 class TracksSpotifyPlaylist {
     private static TracksSpotifyPlaylist ourInstance = new TracksSpotifyPlaylist();
     private SpotifyPlaylistInterface spotifyPlaylistInterface;
-    private boolean changed=false;
+    //private boolean changed=false;
     private ArrayList<String> albumList1 = new ArrayList<>();
     private ArrayList<PlaylistItem> albumTracks1 = new ArrayList<>();
 
@@ -57,7 +57,7 @@ class TracksSpotifyPlaylist {
         for (SpotifyPlaylistInterface spi:listeners)
             if (spotifyPlaylistInterface==spi)there=true;
         if (!there){
-            this.changed=true;
+            //this.changed=true;
             listeners.add(spotifyPlaylistInterface);
         }
         if (!gettingTracks) {
@@ -147,10 +147,12 @@ class TracksSpotifyPlaylist {
             for (SpotifyPlaylistInterface listener:listeners){
                 try{
                     if (listener!=null)listener.spotifyPlaylistReturn(albumList1, albumTracks1,false);
-                }catch (Exception e){changed=false;}
+                }catch (Exception e){
+                    //changed=false;
+                    }
             }
 
-            changed=false;
+            //changed=false;
         //}
     }
 
@@ -193,7 +195,7 @@ class TracksSpotifyPlaylist {
             albumList1.add(pi.text);
             albumTracks1.add(pi);
             SpotifyFragment.getData().previousAlbumTracks.add(pi);
-            changed=true;
+            //changed=true;
         }
         return prevAlbum;
     }
