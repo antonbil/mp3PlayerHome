@@ -41,11 +41,7 @@ class TracksSpotifyPlaylist {
         triggerPlaylist(spotifyPlaylistInterface,5000);
 
     }
-    public void clearTracks(){
-        tracks.clear();
-        albumList1.clear();
-        albumTracks1.clear();
-    }
+
     void triggerPlaylist(SpotifyPlaylistInterface spotifyPlaylistInterface){
         triggerPlaylist(spotifyPlaylistInterface,5000);
 
@@ -120,8 +116,6 @@ class TracksSpotifyPlaylist {
                             }
                             i++;
                         }
-                    }else {
-
                     }
                     gettingTracks = false;
                     updateListview(albumList1, albumTracks1);
@@ -135,7 +129,7 @@ class TracksSpotifyPlaylist {
     }
 
     private void updateListview(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1) {
-        //if (changed) {
+
             //update global tracks
             List<Track> mylist = SpotifyFragment.getData().tracksPlaylist;
             mylist.clear();
@@ -151,9 +145,6 @@ class TracksSpotifyPlaylist {
                     //changed=false;
                     }
             }
-
-            //changed=false;
-        //}
     }
 
     private String createNewTrack(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1, String prevAlbum, String trackid) {

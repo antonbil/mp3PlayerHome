@@ -128,9 +128,7 @@ class SpotifyPlaylistAdapter extends PlanetAdapter {
         ArrayList<Track> tracks=new ArrayList<>();
         int currentTrack=SpotifyFragment.currentTrack;
         int trackPosition=SpotifyFragment.getTime();
-        for (Track t: SpotifyFragment.getData().tracksPlaylist){
-            tracks.add(t);
-        }
+        tracks.addAll(SpotifyFragment.getData().tracksPlaylist);
         new SetAndPlayOnServer(parent.getContext()/*SpotifyPlaylistFragment.activityThis*/){
             @Override
             public void atFirst(){

@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -172,7 +171,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         List<FavoriteRecord> favoritesDisk = new ArrayList<>();
         try {
             favoritesDisk = FavoriteRecord.listAll(FavoriteRecord.class);
-        } catch (Exception e){}
+        } catch (Exception e){/**/}
 
 
         for (FavoriteRecord fav:favoritesDisk){
@@ -183,7 +182,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             try{
                 sortkey=parts[1];
 
-            } catch (Exception e){
+            } catch (Exception e){/**/
 
             }
             Favorite favnew=new Favorite(fav.url,description,description,sortkey);
@@ -204,14 +203,10 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
             for (int i=2;i<favoritesListItemArray.size();i++) {
                 FavoritesListItem fi = favoritesListItemArray.get(i);
-                Collections.sort(fi.favoritesAdded, new Comparator() {
-                    public int compare(Object o1, Object o2) {
-                        Favorite mp1 = (Favorite) o1;
-                        Favorite mp2 = (Favorite) o2;
-                        String s1 = (mp1.getSortkey() + mp1.getDescription()).toLowerCase();
-                        String s2 = (mp2.getSortkey() + mp2.getDescription()).toLowerCase();
-                        return s1.compareTo(s2);
-                    }
+                Collections.sort(fi.favoritesAdded, (mp1, mp2) -> {
+                     String s1 = (mp1.getSortkey() + mp1.getDescription()).toLowerCase();
+                    String s2 = (mp2.getSortkey() + mp2.getDescription()).toLowerCase();
+                    return s1.compareTo(s2);
                 });
             }
             checkVisiblityOfLists();
@@ -458,15 +453,15 @@ else//added on 21-6-2016
         The listview contains favorites
          */
         private boolean visible=true;
-        public  String selectlistViewcode;
-        public  ListView favoritesAddedListView;
-        public  FavoriteListAdapter favoritesAddedListAdapter;
-        public ArrayList<Favorite> favoritesAdded;
-        public TextView favoriteTextView;
+        String selectlistViewcode;
+        ListView favoritesAddedListView;
+        FavoriteListAdapter favoritesAddedListAdapter;
+        ArrayList<Favorite> favoritesAdded;
+        TextView favoriteTextView;
         private FragmentActivity activity;
         private LinearLayout ll;
 
-        public FavoritesListItem(SelectFragment selectFragment, View parentView, String listDescription, String selectlistViewcode,boolean visible) {
+        FavoritesListItem(SelectFragment selectFragment, View parentView, String listDescription, String selectlistViewcode, boolean visible) {
             this.selectlistViewcode=selectlistViewcode;
 
 
@@ -496,11 +491,11 @@ else//added on 21-6-2016
 
         }
 
-        public void setLayoutParams() {
+        void setLayoutParams() {
             setDistance(2);
         }
 
-        public void setDistance(int distance) {
+        void setDistance(int distance) {
             LinearLayout.LayoutParams LLParams = new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
             ll.setOrientation(LinearLayout.VERTICAL);
             ll.setPadding(distance, distance, distance, distance);
@@ -512,14 +507,11 @@ else//added on 21-6-2016
             favoriteTextView.setLayoutParams(LLParams);
         }
 
-        public FavoritesListItem(SelectFragment selectFragment, View parentView, String listDescription, String selectlistViewcode) {
-            this( selectFragment,  parentView,  listDescription,  selectlistViewcode,true);
-        }
-        public void toggleVisible(){
+        void toggleVisible(){
             visible=!visible;
             setLayoutParams();
         }
-        public boolean isVisible(){
+        boolean isVisible(){
             return visible;
         }
     }

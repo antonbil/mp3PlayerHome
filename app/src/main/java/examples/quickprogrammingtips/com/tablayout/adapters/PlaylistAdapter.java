@@ -77,7 +77,6 @@ public class PlaylistAdapter extends BaseAdapter {
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
-        // TODO Auto-generated method stub
         try{
             ViewHolder holder;
             if (position>=fileArrayList.size()) return convertView;

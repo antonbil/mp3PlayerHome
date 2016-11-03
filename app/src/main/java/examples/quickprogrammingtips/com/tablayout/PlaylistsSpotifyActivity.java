@@ -1,5 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -19,6 +20,7 @@ public class PlaylistsSpotifyActivity extends Activity {
     private PlaylistsSpotifyActivity getThis;
     private WebView webView;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try{
@@ -73,7 +75,7 @@ public class PlaylistsSpotifyActivity extends Activity {
                 };
                 leftDrawerPlaylist.setMenu(menuItemsArray);
 
-        }catch (Exception e){}
+        }catch (Exception e){/**/}
 
         webView = (WebView) findViewById(R.id.webView1);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -103,25 +105,27 @@ public class PlaylistsSpotifyActivity extends Activity {
 
                     builderSingle.setNegativeButton(
                             "cancel",
-                            (dialog, which) -> {
-                                dialog.dismiss();
-                            });
+                            (dialog, which) -> dialog.dismiss());
 
                     builderSingle.setAdapter(
                             arrayAdapter,
                             (dialog, which) -> {
                                 final String title1 = arrayAdapter.getItem(which);
-                                if (title1.equals("first 30 tracks")) {
-                                    SelectFragment.executeExternalSpotifyPlaylist30Songs(getThis,"https://open.spotify.com/"+url.substring(8).replace(":","/"));
-                                } else if (title1.equals("entire list")) {
-                                    SelectFragment.executeExternalSpotifyPlaylist(getThis, url);
+                                switch (title1) {
+                                    case "first 30 tracks":
+                                        SelectFragment.executeExternalSpotifyPlaylist30Songs(getThis, "https://open.spotify.com/" + url.substring(8).replace(":", "/"));
+                                        break;
+                                    case "entire list":
+                                        SelectFragment.executeExternalSpotifyPlaylist(getThis, url);
 
-                                }else if (title1.equals("add to favorites")) {
-                                    String[] parts=url.split(":");
-                                    SpotifyFragment.addAlbumToFavorites(
-                                            Favorite.SPOTIFYPRIVATEPLAYLIST+url, parts[parts.length-1], null);
+                                        break;
+                                    case "add to favorites":
+                                        String[] parts = url.split(":");
+                                        SpotifyFragment.addAlbumToFavorites(
+                                                Favorite.SPOTIFYPRIVATEPLAYLIST + url, parts[parts.length - 1], null);
 
-                                        }
+                                        break;
+                                }
                             });
                     builderSingle.show();
 
@@ -144,7 +148,7 @@ public class PlaylistsSpotifyActivity extends Activity {
         MainActivity.getInstance().runOnUiThread(() -> {
             try{
                 SpotifyFragment.getInstance().albumAdapter.notifyDataSetChanged();
-            }catch(Exception e){
+            }catch(Exception e){/**/
                 }
         });
         super.onStop();
