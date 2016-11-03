@@ -92,6 +92,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             }
             else{
                 ArrayList<Boolean>bs=new ArrayList<>();
+                //noinspection Convert2streamapi
                 for (FavoritesListItem f:favoritesListItemArray)
                 bs.add(f.visible);
                 initAllFavorites();
@@ -188,6 +189,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             Favorite favnew=new Favorite(fav.url,description,description,sortkey);
             favnew.setRecord(fav);
             if (!MainActivity.filterSpotify||(MainActivity.filterSpotify&&favnew.isSpotifyItem()))
+                //noinspection Convert2streamapi
             for (FavoritesListItem favItem:favoritesListItemArray){
                 if (favItem.selectlistViewcode.equals(fav.category))
                     favItem.favoritesAdded.add(favnew);
