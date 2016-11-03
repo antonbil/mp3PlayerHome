@@ -67,7 +67,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
         albumAdapter = MainActivity.getTracksAdapter(mDrawerLayout, spotifyListview, albumList, albumTracks);
         spotifyListview = (ListView) activity.findViewById(newalbumsdrawer_list);
         mpdListview = (ListView) activity.findViewById(newalbumsmpddrawer_list);
-        adapterMpd = new PlaylistAdapter(MainActivity.getInstance().playFragment, this, MainActivity.getInstance().getLogic().getPlaylistFiles(), MainActivity.getInstance().getApplicationContext());
+        adapterMpd = new PlaylistAdapter(this, MainActivity.getInstance().getLogic().getPlaylistFiles(), MainActivity.getInstance().getApplicationContext());
         mpdListview.setAdapter(adapterMpd);
         swapPlaylist = (FloatingActionButton) activity.findViewById(fabswapplaylist);
         spotifyListview.setAdapter(albumAdapter);
