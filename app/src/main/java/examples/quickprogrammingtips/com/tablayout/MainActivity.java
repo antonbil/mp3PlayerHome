@@ -1,6 +1,7 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -172,8 +174,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         getInstance().getSpotifyInterface = getSpotifyInterface;
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode)
         {
@@ -189,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         }
 
     }
+    @SuppressLint("PrivateResource")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
@@ -308,8 +312,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             leftDrawerPlaylist.setMenu(menuItemsArray);
             LinearLayout ll = ((LinearLayout) findViewById(R.id.song_title));
             ll.setOnClickListener(v -> callSpotify(currentArtist));
-            //DebugLog.log("Text:6");
-            //TODO: make it for-statement (6 times!)
             tabLayout = (TabLayout) findViewById(R.id.tabLayout);
             tabLayout.setTabTextColors(Color.WHITE, R.color.accent_material_dark);
             tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -326,8 +328,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             };
             playFragment = new PlayFragment();
             for (int i = 0; i < tabLayout.getTabCount(); i++) {
+                //noinspection ConstantConditions
                 tabLayout.getTabAt(i).setIcon(imageResId[i]);
             }
+            //noinspection deprecation
             tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
@@ -366,9 +370,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                 try {
 
-                    MainActivity.getInstance().runOnUiThread(() -> {
-                        tabLayout.getTabAt(SELECTTAB).select();
-                    });
+                    //noinspection ConstantConditions
+                    MainActivity.getInstance().runOnUiThread(() -> tabLayout.getTabAt(SELECTTAB).select());
 
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
@@ -505,6 +508,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     .attach(spotifyFragment)
                     .commit();
 
+        //noinspection ConstantConditions
         tabLayout.getTabAt(SPOTIFYTAB).select();
 
 
@@ -519,6 +523,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 .detach(spotifyPlaylistFragment)
                 .attach(spotifyPlaylistFragment)
                 .commit();
+        //noinspection ConstantConditions
         tabLayout.getTabAt(SPOTIFYPLAYLISTTAB).select();
 
     }
@@ -740,7 +745,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, getDbFragment()).commit();
         }, 100);
 
-        View inflate = getLayoutInflater().inflate(R.layout.activity_search, null);
+        @SuppressLint("InflateParams") View inflate = getLayoutInflater().inflate(R.layout.activity_search, null);
         alert.setView(inflate);
         final EditText searchEditText = (EditText) inflate.findViewById(R.id.search);
         searchEditText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
@@ -791,6 +796,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
         seek.setProgress(volume);
         seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @SuppressLint("DefaultLocale")
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 text.setText(String.format("%d", progress));
@@ -914,7 +920,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public void playlistGetContent(final MPC mpc, final MpdInterface mpdInterface) {
-        AsyncTask thread = new AsyncTask() {
+        new AsyncTask<Object, Object, Object>() {
             @Override
             protected Object doInBackground(Object[] params) {
                 if (!MainActivity.activityVisible)return true;
@@ -1004,10 +1010,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                     InputStream input = connection.getInputStream();
                                     Bitmap bitmap = BitmapFactory.decodeStream(input);
                                     getAlbumPictures().put(niceAlbumName, bitmap);
-                                    for (Mp3File f1 : logic.getPlaylistFiles()) {
+                                    //noinspection Convert2streamapi
+                                    for (Mp3File f1 : logic.getPlaylistFiles())
                                         if (f1.niceAlbum().equals(niceAlbumName))
                                             f1.setBitmap(bitmap);
-                                    }
                                     connection.disconnect();
                                 } catch (Exception e) {
 
@@ -1029,11 +1035,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                 return true;
             }
-        };
-        thread.execute();
+        }.execute();
     }
 
     public void selectTab(int tab) {
+        //noinspection ConstantConditions
         tabLayout.getTabAt(tab).select();
     }
 
@@ -1185,11 +1191,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
         };
     }
-    private void checkButtons(int prev){
-        //if (prev!= SpotifyFragment.playingEngine) {
-            //setListenersForButtons();
-        //}
-    }
 
     @Override
     public void statusUpdate(MPCStatus newStatus) {
@@ -1199,7 +1200,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //new Thread(() -> {
             statusThread = true;
 
-            int prev = SpotifyFragment.playingEngine;
+            //int prev = SpotifyFragment.playingEngine;
 
             if (SpotifyFragment.isPlaying()) {
                 if (SpotifyFragment.getInstance() != null)
@@ -1211,7 +1212,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                     currentArtist = SpotifyFragment.updateSongInfo(getInstance(), getSpotifyInterface());
 
-                checkButtons(prev);
+                //checkButtons(prev);
                 MainActivity.playingStatus = MainActivity.SPOTIFY_PLAYING;
                 statusThread = false;
 
@@ -1335,6 +1336,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         }
 
         // The directory is now empty so delete it
+        assert dir != null;
         return dir.delete();
     }
     @Override

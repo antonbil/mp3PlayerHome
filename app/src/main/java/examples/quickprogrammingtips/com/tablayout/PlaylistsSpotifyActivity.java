@@ -82,7 +82,8 @@ public class PlaylistsSpotifyActivity extends Activity {
             String url = "http://playlists.net/charts";
             leftDrawerPlaylist.addItem(url);
             webView.loadUrl(url);
-        webView.setWebViewClient(new WebViewClient() {
+            //noinspection deprecation
+            webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 //leftDrawerPlaylist.addItem(url);
@@ -111,6 +112,7 @@ public class PlaylistsSpotifyActivity extends Activity {
                             arrayAdapter,
                             (dialog, which) -> {
                                 final String title1 = arrayAdapter.getItem(which);
+                                assert title1 != null;
                                 switch (title1) {
                                     case "first 30 tracks":
                                         SelectFragment.executeExternalSpotifyPlaylist30Songs(getThis, "https://open.spotify.com/" + url.substring(8).replace(":", "/"));

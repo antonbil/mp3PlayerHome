@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
+@SuppressWarnings("ConstantConditions")
 abstract class PlanetAdapter extends ArrayAdapter<String> {
     private final ArrayList<PlaylistItem> tracksPlaylist;
     private boolean displayCurrentTrack = true;
@@ -64,7 +66,8 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
         this.getThis=ctx;
     }
 
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    @NonNull
+    public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
         try{
         this.parent=parent;
         final ViewHolder holder;
