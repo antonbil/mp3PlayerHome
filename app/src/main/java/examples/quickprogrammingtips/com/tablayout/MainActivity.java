@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -67,6 +66,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -83,7 +83,6 @@ import mpc.DatabaseCommand;
 import mpc.MPC;
 import mpc.MPCDatabaseListener;
 import mpc.MPCListener;
-import mpc.MPCSong;
 import mpc.MPCStatus;
 
 
@@ -137,10 +136,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     private DBFragment         dbFragment;
     private SpotifyFragment spotifyFragment;
     public LeftDrawerPlaylist leftDrawerPlaylist;
-    private SpotifyData data;
     private ShutDownReceiver shutDownReceiver;
     private Timer secondTimer;
-    private Timer cleanupTimer;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -241,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
             StrictMode.setThreadPolicy(policy);
             setSpotifyInterface(new SpotifyInterface());
-            data = new SpotifyData();
+            SpotifyData data = new SpotifyData();
             SpotifyFragment.setData(data);
             dialog = new ProgressDialog(this);//keep it hidden until needed
             updateBarHandler = new Handler();
@@ -253,10 +250,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //DebugLog.log(""+16);
 
             //DebugLog.log("Text:5");
-            ArrayList<String> menuItemsArray = new ArrayList<String>(
-                    Arrays.asList("Settings","Large Display",
-                            "sep","Search mpd", "Search album","sep", "New albums categories" , "Dutch album top 100","Billboard top albums","Spotify Album Shortcuts", "sep","Volume","Refresh Spotify",
-                            "sep","Playlists","sep","Close" ));
+            ArrayList<String> menuItemsArray = new ArrayList<>(
+                    Arrays.asList("Settings", "Large Display",
+                            "sep", "Search mpd", "Search album", "sep", "New albums categories", "Dutch album top 100", "Billboard top albums", "Spotify Album Shortcuts", "sep", "Volume", "Refresh Spotify",
+                            "sep", "Playlists", "sep", "Close"));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                     R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
                 @Override
@@ -304,14 +301,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         case "Playlists":
                             //DebugLog.log("miner");
                             Intent myIntent = new Intent(getInstance(), PlaylistsSpotifyActivity.class);
-                            //myIntent.putExtra("searchitem", outsiders);
-                            //DebugLog.log("miner");
                             getInstance().startActivity(myIntent);
                             //DebugLog.log("miner");
 
                             break;
                         case "Refresh Spotify":
-                            try{SpotifyPlaylistFragment.getInstance().setCurrentTracklist();} catch (Exception e) {        }
+                            try{SpotifyPlaylistFragment.getInstance().setCurrentTracklist();} catch (Exception e) { /*empty*/       }
                             break;
                         case "Close":
                             getInstance().finish();
@@ -321,9 +316,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             };
             leftDrawerPlaylist.setMenu(menuItemsArray);
             LinearLayout ll = ((LinearLayout) findViewById(R.id.song_title));
-            ll.setOnClickListener(v -> {
-                callSpotify(currentArtist);
-            });
+            ll.setOnClickListener(v -> callSpotify(currentArtist));
             //DebugLog.log("Text:6");
             //TODO: make it for-statement (6 times!)
             tabLayout = (TabLayout) findViewById(R.id.tabLayout);
@@ -421,22 +414,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             } catch (Exception e) {
                 DebugLog.log("error in setting up tool");
             }
-            //DebugLog.log("Text:9");
-
-
-            //DebugLog.log(""+20);
-            //new Thread(() -> {
 
             setTimerToUpdateDisplay();
-              /*  SpotifyFragment.getOnlyPlaylistFromSpotify(new GetSpotifyPlaylistClass(){
-                    @Override
-                    public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
-
-                    }
-                },1, getThis, SpotifyFragment.getThis.albumAdapter, SpotifyFragment.getThis.data.albumList, SpotifyFragment.getThis.data.albumTracks);*/
-
-            //}).start();
-            //DebugLog.log("Text:10");
 
             try {
                 // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -595,7 +574,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     private void setCleanupTimer(){
-        cleanupTimer = new Timer();
+        Timer cleanupTimer = new Timer();
         cleanupTimer.schedule(new TimerTask() {
 
             @Override
@@ -663,7 +642,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public void onBackPressed() {
-        int tabSelected=tabLayout.getSelectedTabPosition();;
+        int tabSelected=tabLayout.getSelectedTabPosition();
         if ((tabSelected== SMBTAB)||(tabSelected==MPDTAB)) {
             if (tabSelected == SMBTAB)
                 listFragment.back();
@@ -673,11 +652,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         new AlertDialog.Builder(this)
                 .setMessage("Are you sure you want to exit?")
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        MainActivity.this.finish();
-                    }
-                })
+                .setPositiveButton("Yes", (dialog1, id) -> MainActivity.this.finish())
                 .setNegativeButton("No", null)
                 .show();
     }
@@ -772,12 +747,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         myterm = myterm.trim();
         final AlertDialog alert = new AlertDialog.Builder(this).create();
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                selectTab(2);
-                getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, getDbFragment()).commit();
-            }
+        handler.postDelayed(() -> {
+            selectTab(2);
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, getDbFragment()).commit();
         }, 100);
 
         View inflate = getLayoutInflater().inflate(R.layout.activity_search, null);
@@ -833,7 +805,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                text.setText("" + progress);
+                text.setText(String.format("%d", progress));
                 logic.getMpc().setVolume(progress);
             }
 
@@ -854,11 +826,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         alert.setView(linear);
 
 
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss();
-            }
-        });
+        alert.setPositiveButton("Ok", (dialog1, id) -> dialog1.dismiss());
 
         alert.show();
     }
@@ -908,34 +876,23 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             if (resultCode == Activity.RESULT_OK) {
                 //spotify window asks for search of artist
                 final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        selectTab(MainActivity.MPDTAB);
-                        //give the program time to restore saved instance
-                        getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, getDbFragment()).commit();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                //start searching if right tab is selected
-                                searchForItem(data.getExtras().getString("artist"));
-                            }
-                        }, 100);
-                    }
+                handler.postDelayed(() -> {
+                    selectTab(MainActivity.MPDTAB);
+                    //give the program time to restore saved instance
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_container, getDbFragment()).commit();
+                    handler.postDelayed(() -> {
+                        //start searching if right tab is selected
+                        searchForItem(data.getExtras().getString("artist"));
+                    }, 100);
                 }, 100);
 
 
-            } else {
-                // the result code is different from the one you've finished with, do something else.
             }
         }
 
 
         super.onActivityResult(requestCode, resultCode, data);
 
-    }
-    public static boolean isActivityVisible() {
-        return activityVisible;
     }
 
     public static void activityResumed() {
@@ -974,11 +931,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             protected Object doInBackground(Object[] params) {
                 if (!MainActivity.activityVisible)return true;
                 String address = logic.getMpc().getAddress();
-                Socket sock = null;
-                BufferedReader in = null;
-                PrintWriter out = null;
+                Socket sock;
+                BufferedReader in;
+                PrintWriter out;
 
-                List<MPCSong> songs;
                 ArrayList<Mp3File> playlist;
                 // Establish socket connection
                 try {
@@ -989,9 +945,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     out.println("playlistinfo");
                     // Clear version number from buffer
                     in.readLine();
-                    playlist = new ArrayList<Mp3File>();
+                    playlist = new ArrayList<>();
                     String response;
-                    ArrayList<String> list = new ArrayList<String>();
+                    ArrayList<String> list = new ArrayList<>();
                     while (((response = in.readLine()) != null)) {
                         if (response.startsWith("OK")) break;
                         list.add(response);
@@ -1003,14 +959,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     }
                     try {
                         sock.close();
-                        if (in != null) in.close();
-                        if (out != null) out.close();
+                        in.close();
+                        out.close();
                     } catch (Exception e) {
                         DebugLog.log("playlist get content");
                     }
 
                     //see if address has not changed while getting information
-                    if (address != logic.getMpc().getAddress()) return true;
+                    if (!Objects.equals(address, logic.getMpc().getAddress())) return true;
                     boolean change = false;
                     int max = playlist.size();
                     if (max == 0) {
@@ -1025,8 +981,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         }
 
                         for (int i = 0; i < max; i++) {
-                            if (!(playlist.get(i).getTitle() == logic.getPlaylistFiles().get(i).getTitle()))
+                            if (!Objects.equals(playlist.get(i).getTitle(), logic.getPlaylistFiles().get(i).getTitle())) {
                                 change = true;
+                            }
                         }
                         if (change) {
                             logic.getPlaylistFiles().clear();
@@ -1105,17 +1062,17 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     }
     public void enqueueSingleCommand(String message) {
-        logic.getMpc().enqueCommands(new ArrayList<String>(Arrays.asList(message)));
+        logic.getMpc().enqueCommands(new ArrayList<>(Collections.singletonList(message)));
     }
 
     private void export(int position) {
-        //save current playlist DebugLog.log("export:" + position);
+        //save current playlist
         final CopyOnWriteArrayList<Mp3File> copyPlaylist =new CopyOnWriteArrayList<>();
         CopyOnWriteArrayList<Mp3File> playlist = logic.getPlaylistFiles();
         for (Mp3File mp:playlist) {
             copyPlaylist.add(mp);
         }
-        final int currentSong=logic.mpcStatus.song.intValue();
+        final int currentSong= logic.mpcStatus.song;
         final int currentTime=logic.mpcStatus.time;
         //stop playing of first server
         logic.getMpc().pause();
@@ -1127,28 +1084,19 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //do some commands with delay
         //create handler to do background task
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                // Change playlist after 1 second
-                ArrayList<String> commands = new ArrayList<>();
-                commands.add("clear");
-                for (Mp3File mp : copyPlaylist) {
-                    String s = "add \"" + mp.getMpcSong().file + "\"";
-                    commands.add(s);
-                }
-                String s = "play " + currentSong;
+        handler.postDelayed(() -> {
+            // Change playlist after 1 second
+            ArrayList<String> commands = new ArrayList<>();
+            commands.add("clear");
+            for (Mp3File mp : copyPlaylist) {
+                String s = "add \"" + mp.getMpcSong().file + "\"";
                 commands.add(s);
-                s = "seek " + currentSong + " "+currentTime;
-                commands.add(s);
-                logic.getMpc().enqueCommands(commands);
-                //set currentSong after one second
-                /*handler.postDelayed(new Runnable() {
-                    public void run() {
-                        MainActivity.getThis.playlistGetContent();
-                        logic.getMpc().play(currentSong);
-                    }
-                }, 1000);*/
             }
+            String s = "play " + currentSong;
+            commands.add(s);
+            s = "seek " + currentSong + " "+currentTime;
+            commands.add(s);
+            logic.getMpc().enqueCommands(commands);
         }, 1000);
     }
 
@@ -1194,12 +1142,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             getAlbumPictures().put(album, result);
 
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //ImageView thumbnail=(ImageView) findViewById(R.id.thumbnail_top);
-                    image.setImageBitmap(result);
-                }
+            runOnUiThread(() -> {
+                //ImageView thumbnail=(ImageView) findViewById(R.id.thumbnail_top);
+                image.setImageBitmap(result);
             });
         } else {
 
@@ -1250,15 +1195,15 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
-                MainActivity.getInstance().callSpotify(SpotifyFragment.getInstance().getData().tracksPlaylist.get(counter).artists.get(0).name);
+                MainActivity.getInstance().callSpotify(SpotifyFragment.getData().tracksPlaylist.get(counter).artists.get(0).name);
             }
         };
         return albumAdapter;
     }
     private void checkButtons(int prev){
-        if (prev!= SpotifyFragment.playingEngine) {
+        //if (prev!= SpotifyFragment.playingEngine) {
             //setListenersForButtons();
-        }
+        //}
     }
 
     @Override
@@ -1276,6 +1221,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                     try {
                         SpotifyFragment.playingEngine = 1;
                     } catch (Exception e) {
+                        /**/
                     }
 
                 /*if (SpotifyFragment.busyupdateSongInfo) {
@@ -1323,16 +1269,16 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             if (status.playing) {
                 SpotifyFragment.playingEngine = 2;
             }
-            if (status.song.intValue() < logic.getPlaylistFiles().size())
+            if (status.song < logic.getPlaylistFiles().size())
 
                 runOnUiThread(() -> {
                     ViewHolder vh = getInstance().viewHolder;
                     try {
-                        Mp3File currentSong = logic.getPlaylistFiles().get(status.song.intValue());
+                        Mp3File currentSong = logic.getPlaylistFiles().get(status.song);
                         final String title = currentSong.getTitle();
                         vh.title = title;
 
-                        final String time1 = Mp3File.niceTime(status.time.intValue());
+                        final String time1 = Mp3File.niceTime(status.time);
                         vh.time = time1;
                         String timeNice;
                         try {
@@ -1356,7 +1302,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         String uri = Logic.getUrlFromSongpath(currentSong);
                         for (HeaderSongInterface header : MainActivity.getHeaders()) {
                             if (header != null)
-                                header.setData(time1, timeNice, title, album, false, status.song.intValue());
+                                header.setData(time1, timeNice, title, album, false, status.song);
                         }
                         MainActivity.playingStatus = MainActivity.SPOTIFY_PLAYING;
 
@@ -1364,13 +1310,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                             final Bitmap b = getAlbumPictures().get(album);
                             albumBitmap = b;
                             currentSong.setBitmap(b);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (HeaderSongInterface header : MainActivity.getHeaders()) {
-                                        if (header != null)
-                                            header.setLogo(b);
-                                    }
+                            runOnUiThread(() -> {
+                                for (HeaderSongInterface header : MainActivity.getHeaders()) {
+                                    if (header != null)
+                                        header.setLogo(b);
                                 }
                             });
                         } else {
@@ -1399,7 +1342,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             trimCache(this);
             secondTimer.cancel();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             DebugLog.log("ondestroy");
 
             e.printStackTrace();
@@ -1425,8 +1367,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static boolean deleteDir(java.io.File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                boolean success = deleteDir(new java.io.File(dir, children[i]));
+            for (String aChildren : children) {
+                boolean success = deleteDir(new java.io.File(dir, aChildren));
                 if (!success) {
                     return false;
                 }
@@ -1492,7 +1434,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public class ViewHolder {
-        public String totaltime;
+        String totaltime;
         public String time;
         public String title;
         public String album;
@@ -1503,16 +1445,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public void onTaskCompleted(String result, String call) {
         //Log.v("samba", result);
     }
-    public class SpotifyData{//SpotifyFragment.getThis.data.
-        public ArrayList<String> albumIds = new ArrayList<>();
-        public  ArrayList<String> albumList = new ArrayList<>();
-        public  ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
-        public ArrayList<PlaylistItem> previousAlbumTracks=new ArrayList<>();
-        public ArrayList<Track> previousTracksPlaylist= new ArrayList<>();
-        public List<Track> tracksPlaylist= Collections.synchronizedList(new ArrayList<>());
-        public HashMap hm = new HashMap();
+    public class SpotifyData{
+        ArrayList<String> albumIds = new ArrayList<>();
+        ArrayList<String> albumList = new ArrayList<>();
+        ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
+        ArrayList<PlaylistItem> previousAlbumTracks=new ArrayList<>();
+        ArrayList<Track> previousTracksPlaylist= new ArrayList<>();
+        List<Track> tracksPlaylist= Collections.synchronizedList(new ArrayList<>());
+        HashMap hm = new HashMap();
         public ArrayList<String> searchArtistString =new ArrayList<>();
-
-        public int keer=0;
     }
 }
