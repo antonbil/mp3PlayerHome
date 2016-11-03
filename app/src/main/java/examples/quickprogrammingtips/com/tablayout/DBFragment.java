@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.HistoryListview;
@@ -55,7 +56,7 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     }
     @Override
     public void displayContentOfDir(SambaInterface si,String path, String id) {
-        if (id=="Download"){
+        if (Objects.equals(id, "Download")){
             download=true;
             //Log.v("samba","download "+path);
         }
@@ -91,7 +92,7 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
 
         //Log.v("samba","db-call succeeded");
         if (playit){
-            logic.sambaCallCompleted(files1a, new ArrayList<File>(),currentId);//chdb
+            logic.sambaCallCompleted(files1a, new ArrayList<>(),currentId);//chdb
             playit=false;
         } else {
             if (download){

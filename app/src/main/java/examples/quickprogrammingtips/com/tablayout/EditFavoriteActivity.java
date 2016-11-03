@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -67,7 +68,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
         String    imageurl="";
         try{
             imageurl= extras.getString("imageurl");
-        }catch (Exception e){}
+        }catch (Exception e){/**/}
         String finalimageurl=imageurl;
         vwgroup=((ViewGroup)findViewById(R.id.favorite_radiogroup));
 
@@ -77,6 +78,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
             RadioButton radioButton = new RadioButton(this);
             String categoryDescription = Favorite.getCategoryDescription(i);
             radioButton.setText(categoryDescription);
+            assert categoryString != null;
             if (categoryString.equals(categoryDescription))
                 radioButton.setChecked(true);
             radioButtons.add(radioButton);
@@ -120,7 +122,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
                 try{
                     FavoriteRecord fv=new FavoriteRecord(url.getText().toString(),
                             description.getText().toString()+";;"+sortkey.getText().toString(), tempfavorite);
-                    long a = fv.save();
+                    fv.save();
                     finish(); //finish the startNewOne activity
                 }
                 catch (Exception e){
@@ -138,7 +140,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
                 setResult(23, i);  //now you can use Activity.RESULT_OK, its irrelevant whats the resultCode
                 try{
                     SelectFragment.getThis.getFavorites();
-                }catch (Exception e){}
+                }catch (Exception e){/**/}
                 finish(); //finish the startNewOne activity
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "Error!", Toast.LENGTH_SHORT).show();
@@ -164,7 +166,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
     public static void editFavorite(Activity a, Favorite favorite) {
 
         if (favorite.getRecord() != null) {
-            editFavorite(a,favorite,favorite.getRecord().getId() + 0);
+            editFavorite(a,favorite, favorite.getRecord().getId());
         } else {
             Log.v("samba","getRecord not found");
         }
@@ -213,9 +215,14 @@ public class EditFavoriteActivity extends AppCompatActivity{
     }
 
     public static void saveFavoriteToServer(String sortkey, String url, String categoryDescription, String artist, String album, String pictureUrl) {
-        String outputurl=String.format("http://192.168.2.8/spotify/data/genre/%s/addlink.php?url=%s&artist=%s&artistsort=%s&album=%s&pictureurl=%s",
-                categoryDescription,url, URLEncoder.encode(artist.trim()),
-                URLEncoder.encode(sortkey.trim()),URLEncoder.encode(album.trim()),URLEncoder.encode(pictureUrl)).replace(" ","%20");
+        String outputurl= null;
+        try {
+            outputurl = String.format("http://192.168.2.8/spotify/data/genre/%s/addlink.php?url=%s&artist=%s&artistsort=%s&album=%s&pictureurl=%s",
+                    categoryDescription,url, URLEncoder.encode(artist.trim(), "UTF-8"),
+                    URLEncoder.encode(sortkey.trim(), "UTF-8"),URLEncoder.encode(album.trim(), "UTF-8"),URLEncoder.encode(pictureUrl, "UTF-8")).replace(" ","%20");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         Log.v("samba",outputurl);
         //url = outputurl;
         try {
@@ -230,17 +237,16 @@ public class EditFavoriteActivity extends AppCompatActivity{
             //add request header
             con.setRequestProperty("User-Agent", USER_AGENT);
 
-            int responseCode = con.getResponseCode();
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));
-            String inputLine;
+            /*String inputLine;
             StringBuffer response = new StringBuffer();
 
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
-            }
+            }*/
             in.close();
-        }catch (Exception e){}
+        }catch (Exception e){/**/}
     }
 
     public static void editFavorite(Activity a, Favorite favorite, long l) {

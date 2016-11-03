@@ -9,11 +9,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 
-public abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-    public static HashMap<String, Bitmap> albumPictures=new HashMap<>();//DownLoadImageTask.albumPictures=new HashMap<>();
+abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
+    private static HashMap<String, Bitmap> albumPictures=new HashMap<>();//DownLoadImageTask.albumPictures=new HashMap<>();
 
 
-    public DownLoadImageTask() {
+    DownLoadImageTask() {
     }
 
     public abstract void setImage(Bitmap logo);
@@ -22,7 +22,7 @@ public abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> 
         doInBackground(Params... params)
             Override this method to perform a computation on a background thread.
      */
-    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
