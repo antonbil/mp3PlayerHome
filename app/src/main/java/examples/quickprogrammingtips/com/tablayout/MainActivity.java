@@ -206,8 +206,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //headers.add(this);
             super.onCreate(savedInstanceState);
             setHeaders(new HeaderHandler());
-            Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
-                    MainActivity.class));
+            Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this
+            ));
             trimCache(this);
             boolean hasPermission = (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);

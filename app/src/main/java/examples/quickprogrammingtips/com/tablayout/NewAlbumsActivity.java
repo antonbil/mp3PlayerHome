@@ -48,8 +48,8 @@ public class NewAlbumsActivity extends Activity  {
             //Log.v("samba","1a");
             //Log.v("samba","5a");
         getThis=this;
-            Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this,
-                    MainActivity.class));
+            Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this
+            ));
         setContentView(R.layout.activity_new_albums);
             //Log.v("samba","2a");
         final ListView yourListView = (ListView) findViewById(R.id.newalbums_listview);

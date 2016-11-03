@@ -5,11 +5,11 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 
-import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
 /**
  * Created by anton on 23-1-16.
+ * interface for Mpd
  */
 public interface MpdInterface {
     void playlistCall(ArrayList<Mp3File>playlist,boolean change);
