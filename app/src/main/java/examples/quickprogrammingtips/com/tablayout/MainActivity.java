@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,9 +44,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.orm.SugarContext;
 
 import org.jsoup.nodes.Document;
@@ -121,11 +117,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public Bitmap albumBitmap;
     public static boolean filterSpotify;
     private static final int REQUEST_WRITE_STORAGE = 112;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
+
     private boolean statusThread=false;
     SelectFragment selectFragment;
     SpotifyPlaylistFragment spotifyPlaylistFragment;
@@ -136,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     private DBFragment         dbFragment;
     private SpotifyFragment spotifyFragment;
     public LeftDrawerPlaylist leftDrawerPlaylist;
-    private ShutDownReceiver shutDownReceiver;
     private Timer secondTimer;
 
     public static void panicMessage(final String message) {
@@ -203,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         try {
             mainActivity = this;
             instance = this;
-            shutDownReceiver = new ShutDownReceiver();
+            ShutDownReceiver shutDownReceiver = new ShutDownReceiver();
             final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
             registerReceiver(shutDownReceiver, filter);//shutDownReceiver.wasScreenOn
@@ -418,9 +409,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             setTimerToUpdateDisplay();
 
             try {
-                // ATTENTION: This was auto-generated to implement the App Indexing API.
-                // See https://g.co/AppIndexing/AndroidStudio for more information.
-                client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
                 ArtistAutoCompleteAdapter.getAllFilenames();
                 //DebugLog.log("Text:11");
                 final Handler handler = new Handler();
@@ -1069,9 +1057,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //save current playlist
         final CopyOnWriteArrayList<Mp3File> copyPlaylist =new CopyOnWriteArrayList<>();
         CopyOnWriteArrayList<Mp3File> playlist = logic.getPlaylistFiles();
-        for (Mp3File mp:playlist) {
-            copyPlaylist.add(mp);
-        }
+        copyPlaylist.addAll(playlist);
         final int currentSong= logic.mpcStatus.song;
         final int currentTime=logic.mpcStatus.time;
         //stop playing of first server
@@ -1187,7 +1173,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public static PlanetAdapter getTracksAdapter(final DrawerLayout mDrawerLayout, final ListView albumsListview, final ArrayList<String> albumList, final ArrayList<PlaylistItem> albumTracks) {
-        PlanetAdapter albumAdapter = new SpotifyPlaylistAdapter(albumList, MainActivity.getInstance(), albumTracks,albumsListview){
+        return new SpotifyPlaylistAdapter(albumList, MainActivity.getInstance(), albumTracks,albumsListview){
             @Override
             public void displayArtist(int counter) {
                 try{
@@ -1198,7 +1184,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 MainActivity.getInstance().callSpotify(SpotifyFragment.getData().tracksPlaylist.get(counter).artists.get(0).name);
             }
         };
-        return albumAdapter;
     }
     private void checkButtons(int prev){
         //if (prev!= SpotifyFragment.playingEngine) {
@@ -1209,7 +1194,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void statusUpdate(MPCStatus newStatus) {
 
-        if (statusThread || !shutDownReceiver.wasScreenOn) return;
+        if (statusThread || !ShutDownReceiver.wasScreenOn) return;
 
         //new Thread(() -> {
             statusThread = true;
@@ -1224,32 +1209,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         /**/
                     }
 
-                /*if (SpotifyFragment.busyupdateSongInfo) {
-                    //todo: busyupdateSongInfo is always false!
-                    try {
-                        //DebugLog.log("nu binnen2");
-                        String[] trid1 = SpotifyFragment.getCurrentTrack();//
-                        String trid = "0";
-                        trid = trid1[0];
-                        if (trid.length() > 0) {
-                            for (int i = 0; i < SpotifyPlaylistFragment.getThis.getData().tracksPlaylist.size(); i++) {
-                                if (SpotifyPlaylistFragment.getThis.getData().tracksPlaylist.get(i).id.equals(trid)) {
-                                    if (SpotifyPlaylistFragment.currentTrack != i)
-                                        SpotifyPlaylistFragment.getThis.albumsListview.setItemChecked(SpotifyFragment.currentTrack, false);
-                                    SpotifyPlaylistFragment.currentTrack = i;
-                                    break;
-                                }
-                            }
-                            MainActivity.getThis.runOnUiThread(() -> {
-                                SpotifyPlaylistFragment.getInstance().tracksAdapter.notifyDataSetChanged();
-                            });
-                        }
-                    } catch (Exception e) {
-                        Log.v("samba", Log.getStackTraceString(e));
-                    }*/
-                //} else {
                     currentArtist = SpotifyFragment.updateSongInfo(getInstance(), getSpotifyInterface());
-                //}
 
                 checkButtons(prev);
                 MainActivity.playingStatus = MainActivity.SPOTIFY_PLAYING;
@@ -1358,7 +1318,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 deleteDir(dir);
             }
         } catch (Exception e) {
-            // TODO: handle exception
             DebugLog.log("trimcache");
 
         }
@@ -1381,41 +1340,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void onStart() {
         super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://examples.quickprogrammingtips.com.tablayout/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://examples.quickprogrammingtips.com.tablayout/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
     }
 
     @Override
