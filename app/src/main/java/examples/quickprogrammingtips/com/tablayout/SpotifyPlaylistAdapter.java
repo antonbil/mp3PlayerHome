@@ -30,7 +30,7 @@ class SpotifyPlaylistAdapter extends PlanetAdapter {
         public void removeUp(int counter) {
         duplicateLists();
 
-        SpotifyFragment.removeUplist(this, albumsListview, counter, MainActivity.getInstance());
+        SpotifyFragment.removeUplist(this, counter, MainActivity.getInstance());
     }
 
         @Override
@@ -55,7 +55,7 @@ class SpotifyPlaylistAdapter extends PlanetAdapter {
         @Override
         public void removeAlbum(int counter) {
         duplicateLists();
-        SpotifyFragment.removeAlbum(this, counter, albumsListview, MainActivity.getInstance());
+        SpotifyFragment.removeAlbum(this, counter, MainActivity.getInstance());
 
     }
 
