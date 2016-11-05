@@ -1385,5 +1385,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         List<Track> tracksPlaylist= Collections.synchronizedList(new ArrayList<>());
         HashMap hm = new HashMap();
         public ArrayList<String> searchArtistString =new ArrayList<>();
+        public ArrayList<PlaylistItem> albums = new ArrayList<>();
     }
 }

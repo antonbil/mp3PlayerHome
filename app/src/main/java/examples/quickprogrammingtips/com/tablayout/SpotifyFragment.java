@@ -277,7 +277,7 @@ public class SpotifyFragment extends Fragment implements
         //Log.d("samba", "Text:12b");
         getData().albumList.clear();
         //Log.d("samba", "Text:12c");
-        getData().albumTracks.clear();
+        getData().albums.clear();
         //Log.d("samba", "Text:12d");
     }
 
@@ -985,7 +985,7 @@ public class SpotifyFragment extends Fragment implements
 
 
     protected PlanetAdapter setAdapterForSpotify() {
-        albumAdapter = new PlanetAdapter(getData().albumList, activityThis, getData().albumTracks) {
+        albumAdapter = new PlanetAdapter(getData().albumList, activityThis, getData().albums) {
             @Override
             public void removeUp(int counter) {
                 removeUplist(albumAdapter, counter,activityThis);
@@ -1040,7 +1040,7 @@ public class SpotifyFragment extends Fragment implements
 
             @Override
             public void addAlbumToFavoritesAlbum(int counter) {
-                addAlbumToFavorites(Favorite.SPOTIFYALBUM + getData().albumIds.get(counter), artistName + "-" + getData().albumList.get(counter), getData().albumTracks.get(counter).url);
+                addAlbumToFavorites(Favorite.SPOTIFYALBUM + getData().albumIds.get(counter), artistName + "-" + getData().albumList.get(counter), getData().albums.get(counter).url);
 
             }
 
@@ -1715,7 +1715,7 @@ public class SpotifyFragment extends Fragment implements
 
                             getData().albumList.add(album);
                             getData().albumIds.add(MPD+file);
-                            getData().albumTracks.add(pi);
+                            getData().albums.add(pi);
                         }
                         album=album1;
                         file=prevFile;
@@ -1739,7 +1739,7 @@ public class SpotifyFragment extends Fragment implements
 
                 getData().albumList.add(album);
                 getData().albumIds.add(MPD+file);
-                getData().albumTracks.add(pi);
+                getData().albums.add(pi);
             }
             albumAdapter.setDisplayCurrentTrack(false);
         } catch (Exception e) {
@@ -2255,7 +2255,7 @@ public class SpotifyFragment extends Fragment implements
                         return;
                     }
                     SpotifyFragment.getData().albumList.clear();
-                    SpotifyFragment.getData().albumTracks.clear();
+                    SpotifyFragment.getData().albums.clear();
                     SpotifyFragment.getData().albumIds.clear();
                     //albumTracks.clear();
                     String previous = "";
@@ -2270,7 +2270,7 @@ public class SpotifyFragment extends Fragment implements
 
                             SpotifyFragment.getData().albumList.add(album.name);
                             SpotifyFragment.getData().albumIds.add(album.id);
-                            SpotifyFragment.getData().albumTracks.add(pi);
+                            SpotifyFragment.getData().albums.add(pi);
                             previous = album.name;
 
                         }
