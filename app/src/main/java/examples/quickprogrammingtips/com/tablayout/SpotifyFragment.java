@@ -1905,6 +1905,7 @@ public class SpotifyFragment extends Fragment implements
 
     public void listAlbumsForArtistId(String id, Image image, String beatles, SpotifyApi api) {
         initArtistLook(beatles);
+        artistTitleTextView.setText(beatles);
 
         spotifyHeader.setArtistText(beatles, image);
         SpotifyService spotify = api.getService();
