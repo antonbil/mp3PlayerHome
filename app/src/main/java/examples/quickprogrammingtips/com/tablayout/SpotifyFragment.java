@@ -465,7 +465,6 @@ public class SpotifyFragment extends Fragment implements
             String line;
             try {
                 while ((line = reader.readLine()) != null) {
-                    //Log.v("samba","line read:"+line);
                     sb.append(line).append("\n");
                 }
             } catch (IOException e) {
@@ -721,7 +720,6 @@ public class SpotifyFragment extends Fragment implements
 
                             }catch (Exception e){
                                 Log.v("samba","Error in "+i+artist+album);
-                                //Log.v("samba", Log.getStackTraceString(e));
                                 }
                             i++;
                         }
@@ -739,7 +737,6 @@ public class SpotifyFragment extends Fragment implements
                 public boolean processChoice(String choice, NewAlbumsActivity.ListAdapter listAdapter, ArrayList<NewAlbum> items, int position) {
                     if (choice.equals("delete")) {
                         String outputurl=String.format(url+"/index.php?key=%s&deleteitem=%s",items.get(position).url,true).replace(" ","%20");
-                        Log.v("samba",outputurl);
                         try {
 
                             URL obj = new URL(outputurl);
@@ -975,7 +972,6 @@ public class SpotifyFragment extends Fragment implements
                     try{
                         if (!playMpdAlbum(getData().albumIds.get(counter), true, false, true)) {
                             clearSpotifyPlaylist();
-                            //Log.v("samba","end removing");
                             updateSpotifyList(counter);
                         }
 
@@ -1249,7 +1245,6 @@ public class SpotifyFragment extends Fragment implements
         String url = Favorite.SPOTIFYALBUM + getData().tracksPlaylist.get(counter).album.id;
         String name = getData().tracksPlaylist.get(counter).artists.get(0).name;
         String album = getData().tracksPlaylist.get(counter).album.name;
-        //Log.v("samba","add "+url+name+"-"+album);
         String description = name + "-" + album;
         String newalbum = Favorite.NEWALBUM;
         newFavorite(url, description, newalbum, getData().albumTracks.get(counter).url);
@@ -1499,7 +1494,6 @@ public class SpotifyFragment extends Fragment implements
                     String album1= s1.replace("Album: ", "");
                     if (!album.equals(album1)){
                         if ((album.length()>0) &&(total>1)){
-                            //Log.v("samba",album+file);
                             PlaylistItem pi=new PlaylistItem();
                             pi.pictureVisible=true;
                             pi.url="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
@@ -1741,7 +1735,6 @@ public class SpotifyFragment extends Fragment implements
         public void run() {
 
             AddSpotifyTrack(mainids, 0);
-            //Log.v("samba","end run");
             atEnd2();
 
         }
@@ -1800,7 +1793,6 @@ public class SpotifyFragment extends Fragment implements
 
             } catch (Exception e) {
                 Log.v("samba", Log.getStackTraceString(e));
-                //Log.v("samba", Log.getStackTraceString(e));
             }
         }
 
@@ -1923,7 +1915,6 @@ public class SpotifyFragment extends Fragment implements
                             pi.url=getImageUrl(album.images);
                             pi.text=String.format("%s",album.name);
                             pi.time=0;
-                            //Log.v("samba",album.name);
 
                             SpotifyFragment.getData().albumList.add(album.name);
                             SpotifyFragment.getData().albumIds.add(album.id);
@@ -2026,7 +2017,6 @@ public class SpotifyFragment extends Fragment implements
                         Track t = getTrack(trid);
                         if ((t != null)&&(getSpotifyInterface!=null))
                             if ((getSpotifyInterface.previousTrack == null) || !(t.id.equals(getSpotifyInterface.previousTrack.id))) {
-                                //Log.v("samba", trackid);
                                 getSpotifyInterface.previousTrack = t;
                                     String imageurl = getImageUrl(t.album.images);
                                     if (imageurl.equals("")) {
