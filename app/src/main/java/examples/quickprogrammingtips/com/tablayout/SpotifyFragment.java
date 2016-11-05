@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -166,12 +167,34 @@ public class SpotifyFragment extends Fragment implements
     View llview;
     public static PopupMenu categoriesMenu;
     protected boolean artist_desc_hidden=true;
+    protected boolean relatedartists_hidden=false;
     private static MainActivity.SpotifyData data;
     protected boolean spotifyWorkingOnPlaylist=false;
+    private static Parcelable mListViewScrollPos1 = null;
 
     public static MainActivity.SpotifyData getData() {
         return data;
     }
+    /*@Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Restore the ListView position
+        if (mListViewScrollPos1 != null) {
+            DebugLog.log("restore:"+mListViewScrollPos1.toString());
+            ((ScrollView)(llview.findViewById(R.id.spotifyscrollviewmiddle))).onRestoreInstanceState(mListViewScrollPos1);
+        }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Save the ListView position
+        mListViewScrollPos1 = albumsListview.onSaveInstanceState();
+    }*/
+
 
     public static void setData(MainActivity.SpotifyData data) {
         SpotifyFragment.data = data;
@@ -489,6 +512,7 @@ public class SpotifyFragment extends Fragment implements
 
 
         public void onActivityCreated() {
+            albumsListview = (ListView) llview.findViewById(R.id.albums_listview2);
 
             try {
 
@@ -497,7 +521,6 @@ public class SpotifyFragment extends Fragment implements
                 }
                 if (nosearch) artistName = "The Beatles";
 
-                albumsListview = (ListView) llview.findViewById(R.id.albums_listview2);
                 albumsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
                 setAdapterForSpotify();
@@ -510,7 +533,7 @@ public class SpotifyFragment extends Fragment implements
                 relatedArtistsAdapter = new RelatedArtistAdapter<>(activityThis, android.R.layout.simple_list_item_1, artistList);
                 relatedArtistsListView.setAdapter(relatedArtistsAdapter);
 
-                artistTitleTextView = (TextView)
+                artistTitleTextView = (TextView)//
 
                         llview.findViewById(R.id.artist_title);
 
@@ -529,7 +552,13 @@ public class SpotifyFragment extends Fragment implements
                     }
                     artist_desc_hidden=!artist_desc_hidden;
                 });
-                llview.findViewById(R.id.relatedartists_text).setOnClickListener(view -> llview.findViewById(R.id.relatedartistsinfo).setVisibility(View.GONE));
+                llview.findViewById(R.id.relatedartists_text).setOnClickListener(view ->
+                {
+                    if (relatedartists_hidden)
+                    llview.findViewById(R.id.relatedartists_listview).setVisibility(View.VISIBLE);
+                else
+                        llview.findViewById(R.id.relatedartists_listview).setVisibility(View.GONE);
+                    relatedartists_hidden=!relatedartists_hidden;});
 
             } catch (Exception e) {
                 Log.getStackTraceString(e);
