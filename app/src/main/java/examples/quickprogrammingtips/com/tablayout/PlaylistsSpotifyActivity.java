@@ -32,7 +32,7 @@ public class PlaylistsSpotifyActivity extends Activity {
 
                 ArrayList<String> menuItemsArray = new ArrayList<>(
                         Arrays.asList("Settings",
-                                "sep","Topsify", "Dutch Playlists", "Playlists.net","sep","Play-Dialog","sep","Close","sep"  ));
+                                "sep","Topsify", "Dutch Playlists", "Populairste", "Playlists.net","sep","Play-Dialog","sep","Close","sep"  ));
                 leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                 R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
             @Override
@@ -50,12 +50,15 @@ public class PlaylistsSpotifyActivity extends Activity {
                         if (s.startsWith("http")){//http://playlists.net/
                             webView.loadUrl(s);
                         }else
-                        switch (s) {//http://topsify.com/
+                        switch (s) {//https://muziekstreamen.com/muziek/de-populairste-spotify-playlists-dagelijks-bijgewerkt
                             case "Topsify":
                                 webView.loadUrl("http://topsify.com");
                                 break;
                             case "Dutch Playlists":
                                 webView.loadUrl("http://topsify.com/nl");
+                                break;
+                            case "Populairste":
+                                webView.loadUrl("https://muziekstreamen.com/muziek/de-populairste-spotify-playlists-dagelijks-bijgewerkt");
                                 break;
                             case "Playlists.net":
                                 webView.loadUrl("http://playlists.net");
