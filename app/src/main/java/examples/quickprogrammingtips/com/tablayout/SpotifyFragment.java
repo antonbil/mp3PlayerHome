@@ -22,7 +22,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -174,29 +173,22 @@ public class SpotifyFragment extends Fragment implements
     protected boolean spotifyWorkingOnPlaylist=false;
     private static Parcelable mListViewScrollPos1 = null;
     private static int scrollY=0;
+    private int prevScrollY=0;
 
     public static MainActivity.SpotifyData getData() {
         return data;
     }
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //final ScrollView scrollView = (ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
-        //outState.putInt("scrollint", scrollView.getScrollY ());
-        //scrollY =scrollView.getScrollY ();
-    }*/
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //DebugLog.log("scroll2 to ");
-            final Handler handler = new Handler();
+        final ScrollView scrollView = (ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
+        if (scrollView==null)return;
+        final Handler handler = new Handler();
             handler.postDelayed(() -> {
                 try {
-                    //DebugLog.log("scroll1 to "+savedInstanceState.getInt("scrollint", 0));
-                    final ScrollView scrollView = (ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
-                    scrollView.post(() -> {
+                   scrollView.post(() -> {
 
                         try {
                             DebugLog.log("scroll to "+scrollY);
@@ -525,18 +517,7 @@ public class SpotifyFragment extends Fragment implements
 
         public void onActivityCreated() {
             albumsListview = (ListView) llview.findViewById(R.id.albums_listview2);
-            ScrollView sc=(ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
-            sc.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener()
-            {
-                @Override
-                public void onScrollChanged()
-                {
-                    int scrollY1 = sc.getScrollY();
-                    if (scrollY1>0)
-                    SpotifyFragment.scrollY = scrollY1;
-                    //DebugLog.log("scroll "+ SpotifyFragment.scrollY);
-                 }
-            });
+            setScrollviewListenerToGetScrollOffset();
 
             try {
 
@@ -588,6 +569,17 @@ public class SpotifyFragment extends Fragment implements
                 Log.getStackTraceString(e);
             }
         }
+
+    public void setScrollviewListenerToGetScrollOffset() {
+        ScrollView sc=(ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
+        sc.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            int scrollY1 = sc.getScrollY();
+            //workaround: scrolly gives 0 and then the real value;
+            if (scrollY1>0||prevScrollY==0)
+                SpotifyFragment.scrollY = scrollY1;
+            prevScrollY =scrollY1;
+         });
+    }
 
     public static void albumTop100Nl(){
         try {
