@@ -166,32 +166,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
         gettingList=true;
         startDialog();
             try{
-                SpotifyFragment.refreshPlaylistFromSpotify(1, new GetSpotifyPlaylistClass(){
-                    @Override
-                    public void atEnd(ArrayList<String> albumList, ArrayList<PlaylistItem> albumTracks) {
-                        albumList1=albumList;
-                            albumTracks1=albumTracks;
-                            MainActivity.getInstance().runOnUiThread(() -> {
-                                try{
-                                    tracksListview = (ListView) llview.findViewById(R.id.tracks_listview);
-                                    tracksAdapter = getTracksAdapter(tracksListview, albumList1, albumTracks1);
-
-                                    tracksAdapter.setDisplayCurrentTrack(true);
-                                    tracksListview.setAdapter(tracksAdapter);
-                                    //DebugLog.log("currentTrack:"+SpotifyFragment.currentTrack);
-                                    tracksAdapter.setCurrentItem(SpotifyFragment.currentTrack);
-                                    tracksAdapter.notifyDataSetChanged();
-                                    previousLength=albumList1.size();
-                                    gettingList=false;
-                                    spotifyWorkingOnPlaylist=false;
-                                    progressDialog.dismiss();
-                                    progressDialog=null;
-
-                                }catch(Exception e){
-                                    Log.v("samba", Log.getStackTraceString(e));}
-                            });
-                    }
-                },tracksAdapter, MainActivity.getInstance(), albumList1, albumTracks1);
+                SpotifyFragment.refreshPlaylistFromSpotify(tracksAdapter, MainActivity.getInstance());
 
             }catch(Exception e){
                 Log.v("samba", Log.getStackTraceString(e));}
