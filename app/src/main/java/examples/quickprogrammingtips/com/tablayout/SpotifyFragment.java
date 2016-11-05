@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -171,30 +173,40 @@ public class SpotifyFragment extends Fragment implements
     private static MainActivity.SpotifyData data;
     protected boolean spotifyWorkingOnPlaylist=false;
     private static Parcelable mListViewScrollPos1 = null;
+    private static int scrollY=0;
 
     public static MainActivity.SpotifyData getData() {
         return data;
     }
     /*@Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //final ScrollView scrollView = (ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
+        //outState.putInt("scrollint", scrollView.getScrollY ());
+        //scrollY =scrollView.getScrollY ();
+    }*/
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Restore the ListView position
-        if (mListViewScrollPos1 != null) {
-            DebugLog.log("restore:"+mListViewScrollPos1.toString());
-            ((ScrollView)(llview.findViewById(R.id.spotifyscrollviewmiddle))).onRestoreInstanceState(mListViewScrollPos1);
-        }
+        //DebugLog.log("scroll2 to ");
+            final Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                try {
+                    //DebugLog.log("scroll1 to "+savedInstanceState.getInt("scrollint", 0));
+                    final ScrollView scrollView = (ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
+                    scrollView.post(() -> {
+
+                        try {
+                            DebugLog.log("scroll to "+scrollY);
+                            scrollView.scrollTo(0, scrollY);
+                        } catch (Exception e) {/**/}
+                    });
+
+                } catch (Exception e) {/**/}
+            }, 1000);
     }
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // Save the ListView position
-        mListViewScrollPos1 = albumsListview.onSaveInstanceState();
-    }*/
-
 
     public static void setData(MainActivity.SpotifyData data) {
         SpotifyFragment.data = data;
@@ -513,6 +525,18 @@ public class SpotifyFragment extends Fragment implements
 
         public void onActivityCreated() {
             albumsListview = (ListView) llview.findViewById(R.id.albums_listview2);
+            ScrollView sc=(ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
+            sc.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener()
+            {
+                @Override
+                public void onScrollChanged()
+                {
+                    int scrollY1 = sc.getScrollY();
+                    if (scrollY1>0)
+                    SpotifyFragment.scrollY = scrollY1;
+                    //DebugLog.log("scroll "+ SpotifyFragment.scrollY);
+                 }
+            });
 
             try {
 
