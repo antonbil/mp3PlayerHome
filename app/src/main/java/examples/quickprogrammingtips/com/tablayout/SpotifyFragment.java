@@ -1607,8 +1607,6 @@ public class SpotifyFragment extends Fragment implements
                             //todo: check if id valid spotify-link
                             String nr=String.format("%s-%s-(%s)-",currentWeek,lastweek,incharts);
 
-                            Log.v("samba",":"+id+":"+image1);
-
                             newAlbums.add(new NewAlbum(id, artistTitle, nr+albumTitle, image1));
                         } catch (Exception e) {
                             Log.v("samba", Log.getStackTraceString(e));
