@@ -2457,6 +2457,7 @@ class SpotifyHeader {
     }
 
     void setArtistText(final String artistName, Image image) {
+        //todo only get artist-info if asked
         AsyncTask.execute(() -> {
             try{
                     MainActivity.getInstance().runOnUiThread(() -> ((TextView)
