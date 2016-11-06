@@ -2460,20 +2460,12 @@ class SpotifyHeader {
         if (SpotifyFragment.isNewArtist)
             AsyncTask.execute(() -> {
                 try{
-                        MainActivity.getInstance().runOnUiThread(() -> ((TextView)
-
-                                SpotifyFragment.getInstance().llview.findViewById(R.id.albumsartist_listview)).setText(artistName));
                     SpotifyFragment.getData().artistText = "";
 
+                    JSONObject artist = (new JSONObject(SpotifyFragment.LastFMArtist(artistName))).getJSONObject("artist");
 
-                    try {
-                        JSONObject artist = (new JSONObject(SpotifyFragment.LastFMArtist(artistName))).getJSONObject("artist");
-
-                        SpotifyFragment.getData().artistText = artist.getJSONObject("bio").getString("content");
-                        setArtistTextFromLastFM(image);
-                    } catch (JSONException e) {
-                        /**/
-                    }
+                    SpotifyFragment.getData().artistText = artist.getJSONObject("bio").getString("content");
+                    setArtistTextFromLastFM(image);
 
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
