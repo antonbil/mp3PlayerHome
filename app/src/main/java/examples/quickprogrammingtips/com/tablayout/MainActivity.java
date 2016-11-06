@@ -490,6 +490,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public void callSpotify(String currentArtist) {
         try {
 
+            SpotifyFragment.startAtTop();
             SpotifyFragment.artistName=currentArtist;
             callSpotify();
         } catch (Exception e) {
@@ -1382,6 +1383,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         ArrayList<PlaylistItem> albumTracks = new ArrayList<>();
         ArrayList<PlaylistItem> previousAlbumTracks=new ArrayList<>();
         ArrayList<Track> previousTracksPlaylist= new ArrayList<>();
+        public ArrayList<String> artistList = new ArrayList<>();
         List<Track> tracksPlaylist= Collections.synchronizedList(new ArrayList<>());
         HashMap hm = new HashMap();
         public ArrayList<String> searchArtistString =new ArrayList<>();

@@ -49,7 +49,7 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
             convertView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    final java.lang.String selectedItem = SpotifyFragment.getInstance().artistList.get(position);
+                    final java.lang.String selectedItem = SpotifyFragment.getData().artistList.get(position);
 
                     //Log.v("long clicked", "pos: " + pos + "artist: " + selectedItem);
                     PopupMenu menu = new PopupMenu(convertView2.getContext(), convertView2);
@@ -64,6 +64,7 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
 
                                 java.lang.String title = item.getTitle().toString();
                                 if ((title.equals("search"))) {
+                                    SpotifyFragment.startAtTop();
                                     /*MainActivity.getThis.selectTab(2);
                                     try{ Thread.sleep(1000); MainActivity.getThis.searchTerm(selectedItem);}catch(InterruptedException e){ }
                                     */
@@ -94,7 +95,8 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
                 @Override
                 public void onClick(View view) {
                     try{
-                        java.lang.String s = SpotifyFragment.getInstance().artistList.get(position);
+                        SpotifyFragment.startAtTop();
+                        java.lang.String s = SpotifyFragment.getData().artistList.get(position);
                         Log.v("samba","get "+s);
                         longclicked=true;
                         SpotifyFragment.getInstance().setVisibility(View.VISIBLE);
