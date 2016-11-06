@@ -317,8 +317,10 @@ public class NewAlbumsActivity extends Activity  {
     }
     public void processAlbum(NewAlbum album){
         if (album.url.indexOf("playlist")>0) {
-            Toast.makeText(MainActivity.getInstance(), "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
+            SpotifyFragment.clearSpotifyPlaylist();
+            //Toast.makeText(MainActivity.getInstance(), "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
             AddAlbumToPlaylist(album.url);
+            SpotifyFragment.playAtPosition(0);
         }
         else {
             SpotifyFragment.artistName = album.artist;
