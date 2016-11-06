@@ -179,27 +179,6 @@ public class SpotifyFragment extends Fragment implements
         return data;
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final ScrollView scrollView = (ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
-        if (scrollView==null)return;
-        final Handler handler = new Handler();
-            handler.postDelayed(() -> {
-                try {
-                   scrollView.post(() -> {
-
-                        try {
-                            DebugLog.log("scroll to "+scrollY);
-                            scrollView.scrollTo(0, scrollY);
-                        } catch (Exception e) {/**/}
-                    });
-
-                } catch (Exception e) {/**/}
-            }, 1000);
-    }
-
     public static void setData(MainActivity.SpotifyData data) {
         SpotifyFragment.data = data;
     }
@@ -517,7 +496,6 @@ public class SpotifyFragment extends Fragment implements
 
         public void onActivityCreated() {
             albumsListview = (ListView) llview.findViewById(R.id.albums_listview2);
-            setScrollviewListenerToGetScrollOffset();
 
             try {
 
@@ -575,8 +553,10 @@ public class SpotifyFragment extends Fragment implements
         sc.getViewTreeObserver().addOnScrollChangedListener(() -> {
             int scrollY1 = sc.getScrollY();
             //workaround: scrolly gives 0 and then the real value;
-            if (scrollY1>0||prevScrollY==0)
+            if (scrollY1>0||prevScrollY==0) {
+                DebugLog.log("set scrolly to "+scrollY1);
                 SpotifyFragment.scrollY = scrollY1;
+            }
             prevScrollY =scrollY1;
          });
     }
@@ -1904,6 +1884,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public void listAlbumsForArtistId(String id, Image image, String beatles, SpotifyApi api) {
+        int scrollY1=scrollY;
         initArtistLook(beatles);
         artistTitleTextView.setText(beatles);
 
@@ -1911,6 +1892,7 @@ public class SpotifyFragment extends Fragment implements
         SpotifyService spotify = api.getService();
         getArtistAlbums(id, beatles, spotify);
         getRelatedArtists(id, spotify);
+
     }
 
     public void getRelatedArtists(String id, SpotifyService spotify) {
@@ -1928,6 +1910,19 @@ public class SpotifyFragment extends Fragment implements
                 MainActivity.getInstance().runOnUiThread(() -> {
                     relatedArtistsAdapter.notifyDataSetChanged();
                     Utils.setDynamicHeight(relatedArtistsListView, 0);
+                    final ScrollView scrollView = (ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
+                    scrollView.post(() -> {
+
+                        try {
+                            DebugLog.log("scroll to "+scrollY);
+                            MainActivity.getInstance().runOnUiThread(() -> {
+                                scrollView.scrollTo(0, scrollY);
+                                setScrollviewListenerToGetScrollOffset();
+                            });
+                        } catch (Exception e) {/**/}
+                    });
+
+
                 });
             }
 
