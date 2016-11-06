@@ -128,7 +128,7 @@ public class SpotifyFragment extends Fragment implements
     public static boolean explicitlyCalled=false;
     private static boolean spotifyPaused=false;
     public static boolean hasBeen=false;
-    private static boolean isNewArtist=true;
+    public static boolean isNewArtist=true;
     protected SpotifyHeader spotifyHeader;
     private static SpotifyFragment instance;
     private SpotifyInterface getSpotifyInterface;
@@ -2457,56 +2457,64 @@ class SpotifyHeader {
     }
 
     void setArtistText(final String artistName, Image image) {
-        //todo only get artist-info if asked
-        AsyncTask.execute(() -> {
-            try{
-                    MainActivity.getInstance().runOnUiThread(() -> ((TextView)
+        if (SpotifyFragment.isNewArtist)
+            AsyncTask.execute(() -> {
+                try{
+                        MainActivity.getInstance().runOnUiThread(() -> ((TextView)
 
-                            SpotifyFragment.getInstance().llview.findViewById(R.id.albumsartist_listview)).setText(artistName));
+                                SpotifyFragment.getInstance().llview.findViewById(R.id.albumsartist_listview)).setText(artistName));
+                    SpotifyFragment.getData().artistText = "";
 
-                String artistText = "";
 
-                try {
-                    JSONObject artist = (new JSONObject(SpotifyFragment.LastFMArtist(artistName))).getJSONObject("artist");
+                    try {
+                        JSONObject artist = (new JSONObject(SpotifyFragment.LastFMArtist(artistName))).getJSONObject("artist");
 
-                    artistText = artist.getJSONObject("bio").getString("content");
-                } catch (JSONException e) {
-                    /**/
-                }
-                SpannableString SS = new SpannableString(artistText);
+                        SpotifyFragment.getData().artistText = artist.getJSONObject("bio").getString("content");
+                        setArtistTextFromLastFM(image);
+                    } catch (JSONException e) {
+                        /**/
+                    }
 
-                int scale = 250;
-                int leftMargin = scale + 10;
-
-                //Set the icon in R.id.icon
-                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scale, scale);
-
-                if (image!=null)
-
-                try {
-                    new DownLoadImageTask() {
-                        @Override
-                        public void setImage(Bitmap logo) {
-
-                            MainActivity.getInstance().runOnUiThread(() -> {
-                                icon.setLayoutParams(layoutParams);
-                                icon.setImageBitmap(logo);
-                            });
-                        }
-                    }.execute(image.url);
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
 
-                SS.setSpan(new MyLeadingMarginSpan2(scale / 50, leftMargin), 0, SS.length(), 0);
-                MainActivity.getInstance().runOnUiThread(() -> MessageView.setText(SS));
-            } catch (Exception e) {
-                Log.v("samba", Log.getStackTraceString(e));
-            }
-
-        });
+            });
+        else {
+            setArtistTextFromLastFM(image);
+        }
 
 
+    }
+
+    private void setArtistTextFromLastFM(Image image) {
+        SpannableString SS = new SpannableString(SpotifyFragment.getData().artistText);
+
+        int scale = 250;
+        int leftMargin = scale + 10;
+
+        //Set the icon in R.id.icon
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(scale, scale);
+
+        if (image!=null)
+
+        try {
+            new DownLoadImageTask() {
+                @Override
+                public void setImage(Bitmap logo) {
+
+                    MainActivity.getInstance().runOnUiThread(() -> {
+                        icon.setLayoutParams(layoutParams);
+                        icon.setImageBitmap(logo);
+                    });
+                }
+            }.execute(image.url);
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+
+        SS.setSpan(new MyLeadingMarginSpan2(scale / 50, leftMargin), 0, SS.length(), 0);
+        MainActivity.getInstance().runOnUiThread(() -> MessageView.setText(SS));
     }
 }
 

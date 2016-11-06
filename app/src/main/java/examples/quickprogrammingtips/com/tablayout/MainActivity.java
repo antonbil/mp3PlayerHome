@@ -1388,5 +1388,6 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         HashMap hm = new HashMap();
         public ArrayList<String> searchArtistString =new ArrayList<>();
         public ArrayList<PlaylistItem> albums = new ArrayList<>();
+        public String artistText="";
     }
 }
