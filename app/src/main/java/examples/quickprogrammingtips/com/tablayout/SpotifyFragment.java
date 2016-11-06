@@ -187,7 +187,6 @@ public class SpotifyFragment extends Fragment implements
     public static void startAtTop() {
         scrollY=0;
         isNewArtist =true;
-        //DebugLog.log("staRT AT "+scrollY);
     }
 
     public static void setInstance(SpotifyFragment getThis) {
@@ -203,18 +202,15 @@ public class SpotifyFragment extends Fragment implements
                              Bundle savedInstanceState) {
 
         try{
-        setInstance(this);
+            setInstance(this);
 
             spotifyWorkingOnPlaylist=false;
             activityThis = getActivity();
-        SpotifyFragment.hasBeen=true;
+            SpotifyFragment.hasBeen=true;
             getLayout(inflater, container);
             checkAddress();
             memoryHandler_ = new Handler();
             checkAppMemory();
-
-
-
 
             String ip = MainActivity.getInstance().getLogic().getMpc().getAddress();
             ipAddress = String.format("http://%s:8080/jsonrpc", ip);
@@ -223,13 +219,13 @@ public class SpotifyFragment extends Fragment implements
             spotify = api.getService();
             dialog1 = new ProgressDialog(activityThis);
 
-        onActivityCreated();
-        lastOncreateView(llview);
-        return llview;
-    } catch (Exception e) {
-        Log.v("samba", Log.getStackTraceString(e));
-            return null;
-    }
+            onActivityCreated();
+            lastOncreateView(llview);
+            return llview;
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+                return null;
+        }
     }
 
     public void getLayout(LayoutInflater inflater, ViewGroup container) {
@@ -555,7 +551,7 @@ public class SpotifyFragment extends Fragment implements
         ScrollView sc=(ScrollView) llview.findViewById(R.id.spotifyscrollviewmiddle);
         sc.getViewTreeObserver().addOnScrollChangedListener(() -> {
             int scrollY1 = sc.getScrollY();
-            //workaround: scrolly gives 0 and then the real value;
+            //workaround: scrolly first gives 0 and after that the actual value;
             if (scrollY1>0||prevScrollY==0) {
                 SpotifyFragment.scrollY = scrollY1;
             }
@@ -2437,8 +2433,6 @@ class PlaylistItem {
 
 class SpotifyHeader {
     Activity getThis;
-    //private TextView artistTitleTextView;
-
     public ImageView icon;
     private TextView MessageView;
 
