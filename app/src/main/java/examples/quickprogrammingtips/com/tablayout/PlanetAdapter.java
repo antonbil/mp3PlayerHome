@@ -114,7 +114,8 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                     @Override
                     public void setImage(final Bitmap logo) {
                         logo1=logo;
-                        holder.image.setImageBitmap(logo);
+                        //logo=getResizedBitmap(logo,250,250);
+                        holder.image.setImageBitmap(getResizedBitmap(logo,80,80,false));
                         holder.image.setOnClickListener(arg0 -> {
                             //MainActivity.displayLargeImage(getThis, logo);
                             longclick( position,  convertView2,logo);

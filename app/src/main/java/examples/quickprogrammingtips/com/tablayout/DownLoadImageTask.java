@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.HashMap;
 
 abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-    private static HashMap<String, Bitmap> albumPictures=new HashMap<>();//DownLoadImageTask.albumPictures=new HashMap<>();
+    private static HashMap<String, Bitmap> albumPictures=new HashMap<>();
 
 
     DownLoadImageTask() {
@@ -18,15 +18,11 @@ abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
 
     public abstract void setImage(Bitmap logo);
 
-    /*
-        doInBackground(Params... params)
-            Override this method to perform a computation on a background thread.
-     */
-    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+    Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight,boolean recycle) {
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
+        float scaleHeight = ((float) newHeight) / height;//Bitmap.Config.RGB_565
         // CREATE A MATRIX FOR THE MANIPULATION
         Matrix matrix = new Matrix();
         // RESIZE THE BIT MAP
@@ -35,6 +31,7 @@ abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
         // "RECREATE" THE NEW BITMAP
         Bitmap resizedBitmap = Bitmap.createBitmap(
                 bm, 0, 0, width, height, matrix, false);
+        if (recycle)
         bm.recycle();
         return resizedBitmap;
     }
@@ -42,7 +39,6 @@ abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
         String urlOfImage = urls[0];
         Bitmap logo = null;
         if (albumPictures.containsKey(urlOfImage)) {
-            //if (albumPictures.get(niceAlbumName) != null)
 
             try {
                 int n=0;
@@ -56,32 +52,21 @@ abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
                 e.printStackTrace();
             }
 
-            //setBitmap(albumPictures.get(niceAlbumName));
 
         } else             try {
             InputStream is = new URL(urlOfImage.replace(" ","%20")).openStream();
-                /*
-                    decodeStream(InputStream is)
-                        Decode an input stream into a bitmap.
-                 */
-            //if (logo.getHeight()>=250)
+
             logo = BitmapFactory.decodeStream(is);
-            if (logo.getHeight()>250)
-            logo=getResizedBitmap(logo,250,250);
+            if (logo.getHeight()>300)
+            logo=getResizedBitmap(logo,300,300,true);
             albumPictures.put(urlOfImage, logo);//so image is loaded only once
         } catch (Exception e) { // Catch the download exception
-            //albumPictures.clear();
-            //Log.v("samba", Log.getStackTraceString(e));
+
         }
         return logo;
     }
 
-    /*
-        onPostExecute(Result result)
-            Runs on the UI thread after doInBackground(Params...).
-     */
     protected void onPostExecute(Bitmap result) {
         setImage(result);
-        //imageView.setImageBitmap(result);
     }
 }
