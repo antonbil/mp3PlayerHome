@@ -826,7 +826,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         alert.show();
     }
 
-    public static void displayLargeImage(Context context, Bitmap bitmap) {
+    public static void displayLargeImage(Context context, String url) {
         final AlertDialog alert = new AlertDialog.Builder(context).create();
 
         LinearLayout linear = new LinearLayout(context);
@@ -842,7 +842,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //fit image to width of screen, keep aspect ratio
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width - 140, width - 140);
         image.setLayoutParams(layoutParams);
-        image.setImageBitmap(bitmap);
+        new DownLoadImageTask() {
+
+            @Override
+            public void setImage(final Bitmap logo) {
+                image.setImageBitmap(logo);
+
+            }
+        }.execute(url+"original");
         image.setOnClickListener(v -> alert.dismiss());
         linear.addView(image);
         alert.setView(linear);

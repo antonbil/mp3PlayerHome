@@ -118,7 +118,7 @@ public class SearchActivity extends AppCompatActivity {
                         image.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                MainActivity.displayLargeImage(getThis, logo);
+                                MainActivity.displayLargeImage(getThis, p.imageid);
                             }
                         });
                     }

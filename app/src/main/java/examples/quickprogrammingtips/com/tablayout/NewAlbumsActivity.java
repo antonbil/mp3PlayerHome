@@ -205,7 +205,7 @@ public class NewAlbumsActivity extends Activity  {
                                     AddAlbumToPlaylist(position);
                                 }else
                                 if (item.getTitle().toString().equals("large image")) {
-                                    MainActivity.displayLargeImage(getThis, logo);
+                                    MainActivity.displayLargeImage(getThis, p.getImage());
 
                                 }else
                                 if (item.getTitle().toString().equals("play")) {

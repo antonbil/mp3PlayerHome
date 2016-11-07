@@ -110,6 +110,7 @@ public class PlaylistAdapter extends BaseAdapter {
             else {
                 ImageView image=(ImageView) (convertView.findViewById(R.id.thumbnail_playlist));
                 String niceAlbum = mp3File.niceAlbum();
+
                 Bitmap bm = MainActivity.getAlbumPictures().get(niceAlbum);
                 if (MainActivity.getAlbumPictures().containsKey(niceAlbum)&& bm !=null)
                     image.setImageBitmap(bm);
@@ -117,8 +118,14 @@ public class PlaylistAdapter extends BaseAdapter {
                     bm=BitmapFactory.decodeResource(convertView.getResources(), R.drawable.pause);
                     image.setImageBitmap(bm);
                 }
-                Bitmap bm1=bm;
-                image.setOnClickListener(arg0 -> MainActivity.displayLargeImage(MainActivity.getInstance(), bm1));
+                //Bitmap bm1=bm;
+                image.setOnClickListener(arg0 -> {
+                    String file=mp3File.getFile();
+                    int p=file.lastIndexOf("/");
+                    file=file.substring(0,p);
+                    file="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
+                    MainActivity.displayLargeImage(MainActivity.getInstance(), file);
+                });
                 holder.performer.setText(String.format("%s-%s", mp3File.getArtist(), mp3File.getAlbum()));
                 if (mp3File.getTracknr()>0)
                     holder.title.setText(String.format("%s-%s", mp3File.getTracknr(), mp3File.getTitle()));

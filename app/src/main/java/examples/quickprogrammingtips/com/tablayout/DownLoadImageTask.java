@@ -36,32 +36,43 @@ abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
         return resizedBitmap;
     }
     protected Bitmap doInBackground(String... urls) {
-        String urlOfImage = urls[0];
         Bitmap logo = null;
-        if (albumPictures.containsKey(urlOfImage)) {
-
+        String urlOfImage = urls[0];
+        if (urlOfImage.endsWith("original")){
             try {
-                int n=0;
-                while ((albumPictures.get(urlOfImage) == null)&&(n<30)) {
-                    //Log.v("samba","wait....."+n+" iteration");
-                    Thread.sleep(1000);
-                    n++;
-                }
-                return(albumPictures.get(urlOfImage));
-            } catch (Exception e) {
-                e.printStackTrace();
+                urlOfImage=urlOfImage.replace("original","");
+                InputStream is = new URL(urlOfImage.replace(" ", "%20")).openStream();
+
+                logo = BitmapFactory.decodeStream(is);
+            } catch (Exception e) { // Catch the download exception
+
             }
+        } else {
+            if (albumPictures.containsKey(urlOfImage)) {
+
+                try {
+                    int n = 0;
+                    while ((albumPictures.get(urlOfImage) == null) && (n < 30)) {
+                        //Log.v("samba","wait....."+n+" iteration");
+                        Thread.sleep(1000);
+                        n++;
+                    }
+                    return (albumPictures.get(urlOfImage));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 
-        } else             try {
-            InputStream is = new URL(urlOfImage.replace(" ","%20")).openStream();
+            } else try {
+                InputStream is = new URL(urlOfImage.replace(" ", "%20")).openStream();
 
-            logo = BitmapFactory.decodeStream(is);
-            if (logo.getHeight()>300)
-            logo=getResizedBitmap(logo,300,300,true);
-            albumPictures.put(urlOfImage, logo);//so image is loaded only once
-        } catch (Exception e) { // Catch the download exception
+                logo = BitmapFactory.decodeStream(is);
+                if (logo.getHeight() > 200)
+                    logo = getResizedBitmap(logo, 200, 200, true);
+                albumPictures.put(urlOfImage, logo);//so image is loaded only once
+            } catch (Exception e) { // Catch the download exception
 
+            }
         }
         return logo;
     }
