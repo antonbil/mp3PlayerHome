@@ -57,8 +57,6 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void transferPlaylist();
     public abstract void addAlbumNoplay(int counter);
 
-        private String logo1;
-
     PlanetAdapter(List<String> planetList, Context ctx, ArrayList<PlaylistItem> tracksPlaylist) {
         super(ctx, R.layout.spotifylist, planetList);
         this.tracksPlaylist=tracksPlaylist;
@@ -90,7 +88,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
         holder.image = (ImageView) convertView.findViewById(R.id.spotifylistimageView);
         holder.name = (TextView) convertView.findViewById(R.id.name);
         holder.time = (TextView) convertView.findViewById(R.id.spotifytime);
-        holder.pos.setOnClickListener(view -> longclick( position,  convertView2,logo1));
+        holder.pos.setOnClickListener(view -> longclick( position,  convertView2));
 
         convertView.setTag(holder);
 
@@ -113,13 +111,8 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
 
                     @Override
                     public void setImage(final Bitmap logo) {
-                        logo1=t.url;
-                        //logo=getResizedBitmap(logo,250,250);
                         holder.image.setImageBitmap(logo);
-                        holder.image.setOnClickListener(arg0 -> {
-                            //MainActivity.displayLargeImage(getThis, logo);
-                            longclick( position,  convertView2,t.url);
-                        });
+                        holder.image.setOnClickListener(arg0 -> longclick( position,  convertView2));
                     }
                 }.execute(t.url);
             } else
@@ -155,7 +148,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
 
         });
         convertView.setOnLongClickListener(view -> {
-            longclick( position,  convertView2,t.url);
+            longclick( position,  convertView2);
             return false;
         });
 
@@ -171,7 +164,8 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
         return convertView;
     }
 
-    private void longclick(int position, View v, String url){
+    private void longclick(int position, View v){
+        String imageUrl=tracksPlaylist.get(position).url;
         PopupMenu menu = new PopupMenu(v.getContext(), v);
         if (!isAlbumVisible()) {
 
@@ -213,7 +207,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                 } else if (title.equals("wikipedia")) {
                     displayArtistWikipedia(position);
                 } else if (title.equals("large picture")) {
-                    MainActivity.displayLargeImage(getThis, url);
+                    MainActivity.displayLargeImage(getThis, imageUrl);
                 } else if (item.getTitle().toString().equals("-->transfer")) {
                     //Log.v("samba","transfer planetadapter");
                     transferPlaylist();
@@ -246,7 +240,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                         albumArtistWikipedia(position);
                         break;
                     case "large picture":
-                        MainActivity.displayLargeImage(getThis, logo1);
+                        MainActivity.displayLargeImage(getThis, imageUrl);
                         break;
                     case "add":
                         addAlbumNoplay(position);

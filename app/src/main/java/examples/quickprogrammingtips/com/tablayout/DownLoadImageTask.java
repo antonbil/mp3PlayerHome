@@ -18,7 +18,7 @@ abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
 
     public abstract void setImage(Bitmap logo);
 
-    Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight,boolean recycle) {
+    static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight, boolean recycle) {
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -64,16 +64,29 @@ abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
 
 
             } else try {
+                //albumPictures.put(urlOfImage, null);//so image is loaded only once
                 InputStream is = new URL(urlOfImage.replace(" ", "%20")).openStream();
 
                 logo = BitmapFactory.decodeStream(is);
-                if (logo.getHeight() > 200)
-                    logo = getResizedBitmap(logo, 200, 200, true);
-                albumPictures.put(urlOfImage, logo);//so image is loaded only once
+                logo=storeBitmapInCache(logo, urlOfImage, albumPictures);
+                //if (logo.getHeight() > 200)
+                //    logo = getResizedBitmap(logo, 200, 200, true);
+                //albumPictures.put(urlOfImage, logo);
             } catch (Exception e) { // Catch the download exception
 
             }
         }
+        return logo;
+    }
+    public static Bitmap storeBitmapInCache(Bitmap logo, String urlOfImage,HashMap<String, Bitmap> albumPictures) {
+        logo = setBitmapsizeToDefault(logo);
+        albumPictures.put(urlOfImage, logo);
+        return logo;
+    }
+
+    public static Bitmap setBitmapsizeToDefault(Bitmap logo) {
+        if (logo.getHeight() > 100)
+            logo = getResizedBitmap(logo, 100, 100, true);
         return logo;
     }
 

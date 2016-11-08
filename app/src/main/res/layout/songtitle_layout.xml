@@ -85,11 +85,10 @@
         android:layout_width="100dp"
         android:layout_height="match_parent"
         android:text="ab"
-        android:gravity="right"
-        android:scaleType="centerInside"
         android:layout_weight="0.30"
         android:id="@+id/thumbnail_top"
         android:layout_gravity="center"
+        android:gravity="center_vertical"
         android:src="@drawable/pause" />
     <!--android:scaleType="centerInside"-->
 </LinearLayout>

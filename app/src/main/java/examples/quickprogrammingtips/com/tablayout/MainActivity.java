@@ -1017,6 +1017,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                     connection.connect();
                                     InputStream input = connection.getInputStream();
                                     Bitmap bitmap = BitmapFactory.decodeStream(input);
+                                    bitmap=DownLoadImageTask.setBitmapsizeToDefault(bitmap);
                                     getAlbumPictures().put(niceAlbumName, bitmap);
                                     //noinspection Convert2streamapi
                                     for (Mp3File f1 : logic.getPlaylistFiles())
@@ -1138,13 +1139,14 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void printCover(final Bitmap result, final ImageView image, String album) {
         if (result != null) {
+            final Bitmap result1=DownLoadImageTask.setBitmapsizeToDefault(result);
 
-            getAlbumPictures().put(album, result);
+            getAlbumPictures().put(album, result1);
 
 
             runOnUiThread(() -> {
                 //ImageView thumbnail=(ImageView) findViewById(R.id.thumbnail_top);
-                image.setImageBitmap(result);
+                image.setImageBitmap(result1);
             });
         } else {
 

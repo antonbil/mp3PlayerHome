@@ -22,9 +22,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:text="ab"
-        android:gravity="right"
-        android:scaleType="centerInside"
-
+        android:gravity="center_vertical"
         android:layout_weight="0.20"
         android:id="@+id/thumbnail_playlist"
         android:layout_gravity="center"
