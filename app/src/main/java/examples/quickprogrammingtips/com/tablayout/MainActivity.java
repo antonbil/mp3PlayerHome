@@ -995,7 +995,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         String previousAlbumName = "";
 
                         for (final Mp3File f : logic.getPlaylistFiles()) {
-                            if (f.getBitmap() != null) continue;
+                            //if (f.getBitmap() != null) continue;
+                            f.setBitmap(null);
                             f.setStartAlbum(!f.getAlbum().equals(albumName));
 
                             albumName = f.getAlbum();
