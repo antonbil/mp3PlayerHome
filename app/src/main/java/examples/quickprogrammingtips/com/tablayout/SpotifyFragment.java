@@ -912,6 +912,12 @@ public class SpotifyFragment extends Fragment implements
             }
 
             @Override
+            public void removeAll() {
+                clearSpotifyPlaylist();
+                refreshPlaylistFromSpotify(albumAdapter,  MainActivity.getInstance());
+            }
+
+            @Override
             public void onClickFunc(int counter) {
                 currentTrack=counter;
                 if (albumVisible)
@@ -1836,6 +1842,9 @@ public class SpotifyFragment extends Fragment implements
             TracksSpotifyPlaylist.getInstance().triggerPlaylist((albumList, albumTracks, force) -> {
                 if (albumAdapter1!=null) {
                     albumAdapter1.setDisplayCurrentTrack(true);
+                    getThis.runOnUiThread(() -> {
+                        albumAdapter1.notifyDataSetChanged();
+                    });
                 }
             });
 
@@ -2140,6 +2149,7 @@ public class SpotifyFragment extends Fragment implements
                 Image im=new Image();
                 try{
                     im.url= o.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                    DownLoadImageUrlTask.albumPictures.put(alb.id, im.url);
                 } catch (Exception e) {
                     im.url="";
                 }

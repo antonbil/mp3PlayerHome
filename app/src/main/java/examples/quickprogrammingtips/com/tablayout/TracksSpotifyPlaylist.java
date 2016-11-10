@@ -164,14 +164,14 @@ class TracksSpotifyPlaylist {
                     pi.pictureVisible = true;
                 }
                 //get image-id
-                new SpotifyFragment.DownLoadImageUrlTask() {
+                /*new SpotifyFragment.DownLoadImageUrlTask() {
                     @Override
                     public void setUrl(String logo) {
                         pi.url = logo;
                     }
-                }.execute(t.album.id);
+                }.execute(t.album.id);*/
                 //perhaps image-id already present?
-                pi.url = SpotifyFragment.getImageUrl(t.album.images);
+                pi.url = t.album.images.get(0).url;//SpotifyFragment.getImageUrl(t.album.images);
 
             } catch (Exception e) {
                 return prevAlbum;

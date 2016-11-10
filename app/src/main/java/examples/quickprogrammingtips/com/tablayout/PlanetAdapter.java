@@ -36,6 +36,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
     private int mypos=1;
 
     public abstract void removeUp(int counter);//onClickFunc
+    public abstract void removeAll();
 
     public abstract void onClickFunc(int counter);//onClickFunc
 
@@ -174,6 +175,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                 if (title.equals("remove->")) {
                     //submenu
                     PopupMenu menu1 = new PopupMenu(v.getContext(), v);
+                    menu1.getMenu().add("remove all");
                     menu1.getMenu().add("remove top");
                     menu1.getMenu().add("remove bottom");
                     menu1.getMenu().add("remove track");
@@ -183,6 +185,9 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                     menu1.setOnMenuItemClickListener(item1 -> {
                         String title1 = item1.getTitle().toString();
                                 switch (title1) {
+                                    case "remove all":
+                                        removeAll();
+                                        break;
                                     case "remove top":
                                         removeUp(position);
                                         break;

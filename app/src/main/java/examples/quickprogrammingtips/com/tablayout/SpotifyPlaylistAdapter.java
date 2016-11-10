@@ -33,7 +33,12 @@ class SpotifyPlaylistAdapter extends PlanetAdapter {
         SpotifyFragment.removeUplist(this, counter, MainActivity.getInstance());
     }
 
-        @Override
+    @Override
+    public void removeAll() {
+        SpotifyFragment.clearSpotifyPlaylist();
+    }
+
+    @Override
         public void onClickFunc(int counter) {
         try {
             new SpotifyInterface().previousTrack.id = "";
