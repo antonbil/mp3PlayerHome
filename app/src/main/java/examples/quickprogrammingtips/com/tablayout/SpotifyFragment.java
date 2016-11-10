@@ -908,13 +908,13 @@ public class SpotifyFragment extends Fragment implements
         albumAdapter = new PlanetAdapter(getData().albumList, activityThis, getData().albums) {
             @Override
             public void removeUp(int counter) {
-                removeUplist(albumAdapter, counter,activityThis);
+                removeUplist(albumAdapter, counter,  activityThis);
             }
 
             @Override
             public void removeAll() {
                 clearSpotifyPlaylist();
-                refreshPlaylistFromSpotify(albumAdapter,  MainActivity.getInstance());
+                refreshPlaylistFromSpotify(albumAdapter,  activityThis);
             }
 
             @Override
@@ -952,12 +952,12 @@ public class SpotifyFragment extends Fragment implements
 
             @Override
             public void removeDown(int counter) {
-                removeDownlist(albumAdapter, counter, activityThis);
+                removeDownlist(albumAdapter, counter,  activityThis);
             }
 
             @Override
             public void removeAlbum(int counter) {
-                SpotifyFragment.removeAlbum(albumAdapter, counter, activityThis);
+                SpotifyFragment.removeAlbum(albumAdapter, counter,  activityThis);
             }
 
             @Override
@@ -2150,6 +2150,13 @@ public class SpotifyFragment extends Fragment implements
                 try{
                     im.url= o.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
                     DownLoadImageUrlTask.albumPictures.put(alb.id, im.url);
+                    new DownLoadImageTask() {
+
+                        @Override
+                        public void setImage(final Bitmap logo) {
+                        }
+                    }.execute(im.url);
+
                 } catch (Exception e) {
                     im.url="";
                 }
