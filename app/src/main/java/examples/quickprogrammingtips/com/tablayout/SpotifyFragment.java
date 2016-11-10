@@ -1844,6 +1844,7 @@ public class SpotifyFragment extends Fragment implements
                     albumAdapter1.setDisplayCurrentTrack(true);
                     getThis.runOnUiThread(() -> {
                         albumAdapter1.notifyDataSetChanged();
+                        DebugLog.log("notify");
                     });
                 }
             });

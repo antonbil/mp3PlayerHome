@@ -31,11 +31,21 @@ class SpotifyPlaylistAdapter extends PlanetAdapter {
         duplicateLists();
 
         SpotifyFragment.removeUplist(this, counter, MainActivity.getInstance());
+            for (int i=0;i<counter;i++)
+            albumList.remove(0);
+            MainActivity.getInstance().runOnUiThread(() -> {
+                this.notifyDataSetChanged();
+            });
     }
 
     @Override
     public void removeAll() {
         SpotifyFragment.clearSpotifyPlaylist();
+        albumList.clear();
+        SpotifyFragment.getData().tracksPlaylist.clear();
+        MainActivity.getInstance().runOnUiThread(() -> {
+            this.notifyDataSetChanged();
+        });
     }
 
     @Override
@@ -54,6 +64,11 @@ class SpotifyPlaylistAdapter extends PlanetAdapter {
         public void removeDown(int counter) {
         duplicateLists();
         SpotifyFragment.removeDownlist(this, counter, MainActivity.getInstance());
+            for (int i=counter;i<albumList.size();i++)
+                albumList.remove(counter);
+            MainActivity.getInstance().runOnUiThread(() -> {
+                this.notifyDataSetChanged();
+            });
 
     }
 
