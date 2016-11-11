@@ -120,17 +120,8 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
             //album-name can become part of title
             pi.text = t.name + extra;
             //get image-id
-            /*pi.url ="";
-            try {
-                new DownLoadImageUrlTask() {
-                    @Override
-                    public void setUrl(String logo) {
-                        pi.url = logo;
-                    }
-                }.execute(t.album.id);*/
-               //perhaps image-id already present?
-                pi.url = getImageUrl(t.album.images);
-            //}catch (Exception e){pi.url="";}
+            //perhaps image-id already present?
+            pi.url = getImageUrl(t.album.images);
             //rest of properties
             pi.id = t.id;
             pi.trackNumber = t.track_number;
@@ -138,7 +129,6 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
             albumList1.add(pi.text);
             albumTracks1.add(pi);
-
         }
     }
     @Override
