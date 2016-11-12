@@ -1,7 +1,6 @@
 package examples.quickprogrammingtips.com.tablayout;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -106,16 +105,19 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                 holder.image.setVisibility(View.VISIBLE);
                 holder.pos.setVisibility(View.GONE);
                 mypos=1;
+                String replace = t.url.replace(" ", "%20");
+                MainActivity.getInstance().imageLoader.DisplayImage(replace, holder.image);
+                holder.image.setOnClickListener(arg0 -> longclick( position,  convertView2));
 
-                //Log.v("samba", "look for:" + t.url);
-                new DownLoadImageTask() {
+                //Log.v("samba", "look for:" + replace);
+                /*new DownLoadImageTask() {
 
                     @Override
                     public void setImage(final Bitmap logo) {
                         holder.image.setImageBitmap(logo);
                         holder.image.setOnClickListener(arg0 -> longclick( position,  convertView2));
                     }
-                }.execute(t.url);
+                }.execute(t.url);*/
             } else
                 holder.image.setVisibility(View.GONE);
         } catch (Exception e) {

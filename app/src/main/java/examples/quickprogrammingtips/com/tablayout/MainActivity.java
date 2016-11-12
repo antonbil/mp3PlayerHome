@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     private SpotifyFragment spotifyFragment;
     public LeftDrawerPlaylist leftDrawerPlaylist;
     private Timer secondTimer;
+    public ImageLoader imageLoader;
 
     public static void panicMessage(final String message) {
         //Let this be the code in your n'th level thread from main UI thread
@@ -198,6 +199,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         try {
             mainActivity = this;
             instance = this;
+            imageLoader =new ImageLoader(getApplicationContext());
+            imageLoader.setActivity(this);
             ShutDownReceiver shutDownReceiver = new ShutDownReceiver();
             final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
