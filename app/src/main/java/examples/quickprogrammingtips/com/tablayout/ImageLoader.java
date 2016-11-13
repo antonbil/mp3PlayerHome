@@ -169,8 +169,10 @@ public class ImageLoader {
             //bmp=DownLoadImageTask.getResizedBitmap(bmp, 100, 100, true);
             memoryCache.put(photoToLoad.url, bmp);
                 //DebugLog.log("put it in cache"+photoToLoad.url);
-            if(imageViewReused(photoToLoad))
+            if(imageViewReused(photoToLoad)){
+                photoToLoad.doAction.doAction(bmp);
                 return;
+            }
             BitmapDisplayer bd=new BitmapDisplayer(bmp, photoToLoad);
             //Activity a=MainActivity.getInstance();//(Activity)photoToLoad.imageView.getContext();
             activity.runOnUiThread(bd);
@@ -194,8 +196,10 @@ public class ImageLoader {
         public void run()
         {
             try{
-            if(imageViewReused(photoToLoad))
+            if(imageViewReused(photoToLoad)){
+                photoToLoad.doAction.doAction(bitmap);
                 return;
+            }
                 setImage(photoToLoad.imageView,bitmap, photoToLoad.doAction);
             } catch (Exception e) {            Log.v("samba", Log.getStackTraceString(e));        }
         }

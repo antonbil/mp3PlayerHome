@@ -845,6 +845,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //fit image to width of screen, keep aspect ratio
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width - 140, width - 140);
         image.setLayoutParams(layoutParams);
+        /*MainActivity.getInstance().imageLoader.DisplayImage(url, bitmap -> {
+            image.setImageBitmap(bitmap);
+        });*/
         new DownLoadImageTask() {
 
             @Override
@@ -1023,6 +1026,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                                     Bitmap bitmap = BitmapFactory.decodeStream(input);
                                     bitmap=DownLoadImageTask.setBitmapsizeToDefault(bitmap);
                                     getAlbumPictures().put(niceAlbumName, bitmap);
+                                    imageLoader.memoryCache.put(niceAlbumName, bitmap);
                                     //noinspection Convert2streamapi
                                     for (Mp3File f1 : logic.getPlaylistFiles())
                                         if (f1.niceAlbum().equals(niceAlbumName))

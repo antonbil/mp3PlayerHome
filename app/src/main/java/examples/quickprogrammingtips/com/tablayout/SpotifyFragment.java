@@ -2086,7 +2086,16 @@ public class SpotifyFragment extends Fragment implements
                                     DownLoadImageUrlTask.setAlbumPicture(t.album.id, imageurl);
                                     MainActivity.getAlbumPicturesIds().put(t.album.id, imageurl);
                             }
-                        new DownLoadImageTask() {
+                        MainActivity.getInstance().imageLoader.DisplayImage(MainActivity.getAlbumPicturesIds().get(t.album.id), bitmap -> {
+                            MainActivity.getInstance().runOnUiThread(() -> {
+                                for (HeaderSongInterface header: MainActivity.getHeaders()){
+                                    if (header!=null)
+                                        header.setLogo(bitmap);
+                                }
+                                SpotifyFragment.bitmap = bitmap;
+                            });
+                        });
+                        /*new DownLoadImageTask() {
                             @Override
                             public void setImage(Bitmap logo) {
                                 getThis.runOnUiThread(() -> {
@@ -2098,7 +2107,7 @@ public class SpotifyFragment extends Fragment implements
                                 });
                             }
                         }.execute(MainActivity.getAlbumPicturesIds().get(t.album.id));
-
+*/
                         currentTime = getTime();
                         artistReturn = t.artists.get(0).name;
                         MainActivity.playingStatus=MainActivity.SPOTIFY_PLAYING;
@@ -2150,13 +2159,16 @@ public class SpotifyFragment extends Fragment implements
                 Image im=new Image();
                 try{
                     im.url= o.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
-                    DownLoadImageUrlTask.albumPictures.put(alb.id, im.url);
+                    MainActivity.getInstance().imageLoader.DisplayImage(im.url, bitmap -> {
+                        MainActivity.getInstance().runOnUiThread(() -> {});
+                    });
+                    /*DownLoadImageUrlTask.albumPictures.put(alb.id, im.url);
                     new DownLoadImageTask() {
 
                         @Override
                         public void setImage(final Bitmap logo) {
                         }
-                    }.execute(im.url);
+                    }.execute(im.url);*/
 
                 } catch (Exception e) {
                     im.url="";
@@ -2503,7 +2515,13 @@ class SpotifyHeader {
         if (image!=null)
 
         try {
-            new DownLoadImageTask() {
+            MainActivity.getInstance().imageLoader.DisplayImage(image.url, bitmap -> {
+                MainActivity.getInstance().runOnUiThread(() -> {
+                    icon.setLayoutParams(layoutParams);
+                    icon.setImageBitmap(bitmap);
+                });
+            });
+            /*new DownLoadImageTask() {
                 @Override
                 public void setImage(Bitmap logo) {
 
@@ -2512,7 +2530,7 @@ class SpotifyHeader {
                         icon.setImageBitmap(logo);
                     });
                 }
-            }.execute(image.url);
+            }.execute(image.url);*/
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
