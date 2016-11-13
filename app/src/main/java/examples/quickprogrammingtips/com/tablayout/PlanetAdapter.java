@@ -105,8 +105,10 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                 holder.image.setVisibility(View.VISIBLE);
                 holder.pos.setVisibility(View.GONE);
                 mypos=1;
-                String replace = t.url.replace(" ", "%20");
-                MainActivity.getInstance().imageLoader.DisplayImage(replace, holder.image);
+                String url = t.url.replace(" ", "%20");
+                MainActivity.getInstance().imageLoader.DisplayImage(url, bitmap -> {
+                    MainActivity.getInstance().runOnUiThread(() -> holder.image.setImageBitmap(bitmap));
+                });
                 holder.image.setOnClickListener(arg0 -> longclick( position,  convertView2));
 
                 //Log.v("samba", "look for:" + replace);

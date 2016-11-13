@@ -40,25 +40,31 @@ public class ImageLoader {
     }
 
     final int stub_id=R.drawable.common_full_open_on_phone;
-    public void DisplayImage(String url, ImageView imageView)
+    public void DisplayImage(String url, DoAction doAction)
+    {
+        DisplayImage(url,null,doAction);
+
+    }
+    public void DisplayImage(String url, ImageView imageView, DoAction doAction)
     {
         try{
         imageViews.put(imageView, url);
         Bitmap bitmap=memoryCache.get(url);
         if(bitmap!=null)
-            imageView.setImageBitmap(bitmap);
+            setImage(imageView, bitmap,doAction);
         else
         {
-            queuePhoto(url, imageView);
+            queuePhoto(url, imageView,doAction);
+            if (imageView!=null)
             imageView.setImageResource(stub_id);
         }
     } catch (Exception e) {            Log.v("samba", Log.getStackTraceString(e));        }
 
     }
 
-    private void queuePhoto(String url, ImageView imageView)
+    private void queuePhoto(String url, ImageView imageView, DoAction doAction)
     {
-        PhotoToLoad p=new PhotoToLoad(url, imageView);
+        PhotoToLoad p=new PhotoToLoad(url, imageView,doAction);
         executorService.submit(new PhotosLoader(p));
     }
 
@@ -137,10 +143,12 @@ public class ImageLoader {
     //Task for the queue
     private class PhotoToLoad
     {
+        private final DoAction doAction;
         public String url;
         public ImageView imageView;
-        public PhotoToLoad(String u, ImageView i){
+        public PhotoToLoad(String u, ImageView i, DoAction doAction){
             url=u;
+            this.doAction=doAction;
             imageView=i;
         }
     }
@@ -188,14 +196,21 @@ public class ImageLoader {
             try{
             if(imageViewReused(photoToLoad))
                 return;
-            if(bitmap!=null)
-                photoToLoad.imageView.setImageBitmap(bitmap);
-            else
-                photoToLoad.imageView.setImageResource(stub_id);
-        } catch (Exception e) {            Log.v("samba", Log.getStackTraceString(e));        }
+                setImage(photoToLoad.imageView,bitmap, photoToLoad.doAction);
+            } catch (Exception e) {            Log.v("samba", Log.getStackTraceString(e));        }
         }
+
     }
 
+    public void setImage(ImageView imageView, Bitmap bitmap, DoAction doAction) {
+        if(bitmap !=null){
+            if (imageView!=null)
+            imageView.setImageBitmap(bitmap);
+            doAction.doAction(bitmap);
+        }
+        else
+            imageView.setImageResource(stub_id);
+    }
     public void clearCache() {
         memoryCache.clear();
         fileCache.clear();
