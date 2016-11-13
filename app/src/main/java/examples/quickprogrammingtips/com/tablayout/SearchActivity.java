@@ -2,7 +2,6 @@ package examples.quickprogrammingtips.com.tablayout;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -111,7 +110,13 @@ public class SearchActivity extends AppCompatActivity {
                     tt2.setText(p.title);
                 }
                 if (p.imageid.length()>0)
-                new DownLoadImageTask() {
+                    MainActivity.getInstance().imageLoader.DisplayImage(p.imageid, bitmap -> {
+                                getThis.runOnUiThread(() -> {
+                                    image.setImageBitmap(bitmap);
+                                    image.setOnClickListener(v -> MainActivity.displayLargeImage(getThis, p.imageid));
+                                });
+                            });
+                /*new DownLoadImageTask() {
                     @Override
                     public void setImage(final Bitmap logo) {
                         image.setImageBitmap(logo);
@@ -122,7 +127,7 @@ public class SearchActivity extends AppCompatActivity {
                             }
                         });
                     }
-                }.execute(p.imageid);
+                }.execute(p.imageid);*/
 
             //}
 

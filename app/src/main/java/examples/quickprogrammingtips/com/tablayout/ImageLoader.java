@@ -50,8 +50,10 @@ public class ImageLoader {
         try{
         imageViews.put(imageView, url);
         Bitmap bitmap=memoryCache.get(url);
-        if(bitmap!=null)
+        if(bitmap!=null){
             setImage(imageView, bitmap,doAction);
+            doAction.doAction(bitmap);
+        }
         else
         {
             queuePhoto(url, imageView,doAction);
@@ -176,6 +178,7 @@ public class ImageLoader {
             BitmapDisplayer bd=new BitmapDisplayer(bmp, photoToLoad);
             //Activity a=MainActivity.getInstance();//(Activity)photoToLoad.imageView.getContext();
             activity.runOnUiThread(bd);
+                photoToLoad.doAction.doAction(bmp);
         } catch (Exception e) {            Log.v("samba", Log.getStackTraceString(e));        }
         }
     }
@@ -197,7 +200,6 @@ public class ImageLoader {
         {
             try{
             if(imageViewReused(photoToLoad)){
-                photoToLoad.doAction.doAction(bitmap);
                 return;
             }
                 setImage(photoToLoad.imageView,bitmap, photoToLoad.doAction);
@@ -210,7 +212,7 @@ public class ImageLoader {
         if(bitmap !=null){
             if (imageView!=null)
             imageView.setImageBitmap(bitmap);
-            doAction.doAction(bitmap);
+
         }
         else
             imageView.setImageResource(stub_id);

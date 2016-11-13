@@ -106,8 +106,9 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                 holder.pos.setVisibility(View.GONE);
                 mypos=1;
                 String url = t.url.replace(" ", "%20");
-                MainActivity.getInstance().imageLoader.DisplayImage(url, bitmap -> {
-                    MainActivity.getInstance().runOnUiThread(() -> holder.image.setImageBitmap(bitmap));
+                MainActivity.getInstance().imageLoader.DisplayImage(url, holder.image,bitmap -> {
+                    //((Activity)context).runOnUiThread(() -> holder.image.setImageBitmap(bitmap));
+                    //Log.v("samba", "album:" + t.text);
                 });
                 holder.image.setOnClickListener(arg0 -> longclick( position,  convertView2));
 

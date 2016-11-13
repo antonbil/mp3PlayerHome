@@ -1561,7 +1561,7 @@ public class SpotifyFragment extends Fragment implements
             Log.v("samba", Log.getStackTraceString(e));
         }
 
-        MainActivity.getInstance().runOnUiThread(() -> {
+        SpotifyFragment.getInstance().getActivity().runOnUiThread(() -> {
             albumAdapter.notifyDataSetChanged();
             Utils.setDynamicHeight(albumsListview, 0);
 
@@ -2159,9 +2159,9 @@ public class SpotifyFragment extends Fragment implements
                 Image im=new Image();
                 try{
                     im.url= o.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
-                    MainActivity.getInstance().imageLoader.DisplayImage(im.url, bitmap -> {
+                    /*MainActivity.getInstance().imageLoader.DisplayImage(im.url, bitmap -> {
                         MainActivity.getInstance().runOnUiThread(() -> {});
-                    });
+                    });*/
                     /*DownLoadImageUrlTask.albumPictures.put(alb.id, im.url);
                     new DownLoadImageTask() {
 

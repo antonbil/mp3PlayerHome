@@ -7,14 +7,22 @@ import android.os.AsyncTask;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
 
 abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-    private static HashMap<String, Bitmap> albumPictures=new HashMap<>();
+    //private static HashMap<String, Bitmap> albumPictures=new HashMap<>();
 
 
     DownLoadImageTask() {
     }
+
+    public static MemoryCache getAlbumPictures() {
+        return MainActivity.getInstance().imageLoader.memoryCache;
+        //return albumPictures;
+    }
+
+    /*public static void setAlbumPictures(HashMap<String, Bitmap> albumPictures) {
+        DownLoadImageTask.albumPictures = albumPictures;
+    }*/
 
     public abstract void setImage(Bitmap logo);
 
@@ -48,16 +56,16 @@ abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
 
             }
         } else {
-            if (albumPictures.containsKey(urlOfImage)) {
+            if (getAlbumPictures().get(urlOfImage)!=null) {
 
                 try {
                     int n = 0;
-                    while ((albumPictures.get(urlOfImage) == null) && (n < 30)) {
+                    while ((getAlbumPictures().get(urlOfImage) == null) && (n < 30)) {
                         //Log.v("samba","wait....."+n+" iteration");
                         Thread.sleep(1000);
                         n++;
                     }
-                    return (albumPictures.get(urlOfImage));
+                    return (getAlbumPictures().get(urlOfImage));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -68,7 +76,7 @@ abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
                 InputStream is = new URL(urlOfImage.replace(" ", "%20")).openStream();
 
                 logo = BitmapFactory.decodeStream(is);
-                logo=storeBitmapInCache(logo, urlOfImage, albumPictures);
+                logo=storeBitmapInCache(logo, urlOfImage, getAlbumPictures());
                 //if (logo.getHeight() > 200)
                 //    logo = getResizedBitmap(logo, 200, 200, true);
                 //albumPictures.put(urlOfImage, logo);
@@ -78,7 +86,7 @@ abstract class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
         }
         return logo;
     }
-    public static Bitmap storeBitmapInCache(Bitmap logo, String urlOfImage,HashMap<String, Bitmap> albumPictures) {
+    public static Bitmap storeBitmapInCache(Bitmap logo, String urlOfImage,MemoryCache albumPictures) {
         logo = setBitmapsizeToDefault(logo);
         albumPictures.put(urlOfImage, logo);
         return logo;

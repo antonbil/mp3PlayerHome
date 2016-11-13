@@ -3,6 +3,7 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -183,13 +184,10 @@ public class NewAlbumsActivity extends Activity  {
                     tt2.setText(p.album);
                 }
                 if (p.getImage().length()>0)
-                    MainActivity.getInstance().imageLoader.DisplayImage(p.getImage(), bitmap -> {
-                //new DownLoadImageTask() {
-                //    @Override
-                //    public void setImage(final Bitmap logo) {
-                //        image.setImageBitmap(logo);
-                        getThis.runOnUiThread(() -> image.setImageBitmap(bitmap));
-
+                new DownLoadImageTask() {
+                    @Override
+                    public void setImage(final Bitmap logo) {
+                        image.setImageBitmap(logo);
                         image.setOnClickListener(v -> {
                             PopupMenu menu = new PopupMenu(v.getContext(), v);
 
@@ -231,8 +229,8 @@ public class NewAlbumsActivity extends Activity  {
                             menu.getMenu().add("finish");//SpotifyFragment.showPlayMenu(this,fab)
                             menu.show();
                         });
-                    });
-                //}.execute(p.getImage());
+                    }
+                }.execute(p.getImage());
 
             //}
 

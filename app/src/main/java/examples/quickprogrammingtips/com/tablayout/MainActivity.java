@@ -845,17 +845,23 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         //fit image to width of screen, keep aspect ratio
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width - 140, width - 140);
         image.setLayoutParams(layoutParams);
+        try {
+            InputStream is = new URL(url.replace(" ", "%20")).openStream();
+
+            image.setImageBitmap(BitmapFactory.decodeStream(is));
+        } catch (Exception e){}
+
         /*MainActivity.getInstance().imageLoader.DisplayImage(url, bitmap -> {
             image.setImageBitmap(bitmap);
         });*/
-        new DownLoadImageTask() {
+        /*new DownLoadImageTask() {
 
             @Override
             public void setImage(final Bitmap logo) {
                 image.setImageBitmap(logo);
 
             }
-        }.execute(url+"original");
+        }.execute(url+"original");*/
         image.setOnClickListener(v -> alert.dismiss());
         linear.addView(image);
         alert.setView(linear);
