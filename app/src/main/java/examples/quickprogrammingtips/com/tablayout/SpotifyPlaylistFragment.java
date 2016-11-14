@@ -180,13 +180,13 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
 
     }
     public static void notifyList(){
-        try{
-        MainActivity.getInstance().runOnUiThread(() -> {
-            SpotifyPlaylistFragment.getInstance().tracksAdapter.notifyDataSetChanged();
-        });
-        }catch(Exception e){
-            DebugLog.log("notify adapter error");
-            Log.v("samba", Log.getStackTraceString(e));
+        try {
+            MainActivity.getInstance().runOnUiThread(() -> {
+                SpotifyPlaylistFragment.getInstance().tracksAdapter.notifyDataSetChanged();
+            });
+        } catch (Exception e) {
+            //DebugLog.log("notify adapter error");
+            //Log.v("samba", Log.getStackTraceString(e));
         }
     }
     public static PlanetAdapter getTracksAdapter(final ListView albumsListview, final ArrayList<String> albumList, final ArrayList<PlaylistItem> albumTracks) {
