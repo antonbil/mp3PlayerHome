@@ -2,6 +2,9 @@ package examples.quickprogrammingtips.com.tablayout;
 
 /**
  * Created by anton on 12-11-16.
+ * copied from http://www.androidhive.info/2012/07/android-loading-image-from-url-http
+ * added filecaching limited to last two days
+ * minor changes to adopt it to my own application
  */
 
 
@@ -29,21 +32,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-public class ImageLoader {
+class ImageLoader {
 
-    public static final int DAYSTOSAVE = 2;//two days
+    private static final int DAYSTOSAVE = 2;//files older than two days are automatically deleted
 
     MemoryCache memoryCache=new MemoryCache();
-    FileCache fileCache;
+    private FileCache fileCache;
     private Activity activity;
     private Map<ImageView, String> imageViews=Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
-    ExecutorService executorService;
+    private ExecutorService executorService;
 
-    public static void checkAllFilesInDir(File dir) {
+    private static void checkAllFilesInDirIfTheyCanBeOmittedIfTooOld(File dir) {
         if (dir == null)
             return;
-
-        //ArrayList<File> files = new ArrayList<>();
 
         Stack<File> dirlist = new Stack<>();
         dirlist.clear();
@@ -63,11 +64,11 @@ public class ImageLoader {
         }
     }
 
-    public static void checkOlderFiles(){
+    private static void checkOlderFiles(){
         File f = FileCache.getCacheDir();
-        checkAllFilesInDir(f);
+        checkAllFilesInDirIfTheyCanBeOmittedIfTooOld(f);
     }
-    public static void fileDeleteIfOlder(File file){
+    private static void fileDeleteIfOlder(File file){
         if(file.exists()){
             Calendar time = Calendar.getInstance();
             time.add(Calendar.DAY_OF_YEAR, -DAYSTOSAVE);//mind the minus; substract number of days
@@ -82,27 +83,25 @@ public class ImageLoader {
     }
 
 
-    public ImageLoader(Context context){
+    ImageLoader(Context context){
         fileCache=new FileCache(context);
         executorService=Executors.newFixedThreadPool(5);
-        new Thread(() -> {
-            checkOlderFiles();
-        }).start();
+        new Thread(ImageLoader::checkOlderFiles).start();
     }
 
-    final int stub_id=R.drawable.common_full_open_on_phone;
-    public void DisplayImage(String url, DoAction doAction)
+    private final int stub_id=R.drawable.common_full_open_on_phone;
+    void DisplayImage(String url, DoAction doAction)
     {
         DisplayImage(url,null,doAction);
 
     }
-    public void DisplayImage(String url, ImageView imageView, DoAction doAction)
+    void DisplayImage(String url, ImageView imageView, DoAction doAction)
     {
         try{
         imageViews.put(imageView, url);
         Bitmap bitmap=memoryCache.get(url);
         if(bitmap!=null){
-            setImage(imageView, bitmap,doAction);
+            setImage(imageView, bitmap);
             doAction.doAction(bitmap);
         }
         else
@@ -133,7 +132,7 @@ public class ImageLoader {
 //from web
         try{
         try {
-            Bitmap bitmap=null;
+            Bitmap bitmap;
             URL imageUrl = new URL(url);
             HttpURLConnection conn = (HttpURLConnection)imageUrl.openConnection();
             conn.setConnectTimeout(30000);
@@ -181,7 +180,7 @@ public class ImageLoader {
             BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize=scale;
             return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-        } catch (Exception e) { }
+        } catch (Exception e) { /**/}
         return null;
     }
 
@@ -198,15 +197,15 @@ public class ImageLoader {
     {
         private final DoAction doAction;
         public String url;
-        public ImageView imageView;
-        public PhotoToLoad(String u, ImageView i, DoAction doAction){
+        ImageView imageView;
+        PhotoToLoad(String u, ImageView i, DoAction doAction){
             url=u;
             this.doAction=doAction;
             imageView=i;
         }
     }
 
-    class PhotosLoader implements Runnable {
+    private class PhotosLoader implements Runnable {
         PhotoToLoad photoToLoad;
         PhotosLoader(PhotoToLoad photoToLoad){
             this.photoToLoad=photoToLoad;
@@ -219,54 +218,52 @@ public class ImageLoader {
                 return;
             Bitmap bmp=getBitmap(photoToLoad.url);
                 if (bmp==null)return;
-            //bmp=DownLoadImageTask.getResizedBitmap(bmp, 100, 100, true);
             memoryCache.put(photoToLoad.url, bmp);
-                //DebugLog.log("put it in cache"+photoToLoad.url);
             if(imageViewReused(photoToLoad)){
                 photoToLoad.doAction.doAction(bmp);
                 return;
             }
             BitmapDisplayer bd=new BitmapDisplayer(bmp, photoToLoad);
-            //Activity a=MainActivity.getInstance();//(Activity)photoToLoad.imageView.getContext();
+                //next command was originally in library. It gives error if in Thread
+            //(Activity)photoToLoad.imageView.getContext();
             activity.runOnUiThread(bd);
                 photoToLoad.doAction.doAction(bmp);
         } catch (Exception e) {            Log.v("samba", Log.getStackTraceString(e));        }
         }
     }
 
-    boolean imageViewReused(PhotoToLoad photoToLoad){
+    private boolean imageViewReused(PhotoToLoad photoToLoad){
         String tag=imageViews.get(photoToLoad.imageView);
-        if(tag==null || !tag.equals(photoToLoad.url))
-            return true;
-        return false;
+        return tag == null || !tag.equals(photoToLoad.url);
     }
 
     //Used to display bitmap in the UI thread
-    class BitmapDisplayer implements Runnable
+    private class BitmapDisplayer implements Runnable
     {
         Bitmap bitmap;
         PhotoToLoad photoToLoad;
-        public BitmapDisplayer(Bitmap b, PhotoToLoad p){bitmap=b;photoToLoad=p;}
+        BitmapDisplayer(Bitmap b, PhotoToLoad p){bitmap=b;photoToLoad=p;}
         public void run()
         {
             try{
             if(imageViewReused(photoToLoad)){
                 return;
             }
-                setImage(photoToLoad.imageView,bitmap, photoToLoad.doAction);
+                setImage(photoToLoad.imageView,bitmap);
             } catch (Exception e) {            Log.v("samba", Log.getStackTraceString(e));        }
         }
 
     }
 
-    public void setImage(ImageView imageView, Bitmap bitmap, DoAction doAction) {
+    private void setImage(ImageView imageView, Bitmap bitmap) {
         if(bitmap !=null){
             if (imageView!=null)
             imageView.setImageBitmap(bitmap);
 
         }
         else
-            imageView.setImageResource(stub_id);
+            if (imageView!=null)
+                imageView.setImageResource(stub_id);
     }
     public void clearCache() {
         memoryCache.clear();
