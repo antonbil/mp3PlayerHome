@@ -5,7 +5,7 @@ package examples.quickprogrammingtips.com.tablayout;
  */
 
 
-        import android.app.Activity;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,8 +19,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
+import java.util.Stack;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,15 +31,63 @@ import java.util.concurrent.Executors;
 
 public class ImageLoader {
 
+    public static final int DAYSTOSAVE = 2;//two days
+
     MemoryCache memoryCache=new MemoryCache();
     FileCache fileCache;
     private Activity activity;
     private Map<ImageView, String> imageViews=Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
     ExecutorService executorService;
 
+    public static void checkAllFilesInDir(File dir) {
+        if (dir == null)
+            return;
+
+        //ArrayList<File> files = new ArrayList<>();
+
+        Stack<File> dirlist = new Stack<>();
+        dirlist.clear();
+        dirlist.push(dir);
+
+        while (!dirlist.isEmpty()) {
+            File dirCurrent = dirlist.pop();
+
+            File[] fileList = dirCurrent.listFiles();
+            for (File aFileList : fileList) {
+                if (aFileList.isDirectory())
+                    dirlist.push(aFileList);
+                else{
+                    fileDeleteIfOlder(aFileList);
+                }
+            }
+        }
+    }
+
+    public static void checkOlderFiles(){
+        File f = FileCache.getCacheDir();
+        checkAllFilesInDir(f);
+    }
+    public static void fileDeleteIfOlder(File file){
+        if(file.exists()){
+            Calendar time = Calendar.getInstance();
+            time.add(Calendar.DAY_OF_YEAR, -DAYSTOSAVE);//mind the minus; substract number of days
+            //I store the required attributes here and delete them
+            Date lastModified = new Date(file.lastModified());
+            if(lastModified.before(time.getTime()))
+            {
+                file.delete();
+                DebugLog.log("delete file:"+file.getName());
+            }
+        }
+    }
+
+
     public ImageLoader(Context context){
         fileCache=new FileCache(context);
         executorService=Executors.newFixedThreadPool(5);
+        new Thread(() -> {
+            checkOlderFiles();
+        }).start();
     }
 
     final int stub_id=R.drawable.common_full_open_on_phone;
