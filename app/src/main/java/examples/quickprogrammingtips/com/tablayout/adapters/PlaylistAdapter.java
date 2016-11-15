@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -90,11 +91,13 @@ public class PlaylistAdapter extends BaseAdapter {
                 holder.performer = (TextView) convertView.findViewById(R.id.textViewPerformer);
                 holder.title = (TextView) convertView.findViewById(R.id.textViewTitle);
                 holder.time = (TextView) convertView.findViewById(R.id.textViewPerformerCountry);
+                holder.nr = (TextView) convertView.findViewById(R.id.number);
 
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
+            final View convertView2=convertView;
 
             if (position==currentSongInPlaylist)convertView.setBackgroundColor(Color.rgb(40,40,40));//
             else
@@ -103,9 +106,13 @@ public class PlaylistAdapter extends BaseAdapter {
             if (!mp3File.isStartAlbum()) {
                 String albumId = mp3File.getTitle();
                 if (mp3File.getTracknr()>0)
-                     albumId = String.format("%s-%s", mp3File.getTracknr(), mp3File.getTitle());
+                     albumId = String.format("%s", mp3File.getTitle());
 
                 holder.performer.setText(albumId);
+                holder.nr.setOnClickListener(v -> {
+                    setContextPopup(position, mp3File, convertView2, v);
+                });
+                holder.nr.setText(String.format("%s", mp3File.getTracknr()));
             }
             else {
                 ImageView image=(ImageView) (convertView.findViewById(R.id.thumbnail_playlist));
@@ -119,139 +126,23 @@ public class PlaylistAdapter extends BaseAdapter {
                     image.setImageBitmap(bm);
                 }
                 //Bitmap bm1=bm;
-                image.setOnClickListener(arg0 -> {
-                    String file=mp3File.getFile();
-                    int p=file.lastIndexOf("/");
-                    file=file.substring(0,p);
-                    file="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
-                    MainActivity.displayLargeImage(MainActivity.getInstance(), file);
+                image.setOnClickListener(v -> {
+                    setContextPopup(position, mp3File, convertView2, v);
                 });
                 holder.performer.setText(String.format("%s-%s", mp3File.getArtist(), mp3File.getAlbum()));
-                if (mp3File.getTracknr()>0)
-                    holder.title.setText(String.format("%s-%s", mp3File.getTracknr(), mp3File.getTitle()));
-                else
+                /*if (mp3File.getTracknr()>0){
+                    holder.title.setText(String.format("%s", mp3File.getTitle()));
+                }
+                else*/{
                     holder.title.setText(mp3File.getTitle());
+                }
             }
             if (mp3File.radio){
                 holder.time.setText("radio");
             } else
             holder.time.setText(mp3File.getTimeNice());
-            final View convertView2=convertView;
             convertView.setOnLongClickListener(v -> {
-                try{
-                        PopupMenu menu = new PopupMenu(v.getContext(), v);
-
-                        menu.getMenu().add("remove->");//submenu
-                        menu.getMenu().add("move->");//submenu
-                        menu.getMenu().add("info->");//submenu
-                        menu.getMenu().add("transfer->");//submenu
-                        menu.getMenu().add("spotify");//submenu
-                        try{
-                            menu.show();
-                        }catch(Exception e){
-                            Log.v("samba", Log.getStackTraceString(e));
-                        }
-                        menu.setOnMenuItemClickListener(item -> {
-                            if (item.getTitle().toString().equals("spotify")) {
-                                MainActivity.getInstance().callSpotify(mp3File.getArtist());
-
-                            } else
-                            if (item.getTitle().toString().equals("transfer->")) {
-                                //submenu
-                                PopupMenu menu1 = new PopupMenu(v.getContext(), v);
-                                final ArrayList<Server> servers=Server.servers;
-                                for (int i = 0; i < servers.size(); i++) {
-                                    menu1.getMenu().add(servers.get(i).description);
-                                }
-
-                                menu1.show();
-                                menu1.setOnMenuItemClickListener(item1 -> {
-                                    int position1 =0;
-                                    for (int i = 0; i < servers.size(); i++) {
-                                        if (item1.getTitle().toString().equals(servers.get(i).description)) position1 =i;
-                                    }
-
-                                    caller.newMpdCall(mp3File, position1,"export" );
-                                    return true;
-
-
-                                });
-                            } else
-                            if (item.getTitle().toString().equals("remove->")) {
-                                //submenu
-                                PopupMenu menu1 = new PopupMenu(v.getContext(), v);
-
-                                menu1.getMenu().add(R.string.playlist_removeall);
-                                menu1.getMenu().add(R.string.playlist_removeabum);
-                                menu1.getMenu().add(R.string.playlist_removesong);
-                                menu1.getMenu().add(R.string.playlist_removetop);
-                                menu1.getMenu().add(R.string.playlist_removebottom);
-                                menu1.show();
-                                menu1.setOnMenuItemClickListener(item12 -> {
-                                    //Log.v("samba","remove:"+item.getTitle().toString());
-                                    caller.newMpdCall(mp3File, position, item12.getTitle().toString());
-                                    return true;
-
-
-                                });
-                            } else
-                            if (item.getTitle().toString().equals("info->")) {
-                                //submenu
-                                PopupMenu menu1 = new PopupMenu(v.getContext(), v);
-
-                                menu1.getMenu().add("info");
-                                menu1.getMenu().add("spotify");
-                                menu1.getMenu().add("artist-wikipedia");
-                                menu1.getMenu().add("album-wikipedia");
-                                menu1.show();
-                                menu1.setOnMenuItemClickListener(item13 -> {
-                                    if (item13.getTitle().toString().equals("spotify")) {
-                                        MainActivity.getInstance().callSpotify(mp3File.getArtist());
-                                    }else
-                                    if (item13.getTitle().toString().equals("artist-wikipedia")) {
-                                        MainActivity.startWikipediaPage(mp3File.getArtist());
-                                    }else
-                                    if (item13.getTitle().toString().equals("album-wikipedia")) {
-                                        MainActivity.startWikipediaPage(mp3File.getAlbum());
-                                    }else
-                                        if (item13.getTitle().toString().equals("info")) {
-                                            int length=0;
-                                            for (Mp3File mp:fileArrayList){
-                                                length+=mp.getTime();
-                                            }
-                                            final String snack = String.format("Info playlist\nNumber of songs:%s\nTotal time:%s",fileArrayList.size(),Mp3File.niceString(length));
-                                            Snackbar snackbar=Snackbar.make(convertView2, snack, Snackbar.LENGTH_LONG);
-                                            View snackbarView = snackbar.getView();
-                                            TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                                            textView.setMaxLines(5);
-                                            snackbar.show();
-                                        }else
-                                    caller.newMpdCall(mp3File, position, item13.getTitle().toString());
-                                    return true;
-
-
-                                });
-                            } else
-                            if (item.getTitle().toString().equals("move->")) {
-                                //submenu
-                                PopupMenu menu1 = new PopupMenu(v.getContext(), v);
-
-                                menu1.getMenu().add(R.string.playlist_movebottom);
-                                menu1.getMenu().add(R.string.playlist_down);
-                                menu1.show();
-                                menu1.setOnMenuItemClickListener(item14 -> {
-                                    caller.newMpdCall(mp3File, position, item14.getTitle().toString());
-                                    return true;
-
-
-                                });
-                            } else
-                            caller.newMpdCall(mp3File, position, item.getTitle().toString());
-                            return true;
-                        });
-            }catch(Exception e){
-                Log.v("samba", Log.getStackTraceString(e));}
-                return true;
+                return setContextPopup(position, mp3File, convertView2, v);
             });
 
                 convertView.setOnClickListener(v -> {
@@ -275,8 +166,140 @@ public class PlaylistAdapter extends BaseAdapter {
         return convertView;
     }
 
+    public boolean setContextPopup(int position, Mp3File mp3File, View convertView2, View v) {
+        try{
+                PopupMenu menu = new PopupMenu(v.getContext(), v);
+
+                menu.getMenu().add("remove->");//submenu
+                menu.getMenu().add("move->");//submenu
+                menu.getMenu().add("spotify");//submenu
+            menu.getMenu().add("info->");//submenu
+            menu.getMenu().add("transfer->");//submenu
+            menu.getMenu().add("large image");
+                try{
+                    menu.show();
+                }catch(Exception e){
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
+                menu.setOnMenuItemClickListener(item -> {
+                    if (item.getTitle().toString().equals("large image")) {
+                        String file=mp3File.getFile();
+                        int p=file.lastIndexOf("/");
+                        file=file.substring(0,p);
+                        file="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
+                        MainActivity.displayLargeImage(MainActivity.getInstance(), file);
+
+                    } else
+                    if (item.getTitle().toString().equals("spotify")) {
+                        MainActivity.getInstance().callSpotify(mp3File.getArtist());
+
+                    } else
+                    if (item.getTitle().toString().equals("transfer->")) {
+                        //submenu
+                        PopupMenu menu1 = new PopupMenu(v.getContext(), v);
+                        final ArrayList<Server> servers=Server.servers;
+                        for (int i = 0; i < servers.size(); i++) {
+                            menu1.getMenu().add(servers.get(i).description);
+                        }
+
+                        menu1.show();
+                        menu1.setOnMenuItemClickListener(item1 -> {
+                            int position1 =0;
+                            for (int i = 0; i < servers.size(); i++) {
+                                if (item1.getTitle().toString().equals(servers.get(i).description)) position1 =i;
+                            }
+
+                            caller.newMpdCall(mp3File, position1,"export" );
+                            return true;
+
+
+                        });
+                    } else
+                    if (item.getTitle().toString().equals("remove->")) {
+                        //submenu
+                        PopupMenu menu1 = createRemovePopupMenu(v);
+                        menu1.setOnMenuItemClickListener(item12 -> {
+                            //Log.v("samba","remove:"+item.getTitle().toString());
+                            caller.newMpdCall(mp3File, position, item12.getTitle().toString());
+                            return true;
+
+
+                        });
+                    } else
+                    if (item.getTitle().toString().equals("info->")) {
+                        //submenu
+                        PopupMenu menu1 = new PopupMenu(v.getContext(), v);
+
+                        menu1.getMenu().add("info");
+                        menu1.getMenu().add("spotify");
+                        menu1.getMenu().add("artist-wikipedia");
+                        menu1.getMenu().add("album-wikipedia");
+                        menu1.show();
+                        menu1.setOnMenuItemClickListener(item13 -> {
+                            if (item13.getTitle().toString().equals("spotify")) {
+                                MainActivity.getInstance().callSpotify(mp3File.getArtist());
+                            }else
+                            if (item13.getTitle().toString().equals("artist-wikipedia")) {
+                                MainActivity.startWikipediaPage(mp3File.getArtist());
+                            }else
+                            if (item13.getTitle().toString().equals("album-wikipedia")) {
+                                MainActivity.startWikipediaPage(mp3File.getAlbum());
+                            }else
+                                if (item13.getTitle().toString().equals("info")) {
+                                    int length=0;
+                                    for (Mp3File mp:fileArrayList){
+                                        length+=mp.getTime();
+                                    }
+                                    final String snack = String.format("Info playlist\nNumber of songs:%s\nTotal time:%s",fileArrayList.size(),Mp3File.niceString(length));
+                                    Snackbar snackbar=Snackbar.make(convertView2, snack, Snackbar.LENGTH_LONG);
+                                    View snackbarView = snackbar.getView();
+                                    TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                                    textView.setMaxLines(5);
+                                    snackbar.show();
+                                }else
+                            caller.newMpdCall(mp3File, position, item13.getTitle().toString());
+                            return true;
+
+
+                        });
+                    } else
+                    if (item.getTitle().toString().equals("move->")) {
+                        //submenu
+                        PopupMenu menu1 = new PopupMenu(v.getContext(), v);
+
+                        menu1.getMenu().add(R.string.playlist_movebottom);
+                        menu1.getMenu().add(R.string.playlist_down);
+                        menu1.show();
+                        menu1.setOnMenuItemClickListener(item14 -> {
+                            caller.newMpdCall(mp3File, position, item14.getTitle().toString());
+                            return true;
+
+
+                        });
+                    } else
+                    caller.newMpdCall(mp3File, position, item.getTitle().toString());
+                    return true;
+                });
+    }catch(Exception e){
+        Log.v("samba", Log.getStackTraceString(e));}
+        return true;
+    }
+
+    @NonNull
+    public static PopupMenu createRemovePopupMenu(View v) {
+        PopupMenu menu1 = new PopupMenu(v.getContext(), v);
+
+        menu1.getMenu().add(R.string.playlist_removeall);
+        menu1.getMenu().add(R.string.playlist_removeabum);
+        menu1.getMenu().add(R.string.playlist_removesong);
+        menu1.getMenu().add(R.string.playlist_removetop);
+        menu1.getMenu().add(R.string.playlist_removebottom);
+        menu1.show();
+        return menu1;
+    }
+
     private static class ViewHolder{
-        TextView performer, title,time;
+        TextView nr,performer, title,time;
     }
 
 

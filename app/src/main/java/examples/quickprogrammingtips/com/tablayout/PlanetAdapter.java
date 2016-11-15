@@ -16,6 +16,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import examples.quickprogrammingtips.com.tablayout.adapters.PlaylistAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
 @SuppressWarnings("ConstantConditions")
@@ -179,35 +180,26 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                 String title = item.getTitle().toString();
                 if (title.equals("remove->")) {
                     //submenu
-                    PopupMenu menu1 = new PopupMenu(v.getContext(), v);
-                    menu1.getMenu().add("remove all");
-                    menu1.getMenu().add("remove top");
-                    menu1.getMenu().add("remove bottom");
-                    menu1.getMenu().add("remove track");
-                    menu1.getMenu().add("remove album");
-
-                    menu1.show();
+                    android.widget.PopupMenu menu1 = PlaylistAdapter.createRemovePopupMenu(v);
                     menu1.setOnMenuItemClickListener(item1 -> {
                         String title1 = item1.getTitle().toString();
-                                switch (title1) {
-                                    case "remove all":
-                                        removeAll();
-                                        break;
-                                    case "remove top":
-                                        removeUp(position);
-                                        break;
-                                    case "remove bottom":
-                                        removeDown(position);
-
-                                        break;
-                                    case "remove album":
-                                        removeAlbum(position);
-                                        break;
-                                    case "remove track":
-                                        removeTrack(position);
-                                        break;
-                                }
-                        //
+                        /*
+                                menu1.getMenu().add(R.string.playlist_removeall);
+        menu1.getMenu().add(R.string.playlist_removeabum);
+        menu1.getMenu().add(R.string.playlist_removesong);
+        menu1.getMenu().add(R.string.playlist_removetop);
+        menu1.getMenu().add(R.string.playlist_removebottom
+                         */
+                        if (title1.equals(MainActivity.getInstance().getString(R.string.playlist_removeall)))
+                            removeAll(); else
+                        if (title1.equals(MainActivity.getInstance().getString(R.string.playlist_removesong)))
+                            removeTrack(position); else
+                        if (title1.equals(MainActivity.getInstance().getString(R.string.playlist_removeabum)))
+                            removeAlbum(position); else
+                        if (title1.equals(MainActivity.getInstance().getString(R.string.playlist_removetop)))
+                            removeUp(position); else
+                        if (title1.equals(MainActivity.getInstance().getString(R.string.playlist_removebottom)))
+                            removeDown(position);;
                         return true;
                     });
                 }else if (title.equals("add album")) {
@@ -234,7 +226,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("display artist");
             menu.getMenu().add("wikipedia");
             menu.getMenu().add("-->transfer");
-            menu.getMenu().add("large picture");
+            menu.getMenu().add("large image");
         } else {
             menu.setOnMenuItemClickListener(item -> {
 
@@ -249,7 +241,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                     case "wikipedia artist":
                         albumArtistWikipedia(position);
                         break;
-                    case "large picture":
+                    case "large image":
                         MainActivity.displayLargeImage(getThis, imageUrl);
                         break;
                     case "add":
@@ -267,9 +259,9 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("replace and play");//submenu
             menu.getMenu().add("add and play");//submenu
             menu.getMenu().add("add");//submenu
-            menu.getMenu().add("wikipedia artist");//submenu
             menu.getMenu().add("add album to favorites");//submenu
-            menu.getMenu().add("large picture");
+            menu.getMenu().add("wikipedia artist");//submenu
+            menu.getMenu().add("large image");
 
         }
         menu.show();

@@ -19,7 +19,8 @@
     android:padding="4dp">
 
     <ImageView
-        android:layout_width="50dp"
+        android:layout_width="100dp"
+        android:minWidth="100dp"
         android:layout_height="50dp"
         android:text="ab"
         android:gravity="center_vertical"
@@ -33,6 +34,7 @@
         android:layout_weight="0.5"
         android:padding="4dp">
     <TextView android:layout_height="match_parent"
+        android:layout_weight="0.30"
         android:layout_width="match_parent"
         android:layout_gravity="start"
         android:text="name die ook wel eens langer kan zijn, maar dat zien we dan wel weer."

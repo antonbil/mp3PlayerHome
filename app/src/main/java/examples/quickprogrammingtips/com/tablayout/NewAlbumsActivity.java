@@ -226,11 +226,11 @@ public class NewAlbumsActivity extends Activity  {
                     return true;
                 });
 
+                 menu.getMenu().add("add album");
                 menu.getMenu().add("add album to favorites");
-                menu.getMenu().add("add album");
-                menu.getMenu().add("large image");
-                menu.getMenu().add("wikipedia");
                 menu.getMenu().add("play");//
+                menu.getMenu().add("wikipedia");
+                menu.getMenu().add("large image");
                 menu.getMenu().add("finish");
                 menu.show();
             });
