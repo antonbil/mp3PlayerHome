@@ -600,9 +600,12 @@ public class SpotifyFragment extends Fragment implements
                             String div = navbelements.text();
                             String[] list = div.replace("$$$", ";").split(";");
                             String artist = list[0].replace("b-b-b-","").replace("b+b+b+","");
+                            //artist=new String(artist.getBytes("ISO-8859-1"),"UTF-8");//new String(latin1, "ISO-8859-1").getBytes("UTF-8");
                             String album = "";
                             if (list.length > 1)
                                 album = list[1].replace("\"","");
+                            //DebugLog.log("name:"+artist);
+                            //album=new String(album.getBytes("UTF-8"),"ISO-8859-1");
                             newAlbums.add(new NewAlbum(s, artist, String.format("%s-%s(%s)-%s",current,previous,nofweeks,album), image1));
                         } catch (Exception e) {
                             Log.v("samba", Log.getStackTraceString(e));
@@ -1169,7 +1172,8 @@ public class SpotifyFragment extends Fragment implements
                             im.url = getImageUrl(album.images);
                         } catch (Exception e) {/**/
                         }
-                        listAlbumsForArtistId(album.id, im, album.artist, new SpotifyApi());
+                        DebugLog.log("search:"+album.artist);
+                        listAlbumsForArtistId(album.id, im, album.artist, new SpotifyApi(),true);
                     }
 
 
@@ -1874,7 +1878,7 @@ public class SpotifyFragment extends Fragment implements
             new GetArtistId(spotify, beatles){
                 public void doSomethingWithId(String id, Image image){
                     //Log.d("samba", "Text:13");
-                    listAlbumsForArtistId(id, image, beatles, api);
+                    listAlbumsForArtistId(id, image, beatles, api, isNewArtist);
                 }
             }.invoke();
         else
@@ -1890,7 +1894,7 @@ public class SpotifyFragment extends Fragment implements
         albumAdapter.setAlbumVisible(true);
     }
 
-    public void listAlbumsForArtistId(String id, Image image, String beatles, SpotifyApi api) {
+    public void listAlbumsForArtistId(String id, Image image, String beatles, SpotifyApi api, boolean isNewArtist) {
         initArtistLook(beatles);
         artistTitleTextView.setText(beatles);
 
@@ -1899,7 +1903,7 @@ public class SpotifyFragment extends Fragment implements
             SpotifyService spotify = api.getService();
             getArtistAlbums(id, beatles, spotify);
             getRelatedArtists(id, spotify);
-            isNewArtist=false;
+            SpotifyFragment.isNewArtist=false;
         }else{
             MainActivity.getInstance().runOnUiThread(() -> {
                 Utils.setDynamicHeight(relatedArtistsListView, 0);
