@@ -23,6 +23,9 @@ import examples.quickprogrammingtips.com.tablayout.model.File;
 import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 
 class FileListAdapter extends BaseAdapter {
+
+    private String previousFilePath="";
+
     private static boolean isInteger(String s) {
         return isInteger(s,10);
     }    private static boolean isInteger(String s, int radix) {
@@ -216,8 +219,9 @@ class FileListAdapter extends BaseAdapter {
 
     private void setImageForItem(int position, String fname, String path, ViewHolder holder, View finalView, float density, String filePath) {
         if (filePath.startsWith("smb"))return;
+        if (previousFilePath.equals(filePath)&&(position>0))return;
         int m=countMatches(filePath,"/");
-        if (m>1){
+        if (m>0){
             String url = setFolderPath(filePath);
 
             MainActivity.getInstance().imageLoader.DisplayImage(url, holder.image, bitmap ->
@@ -232,6 +236,7 @@ class FileListAdapter extends BaseAdapter {
 
             }));
         }
+        previousFilePath =filePath;
     }
 
     @NonNull
