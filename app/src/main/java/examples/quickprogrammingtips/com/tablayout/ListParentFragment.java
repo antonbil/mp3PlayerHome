@@ -13,7 +13,6 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import examples.quickprogrammingtips.com.tablayout.adapters.FileListAdapter;
 import examples.quickprogrammingtips.com.tablayout.model.CustomComparator;
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
 import examples.quickprogrammingtips.com.tablayout.model.File;

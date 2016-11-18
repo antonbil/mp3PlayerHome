@@ -95,7 +95,7 @@ class ImageLoader {
         DisplayImage(url,null,doAction);
 
     }
-    void DisplayImage(String url, ImageView imageView, DoAction doAction)
+    public void DisplayImage(String url, ImageView imageView, DoAction doAction)
     {
         try{
         imageViews.put(imageView, url);

@@ -18,13 +18,22 @@
     android:layout_height="wrap_content"
     android:padding="16dp">
 
+    <ImageView
+        android:layout_width="50dp"
+        android:minWidth="50dp"
+        android:layout_height="50dp"
+        android:text="ab"
+        android:gravity="center_vertical"
+        android:id="@+id/thumbnail_playlist"
+        android:layout_gravity="center"
+        android:src="@drawable/pause" />
     <TextView android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_centerInParent="true"
         android:layout_gravity="start"
         android:text="name die wel eens heel lang kan zijn, dus kijken we of dat bij-effecten heeft."
         android:layout_margin="4dp"
         android:id="@+id/textViewPerformer"
-        android:layout_weight="1"
         />
 
 

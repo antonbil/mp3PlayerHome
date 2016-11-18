@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
+import android.text.Html;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.SpannableString;
@@ -50,6 +51,7 @@ import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -569,7 +571,8 @@ public class SpotifyFragment extends Fragment implements
                     Document doc = null;
                     try {
                         String fullString = getContentsOfAddress("http://dutchcharts.nl/weekchart.asp?cat=a");
-                        fullString=fullString.replace("<br>", "$$$").replace("<br />", "$$$").replace("<b>", "b-b-b-").replace("</b>", "b+b+b+"); //$$$ instead <br>
+                        fullString=fullString.replace("<br>", "$$$").replace("<br />", "$$$").replace("<b>", "b-b-b-").replace("</b>", "b+b+b+").replace("é","%E9"); //$$$ instead <br>
+                        //fullString=URLDecoder.decode((String) fullString, "ISO-8859-1");
                         doc = Jsoup.parse(fullString); //Parse again
                     } catch (IOException e) {
                         Log.v("samba", Log.getStackTraceString(e));
@@ -600,12 +603,15 @@ public class SpotifyFragment extends Fragment implements
                             String div = navbelements.text();
                             String[] list = div.replace("$$$", ";").split(";");
                             String artist = list[0].replace("b-b-b-","").replace("b+b+b+","");
-                            //artist=new String(artist.getBytes("ISO-8859-1"),"UTF-8");//new String(latin1, "ISO-8859-1").getBytes("UTF-8");
+                            //artist=new String(artist.getBytes("UTF-8"),"UTF-8");//new String(latin1, "ISO-8859-1").getBytes("UTF-8");
+                            //artist= Html.fromHtml(artist).toString();
+                            artist= Html.fromHtml(URLDecoder.decode( artist, "ISO-8859-1")).toString();
                             String album = "";
                             if (list.length > 1)
                                 album = list[1].replace("\"","");
-                            //DebugLog.log("name:"+artist);
+                            DebugLog.log("name:"+artist);
                             //album=new String(album.getBytes("UTF-8"),"ISO-8859-1");
+                            //album=Html.fromHtml(album).toString();
                             newAlbums.add(new NewAlbum(s, artist, String.format("%s-%s(%s)-%s",current,previous,nofweeks,album), image1));
                         } catch (Exception e) {
                             Log.v("samba", Log.getStackTraceString(e));
@@ -1172,7 +1178,6 @@ public class SpotifyFragment extends Fragment implements
                             im.url = getImageUrl(album.images);
                         } catch (Exception e) {/**/
                         }
-                        DebugLog.log("search:"+album.artist);
                         listAlbumsForArtistId(album.id, im, album.artist, new SpotifyApi(),true);
                     }
 
@@ -1529,7 +1534,7 @@ public class SpotifyFragment extends Fragment implements
                         if ((album.length()>0) &&(total>1)){
                             PlaylistItem pi=new PlaylistItem();
                             pi.pictureVisible=true;
-                            pi.url="http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
+                            pi.url=FileListAdapter.setFolderPath(file);//"http://192.168.2.8:8081/FamilyMusic/"+file+"/folder.jpg";
                             pi.text=album;
                             pi.time=0;
 
