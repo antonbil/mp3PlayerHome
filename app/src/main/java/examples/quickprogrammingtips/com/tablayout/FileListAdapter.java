@@ -76,7 +76,7 @@ class FileListAdapter extends BaseAdapter {
 
         ViewHolder holder;
         if(convertView == null){
-            convertView = mInflater.inflate(R.layout.item_file, null);
+            convertView = mInflater.inflate(R.layout.item_file, parent,false);
             holder = new ViewHolder();
             holder.description = (TextView) convertView.findViewById(R.id.textViewPerformer);
             holder.image=(ImageView)  convertView.findViewById(R.id.thumbnail_playlist);
