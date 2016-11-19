@@ -218,11 +218,22 @@ class FileListAdapter extends BaseAdapter {
     }
 
     private void setImageForItem(int position, String fname, String path, ViewHolder holder, View finalView, float density, String filePath) {
-        if (filePath.startsWith("smb"))return;
+        boolean smb=false;
+        String url="";
+        if (filePath.startsWith("smb")){
+            //DebugLog.log(filePath);
+            smb=true;
+            url=filePath.replace("smb://192.168.2.8/FamilyLibrary","http://192.168.2.8:8081")+"folder.jpg";
+            //return;
+        }
         if (previousFilePath.equals(filePath)&&(position>0))return;
         int m=countMatches(filePath,"/");
-        if (m>0){
-            String url = setFolderPath(filePath);
+        if (m>0&& !smb) {
+            url = setFolderPath(filePath);
+            DebugLog.log(url);
+        }
+        String mUrl=url;
+        if (smb ||m>0)
 
             MainActivity.getInstance().imageLoader.DisplayImage(url, holder.image, bitmap ->
                     MainActivity.getInstance().runOnUiThread(() -> {
@@ -232,10 +243,10 @@ class FileListAdapter extends BaseAdapter {
                 int paddingDp1 = (int)(paddingPixel1 * density);
                 finalView.setPadding(0,paddingDp1,0,0);
                 holder.description.setGravity(Gravity.CENTER_VERTICAL);
-                holder.image.setOnClickListener(v -> setContextMenu(position, fname, path, holder.image, url));
+                holder.image.setOnClickListener(v -> setContextMenu(position, fname, path, holder.image, mUrl));
 
             }));
-        }
+
         previousFilePath =filePath;
     }
 
