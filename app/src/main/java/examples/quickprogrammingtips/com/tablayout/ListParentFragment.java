@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 import examples.quickprogrammingtips.com.tablayout.model.CustomComparator;
 import examples.quickprogrammingtips.com.tablayout.model.Favorite;
@@ -25,6 +26,7 @@ import mpc.MPCDatabaseListener;
 
 /**
  * Created by anton on 29-1-16.
+ * Display listview with contents of samba or mpd
  */
 public  class ListParentFragment extends Fragment implements SambaInterface, MPCDatabaseListener {
     int listViewId = R.id.listViewFiles;
@@ -75,7 +77,6 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
         fileListView = (android.widget.ListView) view.findViewById(listViewId);
         fileListAdapter = new FileListAdapter(getActivity(),this, files);
         fileListView.setAdapter(fileListAdapter);
-        //registerForContextMenu(fileListView);
 
         return view;
     }
@@ -87,8 +88,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
 
     @Override
     public void sambaCallCompleted(ArrayList<File> files1a, ArrayList<File> filesMp3, String id) {
-        if (id=="Download") {
-            //Log.v("samba", "download list");
+        if (Objects.equals(id, "Download")) {
             ArrayList<String> files=new ArrayList<>();
             String dirname="artist-album";
             for (File f:filesMp3){
@@ -97,11 +97,9 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                     Mp3File mp=(Mp3File)f;
                     dirname=String.format("%s-%s" ,mp.getMpcSong().artist,mp.getMpcSong().album);
                 }
-                ///home/wieneke/FamilyLibrary
                 String filename = f.getPath() + "/" + f.getFname();
                 files.add(filename);
 
-                //Log.v("samba", filename);
             }
             NetworkShare.copyFile(files,dirname);
             return;
@@ -122,56 +120,52 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
             }
         }
 
-        if (id==getString(R.string.select_filelist)) {
+        if (Objects.equals(id, getString(R.string.select_filelist))) {
             sortAndDisplay(files1a);
-        } else{
-
         }
     }
 
     public void sortAndDisplay(ArrayList<File> files1a) {
         try {
-            files1a = logic.sort(files1a);
-            //Collections.sort(files1a, new CustomComparator());
+            try{
+                files1a = logic.sort(files1a);
+            } catch (Exception e) {
+                DebugLog.log("error");
+                Log.v("samba",Log.getStackTraceString(e));
+            }
 
             final ArrayList<File> files1 = files1a;
-            getActivity().runOnUiThread(new Runnable() {
-                public String albumCheck;
 
-                @Override
-                public void run() {
-                    files.clear();
-                    files.addAll(files1);
-                    //hier checken voor eventuele toevoegingen aan beschrijvingen
-                    for (File f:files)
-                        if (f instanceof Mp3File){
-                            Mp3File mp=(Mp3File)f;
-                            if(!mp.isFromMpd()){
-                            //if (false){
-                                filesToCheck.add(mp.getTitle());
-                                this.albumCheck=mp.getAlbum();
-                            }
+            listParentFragment.getActivity().runOnUiThread(() -> {
+                files.clear();
+                files.addAll(files1);
+                //hier checken voor eventuele toevoegingen aan beschrijvingen
+                for (File f : files) {
+                    if (f instanceof Mp3File) {
+                        Mp3File mp = (Mp3File) f;
+                        if (!mp.isFromMpd()) {
+                            filesToCheck.add(mp.getTitle());
                         }
-                    fileListAdapter.notifyDataSetChanged();
-                    //workaround; the following line does not work:fileListView.setSelection(listViewPosition);
-                    fileListView.post(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            if (listViewPosition==0)
-                            fileListView.setSelection(listViewPosition);
-                            listViewPosition=-1;
-                        }
-                    });
-                    if (filesToCheck.size()>0){
-                        String fname=filesToCheck.remove(0).trim().replace("'", "\'");
-                        new DatabaseCommand(MainActivity.getInstance().getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
-                        //Log.v("samba", "now search " + fname);
                     }
-
                 }
+                fileListAdapter.notifyDataSetChanged();
             });
-        }catch (Exception e){}
+            //workaround; the following line does not work:fileListView.setSelection(listViewPosition);
+            fileListView.post(() -> {
+
+                if (listViewPosition == 0)
+                    fileListView.setSelection(listViewPosition);
+                listViewPosition = -1;
+            });
+            if (filesToCheck.size() > 0) {
+                String fname = filesToCheck.remove(0).trim().replace("'", "\'");
+                new DatabaseCommand(MainActivity.getInstance().getLogic().getMpc(), "find title \"" + fname + "\"", listParentFragment, false, true).run();
+            }
+
+        } catch (Exception e) {
+            DebugLog.log("error");
+            Log.v("samba",Log.getStackTraceString(e));
+        }
     }
 
     @Override
@@ -189,14 +183,14 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
 
                 displayContentOfDir(this,path, id);
             } else
-            if (id==getString(R.string.select_filelist)) {
+            if (Objects.equals(id, getString(R.string.select_filelist))) {
                 HistoryListview hl=new HistoryListview(path, fileListView.getFirstVisiblePosition());
                 history().add(hl);
                 displayContentOfDir(this, path, id);
                 listViewPosition=0;
                 //fileListView.setSelection(0);
             }
-            else  if (id==getString(R.string.addtofavorites_filelist)){
+            else  if (Objects.equals(id, getString(R.string.addtofavorites_filelist))){
                 String[] paths=path.split("/");
                 SpotifyFragment.newFavorite(path, paths[paths.length-1], Favorite.NEWALBUM, "");
             }else {
@@ -213,13 +207,11 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                     Logic logic = MainActivity.getInstance().getLogic();
                     int toplay = logic.getToplay(id);
                     boolean clear = logic.isClear(id);
-                        //logic.getMpc().clearPlaylist();
                     ArrayList<String>commands=new ArrayList<>();
                     if (clear)
                         commands.add("clear");
                     path = Logic.removeSlashAtEnd(path);
                     String s = "add \""+path+"\"";
-                    //Log.v("samba","command:"+s);
 
                     commands.add(s);
                     logic.getMpc().enqueCommands(commands);
@@ -246,16 +238,16 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
 
         String newPath="";
         for (int j=1;j<=2;j++) {
-            int last = history.size() - 1;//chdb
-            newPath= history.get(last).path;//chdb
+            int last = history.size() - 1;
+            newPath= history.get(last).path;
             if (j==1) {
                 position = history.get(last).position;
-                if (last>=1) history.remove(last);//chdb
+                if (last>=1) history.remove(last);
             }
         }
 
         displayContentOfDir(this, newPath, getString(R.string.select_filelist));
-        //restore position. Dispaly it when new data is received
+        //restore position. Display it when new data is received
         listViewPosition=position;
 
     }
@@ -282,28 +274,24 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
 
     @Override
     public void databaseFindCompleted(ArrayList<File> files1a) {
-        for (File f1a:files1a) {
-
+        for (File f1a:files1a)
             if (f1a instanceof Mp3File) {
                 Mp3File found = (Mp3File) f1a;
-                //Log.v("samba", "Found " + found.getTitle() + " and " + found.getAlbum());
                 for (File f : files) {
-                    Mp3File mp = (Mp3File) f;
-                    //Log.v("samba", "compare " + mp.getTitle().trim() +mp.getAlbum()+ " and " + found.getTitle()+found.getAlbum());
-                    if (mp.getTitle().trim().equals(found.getTitle()) && mp.getAlbum().toLowerCase().equals(found.getAlbum().toLowerCase())) {
-                        //Log.v("samba", "equal " + mp.getTitle() + " and " + found.getAlbum());
-                        mp.setTime(found.getTime());
-                        mp.setArtist(found.getArtist());
-                        mp.setTracknr(found.getTracknr());
-                        mp.setFromMpd(true);
-                        fileListAdapter.notifyDataSetChanged();
+                    if (f instanceof Mp3File) {
+                        Mp3File mp = (Mp3File) f;
+                        if (mp.getTitle().trim().equals(found.getTitle()) && mp.getAlbum().toLowerCase().equals(found.getAlbum().toLowerCase())) {
+                            mp.setTime(found.getTime());
+                            mp.setArtist(found.getArtist());
+                            mp.setTracknr(found.getTracknr());
+                            mp.setFromMpd(true);
+                            fileListAdapter.notifyDataSetChanged();
+                        }
                     }
                 }
             }
-        }
         if (filesToCheck.size()>0){
             String fname=filesToCheck.remove(0).trim().replace("'","\'");
-            //Log.v("samba","now search "+fname);
             new DatabaseCommand(MainActivity.getInstance().getLogic().getMpc(),"find title \""+fname+"\"",listParentFragment,false,true).run();
         } else
             Collections.sort(files, new CustomComparator());

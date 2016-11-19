@@ -741,6 +741,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public void searchTerm(String myterm) {
+        //start search from other tab than mpd-tab
+        //todo find why this is necessary
+        selectTab(1);
         myterm = myterm.trim();
         final AlertDialog alert = new AlertDialog.Builder(this).create();
         final Handler handler = new Handler();
@@ -775,7 +778,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public void searchForItem(String searchString) {
         //DebugLog.log("search:" + searchString);
         selectTab(MainActivity.MPDTAB);
-        new DatabaseCommand(logic.getMpc(), "find any \"" + searchString + "\"", getDbFragment(), true).run();
+
+        new DatabaseCommand(logic.getMpc(), "search any \"" + searchString + "\"", getDbFragment(), true).run();
     }
 
     public void setVolume(Activity activity) {
@@ -1178,6 +1182,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void databaseCallCompleted(ArrayList<File> files) {
 
+        DebugLog.log("databaseCallCompleted");
         getDbFragment().databaseCallCompleted(files);
 
 
@@ -1186,6 +1191,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     @Override
     public void databaseFindCompleted(ArrayList<File> files) {
 
+        DebugLog.log("call completed");
     }
 
     @Override

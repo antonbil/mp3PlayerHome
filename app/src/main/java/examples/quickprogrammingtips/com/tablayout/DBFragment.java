@@ -41,7 +41,6 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
 
         task.start();
 
-        //displayContents(logic.getHistoryMpd().get(logic.getHistoryMpd().size() - 1).path);//chdb
         return view;
     }
 
@@ -51,14 +50,12 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     }
 
     public void displayContents(String path) {
-        //Log.v("samba","get path "+path);
         new DatabaseCommand(logic.getMpc(),"lsinfo \""+path+"\"",this, false).run();
     }
     @Override
     public void displayContentOfDir(SambaInterface si,String path, String id) {
         if (Objects.equals(id, "Download")){
             download=true;
-            //Log.v("samba","download "+path);
         }
         displayContents(path);
     }
@@ -68,7 +65,6 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     }
     @Override
     public void getContentOfDirAndPlay(String path, String id) {
-        //Log.v("samba","playa "+path);
         playit=true;
         currentId=id;
         //if path is filename
@@ -76,7 +72,6 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
             String[] pathLines=path.split("/");
             String f=pathLines[pathLines.length-1];
             path=path.substring(0,path.length()-f.length()-1);
-            //Log.v("samba","play "+path);
         }
         displayContents(path);
     }
@@ -89,8 +84,6 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
     @Override
     public void databaseCallCompleted(final ArrayList<File> files1a) {
 
-
-        //Log.v("samba","db-call succeeded");
         if (playit){
             logic.sambaCallCompleted(files1a, new ArrayList<>(),currentId);//chdb
             playit=false;
@@ -103,15 +96,14 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
                     if (f instanceof Mp3File){
                         Mp3File mp=(Mp3File) f;
                         dirName = String.format("%s-%s", mp.getMpcSong().artist, mp.getMpcSong().album);
-                        //Log.v("samba","file contains "+mp.getMpcSong().artist+"-"+mp.getMpcSong().album);
                     }
                     String path=String.format("%s/%s","/home/wieneke/FamilyLibrary/FamilyMusic",f.getPath());
                     downloadFiles.add(path);
-                    //Log.v("samba", "path found:" + f.getPath());
                 }
                 NetworkShare.copyFile(downloadFiles, dirName);
-            }else
-            sortAndDisplay(files1a);
+            }else{
+                sortAndDisplay(files1a);
+            }
         }
     }
 

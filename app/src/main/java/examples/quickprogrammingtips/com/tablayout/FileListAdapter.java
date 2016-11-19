@@ -230,7 +230,7 @@ class FileListAdapter extends BaseAdapter {
         int m=countMatches(filePath,"/");
         if (m>0&& !smb) {
             url = setFolderPath(filePath);
-            DebugLog.log(url);
+            //DebugLog.log(url);
         }
         String mUrl=url;
         if (smb ||m>0)

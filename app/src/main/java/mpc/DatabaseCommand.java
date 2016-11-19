@@ -34,10 +34,10 @@ public class DatabaseCommand extends Thread{
 
 	/**
 	 * Creates an instance of database thread with the specified settings
-	 *  @param mpc
-	 * @param command
+	 *  @param mpc the caller
+	 * @param command command to be executed
 	 * @param mpcDatabaseListener activity the database is being accessed from
-	 * @param fold
+	 * @param fold fold yes/no
 	 */
 	public DatabaseCommand(MPC mpc, String command, MPCDatabaseListener mpcDatabaseListener, boolean fold, boolean findit){
 		this.mpcDatabaseListener=mpcDatabaseListener;
@@ -52,9 +52,9 @@ public class DatabaseCommand extends Thread{
 		this.command=command;
 		this.fold=fold;
 	}
-	public DatabaseCommand(MPC mpc, String command, MPCDatabaseListener mpcDatabaseListener){
+	/*public DatabaseCommand(MPC mpc, String command, MPCDatabaseListener mpcDatabaseListener){
 		this(mpc, command, mpcDatabaseListener, false);
-	}
+	}*/
 
 	@Override
 	public void run(){
@@ -68,26 +68,19 @@ public class DatabaseCommand extends Thread{
 
 			// Clear version number from buffer
 			in.readLine();
-			//command="find any \"Hotel California\"";
 
 			out.println(command.trim());
-			//Log.v("samba", command+";");
 			String line;
 
-			ArrayList<File> files=new ArrayList<File>();
-			//MPCSong mpcSong=null;
-			ArrayList<String>list=new ArrayList<String>();
+			ArrayList<File> files=new ArrayList<>();
+			ArrayList<String>list=new ArrayList<>();
 			String path="";
 			while((line = in.readLine()) != null){
-				//Log.v("samba", line);
-				//Log.v("samba",line);
 				if (line.startsWith("OK"))break;
-				//Log.v("samba", line);
-				//directory:
-				//Last-Modified:
-				if (line.startsWith("Last-Modified:")) {
+
+				/*if (line.startsWith("Last-Modified:")) {
 					//do nothing
-				} else
+				} else*/
 				if (line.startsWith("directory:")) {
 					path=line.split("directory:")[1].trim();
 					GetPathAndFile getPathAndFile = new GetPathAndFile(path).invoke();
@@ -121,10 +114,10 @@ public class DatabaseCommand extends Thread{
 			sock.close();
 			if(in != null) in.close();
 			if(out != null) out.close();
-		} catch(Exception e){}
+		} catch(Exception e){/**/}
 	}
 
-	public void addMp3FileToList(ArrayList<File> files, ArrayList<String> list, String path) {
+	private void addMp3FileToList(ArrayList<File> files, ArrayList<String> list, String path) {
 		if (list.size()>0) {
 			Mp3File mp3File = new Mp3File(path, list);
 			String album = mp3File.niceAlbum();
@@ -138,7 +131,6 @@ public class DatabaseCommand extends Thread{
 					String f = getPathAndFile.getF();
 					path = getPathAndFile.getPath();
 					files.add(new File(f, path));
-					//Log.v("samba",album+mp3File.getTitle());
 				}
 			} else {if (mp3File.getTime() > 0)
 				files.add(mp3File);
@@ -152,7 +144,7 @@ public class DatabaseCommand extends Thread{
 		private String path;
 		private String f;
 
-		public GetPathAndFile(String path) {
+		GetPathAndFile(String path) {
 			this.path = path;
 		}
 
@@ -164,7 +156,7 @@ public class DatabaseCommand extends Thread{
 			return f;
 		}
 
-		public GetPathAndFile invoke() {
+		GetPathAndFile invoke() {
 			String[] pathLines=path.split("/");
 			f = pathLines[pathLines.length - 1];
 			path=path.substring(0, path.length() - f.length());
