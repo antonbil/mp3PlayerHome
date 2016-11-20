@@ -761,9 +761,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         Button save = (Button) inflate.findViewById(R.id.save_search_button);
         save.setOnClickListener(v -> {
             try {
+                alert.dismiss();
                 final String searchString = searchEditText.getText().toString();
                 searchForItem(searchString);
-                alert.dismiss();
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "Error!", Toast.LENGTH_SHORT).show();
 
@@ -776,10 +776,17 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
 
     public void searchForItem(String searchString) {
-        //DebugLog.log("search:" + searchString);
         selectTab(MainActivity.MPDTAB);
 
-        new DatabaseCommand(logic.getMpc(), "search any \"" + searchString + "\"", getDbFragment(), true).run();
+        new DatabaseCommand(logic.getMpc(), "search any \"" + searchString + "\"", getDbFragment(), true){
+            @Override
+            public void run(){
+
+                super.run();
+
+            }
+        }.run();
+
     }
 
     public void setVolume(Activity activity) {
