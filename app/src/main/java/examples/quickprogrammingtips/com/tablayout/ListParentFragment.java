@@ -39,6 +39,8 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     private int listViewPosition=0;
 
     private static Parcelable mListViewScrollPos = null;
+    int level=0;
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -186,6 +188,10 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
             if (Objects.equals(id, getString(R.string.select_filelist))) {
                 HistoryListview hl=new HistoryListview(path, fileListView.getFirstVisiblePosition());
                 history().add(hl);
+                level++;
+                fileListAdapter.setLevel(level);
+                DebugLog.log("select:"+level);
+
                 displayContentOfDir(this, path, id);
                 listViewPosition=0;
                 //fileListView.setSelection(0);
@@ -235,6 +241,9 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
 
     protected void goBack(ArrayList<HistoryListview >history){
         int position=0;
+        level--;
+        fileListAdapter.setLevel(level);
+        DebugLog.log("back:"+level);
 
         String newPath="";
         for (int j=1;j<=2;j++) {

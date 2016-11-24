@@ -25,6 +25,7 @@ import examples.quickprogrammingtips.com.tablayout.model.Mp3File;
 class FileListAdapter extends BaseAdapter {
 
     private String previousFilePath="";
+    private int level=0;
 
     private static boolean isInteger(String s) {
         return isInteger(s,10);
@@ -88,7 +89,10 @@ class FileListAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+            if (level==0)
             holder.image.setVisibility(View.GONE);
+            else
+                holder.image.setVisibility(View.VISIBLE);
             final View finalView=convertView;
             float density = context.getResources().getDisplayMetrics().density;
             int paddingPixel = 16;
@@ -96,16 +100,26 @@ class FileListAdapter extends BaseAdapter {
             finalView.setPadding(paddingDp,paddingDp,0,0);
 
         try{
+            holder.image.setImageResource(R.drawable.common_full_open_on_phone);
+
             final String fname = fileArrayList.get(position).getFname();
 
             final String path=fileArrayList.get(position).getPath();
         if (!(fileArrayList.get(position) instanceof Mp3File)) {
+
             String filePath = (fileArrayList.get(position).getPath() + fileArrayList.get(position).getFname()).replace(" ","%20");
             setImageForItem(position,fname,path,holder, finalView, density, filePath);
             String itemFname = fileArrayList.get(position).getFname();
             if (itemFname.endsWith("/"))
                 itemFname=itemFname.substring(0,itemFname.length()-1);
-            holder.description.setText(itemFname);
+            //holder.description.setText(itemFname);
+            String d = splitStringAtFirstDash(itemFname);
+            if (level!=0)
+
+                holder.description.setText(d);
+            else
+                holder.description.setText(itemFname);
+
         } else {
             String filePath = ((Mp3File)fileArrayList.get(position)).getFile().replace(" ","%20");
             int p=filePath.lastIndexOf("/");
@@ -150,6 +164,20 @@ class FileListAdapter extends BaseAdapter {
 
 
         return convertView;
+    }
+
+    @NonNull
+    public String splitStringAtFirstDash(String itemFname) {
+        String d=itemFname;
+        String[] lines=d.split("-");
+        if (lines.length>1){
+            d=lines[0]+"\n";
+            for (int i=1;i<lines.length;i++){
+                if (i>1)d+="-";
+                d+=lines[i].trim();
+            }
+        }
+        return d;
     }
 
     private void setContextMenu(int position, String fname, String path, View v, String s) {
@@ -266,6 +294,10 @@ class FileListAdapter extends BaseAdapter {
         menu.getMenu().add("Download");
         menu.getMenu().add("Spotify");
         return menu;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     private static class ViewHolder{
