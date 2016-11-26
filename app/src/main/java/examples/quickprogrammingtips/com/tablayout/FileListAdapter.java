@@ -254,7 +254,7 @@ class FileListAdapter extends BaseAdapter {
             url=filePath.replace("smb://192.168.2.8/FamilyLibrary","http://192.168.2.8:8081")+"folder.jpg";
             //return;
         }
-        if (previousFilePath.equals(filePath)&&(position>0))return;
+        if (previousFilePath.equals(filePath)&&(position>0)){holder.image.setVisibility(View.GONE);return;}
         int m=countMatches(filePath,"/");
         if (m>0&& !smb) {
             url = setFolderPath(filePath);
