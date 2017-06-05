@@ -2394,7 +2394,7 @@ public class SpotifyFragment extends Fragment implements
         return "";
     }
 
-    @NonNull
+    /*@NonNull
     public static  String getStringFromUrl2(String urlString) {
         try {
             URL obj = new URL(urlString);
@@ -2414,7 +2414,7 @@ public class SpotifyFragment extends Fragment implements
             Log.v("samba","error connection:"+e.getMessage());
         }
         return "";
-    }
+    }*/
 
     public static abstract class DownLoadImageUrlTask extends AsyncTask<String, Void, String> {
     static void setAlbumPicture(String key, String value) {
