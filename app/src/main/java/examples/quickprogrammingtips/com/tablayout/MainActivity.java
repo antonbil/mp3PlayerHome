@@ -243,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //DebugLog.log("Text:3");
 
             logic = new Logic(this);
+            SpotifyFragment.setSpotifyToken();
             //DebugLog.log(""+15);
             setContentView(R.layout.activity_main);
             //DebugLog.log(""+16);

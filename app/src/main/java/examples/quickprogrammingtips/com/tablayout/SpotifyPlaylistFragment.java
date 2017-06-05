@@ -115,7 +115,7 @@ public class SpotifyPlaylistFragment extends SpotifyFragment implements HeaderSo
                 } else
                     pi.pictureVisible = false;
             } catch (Exception e) {
-                //Log.v("samba", Log.getStackTraceString(e));
+                Log.v("samba", Log.getStackTraceString(e));
             }
             //album-name can become part of title
             pi.text = t.name + extra;

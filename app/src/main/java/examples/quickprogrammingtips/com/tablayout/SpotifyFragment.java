@@ -18,6 +18,7 @@ import android.text.InputType;
 import android.text.Layout;
 import android.text.SpannableString;
 import android.text.style.LeadingMarginSpan;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,19 +44,26 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import examples.quickprogrammingtips.com.tablayout.adapters.ArtistAutoCompleteAdapter;
 import examples.quickprogrammingtips.com.tablayout.adapters.InstantAutoComplete;
@@ -132,6 +140,7 @@ public class SpotifyFragment extends Fragment implements
     public static boolean hasBeen=false;
     public static boolean isNewArtist=true;
     protected SpotifyHeader spotifyHeader;
+    public static String spotifyToken="";
     private static SpotifyFragment instance;
     private SpotifyInterface getSpotifyInterface;
     private static int spotifyStartPosition = 0;
@@ -213,11 +222,16 @@ public class SpotifyFragment extends Fragment implements
             checkAddress();
             memoryHandler_ = new Handler();
             checkAppMemory();
+            //JSONObject jsontoken=getSpotifyToken();
+            setSpotifyToken();
+            Log.v("samba","token:"+spotifyToken);
+
 
             String ip = MainActivity.getInstance().getLogic().getMpc().getAddress();
             ipAddress = String.format("http://%s:8080/jsonrpc", ip);
             setSpotifyInterface(new SpotifyInterface());
             api = new SpotifyApi();
+            api.setAccessToken(spotifyToken);
             spotify = api.getService();
             dialog1 = new ProgressDialog(activityThis);
 
@@ -227,6 +241,14 @@ public class SpotifyFragment extends Fragment implements
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
                 return null;
+        }
+    }
+
+    public static void setSpotifyToken() {
+        if (spotifyToken.length()==0) {
+            Log.v("samba","get new token:");
+            String token = getSpotifyAccessToken();
+            spotifyToken = token;
         }
     }
 
@@ -367,6 +389,7 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
+
     public static JSONArray getPlaylist() {
         return GetJsonArrayFromUrl(
                 "{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.get_tl_tracks\", \"id\": 1}",
@@ -403,6 +426,119 @@ public class SpotifyFragment extends Fragment implements
         busyupdateSongInfo=false;
         return jsonRootObject;
     }
+    private static String getAccessTokenFromJsonStr(String spotifyJsonStr) throws JSONException {
+        final String OWM_ACCESS_TOKEN = "access_token";
+        String accessToken=null;
+
+        try {
+            JSONObject spotifyJson = new JSONObject(spotifyJsonStr);
+            accessToken = spotifyJson.getString(OWM_ACCESS_TOKEN);
+        } catch (JSONException e) {
+            Log.v("samba", e.getMessage(), e);
+            e.printStackTrace();
+        }
+
+        return accessToken;
+    }
+
+    public static String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (first)
+                first = false;
+            else
+
+            /*result.append("&");
+
+        result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+        result.append("=");
+        result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));*/
+
+                result.append("&");
+
+            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+        }
+
+        return result.toString();
+    }
+    private static String getSpotifyAccessToken(){
+        String response=null;
+        String accessToken;
+        try {
+            String serviceURL = "https://accounts.spotify.com/api/token";
+            URL myURL = new URL(serviceURL);
+
+            HttpsURLConnection myURLConnection = (HttpsURLConnection) myURL.openConnection();
+
+            String userCredentials = "89f945f1696e4f389aaed419e51beaad:2aef97a465c547c5ba9e03a06ef61787";
+            int flags = Base64.NO_WRAP | Base64.URL_SAFE;
+            byte[] encodedString = Base64.encode(userCredentials.getBytes(), flags);
+            String basicAuth = "Basic " + new String(encodedString);
+            myURLConnection.setRequestProperty("Authorization", basicAuth);
+
+            myURLConnection.setRequestMethod("POST");
+            myURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            myURLConnection.setUseCaches(false);
+            myURLConnection.setDoInput(true);
+            myURLConnection.setDoOutput(true);
+            System.setProperty("http.agent", "");
+
+            HashMap postDataParams = new HashMap<String, String>();
+            postDataParams.put("grant_type", "client_credentials");
+            OutputStream os = myURLConnection.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(os, "UTF-8"));
+            writer.write(getPostDataString(postDataParams));
+
+            writer.flush();
+            writer.close();
+            os.close();
+
+            response = "";
+            int responseCode=myURLConnection.getResponseCode();
+
+            Log.d("samba", "response code is " + responseCode);
+
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+                String line;
+                BufferedReader br=new BufferedReader(new InputStreamReader(myURLConnection.getInputStream()));
+                while ((line=br.readLine()) != null) {
+                    response+=line;
+                }
+            }
+            else {
+                response="";
+                String errLine;
+                String errResponse = "";
+                BufferedReader br=new BufferedReader(new InputStreamReader(myURLConnection.getErrorStream()));
+                while ((errLine=br.readLine()) != null) {
+                    errResponse += errLine;
+                }
+                Log.d("samba", "error response is " + errResponse);
+
+            }
+
+            Log.d("samba", "response is " + response);
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String accessTokenJsonStr = response.toString();
+        try {
+            accessToken = getAccessTokenFromJsonStr(accessTokenJsonStr);
+            return accessToken;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
     @NonNull
     private static String getJsonStringFromUrl(String data, String urlString) {
         StringBuilder sb = new StringBuilder();
@@ -952,6 +1088,8 @@ public class SpotifyFragment extends Fragment implements
             }
 
             void updateSpotifyList(int counter) {
+                Log.v("samba", "Spotify-token:"+spotifyToken);
+                api.setAccessToken(spotifyToken);
                 try {
                     getAlbumtracksFromSpotify(counter);
                 } catch (Exception e) {
@@ -1435,13 +1573,17 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void addSpotifyAlbumToPlaylist(final String albumid, final String albumname, final Activity getThis1, final boolean display) {
-        new SpotifyApi().getService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
+        Log.v("samba","get album:"+albumid);
+        SpotifyApi api=new SpotifyApi();
+        api.setAccessToken(spotifyToken);
+        api.getService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
 
             @Override
             public void success(Pager<Track> trackPager, Response response) {
                 ArrayList<String> ids = new ArrayList<>();
                 for (Track t : trackPager.items) {
                     try {
+                        Log.v("samba","get album-track:"+t.id);
                         Album alb = new Album();
                         alb.name = albumname;
                         alb.id = albumid;
@@ -2192,20 +2334,84 @@ public class SpotifyFragment extends Fragment implements
         return nt;
     }
 
-    @NonNull
-    public static  String getStringFromUrl(String urlString) {
+    private static String getStringFromUrl(String urlString){
+        String response=null;
+        String accessToken;
         try {
+
+            URL url = new URL(urlString);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestProperty("Authorization", "Bearer " + spotifyToken);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+
+            response = "";
+            StringBuilder sb = new StringBuilder();
+
+            int responseCode=urlConnection.getResponseCode();
+
+            Log.d("samba", "response code is " + responseCode);
+
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+                String line;
+                //BufferedReader br=new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                while ((line=br.readLine()) != null) {
+                    //response+=line;
+                    sb.append(line);
+                }
+                String retvalue=sb.toString();
+                Log.v("samba","retvalue:"+retvalue);
+                return retvalue;
+            }
+            else {
+                response="";
+                String errLine;
+                String errResponse = "";
+                //BufferedReader br=new BufferedReader(new InputStreamReader(myURLConnection.getErrorStream()));
+                while ((errLine=br.readLine()) != null) {
+                    errResponse += errLine;
+                }
+                Log.d("samba", "error response is " + errResponse);
+
+            }
+
+            Log.d("samba", "response is " + response);
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String accessTokenJsonStr = response.toString();
+        try {
+            accessToken = getAccessTokenFromJsonStr(accessTokenJsonStr);
+            return accessToken;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
+    @NonNull
+    public static  String getStringFromUrl2(String urlString) {
+        try {
+            URL obj = new URL(urlString);
+            HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+            con.setRequestMethod("GET");
             StringBuilder sb = new StringBuilder();
             InputStream is = new URL(urlString).openStream();
+            con.setRequestProperty("Authorization", "Bearer " + spotifyToken);
 
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
             String inputStr;
             while ((inputStr = streamReader.readLine()) != null)
                 sb.append(inputStr);
             return sb.toString();
         } catch (Exception e) {
-            /**/
+            Log.v("samba","error connection:"+e.getMessage());
         }
         return "";
     }
@@ -2253,7 +2459,7 @@ public class SpotifyFragment extends Fragment implements
                 imageUrl = new JSONObject(getResult).getJSONArray("images").getJSONObject(0).getString("url");
                 albumPictures.put(albumId, imageUrl);//so image is loaded only once
             } catch (Exception e) { // Catch the download exception
-                /**/
+                Log.v("samba","error get image:"+"https://api.spotify.com/v1/albums/" + albumId);
             }
             return imageUrl;
         }

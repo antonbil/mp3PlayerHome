@@ -181,7 +181,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
 
         } catch (Exception e ) {
 
-            System.out.println(e.getMessage());
+            Log.v("samba","error request:"+(e.getMessage()));
 
             return e.getMessage();
 
