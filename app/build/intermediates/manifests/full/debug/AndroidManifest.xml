@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="examples.quickprogrammingtips.com.tablayout"
+    android:versionCode="1"
+    android:versionName="1.1" >
+
+    <uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="24" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name="com.orm.SugarApp"
+        android:allowBackup="true"
+        android:icon="@drawable/swan2"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="examples.quickprogrammingtips.com.tablayout.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="bc2197999b21e7ba11c8a95c07b57385c5ccd83a" />
+
+        <!--
+            <activity
+            android:name="com.spotify.sdk.android.authentication.LoginActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        -->
+        <activity
+            android:name="examples.quickprogrammingtips.com.tablayout.SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name="examples.quickprogrammingtips.com.tablayout.EditFavoriteActivity"
+            android:label="@string/title_activity_edit_favorite2" />
+        <activity
+            android:name="examples.quickprogrammingtips.com.tablayout.WikipediaActivity"
+            android:label="@string/title_activity_wikpedia"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="examples.quickprogrammingtips.com.tablayout.PlaylistsSpotifyActivity"
+            android:label="PlaylistminerActivity"
+            android:theme="@style/AppTheme" />
+        <!--
+ ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
+        <!--
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW"/>
+            <category android:name="android.intent.category.DEFAULT"/>
+            <category android:name="android.intent.category.BROWSABLE"/>
+            <data android:host="open.spotify.com" android:scheme="http"/>
+            <data android:host="open.spotify.com" android:scheme="https"/>
+            <data android:host="play.spotify.com" android:scheme="http"/>
+            <data android:host="play.spotify.com" android:scheme="https"/>
+            <data android:scheme="spotify"/>
+        </intent-filter>
+        -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name="examples.quickprogrammingtips.com.tablayout.SearchActivity"
+            android:label="@string/title_activity_new_albums"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="examples.quickprogrammingtips.com.tablayout.NewAlbumsActivity"
+            android:label="@string/title_activity_new_albums"
+            android:theme="@style/Base.AlertDialog.AppCompat"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustPan" />
+        <activity
+            android:name="examples.quickprogrammingtips.com.tablayout.NewAlbumsActivityElectronic"
+            android:label="@string/title_activity_new_albums_activity_electronic" >
+
+            <!--
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+
+        <meta-data
+            android:name="DATABASE"
+            android:value="sugar_example3.db" />
+        <meta-data
+            android:name="VERSION"
+            android:value="1" />
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true" />
+        <!-- <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.example" /> -->
+    </application>
+
+</manifest>

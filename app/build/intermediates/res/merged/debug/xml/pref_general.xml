@@ -1,0 +1,103 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="New Links"
+        android:inputType="textCapWords"
+        android:key="category1"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Category 1" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="Classical"
+        android:inputType="textCapWords"
+        android:key="category2"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Category 2" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="Symphonic Rock"
+        android:inputType="textCapWords"
+        android:key="category3"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Category 3" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="Electronic"
+        android:inputType="textCapWords"
+        android:key="category4"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Category 4" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="Soul"
+        android:inputType="textCapWords"
+        android:key="category5"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Category 5" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="Singer/Songwriter"
+        android:inputType="textCapWords"
+        android:key="category6"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Category 6" />
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="Alternative"
+        android:inputType="textCapWords"
+        android:key="category7"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Category 7" />
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="Rock"
+        android:inputType="textCapWords"
+        android:key="category8"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Category 8" />
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="Ambient"
+        android:inputType="textCapWords"
+        android:key="category9"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Category 9" />
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="Various"
+        android:inputType="textCapWords"
+        android:key="category10"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Category 10" />
+
+</PreferenceScreen>

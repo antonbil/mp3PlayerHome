@@ -1734,7 +1734,7 @@ public class SpotifyFragment extends Fragment implements
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
                     addReleases(newAlbums, 0);
-                    addReleases(newAlbums, 50);//can be iterated
+                    addReleases(newAlbums, 50);//can be iterated, but gives more lines
                 }
 
                 private void addReleases(ArrayList<NewAlbum> newAlbums, int start) {

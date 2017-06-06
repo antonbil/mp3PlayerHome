@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="0dip"
+    android:id="@+id/footer"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:layout_alignParentBottom="true"
+    android:background="#333"
+    android:orientation="horizontal">
+
+
+<!--        <ImageButton
+            style="@style/ToolBarButtonStyle"
+            android:id="@+id/playspotify"
+            android:src="@android:drawable/ic_media_play"
+            android:layout_width="45dp"
+            android:layout_height="45dp"  />-->
+        <ImageButton
+            style="@style/ToolBarButtonStyle"
+            android:id="@+id/stopspotify"
+            android:src="@android:drawable/radiobutton_off_background"
+            android:layout_width="45dp"
+            android:layout_height="45dp" />
+        <ImageButton
+            style="@style/ToolBarButtonStyle"
+            android:id="@+id/pausespotify"
+            android:src="@android:drawable/ic_media_pause"
+            android:layout_width="45dp"
+            android:layout_height="45dp" />
+        <ImageButton
+            style="@style/ToolBarButtonStyle"
+            android:id="@+id/previousspotify"
+            android:src="@android:drawable/ic_media_previous"
+            android:layout_width="45dp"
+            android:layout_height="45dp" />
+    <ImageButton
+        style="@style/ToolBarButtonStyle"
+        android:id="@+id/nextspotify"
+        android:src="@android:drawable/ic_media_next"
+        android:layout_width="45dp"
+        android:layout_height="45dp" />
+    <ImageButton
+        style="@style/ToolBarButtonStyle"
+        android:id="@+id/volumespotify"
+        android:src="@android:drawable/ic_lock_silent_mode_off"
+        android:layout_width="45dp"
+        android:layout_height="45dp" />
+    <ImageButton
+        style="@style/ToolBarButtonStyle"
+        android:id="@+id/positionspotify"
+        android:src="@android:drawable/ic_media_ff"
+        android:layout_width="45dp"
+        android:layout_height="45dp" />
+
+
+    </LinearLayout>
