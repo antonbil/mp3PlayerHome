@@ -1727,6 +1727,65 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
+    public static void newAlbums() {
+        try {
+            MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
+
+                @Override
+                public void generateList(ArrayList<NewAlbum> newAlbums) {
+
+                    int start=0;
+                    addReleases(newAlbums, start);
+                    addReleases(newAlbums, 50);
+                }
+
+                private void addReleases(ArrayList<NewAlbum> newAlbums, int start) {
+                    String urlString = String.format("https://api.spotify.com/v1/browse/new-releases?country=NL&limit=50&offset=%s",start);
+                    String getResult = getStringFromUrl(urlString);
+                    try {
+                        JSONArray items = new JSONObject(getResult).getJSONObject("albums").getJSONArray("items");
+                        for (int i = 0; i < items.length(); i++) {
+                            String id=items.getJSONObject(i).getString("id");
+                            String album = "https://api.spotify.com/v1/albums/" + id;
+                            String albumResult = getStringFromUrl(album);
+                            JSONObject albumres=new JSONObject(albumResult);
+                            String artist=albumres.getJSONArray("artists").getJSONObject(0).getString("name");
+                            String albumname=albumres.getString("name");
+                            int tracks=albumres.getJSONObject("tracks").getJSONArray("items").length();
+                            String image1=albumres.getJSONArray("images").getJSONObject(0).getString("url");
+                            //Log.v("samba","album:"+artist+":"+albumname+":"+tracks);
+
+                            newAlbums.add(new NewAlbum(id, artist, String.format("%s(%s)",albumname,tracks), image1));
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void addToFavorites(NewAlbum newAlbum) {
+                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
+                    generateLists();
+                }
+
+            };
+
+
+            {
+                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
+                MainActivity.getInstance().startActivity(intent);
+            }
+            // }
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+
+
+
+
+    }
+
     public static void billboardAlbumChart(final String url) {
         try {
             MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
