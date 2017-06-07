@@ -1793,7 +1793,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void listPlaylists() {
-        ArrayList<String> directoryListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "billboard.com"));
+        ArrayList<String> directoryListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "billboard.com", "otterhouse"));
 
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
         builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
