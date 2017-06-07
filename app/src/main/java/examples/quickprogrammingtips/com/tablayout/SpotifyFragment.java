@@ -1792,6 +1792,76 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
+    public static void listPlaylists(String spotifyuser) {
+        //"bbc_playlister"
+        try {
+            MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
+
+                @Override
+                public void generateList(ArrayList<NewAlbum> newAlbums) {
+                    try{
+                        String urlString = String.format("https://api.spotify.com/v1/users/%s/playlists",spotifyuser);
+                        String getResult = getStringFromUrl(urlString);
+                        JSONArray items = new JSONObject(getResult).getJSONArray("items");
+                        for (int i = 0; i < items.length(); i++) {
+                            try{
+                                String href=items.getJSONObject(i).getString("href");
+                                String imageurl=items.getJSONObject(i).getJSONArray("images").getJSONObject(0).getString("url");;
+                                String playlistname=items.getJSONObject(i).getString("name");
+                                int tracks=items.getJSONObject(i).getJSONObject("tracks").getInt("total");
+                                newAlbums.add(new NewAlbum(href, playlistname, String.format("%s tracks",tracks), imageurl));
+                            } catch (Exception e) {
+                                Log.v("samba", Log.getStackTraceString(e));
+
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+
+                    }
+                }
+
+
+                @Override
+                public void addToFavorites(NewAlbum newAlbum) {
+                    /*
+                                                        case "add to favorites":
+                                        String[] parts = url.split(":");
+                                        SpotifyFragment.addAlbumToFavorites(
+                                                Favorite.SPOTIFYPRIVATEPLAYLIST + url, parts[parts.length - 1], null);
+
+                                        break;
+
+                     */
+                    newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
+                    generateLists();
+                }
+                @Override
+                public void processAlbum(SearchItem album) {
+                    try {
+                        SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), album.id);
+                        //getAlbumtracksFromSpotify(album.id, album.artist, activityThis);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            };
+
+
+            {
+                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
+                MainActivity.getInstance().startActivity(intent);
+            }
+            // }
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+
+
+
+
+    }
     public static void billboardAlbumChart(final String url) {
         try {
             MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
