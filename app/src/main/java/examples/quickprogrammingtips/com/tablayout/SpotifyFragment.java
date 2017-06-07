@@ -1737,8 +1737,9 @@ public class SpotifyFragment extends Fragment implements
                     if (previousNewAlbums==null) {
                         addReleases(newAlbums, 0);
                         addReleases(newAlbums, 50);//can be iterated
-                    }
-                    previousNewAlbums=newAlbums;
+                        previousNewAlbums=newAlbums;
+                    } else
+                        newAlbums.addAll(previousNewAlbums);
                 }
 
                 private void addReleases(ArrayList<NewAlbum> newAlbums, int start) {
@@ -1792,17 +1793,90 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
-    public static void listPlaylists() {
-        ArrayList<String> directoryListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "billboard.com", "otterhouse"));
+    public static void getRecommendation(String artist){
+        /*
+        curl -X GET "https://api.spotify.com/v1/recommendations?market=NL&seed_artists=4NHQUGzhtTLFvgF5SZesLK&seed_genres=classical&limit=20" -H "Accept: application/json" -H "Authorization: Bearer BQD2XyY1skIAEMs2tJ0orXixbbh-K6nwsr66xqCovE15viRVExef9cc_ETJte5pF2WOS4mX3im1g7ObF9U12TTdF9C94hbMCkraY4y7Sd-hLfy-1AZJNQE9gjUWAY14SPCxRzf__ySarGLc0EkJRC0Ha7i8j-A"
 
+{
+  "tracks" : [ {
+    "album" : {
+      "album_type" : "ALBUM",
+      "artists" : [ {
+        "external_urls" : {
+          "spotify" : "https://open.spotify.com/artist/4NHQUGzhtTLFvgF5SZesLK"
+        },
+        "href" : "https://api.spotify.com/v1/artists/4NHQUGzhtTLFvgF5SZesLK",
+        "id" : "4NHQUGzhtTLFvgF5SZesLK",
+        "name" : "Tove Lo",
+        "type" : "artist",
+        "uri" : "spotify:artist:4NHQUGzhtTLFvgF5SZesLK"
+      } ],
+      "external_urls" : {
+        "spotify" : "https://open.spotify.com/album/5Z5O36p7BivXzkucc0PAfw"
+      },
+      "href" : "https://api.spotify.com/v1/albums/5Z5O36p7BivXzkucc0PAfw",
+      "id" : "5Z5O36p7BivXzkucc0PAfw",
+      "images" : [ {
+        "height" : 640,
+        "url" : "https://i.scdn.co/image/6d18d4e8dcc3c8b617af00af9de35e332287648a",
+        "width" : 640
+      }, {
+        "height" : 300,
+        "url" : "https://i.scdn.co/image/aeed8868b665a019c2d992a6b7b42aae29185e6a",
+        "width" : 300
+      }, {
+        "height" : 64,
+        "url" : "https://i.scdn.co/image/5e4799a2753d3eec44e55f949454af37eef7567f",
+        "width" : 64
+      } ],
+      "name" : "Queen Of The Clouds",
+      "type" : "album",
+      "uri" : "spotify:album:5Z5O36p7BivXzkucc0PAfw"
+    },
+    "artists" : [ {
+      "external_urls" : {
+        "spotify" : "https://open.spotify.com/artist/4NHQUGzhtTLFvgF5SZesLK"
+      },
+      "href" : "https://api.spotify.com/v1/artists/4NHQUGzhtTLFvgF5SZesLK",
+      "id" : "4NHQUGzhtTLFvgF5SZesLK",
+      "name" : "Tove Lo",
+      "type" : "artist",
+      "uri" : "spotify:artist:4NHQUGzhtTLFvgF5SZesLK"
+    } ],
+    "disc_number" : 1,
+    "duration_ms" : 182346,
+    "explicit" : false,
+    "external_ids" : {
+      "isrc" : "SEUM71400059"
+    },
+    "external_urls" : {
+      "spotify" : "https://open.spotify.com/track/3zK3kzz1U8KEa8v9Kj8hu8"
+    },
+    "href" : "https://api.spotify.com/v1/tracks/3zK3kzz1U8KEa8v9Kj8hu8",
+    "id" : "3zK3kzz1U8KEa8v9Kj8hu8",
+    "is_playable" : true,
+    "name" : "Not On Drugs",
+    "popularity" : 54,
+    "preview_url" : null,
+    "track_number" : 10,
+    "type" : "track",
+    "uri" : "spotify:track:3zK3kzz1U8KEa8v9Kj8hu8"
+  },
+
+         */
+    }
+    public static void listPlaylists() {
+        ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"));
+
+        String title="Select user";
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
         builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
-        builderSingle.setTitle("Select Directory");
+        builderSingle.setTitle(title);
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                 MainActivity.getInstance(),
                 android.R.layout.select_dialog_singlechoice);
-        for (String cat : directoryListing) {
+        for (String cat : userListing) {
             arrayAdapter.add(cat);
         }
 
@@ -1813,8 +1887,8 @@ public class SpotifyFragment extends Fragment implements
         builderSingle.setAdapter(
                 arrayAdapter,
                 (dialog, which) -> {
-                    final String dir = arrayAdapter.getItem(which);
-                    listPlaylists(dir);
+                    final String user = arrayAdapter.getItem(which);
+                    listPlaylists(user);
                 });
         builderSingle.show();
 
@@ -1825,13 +1899,15 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
+                    //must be:"redactie_oor:playlist:3N9rTO6YG7kjWETJGOEvQY
+                    //
                     try{
                         String urlString = String.format("https://api.spotify.com/v1/users/%s/playlists",spotifyuser);
                         String getResult = getStringFromUrl(urlString);
                         JSONArray items = new JSONObject(getResult).getJSONArray("items");
                         for (int i = 0; i < items.length(); i++) {
                             try{
-                                String href=items.getJSONObject(i).getString("href");
+                                String href=items.getJSONObject(i).getString("uri");
                                 String imageurl=items.getJSONObject(i).getJSONArray("images").getJSONObject(0).getString("url");;
                                 String playlistname=items.getJSONObject(i).getString("name");
                                 int tracks=items.getJSONObject(i).getJSONObject("tracks").getInt("total");
@@ -1862,10 +1938,23 @@ public class SpotifyFragment extends Fragment implements
                     newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
                     generateLists();
                 }
+                /*@Override
+                public boolean processChoice(String choice, NewAlbumsActivity.ListAdapter listAdapter, ArrayList<NewAlbum> items, int position) {
+                    Log.v("samba","pl3:"+ choice);
+                    return true;
+                }*/
+
+
                 @Override
-                public void processAlbum(SearchItem album) {
+                public boolean processAlbum(NewAlbum album){
+                    Log.v("samba","pl2:"+ album.url);
+                    SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), (album.url));
+                    return true;}
+                @Override
+                public void executeUrl(String s){
                     try {
-                        SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), album.id);
+                        Log.v("samba","pl2:"+ s);
+                        SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), s);
                         //getAlbumtracksFromSpotify(album.id, album.artist, activityThis);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1985,9 +2074,11 @@ public class SpotifyFragment extends Fragment implements
                 ArrayList<String> ids = new ArrayList<>();
 
                 String prefix="spotify:user:";
+
                 if (playlistid.startsWith("spotify"))prefix="";
-                ids.add(prefix+playlistid);
-                DebugLog.log("play "+prefix+playlistid);
+                String id=(prefix+playlistid);
+                ids.add(id);
+                DebugLog.log("play "+id);
                 new AddTracksToPlaylist(ids, getThis) {
                     @Override
                     public void atEnd() {

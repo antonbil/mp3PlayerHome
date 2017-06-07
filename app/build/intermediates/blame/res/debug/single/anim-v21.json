@@ -1,14 +1,14 @@
 [
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/anim-v21/design_appbar_state_list_animator.xml",
-        "source": "/home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/design/24.1.1/res/anim-v21/design_appbar_state_list_animator.xml"
+        "source": "/home/anton/.android/build-cache/78d4fb05a3097a206b4855a5b1d144729bc384d1/output/res/anim-v21/design_appbar_state_list_animator.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/anim-v21/design_bottom_sheet_slide_out.xml",
-        "source": "/home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/design/24.1.1/res/anim-v21/design_bottom_sheet_slide_out.xml"
+        "source": "/home/anton/.android/build-cache/78d4fb05a3097a206b4855a5b1d144729bc384d1/output/res/anim-v21/design_bottom_sheet_slide_out.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/anim-v21/design_bottom_sheet_slide_in.xml",
-        "source": "/home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/design/24.1.1/res/anim-v21/design_bottom_sheet_slide_in.xml"
+        "source": "/home/anton/.android/build-cache/78d4fb05a3097a206b4855a5b1d144729bc384d1/output/res/anim-v21/design_bottom_sheet_slide_in.xml"
     }
 ]

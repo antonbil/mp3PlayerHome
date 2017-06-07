@@ -16,6 +16,7 @@ abstract class FillListviewWithValues {
 
     public void addToFavorites(NewAlbum newAlbum){}
     public void processAlbum(SearchItem album){}
+    public boolean processAlbum(NewAlbum album){return false;}
 
     public boolean processChoice(String s, NewAlbumsActivity.ListAdapter listAdapter, ArrayList<NewAlbum> items, int position){
         return false;

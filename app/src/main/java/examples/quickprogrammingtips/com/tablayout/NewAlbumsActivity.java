@@ -297,6 +297,7 @@ public class NewAlbumsActivity extends Activity  {
         else return "spotify:album:";
     }
     public void processAlbum(NewAlbum album){
+        Log.v("samba","process:"+album.url);
         if (album.url.indexOf("playlist")>0) {
             SpotifyFragment.clearSpotifyPlaylist();
             AddAlbumToPlaylist(album.url);

@@ -1,5 +1,7 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 public     class NewAlbumsActivityElectronic extends NewAlbumsActivity {
@@ -8,9 +10,23 @@ public     class NewAlbumsActivityElectronic extends NewAlbumsActivity {
     public void setUrl(){
         url="http://www.spotifynewmusic.com/tagwall3.php?ans=electronic";
     }
+    @Override
+    public void processAlbum(NewAlbum album) {
+       if (!MainActivity.getInstance().fillListviewWithValues.processAlbum(album))
+           super.processAlbum(album);
+    }
 
     @Override
+    public void AddAlbumToPlaylist(String uri){
+        NewAlbum album=new NewAlbum(uri,"","");
+        if (!MainActivity.getInstance().fillListviewWithValues.processAlbum(album))
+            super.processAlbum(album);
+    }
+
+
+        @Override
     protected void doAction(String s) {
+        Log.v("samba","pl3:"+s);
         this.finish();
         MainActivity.getInstance().fillListviewWithValues.executeUrl(s);
     }

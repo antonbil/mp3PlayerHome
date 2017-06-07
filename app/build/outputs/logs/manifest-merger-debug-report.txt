@@ -39,13 +39,13 @@ ADDED from /home/anton/tablayout/app/src/main/AndroidManifest.xml:12:5-81
 		ADDED from /home/anton/tablayout/app/src/main/AndroidManifest.xml:12:22-78
 application
 ADDED from /home/anton/tablayout/app/src/main/AndroidManifest.xml:14:5-95:19
-MERGED from [com.android.support:design:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/design/24.1.1/AndroidManifest.xml:22:5-20
-MERGED from [com.android.support:support-v4:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/support-v4/24.1.1/AndroidManifest.xml:25:5-20
-MERGED from [com.android.support:appcompat-v7:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.1.1/AndroidManifest.xml:25:5-20
-MERGED from [com.android.support:animated-vector-drawable:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/24.1.1/AndroidManifest.xml:22:5-20
-MERGED from [com.android.support:support-vector-drawable:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/24.1.1/AndroidManifest.xml:23:5-20
-MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-appindexing/8.4.0/AndroidManifest.xml:19:5-20
-MERGED from [com.google.android.gms:play-services-basement:8.4.0] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/AndroidManifest.xml:20:5-24:19
+MERGED from [com.android.support:design:24.1.1] /home/anton/.android/build-cache/78d4fb05a3097a206b4855a5b1d144729bc384d1/output/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:appcompat-v7:24.1.1] /home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:animated-vector-drawable:24.1.1] /home/anton/.android/build-cache/df36eb0f0fdc057253c0cadc9adbe45078f3b762/output/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-vector-drawable:24.1.1] /home/anton/.android/build-cache/684ded9e36cb02416468be666130cc28c868530c/output/AndroidManifest.xml:23:5-20
+MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] /home/anton/.android/build-cache/b7b91a1b205da58b1e52ca5dceab0f402e49a751/output/AndroidManifest.xml:19:5-20
+MERGED from [com.google.android.gms:play-services-basement:8.4.0] /home/anton/.android/build-cache/efc09caf1399859c424e73790f41f4bce29ac322/output/AndroidManifest.xml:20:5-24:19
+MERGED from [com.android.support:support-v4:24.1.1] /home/anton/.android/build-cache/f8e7b33b2b6ee4f16887b99b6ed7595e527d25e1/output/AndroidManifest.xml:25:5-20
 	android:label
 		ADDED from /home/anton/tablayout/app/src/main/AndroidManifest.xml:18:9-41
 	android:allowBackup
@@ -108,7 +108,7 @@ ADDED from /home/anton/tablayout/app/src/main/AndroidManifest.xml:47:9-50:47
 		ADDED from /home/anton/tablayout/app/src/main/AndroidManifest.xml:48:13-53
 meta-data#com.google.android.gms.version
 ADDED from /home/anton/tablayout/app/src/main/AndroidManifest.xml:67:9-69:69
-MERGED from [com.google.android.gms:play-services-basement:8.4.0] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/AndroidManifest.xml:21:9-23:69
+MERGED from [com.google.android.gms:play-services-basement:8.4.0] /home/anton/.android/build-cache/efc09caf1399859c424e73790f41f4bce29ac322/output/AndroidManifest.xml:21:9-23:69
 	android:value
 		ADDED from /home/anton/tablayout/app/src/main/AndroidManifest.xml:69:13-66
 	android:name
@@ -157,19 +157,19 @@ ADDED from /home/anton/tablayout/app/src/main/AndroidManifest.xml:93:9-68
 		ADDED from /home/anton/tablayout/app/src/main/AndroidManifest.xml:93:20-44
 uses-sdk
 INJECTED from /home/anton/tablayout/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
-MERGED from [com.android.support:design:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/design/24.1.1/AndroidManifest.xml:20:5-43
-MERGED from [com.android.support:support-v4:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/support-v4/24.1.1/AndroidManifest.xml:21:5-23:54
-MERGED from [com.android.support:recyclerview-v7:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/24.1.1/AndroidManifest.xml:20:5-43
-MERGED from [com.android.support:appcompat-v7:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.1.1/AndroidManifest.xml:21:5-23:78
-MERGED from [com.android.support:animated-vector-drawable:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/24.1.1/AndroidManifest.xml:20:5-44
-MERGED from [com.android.support:support-vector-drawable:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/24.1.1/AndroidManifest.xml:21:5-43
-MERGED from [io.reactivex:rxandroid:1.2.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/io.reactivex/rxandroid/1.2.1/AndroidManifest.xml:19:5-43
-MERGED from [com.github.satyan:sugar:1.5] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.github.satyan/sugar/1.5/AndroidManifest.xml:7:5-9:41
-MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-appindexing/8.4.0/AndroidManifest.xml:18:5-42
-MERGED from [com.google.android.gms:play-services-base:8.4.0] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/AndroidManifest.xml:18:5-42
-MERGED from [com.google.android.gms:play-services-basement:8.4.0] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/AndroidManifest.xml:18:5-42
+MERGED from [com.android.support:design:24.1.1] /home/anton/.android/build-cache/78d4fb05a3097a206b4855a5b1d144729bc384d1/output/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:recyclerview-v7:24.1.1] /home/anton/.android/build-cache/4a5bcaeb5f0b6c4b034091399701e0f0f645c596/output/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:appcompat-v7:24.1.1] /home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:animated-vector-drawable:24.1.1] /home/anton/.android/build-cache/df36eb0f0fdc057253c0cadc9adbe45078f3b762/output/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:24.1.1] /home/anton/.android/build-cache/684ded9e36cb02416468be666130cc28c868530c/output/AndroidManifest.xml:21:5-43
+MERGED from [io.reactivex:rxandroid:1.2.1] /home/anton/.android/build-cache/8b9ca0742e9f806124281d42c4a6a2d8f26b492f/output/AndroidManifest.xml:19:5-43
+MERGED from [com.github.satyan:sugar:1.5] /home/anton/.android/build-cache/c7528a90bfd318abc56624198023a59f609618ee/output/AndroidManifest.xml:7:5-9:41
+MERGED from [com.google.android.gms:play-services-appindexing:8.4.0] /home/anton/.android/build-cache/b7b91a1b205da58b1e52ca5dceab0f402e49a751/output/AndroidManifest.xml:18:5-42
+MERGED from [com.google.android.gms:play-services-base:8.4.0] /home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/AndroidManifest.xml:18:5-42
+MERGED from [com.google.android.gms:play-services-basement:8.4.0] /home/anton/.android/build-cache/efc09caf1399859c424e73790f41f4bce29ac322/output/AndroidManifest.xml:18:5-42
+MERGED from [com.android.support:support-v4:24.1.1] /home/anton/.android/build-cache/f8e7b33b2b6ee4f16887b99b6ed7595e527d25e1/output/AndroidManifest.xml:21:5-23:54
 	tools:overrideLibrary
-		ADDED from [com.android.support:support-v4:24.1.1] /home/anton/tablayout/app/build/intermediates/exploded-aar/com.android.support/support-v4/24.1.1/AndroidManifest.xml:23:9-51
+		ADDED from [com.android.support:appcompat-v7:24.1.1] /home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/AndroidManifest.xml:23:9-75
 	android:targetSdkVersion
 		INJECTED from /home/anton/tablayout/app/src/main/AndroidManifest.xml
 		INJECTED from /home/anton/tablayout/app/src/main/AndroidManifest.xml

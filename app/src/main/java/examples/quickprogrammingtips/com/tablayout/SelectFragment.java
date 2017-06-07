@@ -413,7 +413,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     "", "Loading, please wait", true);
         }
         SpotifyFragment.clearSpotifyPlaylist();
-        DebugLog.log(uri);
+        DebugLog.log("inside:"+uri);
         new SpotifyFragment.getEntirePlaylistFromSpotify(uri, MainActivity.getInstance()){
             @Override
             public void atLast() {
