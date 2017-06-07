@@ -1792,8 +1792,34 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
+    public static void listPlaylists() {
+        ArrayList<String> directoryListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "billboard.com"));
+
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
+        builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
+        builderSingle.setTitle("Select Directory");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                MainActivity.getInstance(),
+                android.R.layout.select_dialog_singlechoice);
+        for (String cat : directoryListing) {
+            arrayAdapter.add(cat);
+        }
+
+        builderSingle.setNegativeButton(
+                "cancel",
+                (dialog, which) -> dialog.dismiss());
+
+        builderSingle.setAdapter(
+                arrayAdapter,
+                (dialog, which) -> {
+                    final String dir = arrayAdapter.getItem(which);
+                    listPlaylists(dir);
+                });
+        builderSingle.show();
+
+    }
     public static void listPlaylists(String spotifyuser) {
-        //"bbc_playlister"
         try {
             MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
 
