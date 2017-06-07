@@ -139,6 +139,7 @@ public class SpotifyFragment extends Fragment implements
     private static boolean spotifyPaused=false;
     public static boolean hasBeen=false;
     public static boolean isNewArtist=true;
+    private static ArrayList<NewAlbum> previousNewAlbums=null;
     protected SpotifyHeader spotifyHeader;
     public static String spotifyToken="";
     private static SpotifyFragment instance;
@@ -1733,8 +1734,11 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
-                    addReleases(newAlbums, 0);
-                    addReleases(newAlbums, 50);//can be iterated
+                    if (previousNewAlbums==null) {
+                        addReleases(newAlbums, 0);
+                        addReleases(newAlbums, 50);//can be iterated
+                    }
+                    previousNewAlbums=newAlbums;
                 }
 
                 private void addReleases(ArrayList<NewAlbum> newAlbums, int start) {
@@ -1743,17 +1747,21 @@ public class SpotifyFragment extends Fragment implements
                     try {
                         JSONArray items = new JSONObject(getResult).getJSONObject("albums").getJSONArray("items");
                         for (int i = 0; i < items.length(); i++) {
-                            String id=items.getJSONObject(i).getString("id");
-                            String album = "https://api.spotify.com/v1/albums/" + id;
-                            String albumResult = getStringFromUrl(album);
-                            JSONObject albumres=new JSONObject(albumResult);
-                            String artist=albumres.getJSONArray("artists").getJSONObject(0).getString("name");
-                            String albumname=albumres.getString("name");
-                            int tracks=albumres.getJSONObject("tracks").getJSONArray("items").length();
-                            String image1=albumres.getJSONArray("images").getJSONObject(0).getString("url");
-                            //Log.v("samba","album:"+artist+":"+albumname+":"+tracks);
+                            try{
+                                String id=items.getJSONObject(i).getString("id");
+                                String album = "https://api.spotify.com/v1/albums/" + id;
+                                String albumResult = getStringFromUrl(album);
+                                JSONObject albumres=new JSONObject(albumResult);
+                                String artist=albumres.getJSONArray("artists").getJSONObject(0).getString("name");
+                                String albumname=albumres.getString("name");
+                                int tracks=albumres.getJSONObject("tracks").getJSONArray("items").length();
+                                String image1=albumres.getJSONArray("images").getJSONObject(0).getString("url");
+                                //Log.v("samba","album:"+artist+":"+albumname+":"+tracks);
 
-                            newAlbums.add(new NewAlbum(id, artist, String.format("%s(%s)",albumname,tracks), image1));
+                                newAlbums.add(new NewAlbum(id, artist, String.format("%s(%s)",albumname,tracks), image1));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
 
                     } catch (JSONException e) {
