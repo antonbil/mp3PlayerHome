@@ -1793,77 +1793,70 @@ public class SpotifyFragment extends Fragment implements
 
     }
 
-    public static void getRecommendation(String artist){
-        /*
-        curl -X GET "https://api.spotify.com/v1/recommendations?market=NL&seed_artists=4NHQUGzhtTLFvgF5SZesLK&seed_genres=classical&limit=20" -H "Accept: application/json" -H "Authorization: Bearer BQD2XyY1skIAEMs2tJ0orXixbbh-K6nwsr66xqCovE15viRVExef9cc_ETJte5pF2WOS4mX3im1g7ObF9U12TTdF9C94hbMCkraY4y7Sd-hLfy-1AZJNQE9gjUWAY14SPCxRzf__ySarGLc0EkJRC0Ha7i8j-A"
+    public static void getRecommendationArtist(){
+        ArrayList<String> userListing=new ArrayList<>(Arrays.asList("Bach", "Couperin", "Beethoven", "Mozart","Grieg","Arvo Part"));
+        String title="Select artist for recommendation";
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
+        builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
+        builderSingle.setTitle(title);
 
-{
-  "tracks" : [ {
-    "album" : {
-      "album_type" : "ALBUM",
-      "artists" : [ {
-        "external_urls" : {
-          "spotify" : "https://open.spotify.com/artist/4NHQUGzhtTLFvgF5SZesLK"
-        },
-        "href" : "https://api.spotify.com/v1/artists/4NHQUGzhtTLFvgF5SZesLK",
-        "id" : "4NHQUGzhtTLFvgF5SZesLK",
-        "name" : "Tove Lo",
-        "type" : "artist",
-        "uri" : "spotify:artist:4NHQUGzhtTLFvgF5SZesLK"
-      } ],
-      "external_urls" : {
-        "spotify" : "https://open.spotify.com/album/5Z5O36p7BivXzkucc0PAfw"
-      },
-      "href" : "https://api.spotify.com/v1/albums/5Z5O36p7BivXzkucc0PAfw",
-      "id" : "5Z5O36p7BivXzkucc0PAfw",
-      "images" : [ {
-        "height" : 640,
-        "url" : "https://i.scdn.co/image/6d18d4e8dcc3c8b617af00af9de35e332287648a",
-        "width" : 640
-      }, {
-        "height" : 300,
-        "url" : "https://i.scdn.co/image/aeed8868b665a019c2d992a6b7b42aae29185e6a",
-        "width" : 300
-      }, {
-        "height" : 64,
-        "url" : "https://i.scdn.co/image/5e4799a2753d3eec44e55f949454af37eef7567f",
-        "width" : 64
-      } ],
-      "name" : "Queen Of The Clouds",
-      "type" : "album",
-      "uri" : "spotify:album:5Z5O36p7BivXzkucc0PAfw"
-    },
-    "artists" : [ {
-      "external_urls" : {
-        "spotify" : "https://open.spotify.com/artist/4NHQUGzhtTLFvgF5SZesLK"
-      },
-      "href" : "https://api.spotify.com/v1/artists/4NHQUGzhtTLFvgF5SZesLK",
-      "id" : "4NHQUGzhtTLFvgF5SZesLK",
-      "name" : "Tove Lo",
-      "type" : "artist",
-      "uri" : "spotify:artist:4NHQUGzhtTLFvgF5SZesLK"
-    } ],
-    "disc_number" : 1,
-    "duration_ms" : 182346,
-    "explicit" : false,
-    "external_ids" : {
-      "isrc" : "SEUM71400059"
-    },
-    "external_urls" : {
-      "spotify" : "https://open.spotify.com/track/3zK3kzz1U8KEa8v9Kj8hu8"
-    },
-    "href" : "https://api.spotify.com/v1/tracks/3zK3kzz1U8KEa8v9Kj8hu8",
-    "id" : "3zK3kzz1U8KEa8v9Kj8hu8",
-    "is_playable" : true,
-    "name" : "Not On Drugs",
-    "popularity" : 54,
-    "preview_url" : null,
-    "track_number" : 10,
-    "type" : "track",
-    "uri" : "spotify:track:3zK3kzz1U8KEa8v9Kj8hu8"
-  },
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                MainActivity.getInstance(),
+                android.R.layout.select_dialog_singlechoice);
+        for (String cat : userListing) {
+            arrayAdapter.add(cat);
+        }
 
-         */
+        builderSingle.setNegativeButton(
+                "cancel",
+                (dialog, which) -> dialog.dismiss());
+
+        builderSingle.setAdapter(
+                arrayAdapter,
+                (dialog, which) -> {
+                    final String user = arrayAdapter.getItem(which);
+                    getRecommendation(user,"classical");
+                });
+        builderSingle.show();
+    }
+
+    public static void getRecommendation(String artist,String genre){
+        if (genre.length()>0)
+            genre="&seed_genres="+genre;
+        String artistid=searchSpotifyArtist(artist);
+        String urlString = String.format("https://api.spotify.com/v1/recommendations?market=NL&seed_artists=%s%s&limit=100",artistid,genre);
+        String getResult = getStringFromUrl(urlString);
+        JSONArray items = null;
+        clearSpotifyPlaylist();
+
+        try {
+            items = new JSONObject(getResult).getJSONArray("tracks");
+            for (int i = 0; i < items.length(); i++) {
+                try{
+                    JSONObject o =items.getJSONObject(i);
+                    String id=o.getString("id");
+                    String albid = o.getJSONObject("album").getString("id");
+                    try{
+                        String imageurl= o.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+                        DownLoadImageUrlTask.setAlbumPicture(albid, imageurl);
+                        MainActivity.getAlbumPicturesIds().put(albid, imageurl);
+                    } catch (Exception e) {
+                    }
+                    String prefix="spotify:track:";
+
+                    AddSpotifyItemToPlaylist(prefix,id);
+
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+
+                }
+            }
+            //start playing playlist at top
+            playAtPosition(0);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
     public static void listPlaylists() {
         ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"));
@@ -2258,8 +2251,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static String searchSpotifyArtist(String artist){
-        SpotifyApi api=new SpotifyApi();
-        SpotifyService spotify = api.getService();
+        SpotifyService spotify = getSpotifyService();
         String artistid1 = "";
         ArtistsPager artistsPager = spotify.searchArtists(artist.trim());
         for (Artist artist1 : artistsPager.artists.items) {
@@ -2268,6 +2260,12 @@ public class SpotifyFragment extends Fragment implements
         }
         return artistid1;
 
+    }
+
+    private static SpotifyService getSpotifyService() {
+        SpotifyApi api=new SpotifyApi();
+        api.setAccessToken(spotifyToken);
+        return api.getService();
     }
 
 
@@ -2645,28 +2643,6 @@ public class SpotifyFragment extends Fragment implements
 
         return "";
     }
-
-    /*@NonNull
-    public static  String getStringFromUrl2(String urlString) {
-        try {
-            URL obj = new URL(urlString);
-            HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
-            StringBuilder sb = new StringBuilder();
-            InputStream is = new URL(urlString).openStream();
-            con.setRequestProperty("Authorization", "Bearer " + spotifyToken);
-
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-            String inputStr;
-            while ((inputStr = streamReader.readLine()) != null)
-                sb.append(inputStr);
-            return sb.toString();
-        } catch (Exception e) {
-            Log.v("samba","error connection:"+e.getMessage());
-        }
-        return "";
-    }*/
 
     public static abstract class DownLoadImageUrlTask extends AsyncTask<String, Void, String> {
     static void setAlbumPicture(String key, String value) {
