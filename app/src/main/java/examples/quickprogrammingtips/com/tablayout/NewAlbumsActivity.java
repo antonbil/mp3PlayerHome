@@ -230,6 +230,7 @@ public class NewAlbumsActivity extends Activity  {
                 menu.getMenu().add("add album to favorites");
                 menu.getMenu().add("play");//
                 menu.getMenu().add("wikipedia");
+                menu.getMenu().add("recommendation");
                 menu.getMenu().add("large image");
                 menu.getMenu().add("finish");
                 menu.show();
@@ -248,6 +249,9 @@ public class NewAlbumsActivity extends Activity  {
                  }else
                  if (item.getTitle().toString().equals("wikipedia")) {
                      MainActivity.startWikipediaPage(items.get(position).artist);
+                 }else
+                 if (item.getTitle().toString().equals("recommendation")) {
+                     MainActivity.getRecommendation(items.get(position).artist);
                  }else
                  if (item.getTitle().toString().equals("play album on server")) {
                      new SetAndPlayOnServer(getThis){
