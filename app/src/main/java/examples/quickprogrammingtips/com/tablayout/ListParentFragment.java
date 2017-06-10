@@ -103,7 +103,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
                 String filename = f.getPath() + "/" + f.getFname();
                 files.add(filename);
                 //Log.v("samba","fname add:"+filename);
-                SpotifyFragment.AddSpotifyItemToPlaylist("file://", filename);
+                SpotifyFragment.AddSpotifyItemToPlaylist("file://", filename.replace("//","/"));
 
             }
             }else

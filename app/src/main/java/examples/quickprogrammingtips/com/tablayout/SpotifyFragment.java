@@ -2446,7 +2446,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static String[] getCurrentTrack(){
-        JSONObject o=GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.get_current_tl_track\"}",ipAddress);
+        JSONObject o = getCurrentTrackAsJsonObject();
         try {
             final String[] a= {o.getJSONObject("track").getString("uri").replace("spotify:track:",""), ""+o.getJSONObject("track").getInt("length")};
             return a;
@@ -2454,6 +2454,10 @@ public class SpotifyFragment extends Fragment implements
             return null;
         }
 
+    }
+
+    private static JSONObject getCurrentTrackAsJsonObject() {
+        return GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"core.playback.get_current_tl_track\"}",ipAddress);
     }
 
     public static String updateSongInfo(Activity getThis, final SpotifyInterface getSpotifyInterface) {
@@ -2551,7 +2555,12 @@ public class SpotifyFragment extends Fragment implements
         Track nt = (Track) getData().hm.get(trackid);
         try {
             if (nt == null) {
-                JSONObject o = new JSONObject(getStringFromUrl("https://api.spotify.com/v1/tracks/" + trackid));
+                JSONObject o =null;
+                if (trackid.startsWith("file://")) {
+                        o = getCurrentTrackAsJsonObject().getJSONObject("track");
+                } else {
+                    o = new JSONObject(getStringFromUrl("https://api.spotify.com/v1/tracks/" + trackid));
+                }
                 nt = getTrack(trackid, o);
                 getData().hm.put(nt.id, nt);
             }
@@ -2593,7 +2602,7 @@ public class SpotifyFragment extends Fragment implements
             im.url= o.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
 
         } catch (Exception e) {
-            im.url=trackid;
+            im.url=trackid.replace(" ","%20");
         }
         alb.images.add(im);
          nt.album = alb;

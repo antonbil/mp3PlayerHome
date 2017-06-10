@@ -166,8 +166,10 @@ public class NetworkShare  implements MPCDatabaseListener{
                         String dirname="";
                         for (int i=0;i<builder.size();i++){
                             try{
-                                Log.v("samba","log:"+builder.get(i));
-                                if (i==0){dirname=Mp3File.removePath(builder.get(0));continue;}
+                                //Log.v("samba","log:"+builder.get(i));
+                                try{
+                                    if (i==0){dirname=Mp3File.removePath(builder.get(0));continue;}
+                                } catch (Exception exception) {}
                                 Mp3File mp=new Mp3File(networkPath,builder.get(i));
                                 if (mp.getTitle()!=null) {
                                     if (!mp.getMpcSong().file.startsWith(dirname)){
