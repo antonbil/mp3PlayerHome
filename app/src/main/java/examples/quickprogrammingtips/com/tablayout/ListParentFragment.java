@@ -90,6 +90,23 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
 
     @Override
     public void sambaCallCompleted(ArrayList<File> files1a, ArrayList<File> filesMp3, String id) {
+        if (Objects.equals(id, "add to mopidy")) {
+            ArrayList<String> files=new ArrayList<>();
+            String dirname="artist-album";
+            filesMp3 = logic.sort(filesMp3);
+            for (File f:filesMp3){
+                if (f instanceof Mp3File)
+                {
+                    Mp3File mp=(Mp3File)f;
+                    dirname=String.format("%s-%s" ,mp.getMpcSong().artist,mp.getMpcSong().album);
+                }
+                String filename = f.getPath() + "/" + f.getFname();
+                files.add(filename);
+                //Log.v("samba","fname add:"+filename);
+                SpotifyFragment.AddSpotifyItemToPlaylist("file://", filename);
+
+            }
+            }else
         if (Objects.equals(id, "Download")) {
             ArrayList<String> files=new ArrayList<>();
             String dirname="artist-album";
@@ -181,7 +198,7 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
             String message = "add \"" + path + "\"";
             logic.getMpc().sendSingleMessage(message);
         }else {
-            if (id.equals("Download")) {
+            if (id.equals("Download") || id.equals("add to mopidy")) {
 
                 displayContentOfDir(this,path, id);
             } else

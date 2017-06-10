@@ -165,16 +165,22 @@ public class NetworkShare  implements MPCDatabaseListener{
                         builder = readFileContent(smbFile);
                         String dirname="";
                         for (int i=0;i<builder.size();i++){
-                            if (i==0){dirname=Mp3File.removePath(builder.get(0));continue;}
-                            Mp3File mp=new Mp3File(networkPath,builder.get(i));
-                            if (mp.getTitle()!=null) {
-                                if (!mp.getMpcSong().file.startsWith(dirname)){
-                                    //dirname is better than path itself, because , can be removed.
-                                    String[] spl=mp.getMpcSong().file.split("/");
-                                    mp.getMpcSong().file=dirname+"/"+spl[spl.length-1];
+                            try{
+                                Log.v("samba","log:"+builder.get(i));
+                                if (i==0){dirname=Mp3File.removePath(builder.get(0));continue;}
+                                Mp3File mp=new Mp3File(networkPath,builder.get(i));
+                                if (mp.getTitle()!=null) {
+                                    if (!mp.getMpcSong().file.startsWith(dirname)){
+                                        //dirname is better than path itself, because , can be removed.
+                                        String[] spl=mp.getMpcSong().file.split("/");
+                                        mp.getMpcSong().file=dirname+"/"+spl[spl.length-1];
+                                    }
+                                    waitForCallBack=false;
+                                    files.add(mp);
                                 }
-                                waitForCallBack=false;
-                                files.add(mp);
+                            } catch (Exception exception) {
+                                //Log.v("samba", "Errorin");
+                                exception.printStackTrace();
                             }
                             //Log.v("samba", mp.getArtist() + "-" + mp.getTracknr() + "-" + mp.getTitle() + "(" + mp.getTimeNice() + ")");
                             //songs.add(mp.getMpcSong());

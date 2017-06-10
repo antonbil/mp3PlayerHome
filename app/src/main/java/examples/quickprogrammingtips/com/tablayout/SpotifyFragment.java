@@ -401,7 +401,7 @@ public class SpotifyFragment extends Fragment implements
         JSONObject jsonRootObject;
 
         String sb = getJsonStringFromUrl(data, urlString);
-        Log.v("samba",sb);
+        //Log.v("samba",sb);
         try {
             jsonRootObject = new JSONObject(sb);
             return jsonRootObject.getJSONArray("result");
@@ -1555,11 +1555,13 @@ public class SpotifyFragment extends Fragment implements
 
     public static void getAlbumtracksFromSpotify(final String albumid, final String albumname, final Activity getThis1,boolean display) throws Exception {
         boolean alreadyThere=false;
-        for (Track t: getData().tracksPlaylist) {
-            if (t.album.id.equals(albumid)) {
-                alreadyThere = true;
+        try {
+            for (Track t : getData().tracksPlaylist) {
+                if (t.album.id.equals(albumid)) {
+                    alreadyThere = true;
+                }
             }
-        }
+        } catch (Exception e){}
         if (alreadyThere)
         new AlertDialog.Builder(getThis1)
                 .setTitle("Warning")
@@ -2594,11 +2596,7 @@ public class SpotifyFragment extends Fragment implements
             im.url=trackid;
         }
         alb.images.add(im);
-        try{
-            Log.v("sambe","duration:"+nt.duration_ms);
-    } catch (Exception e) {
-    }
-        nt.album = alb;
+         nt.album = alb;
         return nt;
     }
 
@@ -2629,7 +2627,7 @@ public class SpotifyFragment extends Fragment implements
                     sb.append(line);
                 }
                 String retvalue=sb.toString();
-                Log.v("samba","retvalue:"+retvalue);
+                //Log.v("samba","retvalue:"+retvalue);
                 return retvalue;
             }
             else {

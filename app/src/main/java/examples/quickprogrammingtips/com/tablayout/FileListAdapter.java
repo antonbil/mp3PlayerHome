@@ -302,6 +302,7 @@ class FileListAdapter extends BaseAdapter {
         menu.getMenu().add(context.getString(R.string.addandplay_filelist));
         menu.getMenu().add(context.getString(R.string.replaceandplay_filelist));
         menu.getMenu().add(R.string.addtofavorites_filelist);
+        menu.getMenu().add("add to mopidy");
         menu.getMenu().add("Download");
         menu.getMenu().add("Spotify");
         menu.getMenu().add("recommendation");

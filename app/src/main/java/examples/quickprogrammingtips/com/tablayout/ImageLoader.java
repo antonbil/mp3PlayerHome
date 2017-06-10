@@ -133,12 +133,13 @@ class ImageLoader {
         try{
         try {
             Bitmap bitmap;
-            if (url.startsWith("file://")){
-                url=url.replace("file:///home/wieneke/FamilyLibrary","http://192.168.2.8:8081");
+            String target = "file:///home/wieneke/FamilyLibrary";
+            if (url.startsWith(target)){
+                url=url.replace(target,"http://192.168.2.8:8081");
                 int p=url.lastIndexOf(File.separator);
                 url=url.substring(0,p)+"/folder.jpg";
             }
-            Log.v("samba","url:"+url);
+            //Log.v("samba","url:"+url);
             URL imageUrl = new URL(url);
             HttpURLConnection conn = (HttpURLConnection)imageUrl.openConnection();
             conn.setConnectTimeout(30000);
