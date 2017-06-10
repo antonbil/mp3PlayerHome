@@ -200,10 +200,14 @@ class FileListAdapter extends BaseAdapter {
                 menu1.getMenu().add("spotify-playlist");
                 menu1.getMenu().add("artist-wikipedia");
                 menu1.getMenu().add("album-wikipedia");
+                menu1.getMenu().add("recommendation");
                 menu1.show();
                 menu1.setOnMenuItemClickListener(item1 -> {
                     Mp3File mp3File=(Mp3File)fileArrayList.get(position);
                     final MainActivity context1 = MainActivity.getInstance();
+                    if (item1.getTitle().toString().equals("recommendation")) {
+                        MainActivity.getRecommendation(mp3File.getArtist());
+                    }else
                     if (item1.getTitle().toString().equals("spotify")) {
                         context1.callSpotify(mp3File.getArtist());
                     }else
@@ -222,16 +226,23 @@ class FileListAdapter extends BaseAdapter {
                 });
                 return true;
             }
-            if (title.equals("Spotify")){
+            if (title.equals("Spotify")||title.equals("recommendation")){
                 final MainActivity context1 = MainActivity.getInstance();
                 try {
                     Mp3File mp3File = (Mp3File) fileArrayList.get(position);
+                    if (title.equals("recommendation")) {
+                        MainActivity.getRecommendation(mp3File.getArtist());
+                    }else
                     context1.callSpotify(mp3File.getArtist());
                 } catch (Exception e) {
                     String[] s1 = fname.split("-");
                     String art = s1[0].trim();
                     if (isInteger(art)) art = s1[1].trim();
-                    context1.callSpotify(art.replace("/", ""));
+                    art=art.replace("/", "");
+                    if (title.equals("recommendation")) {
+                        MainActivity.getRecommendation(art);
+                    }else
+                    context1.callSpotify(art);
                 }
 
             } else
@@ -293,6 +304,7 @@ class FileListAdapter extends BaseAdapter {
         menu.getMenu().add(R.string.addtofavorites_filelist);
         menu.getMenu().add("Download");
         menu.getMenu().add("Spotify");
+        menu.getMenu().add("recommendation");
         return menu;
     }
 

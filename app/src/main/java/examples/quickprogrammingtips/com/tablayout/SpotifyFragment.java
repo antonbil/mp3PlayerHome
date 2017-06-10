@@ -1127,6 +1127,11 @@ public class SpotifyFragment extends Fragment implements
             }
 
             @Override
+            public void recommendation(int counter) {
+                String s = getData().tracksPlaylist.get(counter).artists.get(0).name;
+                MainActivity.getRecommendation(s);
+            }
+            @Override
             public void displayArtist(int counter) {
                 try{
 
@@ -1815,16 +1820,15 @@ public class SpotifyFragment extends Fragment implements
                 arrayAdapter,
                 (dialog, which) -> {
                     final String user = arrayAdapter.getItem(which);
-                    getRecommendation(user,"classical");
+                    getRecommendation(user,"&seed_genres=classical&target_instrumentalness=1");
                 });
         builderSingle.show();
     }
 
-    public static void getRecommendation(String artist,String genre){
-        if (genre.length()>0)
-            genre="&seed_genres="+genre;
+    public static void getRecommendation(String artist,String extra){
+
         String artistid=searchSpotifyArtist(artist);
-        String urlString = String.format("https://api.spotify.com/v1/recommendations?market=NL&seed_artists=%s%s&limit=100",artistid,genre);
+        String urlString = String.format("https://api.spotify.com/v1/recommendations?market=NL&seed_artists=%s%s&limit=100",artistid,extra);
         String getResult = getStringFromUrl(urlString);
         JSONArray items = null;
         clearSpotifyPlaylist();

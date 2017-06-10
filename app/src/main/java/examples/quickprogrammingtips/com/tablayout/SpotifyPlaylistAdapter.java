@@ -113,6 +113,13 @@ class SpotifyPlaylistAdapter extends PlanetAdapter {
     }
 
     @Override
+    public void recommendation(int counter) {
+        MainActivity.getRecommendation(SpotifyFragment.getData().tracksPlaylist.get(counter).artists.get(0).name);
+
+
+    }
+
+    @Override
     public void displayArtistWikipedia(int counter) {
         String s = SpotifyFragment.getData().tracksPlaylist.get(counter).artists.get(0).name;
         MainActivity.startWikipediaPage(s);

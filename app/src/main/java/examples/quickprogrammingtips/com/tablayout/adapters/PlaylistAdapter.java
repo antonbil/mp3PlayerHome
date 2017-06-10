@@ -173,6 +173,7 @@ public class PlaylistAdapter extends BaseAdapter {
                 menu.getMenu().add("remove->");//submenu
                 menu.getMenu().add("move->");//submenu
                 menu.getMenu().add("spotify");//submenu
+            menu.getMenu().add("recommendation");//submenu
             menu.getMenu().add("info->");//submenu
             menu.getMenu().add("transfer->");//submenu
             menu.getMenu().add("large image");
@@ -190,6 +191,9 @@ public class PlaylistAdapter extends BaseAdapter {
                         MainActivity.displayLargeImage(MainActivity.getInstance(), file);
 
                     } else
+                    if (item.getTitle().toString().equals("recommendation")) {
+                        MainActivity.getRecommendation(mp3File.getArtist());
+                    }else
                     if (item.getTitle().toString().equals("spotify")) {
                         MainActivity.getInstance().callSpotify(mp3File.getArtist());
 

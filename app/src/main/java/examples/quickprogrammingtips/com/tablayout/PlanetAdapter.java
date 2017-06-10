@@ -54,6 +54,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
     public abstract void replaceAndPlayAlbum(int counter);
     public abstract void addAndPlayAlbum(int counter);
     public abstract void albumArtistWikipedia(int counter);
+    public abstract void recommendation(int counter);
     public abstract void addAlbum(int counter);
     public abstract void transferPlaylist();
     public abstract void addAlbumNoplay(int counter);
@@ -206,6 +207,8 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                     addAlbum(position);
                 } else if (title.equals("display artist")) {
                     displayArtist(position);
+                } else if (title.equals("recommendation")) {
+                    recommendation(position);
                 } else if (title.equals("wikipedia")) {
                     displayArtistWikipedia(position);
                 } else if (title.equals("large picture")) {
@@ -225,6 +228,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("add album to favorites");
             menu.getMenu().add("display artist");
             menu.getMenu().add("wikipedia");
+            menu.getMenu().add("recommendation");
             menu.getMenu().add("-->transfer");
             menu.getMenu().add("large image");
         } else {
@@ -237,6 +241,9 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                         break;
                     case "add and play":
                         addAndPlayAlbum(position);
+                        break;
+                    case "recommendation":
+                        recommendation(position);
                         break;
                     case "wikipedia artist":
                         albumArtistWikipedia(position);
@@ -261,6 +268,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("add");//submenu
             menu.getMenu().add("add album to favorites");//submenu
             menu.getMenu().add("wikipedia artist");//submenu
+            menu.getMenu().add("recommendation");
             menu.getMenu().add("large image");
 
         }

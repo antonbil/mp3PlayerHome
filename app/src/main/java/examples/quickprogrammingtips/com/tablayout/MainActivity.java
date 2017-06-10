@@ -740,6 +740,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         SpotifyFragment.getRecommendationArtist();
     }
 
+    public static void getRecommendation(String artist){
+        SpotifyFragment.getRecommendation(artist,"");
+    }
+
     public void doDutchAlbumTop40() {
         SpotifyFragment.albumTop100Nl();
     }

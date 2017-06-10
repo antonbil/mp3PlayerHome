@@ -55,6 +55,7 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
                     PopupMenu menu = new PopupMenu(convertView2.getContext(), convertView2);
                     menu.getMenu().add("search");
                     menu.getMenu().add("wikipedia");
+                    menu.getMenu().add("recommendation");
                     menu.show();
                     menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
@@ -79,6 +80,9 @@ public class RelatedArtistAdapter<String> extends ArrayAdapter {
                                 }
                                 if ((title.equals("wikipedia"))) {
                                     MainActivity.getInstance().startWikipediaPage(selectedItem);
+                                }
+                                if ((title.equals("recommendation"))) {
+                                    MainActivity.getInstance().getRecommendation(selectedItem);
                                 }
                             } catch (Exception e) {
                                 Log.v("samba", Log.getStackTraceString(e));
