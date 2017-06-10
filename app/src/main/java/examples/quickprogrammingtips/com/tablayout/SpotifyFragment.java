@@ -401,6 +401,7 @@ public class SpotifyFragment extends Fragment implements
         JSONObject jsonRootObject;
 
         String sb = getJsonStringFromUrl(data, urlString);
+        Log.v("samba",sb);
         try {
             jsonRootObject = new JSONObject(sb);
             return jsonRootObject.getJSONArray("result");
@@ -2546,45 +2547,51 @@ public class SpotifyFragment extends Fragment implements
         Track nt = (Track) getData().hm.get(trackid);
         try {
             if (nt == null) {
-                nt = new Track();
                 JSONObject o = new JSONObject(getStringFromUrl("https://api.spotify.com/v1/tracks/" + trackid));
-                nt.id = trackid;
-                List<ArtistSimple> a = new ArrayList<>();
-                Artist art = new Artist();
-                art.name = o.getJSONArray("artists").getJSONObject(0).getString("name");
-                a.add(art);
-                nt.artists = a;
-                Album alb = new Album();
-                alb.name = o.getJSONObject("album").getString("name");//track_number
-                alb.id = o.getJSONObject("album").getString("id");
-                nt.name = o.getString("name");//duration_ms
-                nt.track_number=o.getInt("track_number");
-                alb.images=new ArrayList<>();
-                Image im=new Image();
-                try{
-                    im.url= o.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
-                    /*MainActivity.getInstance().imageLoader.DisplayImage(im.url, bitmap -> {
-                        MainActivity.getInstance().runOnUiThread(() -> {});
-                    });*/
-                    /*DownLoadImageUrlTask.albumPictures.put(alb.id, im.url);
-                    new DownLoadImageTask() {
-
-                        @Override
-                        public void setImage(final Bitmap logo) {
-                        }
-                    }.execute(im.url);*/
-
-                } catch (Exception e) {
-                    im.url="";
-                }
-                alb.images.add(im);
-                nt.duration_ms = o.optLong("duration_ms");//
-                nt.album = alb;
+                nt = getTrack(trackid, o);
                 getData().hm.put(nt.id, nt);
             }
         } catch (Exception e) {
             /**/
         }
+        return nt;
+    }
+
+    @NonNull
+    public static Track getTrack(String trackid, JSONObject o) throws JSONException {
+        Track nt;
+        nt = new Track();
+        nt.id = trackid;
+        List<ArtistSimple> a = new ArrayList<>();
+        Artist art = new Artist();
+        art.name = o.getJSONArray("artists").getJSONObject(0).getString("name");
+        a.add(art);
+        nt.artists = a;
+        Album alb = new Album();
+        alb.name = o.getJSONObject("album").getString("name");//track_number
+        try{
+            alb.id = o.getJSONObject("album").getString("id");
+        } catch (Exception e) {
+
+        }
+        nt.name = o.getString("name");//duration_ms
+
+        try{
+            nt.track_number=o.getInt("track_number");
+        } catch (Exception e) {
+            nt.track_number=o.getInt("track_no");
+        }
+        alb.images=new ArrayList<>();
+        Image im=new Image();
+        try{
+            im.url= o.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
+
+        } catch (Exception e) {
+            im.url="";
+        }
+        alb.images.add(im);
+        nt.duration_ms = o.optLong("duration_ms");//
+        nt.album = alb;
         return nt;
     }
 

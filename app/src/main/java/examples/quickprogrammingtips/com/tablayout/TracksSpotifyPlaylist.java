@@ -93,19 +93,45 @@ class TracksSpotifyPlaylist {
                                 String trackid;
                                 PlaylistItem pi2 = null;
                                 JSONObject o = items.getJSONObject(i);
-                                trackid = o.getJSONObject("track").getString("uri").replace("spotify:track:", "");
-                                if (trackid.length() == 0) continue;
-                                for (int j = 0; j < SpotifyFragment.getData().previousAlbumTracks.size(); j++) {
-                                    PlaylistItem pi = SpotifyFragment.getData().previousAlbumTracks.get(j);
-                                    if (pi.id.equals(trackid)) {
-                                        pi2 = pi;
-                                        tracks.add(SpotifyFragment.getData().previousTracksPlaylist.get(j));
-                                        albumList1.add(pi.text);
-                                        albumTracks1.add(pi);
+                                trackid = o.getJSONObject("track").getString("uri");
+                                //Track nt = (Track) getData().hm.get(trackid);
+                                if (trackid.startsWith("file://")){
+
+                                    prevAlbum = createNewTrack(albumList1, albumTracks1, prevAlbum, trackid,o.getJSONObject("track"),false);
+
+                                /*
+                                uri (string) – track URI
+name (string) – track name
+artists (list of Artist) – track artists
+album (Album) – track album
+composers (list of Artist) – track composers
+performers (list of Artist) – track performers
+genre (string) – track genre
+track_no (integer or None if unknown) – track number in album
+disc_no (integer or None if unknown) – disc number in album
+date (string) – track release date (YYYY or YYYY-MM-DD)
+length (integer or None if there is no duration) – track length in milliseconds
+bitrate (integer) – bitrate in kbit/s
+comment (string) – track comment
+musicbrainz_id (string) – MusicBrainz ID
+last_modified (integer or None if unknown) – Represents last
+                                 */
+                                }else {
+
+                                    trackid = trackid.replace("spotify:track:", "");
+                                    if (trackid.length() == 0) continue;
+                                    for (int j = 0; j < SpotifyFragment.getData().previousAlbumTracks.size(); j++) {
+                                        PlaylistItem pi = SpotifyFragment.getData().previousAlbumTracks.get(j);
+                                        if (pi.id.equals(trackid)) {
+                                            pi2 = pi;
+                                            tracks.add(SpotifyFragment.getData().previousTracksPlaylist.get(j));
+                                            albumList1.add(pi.text);
+                                            albumTracks1.add(pi);
+                                        }
                                     }
-                                }
-                                if (pi2 == null) {
-                                    prevAlbum = createNewTrack(albumList1, albumTracks1, prevAlbum, trackid);
+                                    if (pi2 == null) {
+                                        prevAlbum = createNewTrack(albumList1, albumTracks1, prevAlbum, trackid,o.getJSONObject("track"),true);
+                                    }
                                 }
                                 if (i == inbetween) {
                                     updateListview(albumList1, albumTracks1);
@@ -147,9 +173,22 @@ class TracksSpotifyPlaylist {
             }
     }
 
-    private String createNewTrack(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1, String prevAlbum, String trackid) {
-        if (trackid.length() > 0) {
-            Track t = SpotifyFragment.getTrack(trackid);
+    private String createNewTrack(ArrayList<String> albumList1, ArrayList<PlaylistItem> albumTracks1, String prevAlbum, String trackid, JSONObject track, boolean notLocal) {
+        if (trackid.length() > 0)
+        {
+            Track t =null;
+            if (notLocal)
+                t = SpotifyFragment.getTrack(trackid);
+            else{
+                try {
+                        t = SpotifyFragment.getInstance().getTrack(trackid,track);
+                        //Log.v("samba",t.name);
+                        SpotifyFragment.getInstance().getData().hm.put(t.id, t);
+                } catch (Exception e) {
+                    Log.v("samba", Log.getStackTraceString(e));
+                }
+
+            }
             tracks.add(t);
             SpotifyFragment.getData().previousTracksPlaylist.add(t);
             final PlaylistItem pi = new PlaylistItem();
