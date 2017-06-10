@@ -133,6 +133,12 @@ class ImageLoader {
         try{
         try {
             Bitmap bitmap;
+            if (url.startsWith("file://")){
+                url=url.replace("file:///home/wieneke/FamilyLibrary","http://192.168.2.8:8081");
+                int p=url.lastIndexOf(File.separator);
+                url=url.substring(0,p)+"/folder.jpg";
+            }
+            Log.v("samba","url:"+url);
             URL imageUrl = new URL(url);
             HttpURLConnection conn = (HttpURLConnection)imageUrl.openConnection();
             conn.setConnectTimeout(30000);
@@ -145,7 +151,7 @@ class ImageLoader {
             bitmap = decodeFile(f);
             return bitmap;
         } catch (Throwable ex){
-            ex.printStackTrace();
+            //ex.printStackTrace();
             if(ex instanceof OutOfMemoryError)
                 memoryCache.clear();
             return null;

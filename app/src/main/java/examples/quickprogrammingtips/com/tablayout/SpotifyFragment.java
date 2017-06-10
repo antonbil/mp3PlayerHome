@@ -2488,8 +2488,10 @@ public class SpotifyFragment extends Fragment implements
                                         imageurl = new JSONObject(getResult).getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
                                     }
 
+                                    try {
                                     DownLoadImageUrlTask.setAlbumPicture(t.album.id, imageurl);
                                     MainActivity.getAlbumPicturesIds().put(t.album.id, imageurl);
+                                }catch(Exception e){}
                             }
                         MainActivity.getInstance().imageLoader.DisplayImage(MainActivity.getAlbumPicturesIds().get(t.album.id), bitmap -> {
                             MainActivity.getInstance().runOnUiThread(() -> {
@@ -2578,8 +2580,10 @@ public class SpotifyFragment extends Fragment implements
 
         try{
             nt.track_number=o.getInt("track_number");
+            nt.duration_ms = o.optLong("duration_ms");//
         } catch (Exception e) {
             nt.track_number=o.getInt("track_no");
+            nt.duration_ms = o.optLong("length");
         }
         alb.images=new ArrayList<>();
         Image im=new Image();
@@ -2587,10 +2591,13 @@ public class SpotifyFragment extends Fragment implements
             im.url= o.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
 
         } catch (Exception e) {
-            im.url="";
+            im.url=trackid;
         }
         alb.images.add(im);
-        nt.duration_ms = o.optLong("duration_ms");//
+        try{
+            Log.v("sambe","duration:"+nt.duration_ms);
+    } catch (Exception e) {
+    }
         nt.album = alb;
         return nt;
     }
