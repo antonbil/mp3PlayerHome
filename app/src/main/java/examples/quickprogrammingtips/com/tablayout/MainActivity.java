@@ -251,8 +251,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //DebugLog.log("Text:5");
             ArrayList<String> menuItemsArray = new ArrayList<>(
                     Arrays.asList("Settings", "Large Display",
-                            "sep", "Search mpd", "Search album", "sep", "New albums categories", "Dutch album top 100", "Billboard top albums",
-                            "New albums","Classical newest","Playlists users", "Spotify Album Shortcuts","Recommendation Artist", "sep", "Volume", "Refresh Spotify",
+                            "sep", "Search mpd", "Search album", "sep", "Dutch album top 100", "Billboard top albums",
+                            "sep", "New albums categories","New albums","Classical newest","sep", "Spotify Album Shortcuts","sep","Playlists users","Get Genre Recommendation",
+                            "Mood list","Recommendation Artist", "sep", "Volume", "Refresh Spotify",
                             "sep", "Playlists", "sep", "Close"));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                     R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
@@ -286,7 +287,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         case "Dutch album top 100":
                             doDutchAlbumTop40();
                             break;
-                        //
+                        case "Get Genre Recommendation":
+                            getGenreRecommendation();
+                            break;
+                        case "Mood list":
+                            getMoodLists();
+                            break;
+                        //getMoodLists
 
                         case "Billboard top albums":
                             doBillboardAlbumTop200();
@@ -747,6 +754,13 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         SpotifyFragment.getNewest(genre);
     }
 
+    public void getGenreRecommendation(){
+        SpotifyFragment.getGenreRecommendation();
+    }
+    public void getMoodLists(){
+        SpotifyFragment.getMoodLists();
+    }
+//
     public static void getRecommendation(String artist){
         SpotifyFragment.getRecommendation(artist,"");
     }

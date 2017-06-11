@@ -336,6 +336,8 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void playAtPosition(int position){
+        if (position<0)
+            position=0;
         JSONArray playlist = getPlaylist();
         try {
             int plid=playlist.getJSONObject(position).getInt("tlid");
@@ -343,7 +345,7 @@ public class SpotifyFragment extends Fragment implements
                     ipAddress);
             GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.set_repeat\", \"params\": {\"value\":true} }",
                     ipAddress);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -502,7 +504,7 @@ public class SpotifyFragment extends Fragment implements
             response = "";
             int responseCode=myURLConnection.getResponseCode();
 
-            Log.d("samba", "response code is " + responseCode);
+            //Log.d("samba", "response code is " + responseCode);
 
             if (responseCode == HttpsURLConnection.HTTP_OK) {
                 String line;
@@ -1796,6 +1798,89 @@ public class SpotifyFragment extends Fragment implements
         };
 
     }
+    public static void getMoodLists(){
+        try {
+            MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
+
+                @Override
+                public void generateList(ArrayList<NewAlbum> newAlbums) {
+                    try{
+                        String urlString = "https://api.spotify.com/v1/browse/categories?country=NL&limit=50";
+                        String getResult = getStringFromUrl(urlString);
+                        JSONArray items = new JSONObject(getResult).getJSONObject("categories").getJSONArray("items");
+                        for (int i = 0; i < items.length(); i++) {
+                            try{
+                                String href=items.getJSONObject(i).getString("id");
+                                String imageurl=items.getJSONObject(i).getJSONArray("icons").getJSONObject(0).getString("url");;
+                                String playlistname=items.getJSONObject(i).getString("name");
+                                newAlbums.add(new NewAlbum(href, playlistname, "", imageurl));
+                            } catch (Exception e) {
+                                Log.v("samba", Log.getStackTraceString(e));
+
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+
+                    }
+                }
+
+
+                @Override
+                public void addToFavorites(NewAlbum newAlbum) {
+                    //newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
+                    //generateLists();
+                }
+                @Override
+                public boolean processAlbum(NewAlbum category){
+                    //Log.v("samba","category:"+ category.url);
+                    getPlaylists(String.format("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50",category.url),true);
+                    return true;}
+                @Override
+                public void executeUrl(String s){
+                    try {
+                        Log.v("samba","pl3:"+ s);
+                        //SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), s);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            };
+
+
+            {
+                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
+                MainActivity.getInstance().startActivity(intent);
+            }
+            // }
+        } catch (Exception e) {
+            Log.v("samba", Log.getStackTraceString(e));
+        }
+
+    }
+    public static void getGenreRecommendation(){
+        String url="https://api.spotify.com/v1/recommendations/available-genre-seeds";
+        String getResult = getStringFromUrl(url);
+        JSONArray items = null;
+        ArrayList<String> genres=new ArrayList<>();
+        try {
+            items = new JSONObject(getResult).getJSONArray("genres");
+            for (int i = 0; i < items.length(); i++) {
+
+                String genre=items.get(i).toString();
+                genres.add(genre);
+            }
+            new ListOptionsAndSelect("recommendation based on genre", genres) {
+                @Override
+                void processNewest(String genre) {
+                    getRecommendation("seed_genres="+genre);
+                }
+            };
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     public static void getNewest(String genre){
         /*
         The field filter year can be used with album, artist and track searches to limit the results to a particular year (for example, q=bob%20year:2014) or date range (for example, q=bob%20year:1980-2020).
@@ -1848,7 +1933,12 @@ Other possible field filters, depending on object types being searched, include 
     public static void getRecommendation(String artist,String extra){
 
         String artistid=searchSpotifyArtist(artist);
-        String urlString = String.format("https://api.spotify.com/v1/recommendations?market=NL&seed_artists=%s%s&limit=100",artistid,extra);
+        String seedArtist = String.format("seed_artists=%s%s", artistid, extra);
+        getRecommendation(seedArtist);
+    }
+
+    private static void getRecommendation(String seed) {
+        String urlString = "https://api.spotify.com/v1/recommendations?market=NL&"+ seed+"&limit=100";
         String getResult = getStringFromUrl(urlString);
         JSONArray items = null;
         clearSpotifyPlaylist();
@@ -1882,6 +1972,7 @@ Other possible field filters, depending on object types being searched, include 
             e.printStackTrace();
         }
     }
+
     public static void listPlaylists() {
         ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"));
 
@@ -1895,6 +1986,13 @@ Other possible field filters, depending on object types being searched, include 
         };
     }
     public static void listPlaylists(String spotifyuser) {
+        String urlString = String.format("https://api.spotify.com/v1/users/%s/playlists",spotifyuser);
+        getPlaylists(urlString,false);
+
+
+    }
+
+    private static void getPlaylists(final String urlString, boolean playlistsInbetween) {
         try {
             MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
 
@@ -1903,9 +2001,12 @@ Other possible field filters, depending on object types being searched, include 
                     //must be:"redactie_oor:playlist:3N9rTO6YG7kjWETJGOEvQY
                     //
                     try{
-                        String urlString = String.format("https://api.spotify.com/v1/users/%s/playlists",spotifyuser);
                         String getResult = getStringFromUrl(urlString);
-                        JSONArray items = new JSONObject(getResult).getJSONArray("items");
+                        JSONArray items;
+                        if (playlistsInbetween)
+                            items = new JSONObject(getResult).getJSONObject("playlists").getJSONArray("items");
+                        else
+                            items = new JSONObject(getResult).getJSONArray("items");
                         for (int i = 0; i < items.length(); i++) {
                             try{
                                 String href=items.getJSONObject(i).getString("uri");
@@ -1927,29 +2028,21 @@ Other possible field filters, depending on object types being searched, include 
 
                 @Override
                 public void addToFavorites(NewAlbum newAlbum) {
-                    /*
-                                                        case "add to favorites":
-                                        String[] parts = url.split(":");
-                                        SpotifyFragment.addAlbumToFavorites(
-                                                Favorite.SPOTIFYPRIVATEPLAYLIST + url, parts[parts.length - 1], null);
-
-                                        break;
-
-                     */
                     newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
                     generateLists();
                 }
-                /*@Override
-                public boolean processChoice(String choice, NewAlbumsActivity.ListAdapter listAdapter, ArrayList<NewAlbum> items, int position) {
-                    Log.v("samba","pl3:"+ choice);
-                    return true;
-                }*/
-
 
                 @Override
                 public boolean processAlbum(NewAlbum album){
+                    try{
                     Log.v("samba","pl2:"+ album.url);
+                    if (album.url.startsWith("spotify:user:spotify:"))
+                        addPlaylistForUserSpotify(album.url);
+                                else
                     SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), (album.url));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                     return true;}
                 @Override
                 public void executeUrl(String s){
@@ -1973,11 +2066,8 @@ Other possible field filters, depending on object types being searched, include 
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
-
-
-
-
     }
+
     public static void billboardAlbumChart(final String url) {
         try {
             MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
@@ -2057,6 +2147,33 @@ Other possible field filters, depending on object types being searched, include 
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
+    }
+
+    public static void addPlaylistForUserSpotify(String id){
+
+        int p=id.lastIndexOf(":");
+        id=id.substring(p+1);
+        String getResult = getStringFromUrl("https://api.spotify.com/v1/users/spotify/playlists/"+id);
+        JSONArray items;
+        try {
+            items = new JSONObject(getResult).getJSONObject("tracks").getJSONArray("items");
+            ArrayList<String> ids=new ArrayList<>();
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject o = items.getJSONObject(i).getJSONObject("track");
+                String trackid=o.getString("id");
+                ids.add(trackid);
+            }
+            new AddTracksToPlaylist(ids, MainActivity.getInstance()) {
+                @Override
+                public void atEnd() {
+                        refreshPlaylistFromSpotify(null, MainActivity.getInstance());
+                }
+
+            }.run();
+
+        } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 
     public static class getEntirePlaylistFromSpotify {
@@ -2627,7 +2744,7 @@ Other possible field filters, depending on object types being searched, include 
 
             int responseCode=urlConnection.getResponseCode();
 
-            Log.d("samba", "response code is " + responseCode);
+            //Log.d("samba", "response code is " + responseCode);
 
             if (responseCode == HttpsURLConnection.HTTP_OK) {
                 String line;
