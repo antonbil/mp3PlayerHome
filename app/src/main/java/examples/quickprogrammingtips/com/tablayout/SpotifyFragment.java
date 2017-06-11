@@ -825,28 +825,13 @@ public class SpotifyFragment extends Fragment implements
         if (directoryListing.size()>0) {
 
             MainActivity.getInstance().spotifyShortcutsDoc =null;
-            AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
-            builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
-            builderSingle.setTitle("Select Directory");
+            new ListOptionsAndSelect("Select Directory", directoryListing) {
+                @Override
+                void processNewest(String dir) {
+                    showSpotifyAlbumlistDirectory(url + "/" + dir,directoryListing);;
+                }
+            };
 
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                    MainActivity.getInstance(),
-                    android.R.layout.select_dialog_singlechoice);
-            for (String cat : directoryListing) {
-                arrayAdapter.add(cat);
-            }
-
-            builderSingle.setNegativeButton(
-                    "cancel",
-                    (dialog, which) -> dialog.dismiss());
-
-            builderSingle.setAdapter(
-                    arrayAdapter,
-                    (dialog, which) -> {
-                        final String dir = arrayAdapter.getItem(which);
-                        showSpotifyAlbumlistDirectory(url + "/" + dir,directoryListing);
-                    });
-            builderSingle.show();
         } else{
             try{
                 MainActivity.getInstance().trackelements = MainActivity.getInstance().spotifyShortcutsDoc.getElementsByClass("spotifyalbum");
@@ -953,28 +938,14 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void newAlbumsCategories() {
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
-        builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
-        builderSingle.setTitle("Select Category");
 
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                MainActivity.getInstance(),
-                android.R.layout.select_dialog_singlechoice);
-        for (String cat : CATEGORY_IDS) {
-            arrayAdapter.add(cat);
-        }
+        new ListOptionsAndSelect("Select Category", CATEGORY_IDS) {
+            @Override
+            void processNewest(String cat) {
+                spotifyNewMusic(cat);
+            }
+        };
 
-        builderSingle.setNegativeButton(
-                "cancel",
-                (dialog, which) -> dialog.dismiss());
-
-        builderSingle.setAdapter(
-                arrayAdapter,
-                (dialog, which) -> {
-                    final String cat = arrayAdapter.getItem(which);//title1.replace("new albums ", "");
-                    spotifyNewMusic(cat);
-                });
-        builderSingle.show();
     }
 
     public static void spotifyNewMusic(final String cat) {
@@ -1804,28 +1775,12 @@ public class SpotifyFragment extends Fragment implements
     public static void getRecommendationArtist(){
         ArrayList<String> userListing=new ArrayList<>(Arrays.asList("Bach", "Couperin", "Beethoven", "Mozart","Grieg","Arvo Part"));
         String title="Select artist for recommendation";
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
-        builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
-        builderSingle.setTitle(title);
-
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                MainActivity.getInstance(),
-                android.R.layout.select_dialog_singlechoice);
-        for (String cat : userListing) {
-            arrayAdapter.add(cat);
-        }
-
-        builderSingle.setNegativeButton(
-                "cancel",
-                (dialog, which) -> dialog.dismiss());
-
-        builderSingle.setAdapter(
-                arrayAdapter,
-                (dialog, which) -> {
-                    final String user = arrayAdapter.getItem(which);
-                    getRecommendation(user,"&seed_genres=classical&target_instrumentalness=1");
-                });
-        builderSingle.show();
+        new ListOptionsAndSelect(title, userListing) {
+            @Override
+            void processNewest(String user) {
+                getRecommendation(user,"&seed_genres=classical&target_instrumentalness=1");
+            }
+        };
     }
 
     public static void getNewest() {
@@ -1833,28 +1788,12 @@ public class SpotifyFragment extends Fragment implements
                 "ambient", "soul","rnb","techno"));
 
         String title="Select user";
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
-        builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
-        builderSingle.setTitle(title);
-
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                MainActivity.getInstance(),
-                android.R.layout.select_dialog_singlechoice);
-        for (String cat : userListing) {
-            arrayAdapter.add(cat);
-        }
-
-        builderSingle.setNegativeButton(
-                "cancel",
-                (dialog, which) -> dialog.dismiss());
-
-        builderSingle.setAdapter(
-                arrayAdapter,
-                (dialog, which) -> {
-                    final String user = arrayAdapter.getItem(which);
-                    getNewest(user);
-                });
-        builderSingle.show();
+        new ListOptionsAndSelect(title, userListing) {
+            @Override
+            void processNewest(String user) {
+                getNewest(user);
+            }
+        };
 
     }
     public static void getNewest(String genre){
@@ -1947,29 +1886,13 @@ Other possible field filters, depending on object types being searched, include 
         ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"));
 
         String title="Select user";
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
-        builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
-        builderSingle.setTitle(title);
 
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                MainActivity.getInstance(),
-                android.R.layout.select_dialog_singlechoice);
-        for (String cat : userListing) {
-            arrayAdapter.add(cat);
-        }
-
-        builderSingle.setNegativeButton(
-                "cancel",
-                (dialog, which) -> dialog.dismiss());
-
-        builderSingle.setAdapter(
-                arrayAdapter,
-                (dialog, which) -> {
-                    final String user = arrayAdapter.getItem(which);
-                    listPlaylists(user);
-                });
-        builderSingle.show();
-
+        new ListOptionsAndSelect(title, userListing) {
+            @Override
+            void processNewest(String user) {
+                listPlaylists(user);
+            }
+        };
     }
     public static void listPlaylists(String spotifyuser) {
         try {
@@ -2995,6 +2918,36 @@ Other possible field filters, depending on object types being searched, include 
         public void doSomethingWithId(String id, Image image){
         }
     }
+    abstract static class ListOptionsAndSelect{
+        ListOptionsAndSelect(String title,ArrayList<String>  userListing) {
+            AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
+            builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
+            builderSingle.setTitle(title);
+
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                    MainActivity.getInstance(),
+                    android.R.layout.select_dialog_singlechoice);
+            for (String cat : userListing) {
+                arrayAdapter.add(cat);
+            }
+
+            builderSingle.setNegativeButton(
+                    "cancel",
+                    (dialog, which) -> dialog.dismiss());
+
+            builderSingle.setAdapter(
+                    arrayAdapter,
+                    (dialog, which) -> {
+                        final String user = arrayAdapter.getItem(which);
+                        processNewest(user);
+                    });
+            builderSingle.show();
+
+        }
+        abstract void processNewest(String user);
+
+    }
+
 }
 
 class PlaylistItem {
