@@ -202,15 +202,16 @@ public class NewAlbumsActivity extends Activity  {
                 PopupMenu menu = new PopupMenu(v.getContext(), v);
 
                 menu.setOnMenuItemClickListener(item -> {
-                    if (items.get(position).url.indexOf("playlist") > 0) {
-                        Toast.makeText(MainActivity.getInstance(), "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
-                        return true;
-                    }
 
                     if (item.getTitle().toString().equals("add album to favorites")) {
                         MainActivity.getInstance().fillListviewWithValues.addToFavorites(items.get(position));
 
                     } else if (item.getTitle().toString().equals("add album")) {
+                        if (items.get(position).url.indexOf("playlist") > 0) {
+                            Toast.makeText(MainActivity.getInstance(), "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+
                         AddAlbumToPlaylist(position);
                     } else if (item.getTitle().toString().equals("large image")) {
                         MainActivity.displayLargeImage(getThis, p.getImage());

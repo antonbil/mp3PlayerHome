@@ -211,7 +211,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                     recommendation(position);
                 } else if (title.equals("wikipedia")) {
                     displayArtistWikipedia(position);
-                } else if (title.equals("large picture")) {
+                } else if (title.equals("large image")) {
                     MainActivity.displayLargeImage(getThis, imageUrl);
                 } else if (item.getTitle().toString().equals("-->transfer")) {
                     //Log.v("samba","transfer planetadapter");
