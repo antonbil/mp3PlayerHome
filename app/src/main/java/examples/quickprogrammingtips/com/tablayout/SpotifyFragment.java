@@ -1833,7 +1833,6 @@ public class SpotifyFragment extends Fragment implements
                 }
                 @Override
                 public boolean processAlbum(NewAlbum category){
-                    //Log.v("samba","category:"+ category.url);
                     getPlaylists(String.format("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50",category.url),true);
                     return true;}
                 @Override
