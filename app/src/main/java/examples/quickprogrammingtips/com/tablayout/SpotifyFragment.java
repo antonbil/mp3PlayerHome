@@ -1828,6 +1828,84 @@ public class SpotifyFragment extends Fragment implements
         builderSingle.show();
     }
 
+    public static void getNewest() {
+        ArrayList<String> userListing=new ArrayList<>(Arrays.asList("classical", "electronic", "progressive+rock", "instrumental","indie+rock","funk","shoegaze",
+                "ambient", "soul","rnb","techno"));
+
+        String title="Select user";
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(MainActivity.getInstance());
+        builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
+        builderSingle.setTitle(title);
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                MainActivity.getInstance(),
+                android.R.layout.select_dialog_singlechoice);
+        for (String cat : userListing) {
+            arrayAdapter.add(cat);
+        }
+
+        builderSingle.setNegativeButton(
+                "cancel",
+                (dialog, which) -> dialog.dismiss());
+
+        builderSingle.setAdapter(
+                arrayAdapter,
+                (dialog, which) -> {
+                    final String user = arrayAdapter.getItem(which);
+                    getNewest(user);
+                });
+        builderSingle.show();
+
+    }
+    public static void getNewest(String genre){
+        /*
+        The field filter year can be used with album, artist and track searches to limit the results to a particular year (for example, q=bob%20year:2014) or date range (for example, q=bob%20year:1980-2020).
+
+The field filter tag:new can be used in album searches to retrieve only albums released in the last two weeks. The field filter tag:hipster can be used in album searches to retrieve only albums with the lowest 10% popularity.
+
+Other possible field filters, depending on object types being searched, include genre (applicable to tracks and artists), upc, and isrc. For example, q=lil%20genre:%22southern%20hip%20hop%22&type=artist. Use double quotation marks around the genre keyword string if it contains spaces.
+         */
+        MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
+
+            @Override
+            public void generateList(ArrayList<NewAlbum> newAlbums) {
+                //curl -X GET "https://api.spotify.com/v1/search?q=%3Aclassical%3A+tag%3Anew%3A&type=album"
+                int start=0;
+                getNextNewest(newAlbums, 0);
+                getNextNewest(newAlbums, 50);
+            }
+
+            private void getNextNewest(ArrayList<NewAlbum> newAlbums, int start) {
+                String urlString = "https://api.spotify.com/v1/search?q=%3A"+genre+"%3A+tag%3Anew%3A&type=album&limit=50&offset="+start;
+                String getResult = getStringFromUrl(urlString);
+                JSONArray items = null;
+                try {
+                    items = new JSONObject(getResult).getJSONObject("albums").getJSONArray("items");
+                    for (int i = 0; i < items.length(); i++) {
+                        try {
+                            JSONObject o = items.getJSONObject(i);
+                            String id=o.getString("id");
+                            String artist = o.getJSONArray("artists").getJSONObject(0).getString("name");
+                            String albumName = o.getString("name");
+                            String uri = o.getString("uri");
+                            String imageuri = o.getJSONArray("images").getJSONObject(0).getString("url");
+                            newAlbums.add(new NewAlbum(id, artist, String.format("%s",albumName), imageuri));
+                        } catch (Exception e) {
+                            Log.v("samba", Log.getStackTraceString(e));
+
+                        }
+                   }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        };
+        Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
+        MainActivity.getInstance().startActivity(intent);
+    }
     public static void getRecommendation(String artist,String extra){
 
         String artistid=searchSpotifyArtist(artist);

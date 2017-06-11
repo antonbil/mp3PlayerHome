@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             ArrayList<String> menuItemsArray = new ArrayList<>(
                     Arrays.asList("Settings", "Large Display",
                             "sep", "Search mpd", "Search album", "sep", "New albums categories", "Dutch album top 100", "Billboard top albums",
-                            "New albums","Playlists users", "Spotify Album Shortcuts","Recommendation Artist", "sep", "Volume", "Refresh Spotify",
+                            "New albums","Classical newest","Playlists users", "Spotify Album Shortcuts","Recommendation Artist", "sep", "Volume", "Refresh Spotify",
                             "sep", "Playlists", "sep", "Close"));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                     R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
@@ -298,6 +298,10 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                         case "Recommendation Artist":
                             getRecommendationArtist();
+                            break;
+
+                        case "Classical newest":
+                            getNewest("classical");
                             break;
 
                         case "New albums":
@@ -738,6 +742,9 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     }
     public void getRecommendationArtist(){
         SpotifyFragment.getRecommendationArtist();
+    }
+    public void getNewest(String genre){
+        SpotifyFragment.getNewest(genre);
     }
 
     public static void getRecommendation(String artist){
