@@ -1710,8 +1710,7 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void newAlbums() {
-        try {
-            MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
+        displayList(new FillListviewWithValues() {
 
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
@@ -1757,21 +1756,7 @@ public class SpotifyFragment extends Fragment implements
                     generateLists();
                 }
 
-            };
-
-
-            {
-                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
-                MainActivity.getInstance().startActivity(intent);
-            }
-            // }
-        } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
-        }
-
-
-
-
+            });
     }
 
     public static void getRecommendationArtist(){
@@ -1799,20 +1784,20 @@ public class SpotifyFragment extends Fragment implements
 
     }
     public static void getMoodLists(){
-        try {
-            MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
+            displayList(new FillListviewWithValues() {
 
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
-                    try{
+                    try {
                         String urlString = "https://api.spotify.com/v1/browse/categories?country=NL&limit=50";
                         String getResult = getStringFromUrl(urlString);
                         JSONArray items = new JSONObject(getResult).getJSONObject("categories").getJSONArray("items");
                         for (int i = 0; i < items.length(); i++) {
-                            try{
-                                String href=items.getJSONObject(i).getString("id");
-                                String imageurl=items.getJSONObject(i).getJSONArray("icons").getJSONObject(0).getString("url");;
-                                String playlistname=items.getJSONObject(i).getString("name");
+                            try {
+                                String href = items.getJSONObject(i).getString("id");
+                                String imageurl = items.getJSONObject(i).getJSONArray("icons").getJSONObject(0).getString("url");
+                                ;
+                                String playlistname = items.getJSONObject(i).getString("name");
                                 newAlbums.add(new NewAlbum(href, playlistname, "", imageurl));
                             } catch (Exception e) {
                                 Log.v("samba", Log.getStackTraceString(e));
@@ -1831,33 +1816,41 @@ public class SpotifyFragment extends Fragment implements
                     //newFavorite(Favorite.SPOTIFYALBUM + newAlbum.url.replace("spotify:album:", ""), newAlbum.artist + "-" + newAlbum.album, Favorite.NEWALBUM, newAlbum.getImage());
                     //generateLists();
                 }
+
                 @Override
-                public boolean processAlbum(NewAlbum category){
-                    getPlaylists(String.format("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50",category.url),true);
-                    return true;}
+                public boolean processAlbum(NewAlbum category) {
+                    getPlaylists(String.format("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50", category.url), true);
+                    return true;
+                }
+
                 @Override
-                public void executeUrl(String s){
+                public void executeUrl(String s) {
                     try {
-                        Log.v("samba","pl3:"+ s);
+                        Log.v("samba", "pl3:" + s);
                         //SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), s);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-            };
+            });
+
+    }
+
+    private static void displayList(FillListviewWithValues fillList) {
+        try{
+            MainActivity.getInstance().fillListviewWithValues = fillList;
 
 
             {
                 Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
                 MainActivity.getInstance().startActivity(intent);
             }
-            // }
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
-
     }
+
     public static void getGenreRecommendation(){
         String url="https://api.spotify.com/v1/recommendations/available-genre-seeds";
         String getResult = getStringFromUrl(url);
@@ -1888,7 +1881,7 @@ The field filter tag:new can be used in album searches to retrieve only albums r
 
 Other possible field filters, depending on object types being searched, include genre (applicable to tracks and artists), upc, and isrc. For example, q=lil%20genre:%22southern%20hip%20hop%22&type=artist. Use double quotation marks around the genre keyword string if it contains spaces.
          */
-        MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
+        displayList(new FillListviewWithValues() {
 
             @Override
             public void generateList(ArrayList<NewAlbum> newAlbums) {
@@ -1925,9 +1918,7 @@ Other possible field filters, depending on object types being searched, include 
                 }
             }
 
-        };
-        Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
-        MainActivity.getInstance().startActivity(intent);
+        });
     }
     public static void getRecommendation(String artist,String extra){
 
@@ -1992,8 +1983,7 @@ Other possible field filters, depending on object types being searched, include 
     }
 
     private static void getPlaylists(final String urlString, boolean playlistsInbetween) {
-        try {
-            MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
+        displayList(new FillListviewWithValues() {
 
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
@@ -2054,22 +2044,11 @@ Other possible field filters, depending on object types being searched, include 
                     }
                 }
 
-            };
-
-
-            {
-                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
-                MainActivity.getInstance().startActivity(intent);
-            }
-            // }
-        } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
-        }
+            });
     }
 
     public static void billboardAlbumChart(final String url) {
-        try {
-            MainActivity.getInstance().fillListviewWithValues = new FillListviewWithValues() {
+        displayList(new FillListviewWithValues() {
 
                 @Override
                 protected void addMenuItems(ArrayList<String> menuItems){
@@ -2135,17 +2114,7 @@ Other possible field filters, depending on object types being searched, include 
                     generateLists();
                 }
 
-            };
-
-
-            {
-                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
-                MainActivity.getInstance().startActivity(intent);
-            }
-            // }
-        } catch (Exception e) {
-            Log.v("samba", Log.getStackTraceString(e));
-        }
+            });
     }
 
     public static void addPlaylistForUserSpotify(String id){

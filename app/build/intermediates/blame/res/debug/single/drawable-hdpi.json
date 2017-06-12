@@ -1,15 +1,15 @@
 [
     {
-        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-hdpi/common_google_signin_btn_icon_light_focused.9.png",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-hdpi/common_google_signin_btn_icon_light_focused.9.png"
+        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-hdpi/common_plus_signin_btn_text_light_focused.9.png",
+        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-hdpi/common_plus_signin_btn_text_light_focused.9.png"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-hdpi/ic_sync_black_24dp.png",
         "source": "/home/anton/tablayout/app/src/main/res/drawable-hdpi/ic_sync_black_24dp.png"
     },
     {
-        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-hdpi/common_plus_signin_btn_text_light_focused.9.png",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-hdpi/common_plus_signin_btn_text_light_focused.9.png"
+        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-hdpi/common_google_signin_btn_icon_light_focused.9.png",
+        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-hdpi/common_google_signin_btn_icon_light_focused.9.png"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-hdpi/common_google_signin_btn_text_dark_pressed.9.png",
@@ -20,12 +20,12 @@
         "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-hdpi/common_plus_signin_btn_icon_light_normal.9.png"
     },
     {
-        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-hdpi/common_plus_signin_btn_icon_dark_disabled.9.png",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-hdpi/common_plus_signin_btn_icon_dark_disabled.9.png"
-    },
-    {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-hdpi/common_google_signin_btn_text_light_pressed.9.png",
         "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-hdpi/common_google_signin_btn_text_light_pressed.9.png"
+    },
+    {
+        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-hdpi/common_plus_signin_btn_icon_dark_disabled.9.png",
+        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-hdpi/common_plus_signin_btn_icon_dark_disabled.9.png"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-hdpi/common_google_signin_btn_icon_dark_pressed.9.png",

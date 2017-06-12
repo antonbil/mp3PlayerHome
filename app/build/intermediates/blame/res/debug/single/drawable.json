@@ -68,16 +68,16 @@
         "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_ratingbar_material.xml"
     },
     {
-        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_item_background_holo_dark.xml",
-        "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_item_background_holo_dark.xml"
+        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_btn_check_material.xml",
+        "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_btn_check_material.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_btn_radio_material.xml",
         "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_btn_radio_material.xml"
     },
     {
-        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_btn_check_material.xml",
-        "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_btn_check_material.xml"
+        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_item_background_holo_dark.xml",
+        "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_item_background_holo_dark.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/ic_refresh_white.png",
