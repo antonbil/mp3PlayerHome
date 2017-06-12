@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -193,11 +192,11 @@ public class NewAlbumsActivity extends Activity  {
                         return true;
                     }
             );
-            createPopupMenuForClickOnImage(position, p, image);
+            createPopupMenuForClickOnImage(position, p, image,p.url.indexOf("playlist") > 0);
             return rowView;
         }
 
-        public void createPopupMenuForClickOnImage(int position, NewAlbum p, ImageView image) {
+        public void createPopupMenuForClickOnImage(int position, NewAlbum p, ImageView image, boolean playlist) {
             image.setOnClickListener(v -> {
                 PopupMenu menu = new PopupMenu(v.getContext(), v);
 
@@ -207,11 +206,6 @@ public class NewAlbumsActivity extends Activity  {
                         MainActivity.getInstance().fillListviewWithValues.addToFavorites(items.get(position));
 
                     } else if (item.getTitle().toString().equals("add album")) {
-                        if (items.get(position).url.indexOf("playlist") > 0) {
-                            Toast.makeText(MainActivity.getInstance(), "playlist cannot be started, only added to playlist", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }
-
                         AddAlbumToPlaylist(position);
                     } else if (item.getTitle().toString().equals("large image")) {
                         MainActivity.displayLargeImage(getThis, p.getImage());
@@ -227,8 +221,10 @@ public class NewAlbumsActivity extends Activity  {
                     return true;
                 });
 
-                 menu.getMenu().add("add album");
-                menu.getMenu().add("add album to favorites");
+                if (!playlist) {
+                    menu.getMenu().add("add album");
+                    menu.getMenu().add("add album to favorites");
+                }
                 menu.getMenu().add("play");//
                 menu.getMenu().add("wikipedia");
                 menu.getMenu().add("recommendation");

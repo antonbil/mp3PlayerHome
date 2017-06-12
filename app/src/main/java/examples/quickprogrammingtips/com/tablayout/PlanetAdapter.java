@@ -32,7 +32,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
     }
 
     protected Context context;
-    private Context getThis;
+    public Context getThis;
     private int mypos=1;
 
     public abstract void removeUp(int counter);//onClickFunc

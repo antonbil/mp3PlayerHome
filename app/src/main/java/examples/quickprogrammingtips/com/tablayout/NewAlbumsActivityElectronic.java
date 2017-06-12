@@ -5,6 +5,13 @@ import android.util.Log;
 import java.util.ArrayList;
 
 public     class NewAlbumsActivityElectronic extends NewAlbumsActivity {
+    @Override
+    protected void onDestroy() {
+        MainActivity.getInstance().fillListviewWithValues.finish();
+        super.onDestroy();
+
+    }
+
     protected String url;
 
     public void setUrl(){

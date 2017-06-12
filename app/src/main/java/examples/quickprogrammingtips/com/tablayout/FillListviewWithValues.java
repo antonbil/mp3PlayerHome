@@ -29,4 +29,8 @@ abstract class FillListviewWithValues {
     public String getText() {
         return "";
     }
+
+    public void finish() {
+
+    }
 }

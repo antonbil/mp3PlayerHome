@@ -664,19 +664,25 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public void onBackPressed() {
-        int tabSelected=tabLayout.getSelectedTabPosition();
-        if ((tabSelected== SMBTAB)||(tabSelected==MPDTAB)) {
-            if (tabSelected == SMBTAB)
-                listFragment.back();
-            if (tabSelected == MPDTAB) getDbFragment().back();
+        try{
+            int tabSelected = tabLayout.getSelectedTabPosition();
+            if ((tabSelected == SMBTAB) || (tabSelected == MPDTAB)) {
+                if (tabSelected == SMBTAB)
+                    listFragment.back();
+                if (tabSelected == MPDTAB) getDbFragment().back();
+            } else
+                new AlertDialog.Builder(this)
+                        .setMessage("Are you sure you want to exit?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", (dialog1, id) -> MainActivity.this.finish())
+                        .setNegativeButton("No", null)
+                        .show();
+        }catch(Exception e){
+            //this.onCreate(null);
+            tabLayout.getTabAt(1).select();
         }
-        else
-        new AlertDialog.Builder(this)
-                .setMessage("Are you sure you want to exit?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", (dialog1, id) -> MainActivity.this.finish())
-                .setNegativeButton("No", null)
-                .show();
+
+
     }
 
     @Override
@@ -890,8 +896,16 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
         alert.show();
     }
 
+    static AlertDialog alert;
     public static void displayLargeImage(Context context, String url) {
-        final AlertDialog alert = new AlertDialog.Builder(context).create();
+
+        try{
+            alert = new AlertDialog.Builder(context).create();
+        } catch(Exception e)
+
+        {
+            alert = new AlertDialog.Builder(MainActivity.getInstance().getApplicationContext()).create();
+        }
 
         LinearLayout linear = new LinearLayout(context);
 

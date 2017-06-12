@@ -1783,8 +1783,9 @@ public class SpotifyFragment extends Fragment implements
         };
 
     }
+    static FillListviewWithValues fl;
     public static void getMoodLists(){
-            displayList(new FillListviewWithValues() {
+            fl=new FillListviewWithValues() {
 
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
@@ -1819,7 +1820,7 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 public boolean processAlbum(NewAlbum category) {
-                    getPlaylists(String.format("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50", category.url), true);
+                    getPlaylists(String.format("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50", category.url), true, fl);
                     return true;
                 }
 
@@ -1833,7 +1834,8 @@ public class SpotifyFragment extends Fragment implements
                     }
                 }
 
-            });
+            };
+        displayList(fl);
 
     }
 
@@ -1973,12 +1975,12 @@ Other possible field filters, depending on object types being searched, include 
     }
     public static void listPlaylists(String spotifyuser) {
         String urlString = String.format("https://api.spotify.com/v1/users/%s/playlists",spotifyuser);
-        getPlaylists(urlString,false);
+        getPlaylists(urlString,false,null);
 
 
     }
 
-    private static void getPlaylists(final String urlString, boolean playlistsInbetween) {
+    private static void getPlaylists(final String urlString, boolean playlistsInbetween, FillListviewWithValues previous) {
         displayList(new FillListviewWithValues() {
 
                 @Override
@@ -2039,8 +2041,14 @@ Other possible field filters, depending on object types being searched, include 
                         e.printStackTrace();
                     }
                 }
+                @Override
+                public void finish() {
+                    MainActivity.getInstance().fillListviewWithValues = previous;
 
-            });
+                }
+
+
+        });
     }
 
     public static void billboardAlbumChart(final String url) {
