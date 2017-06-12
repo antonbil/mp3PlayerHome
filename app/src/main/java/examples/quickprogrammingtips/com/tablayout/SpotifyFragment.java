@@ -1840,12 +1840,8 @@ public class SpotifyFragment extends Fragment implements
     private static void displayList(FillListviewWithValues fillList) {
         try{
             MainActivity.getInstance().fillListviewWithValues = fillList;
-
-
-            {
-                Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
-                MainActivity.getInstance().startActivity(intent);
-            }
+            Intent intent = new Intent(MainActivity.getInstance(), NewAlbumsActivityElectronic.class);
+            MainActivity.getInstance().startActivity(intent);
         } catch (Exception e) {
             Log.v("samba", Log.getStackTraceString(e));
         }
