@@ -1962,7 +1962,7 @@ Other possible field filters, depending on object types being searched, include 
     }
 
     public static void listPlaylists() {
-        ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"));
+        ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "digsternl", "digster","billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"));
 
         String title="Select user";
 
