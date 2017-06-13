@@ -1965,7 +1965,7 @@ Other possible field filters, depending on object types being searched, include 
     }
     static ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "digsternl", "digster",
             "billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"
-            ,"radio2nl","radio3nl","radio4nl","radio6","116697183(Studio Brussel)"));
+            ,"radio2nl","radio3nl","radio4nl","radio6","116697183(Studio Brussel)"));//
 
     public static void listPlaylists() {
 
