@@ -2042,7 +2042,7 @@ Other possible field filters, depending on object types being searched, include 
                 }
 
                 @Override
-                public boolean processAlbum(NewAlbum album){
+                public boolean processAlbum(NewAlbum album){//
                     clearSpotifyPlaylist();
                     try{
                     Log.v("samba","pl2:"+ album.url);
