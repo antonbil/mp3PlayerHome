@@ -80,12 +80,12 @@
         "source": "/home/anton/tablayout/app/src/main/res/drawable-xxhdpi/ic_info_black_24dp.png"
     },
     {
-        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-xxhdpi/common_plus_signin_btn_icon_light_disabled.9.png",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-xxhdpi/common_plus_signin_btn_icon_light_disabled.9.png"
-    },
-    {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-xxhdpi/common_google_signin_btn_text_light_focused.9.png",
         "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-xxhdpi/common_google_signin_btn_text_light_focused.9.png"
+    },
+    {
+        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-xxhdpi/common_plus_signin_btn_icon_light_disabled.9.png",
+        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable-xxhdpi/common_plus_signin_btn_icon_light_disabled.9.png"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable-xxhdpi/common_plus_signin_btn_icon_dark_pressed.9.png",

@@ -1,13 +1,23 @@
 package examples.quickprogrammingtips.com.tablayout;
 
+import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
 
 public     class NewAlbumsActivityElectronic extends NewAlbumsActivity {
+
+    FillListviewWithValues fv;
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        fv=MainActivity.getInstance().fillListviewWithValues;
+        }
+            @Override
     protected void onDestroy() {
-        MainActivity.getInstance().fillListviewWithValues.finish();
+                try {
+                    fv.finish();
+                }catch(Exception e){}
         super.onDestroy();
 
     }
@@ -19,14 +29,14 @@ public     class NewAlbumsActivityElectronic extends NewAlbumsActivity {
     }
     @Override
     public void processAlbum(NewAlbum album) {
-       if (!MainActivity.getInstance().fillListviewWithValues.processAlbum(album))
+       if (!getfv().processAlbum(album))
            super.processAlbum(album);
     }
 
     @Override
     public void AddAlbumToPlaylist(String uri){
         NewAlbum album=new NewAlbum(uri,"","");
-        if (!MainActivity.getInstance().fillListviewWithValues.processAlbum(album))
+        if (!getfv().processAlbum(album))
             super.processAlbum(album);
     }
 
@@ -35,21 +45,26 @@ public     class NewAlbumsActivityElectronic extends NewAlbumsActivity {
     protected void doAction(String s) {
         Log.v("samba","pl3:"+s);
         this.finish();
-        MainActivity.getInstance().fillListviewWithValues.executeUrl(s);
+            getfv().executeUrl(s);
     }
     @Override
     public void generateList(ArrayList<NewAlbum> newAlbums) {
-        MainActivity.getInstance().fillListviewWithValues.generateList(newAlbums);
-        MainActivity.getInstance().fillListviewWithValues.addMenuItems(menuItemsArray);
+        getfv().generateList(newAlbums);
+        getfv().addMenuItems(menuItemsArray);
 
     }
     @Override
     protected String getText(){
-        String text = MainActivity.getInstance().fillListviewWithValues.getText();
+        String text = getfv().getText();
         if (text.length()>0)
         text = " " + text + " ";
         return text;
     }
 
+    public FillListviewWithValues getfv() {
+        if (fv==null)
+            return MainActivity.getInstance().fillListviewWithValues; else
+        return fv;
+    }
 }
 

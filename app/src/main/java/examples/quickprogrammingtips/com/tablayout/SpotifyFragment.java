@@ -1822,7 +1822,7 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 public boolean processAlbum(NewAlbum category) {
-                    getPlaylists("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50", true, fl, categories, category.url);
+                    getPlaylists("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50", true, fl, new ArrayList<>(), category.url);
                     return true;
                 }
 
@@ -1929,6 +1929,7 @@ Other possible field filters, depending on object types being searched, include 
 
     private static void getRecommendation(String seed) {
         String urlString = "https://api.spotify.com/v1/recommendations?market=NL&"+ seed+"&limit=100";
+        Log.v("samba","url:"+urlString);
         String getResult = getStringFromUrl(urlString);
         JSONArray items = null;
         clearSpotifyPlaylist();
@@ -1962,7 +1963,9 @@ Other possible field filters, depending on object types being searched, include 
             e.printStackTrace();
         }
     }
-    static ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "digsternl", "digster","billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"));
+    static ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "digsternl", "digster",
+            "billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"
+            ,"radio2nl","radio3nl","radio4nl","radio6","116697183"));
 
     public static void listPlaylists() {
 
@@ -1990,7 +1993,7 @@ Other possible field filters, depending on object types being searched, include 
                 if (strings.size()>0) {
                     menuItems.add("sep");
                     ArrayList<String> menuItemsadd = new ArrayList<>();
-                    for (String cat : CATEGORY_IDS) {
+                    for (String cat : strings) {
                         menuItemsadd.add("http://" + cat);
                     }
                     menuItems.addAll(menuItemsadd);
