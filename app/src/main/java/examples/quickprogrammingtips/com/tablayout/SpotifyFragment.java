@@ -1785,7 +1785,8 @@ public class SpotifyFragment extends Fragment implements
     }
     static FillListviewWithValues fl;
     public static void getMoodLists(){
-            fl=new FillListviewWithValues() {
+        ArrayList<String> categories = new ArrayList<>();
+        fl=new FillListviewWithValues() {
 
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
@@ -1799,6 +1800,7 @@ public class SpotifyFragment extends Fragment implements
                                 String imageurl = items.getJSONObject(i).getJSONArray("icons").getJSONObject(0).getString("url");
                                 ;
                                 String playlistname = items.getJSONObject(i).getString("name");
+                                categories.add(playlistname);
                                 newAlbums.add(new NewAlbum(href, playlistname, "", imageurl));
                             } catch (Exception e) {
                                 Log.v("samba", Log.getStackTraceString(e));
@@ -1820,7 +1822,7 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 public boolean processAlbum(NewAlbum category) {
-                    getPlaylists(String.format("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50", category.url), true, fl);
+                    getPlaylists("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50", true, fl, categories, category.url);
                     return true;
                 }
 
@@ -1960,9 +1962,9 @@ Other possible field filters, depending on object types being searched, include 
             e.printStackTrace();
         }
     }
+    static ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "digsternl", "digster","billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"));
 
     public static void listPlaylists() {
-        ArrayList<String> userListing=new ArrayList<>(Arrays.asList("bbc_playlister", "nederlandse_top_40", "digsternl", "digster","billboard.com", "redactie_oor","guardianmusic","kusctim","classical_music_indy","otterhouse", "spotify"));
 
         String title="Select user";
 
@@ -1974,21 +1976,38 @@ Other possible field filters, depending on object types being searched, include 
         };
     }
     public static void listPlaylists(String spotifyuser) {
-        String urlString = String.format("https://api.spotify.com/v1/users/%s/playlists",spotifyuser);
-        getPlaylists(urlString,false,null);
+        String urlString = "https://api.spotify.com/v1/users/%s/playlists";
+        getPlaylists(urlString,false,null, userListing,spotifyuser);
 
 
     }
 
-    private static void getPlaylists(final String urlString, boolean playlistsInbetween, FillListviewWithValues previous) {
+    private static void getPlaylists(final String urlString, boolean playlistsInbetween, FillListviewWithValues previous, ArrayList<String> strings, String myitem) {
         displayList(new FillListviewWithValues() {
 
+            @Override
+            protected void addMenuItems(ArrayList<String> menuItems){
+                if (strings.size()>0) {
+                    menuItems.add("sep");
+                    ArrayList<String> menuItemsadd = new ArrayList<>();
+                    for (String cat : CATEGORY_IDS) {
+                        menuItemsadd.add("http://" + cat);
+                    }
+                    menuItems.addAll(menuItemsadd);
+                }
+            }
+            @Override
+            public void executeUrl(String s){
+                s= s.replace("http://","");
+                getPlaylists(urlString, playlistsInbetween, previous, strings, s);
+                //spotifyNewMusic(s);
+            }
                 @Override
                 public void generateList(ArrayList<NewAlbum> newAlbums) {
                     //must be:"redactie_oor:playlist:3N9rTO6YG7kjWETJGOEvQY
                     //
                     try{
-                        String getResult = getStringFromUrl(urlString);
+                        String getResult = getStringFromUrl(String.format(urlString,myitem));
                         JSONArray items;
                         if (playlistsInbetween)
                             items = new JSONObject(getResult).getJSONObject("playlists").getJSONArray("items");
@@ -2031,16 +2050,6 @@ Other possible field filters, depending on object types being searched, include 
                     e.printStackTrace();
                 }
                     return true;}
-                @Override
-                public void executeUrl(String s){
-                    try {
-                        Log.v("samba","pl2:"+ s);
-                        SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), s);
-                        //getAlbumtracksFromSpotify(album.id, album.artist, activityThis);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
                 @Override
                 public void finish() {
                     MainActivity.getInstance().fillListviewWithValues = previous;
