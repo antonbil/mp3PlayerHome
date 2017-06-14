@@ -1824,7 +1824,7 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 public boolean processAlbum(NewAlbum category) {
-                    getPlaylists("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50", true, new ArrayList<>(), category.url);
+                    getPlaylists("https://api.spotify.com/v1/browse/categories/%s/playlists", true, new ArrayList<>(), category.url);
                     return true;
                 }
 
@@ -2452,29 +2452,40 @@ Other possible field filters, depending on object types being searched, include 
         });
     }
 
+    int inbetweenresult=0;
     public void getArtistAlbums(String id, final String beatles, SpotifyService spotify) {
-        spotify.getArtistAlbums(id, new Callback<Pager<Album>>() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("limit",50);
+        SpotifyFragment.getData().albumList.clear();
+        SpotifyFragment.getData().albums.clear();
+        SpotifyFragment.getData().albumIds.clear();
+        //albumTracks.clear();
+        int offset=0;
+        getAlbumsInternal(id, beatles, spotify, map, offset);
+    }
+
+    private void getAlbumsInternal(String id, final String beatles, SpotifyService spotify, Map<String, Object> map, int offset) {
+        map.put("offset",offset);
+        spotify.getArtistAlbums(id, map,new Callback<Pager<Album>>() {
 
             @Override
             public void success(Pager<Album> albumPager, Response response) {
                 try{
+                    String previous = "";
+                    inbetweenresult=0;
                     if (albumPager.items.size()==0){
                         Toast.makeText(activityThis, "no albums for "+beatles,
                                 Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    SpotifyFragment.getData().albumList.clear();
-                    SpotifyFragment.getData().albums.clear();
-                    SpotifyFragment.getData().albumIds.clear();
-                    //albumTracks.clear();
-                    String previous = "";
-                    for (Album album : albumPager.items)
+                    for (Album album : albumPager.items) {
+                        inbetweenresult++;
                         if (!album.name.equals(previous)) {
-                            PlaylistItem pi=new PlaylistItem();
-                            pi.pictureVisible=true;
-                            pi.url=getImageUrl(album.images);
-                            pi.text=String.format("%s",album.name);
-                            pi.time=0;
+                            PlaylistItem pi = new PlaylistItem();
+                            pi.pictureVisible = true;
+                            pi.url = getImageUrl(album.images);
+                            pi.text = String.format("%s", album.name);
+                            pi.time = 0;
 
                             SpotifyFragment.getData().albumList.add(album.name);
                             SpotifyFragment.getData().albumIds.add(album.id);
@@ -2482,15 +2493,21 @@ Other possible field filters, depending on object types being searched, include 
                             previous = album.name;
 
                         }
+                    }
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
-                MainActivity.getInstance().runOnUiThread(() -> {
-                            albumAdapter.notifyDataSetChanged();
-                            Utils.setDynamicHeight(albumsListview, 0);
-                });
-                DatabaseListThread a=new DatabaseListThread(MainActivity.getInstance().getLogic().getMpc(),String.format("find \"artist\" \"%s\"",beatles), getInstance());
-                a.start();
+                if (albumPager.items.size()==50){
+                    getAlbumsInternal( id, beatles,  spotify,  map,  offset+50);
+
+                }else {
+                    MainActivity.getInstance().runOnUiThread(() -> {
+                        albumAdapter.notifyDataSetChanged();
+                        Utils.setDynamicHeight(albumsListview, 0);
+                    });
+                    DatabaseListThread a = new DatabaseListThread(MainActivity.getInstance().getLogic().getMpc(), String.format("find \"artist\" \"%s\"", beatles), getInstance());
+                    a.start();
+                }
 
             }
 

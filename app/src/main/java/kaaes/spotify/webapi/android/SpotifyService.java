@@ -763,7 +763,7 @@ public interface SpotifyService {
      *
      * @param artistId The Spotify ID for the artist.
      * @param options  Optional parameters. For list of supported parameters see
-     *                 <a href="https://developer.spotify.com/web-api/get-artists-albums/">endpoint documentation</a>
+     *                 <a href="eate ">endpoint documentation</a>
      * @param callback Callback method
      * @see <a href="https://developer.spotify.com/web-api/get-artists-albums/">Get an Artist's Albums</a>
      */
