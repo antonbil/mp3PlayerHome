@@ -2187,7 +2187,7 @@ Other possible field filters, depending on object types being searched, include 
                 if (playlistid.startsWith("spotify"))prefix="";
                 String id=(prefix+playlistid);
                 ids.add(id);
-                DebugLog.log("play "+id);
+                //DebugLog.log("play "+id);
                 new AddTracksToPlaylist(ids, getThis) {
                     @Override
                     public void atEnd() {

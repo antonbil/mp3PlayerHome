@@ -301,7 +301,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     @Override
     public void favoritesCall(Favorite favorite, String id) {
-        DebugLog.log( favorite.getUri());
+        //DebugLog.log( favorite.getUri());
         //spotify://
         FragmentActivity activity = this.getActivity();
         if (favorite.getUri().startsWith(Favorite.SPOTIFYPLAYLISTPREFIX)){
@@ -417,7 +417,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     "", "Loading, please wait", true);
         }
         SpotifyFragment.clearSpotifyPlaylist();
-        DebugLog.log("inside:"+uri);
+        //DebugLog.log("inside:"+uri);
         new SpotifyFragment.getEntirePlaylistFromSpotify(uri, MainActivity.getInstance()){
             @Override
             public void atLast() {
