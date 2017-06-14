@@ -304,18 +304,6 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         DebugLog.log( favorite.getUri());
         //spotify://
         FragmentActivity activity = this.getActivity();
-        if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)){
-            try {
-                String uri = favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST, "");
-                executeExternalSpotifyPlaylist(activity, uri);
-                //SpotifyPlaylistFragment.refresh=true;
-            } catch (Exception e) {
-                DebugLog.log( Log.getStackTraceString(e));
-                //DebugLog.log( Log.getStackTraceString(e));
-            }
-
-        }
-        else
         if (favorite.getUri().startsWith(Favorite.SPOTIFYPLAYLISTPREFIX)){
             try {
                 String uri = favorite.getUri();
@@ -340,6 +328,17 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                     FavoriteRecord book = FavoriteRecord.findById(FavoriteRecord.class, favorite.getRecord().getId());
                     book.delete();
                     getFavorites();
+                }
+
+            }else
+            if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)){
+                try {
+                    String uri = favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST, "");
+                    executeExternalSpotifyPlaylist(activity, uri);
+                    //SpotifyPlaylistFragment.refresh=true;
+                } catch (Exception e) {
+                    DebugLog.log( Log.getStackTraceString(e));
+                    //DebugLog.log( Log.getStackTraceString(e));
                 }
 
             }
