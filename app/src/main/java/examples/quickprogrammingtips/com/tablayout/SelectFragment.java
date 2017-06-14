@@ -301,7 +301,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     @Override
     public void favoritesCall(Favorite favorite, String id) {
-        //DebugLog.log( favorite.getUri());
+        DebugLog.log( favorite.getUri());
         //spotify://
         FragmentActivity activity = this.getActivity();
         if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)){
@@ -361,7 +361,12 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 }
 
             }
-            else {
+            else
+            if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)||favorite.getUri().startsWith("spotify:")) {
+                SpotifyFragment.addPlaylist(favorite.getUri());
+                Toast.makeText(MainActivity.getInstance(), "add:"+favorite.getUri(), Toast.LENGTH_SHORT).show();
+            } else
+                {
                 String uri = favorite.getUri();
                 if (uri.startsWith(Favorite.SMBPREFIX)) {
                     if (id.equals("add to playlist")) {

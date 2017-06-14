@@ -2043,14 +2043,11 @@ Other possible field filters, depending on object types being searched, include 
 
                 @Override
                 public boolean processAlbum(NewAlbum album){//
-                    clearSpotifyPlaylist();
                     try{
-                    Log.v("samba","pl2:"+ album.url);
-                    if (album.url.startsWith("spotify:user:spotify:"))
-                        addPlaylistForUserSpotify(album.url);
-                                else
-                    SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), (album.url));
-                } catch (Exception e) {
+                        String url = album.url;
+                        Log.v("samba","pl2:"+ url);
+                        addPlaylist(url);
+                    } catch (Exception e) {
                     e.printStackTrace();
                 }
                     return true;}
@@ -2062,6 +2059,15 @@ Other possible field filters, depending on object types being searched, include 
 
 
         });
+    }
+
+    public static void addPlaylist(String url) {
+        clearSpotifyPlaylist();
+        if (url.startsWith("spotify:user:spotify:"))
+            addPlaylistForUserSpotify(url);
+                    else
+        SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), url);
+        playAtPosition(0);
     }
 
     public static void billboardAlbumChart(final String url) {
