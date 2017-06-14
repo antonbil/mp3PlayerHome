@@ -13,8 +13,6 @@ import android.widget.ArrayAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import examples.quickprogrammingtips.com.tablayout.model.Favorite;
-
 public class PlaylistsSpotifyActivity extends Activity {
     private LeftDrawerPlaylist leftDrawerPlaylist;
     private PlaylistsSpotifyActivity getThis;
@@ -126,8 +124,7 @@ public class PlaylistsSpotifyActivity extends Activity {
                                         break;
                                     case "add to favorites":
                                         String[] parts = url.split(":");
-                                        SpotifyFragment.addAlbumToFavorites(
-                                                Favorite.SPOTIFYPRIVATEPLAYLIST + url, parts[parts.length - 1], null);
+                                        SpotifyFragment.addAlbumToFavorites(url, parts[parts.length - 1], null);
 
                                         break;
                                 }
