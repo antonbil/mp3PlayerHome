@@ -1824,18 +1824,8 @@ public class SpotifyFragment extends Fragment implements
 
                 @Override
                 public boolean processAlbum(NewAlbum category) {
-                    getPlaylists("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50", true, fl, new ArrayList<>(), category.url);
+                    getPlaylists("https://api.spotify.com/v1/browse/categories/%s/playlists?limit=50", true, new ArrayList<>(), category.url);
                     return true;
-                }
-
-                @Override
-                public void executeUrl(String s) {
-                    try {
-                        Log.v("samba", "pl3:" + s);
-                        //SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), s);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                 }
 
             };
@@ -1982,12 +1972,12 @@ Other possible field filters, depending on object types being searched, include 
     }
     public static void listPlaylists(String spotifyuser) {
         String urlString = "https://api.spotify.com/v1/users/%s/playlists";
-        getPlaylists(urlString,false,null, userListing,spotifyuser);
+        getPlaylists(urlString,false,userListing,spotifyuser);
 
 
     }
 
-    private static void getPlaylists(final String urlString, boolean playlistsInbetween, FillListviewWithValues previous, ArrayList<String> strings, String myitem) {
+    private static void getPlaylists(final String urlString, boolean playlistsInbetween, ArrayList<String> strings, String myitem) {
         displayList(new FillListviewWithValues() {
 
             @Override
@@ -2004,7 +1994,7 @@ Other possible field filters, depending on object types being searched, include 
             @Override
             public void executeUrl(String s){
                 s= s.replace("http://","");
-                getPlaylists(urlString, playlistsInbetween, previous, strings, s);
+                getPlaylists(urlString, playlistsInbetween, strings, s);
                 //spotifyNewMusic(s);
             }
                 @Override
@@ -2053,12 +2043,6 @@ Other possible field filters, depending on object types being searched, include 
                     e.printStackTrace();
                 }
                     return true;}
-                @Override
-                public void finish() {
-                    MainActivity.getInstance().fillListviewWithValues = previous;
-
-                }
-
 
         });
     }
