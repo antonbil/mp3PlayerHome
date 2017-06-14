@@ -124,6 +124,8 @@ public class PlaylistsSpotifyActivity extends Activity {
                                         break;
                                     case "add to favorites":
                                         String[] parts = url.split(":");
+                                        //Log.v("samba","url:"+url);
+                                        //Log.v("samba","url2:"+parts[parts.length - 1]);
                                         SpotifyFragment.addAlbumToFavorites(url, parts[parts.length - 1], null);
 
                                         break;

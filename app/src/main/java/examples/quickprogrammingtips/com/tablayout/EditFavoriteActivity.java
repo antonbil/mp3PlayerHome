@@ -40,6 +40,7 @@ public class EditFavoriteActivity extends AppCompatActivity{
     private EditText url;
     private EditText sortkey;
     private EditText description;
+    private boolean playlist=false;
     static final int STATIC_RESULT_SELECT =3; //positive > 0 integer.
     ViewGroup vwgroup;
     private ArrayList<RadioButton> radioButtons=new ArrayList<>();
@@ -63,6 +64,8 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
         String   urlString= extras.getString("url");
         if (urlString.indexOf(":playlist:")>0) {
+            playlist=true;
+            //todo: next line can be removed
             urlString = urlString.replace("spotify:album:", "");
             urlString = urlString.replace(Favorite.SPOTIFYALBUM, "");
         }
@@ -137,6 +140,8 @@ public class EditFavoriteActivity extends AppCompatActivity{
             try {
                 FavoriteRecord favorite = FavoriteRecord.findById(FavoriteRecord.class, idString);
                 favorite.url = url.getText().toString();
+                if (playlist)
+                    favorite.url=Favorite.SPOTIFYPRIVATEPLAYLIST+favorite.url;
                 favorite.description = description.getText().toString()+";;"+sortkey.getText().toString();
                 favorite.category = tempfavorite;
                 favorite.save();
