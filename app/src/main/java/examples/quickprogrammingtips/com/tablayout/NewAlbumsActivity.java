@@ -305,7 +305,7 @@ public class NewAlbumsActivity extends Activity  {
             if (album.url.startsWith("spotify:user:spotify:"))
                 SpotifyFragment.addPlaylistForUserSpotify(album.url);
             else
-                SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), (album.url));
+                SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), (album.url), false);
 
             SpotifyFragment.playAtPosition(0);
         }

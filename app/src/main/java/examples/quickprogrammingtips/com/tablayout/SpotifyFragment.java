@@ -329,6 +329,7 @@ public class SpotifyFragment extends Fragment implements
                     ipAddress);
             GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.set_repeat\", \"params\": {\"value\":true} }",
                     ipAddress);
+            Log.v("samba","play on:");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -345,6 +346,7 @@ public class SpotifyFragment extends Fragment implements
                     ipAddress);
             GetJsonFromUrl("{\"jsonrpc\": \"2.0\", \"method\": \"core.tracklist.set_repeat\", \"params\": {\"value\":true} }",
                     ipAddress);
+            Log.v("samba","play at:"+0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -2066,7 +2068,7 @@ Other possible field filters, depending on object types being searched, include 
         if (url.startsWith("spotify:user:spotify:"))
             addPlaylistForUserSpotify(url);
                     else
-        SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), url);
+        SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), url, true);
         playAtPosition(0);
     }
 

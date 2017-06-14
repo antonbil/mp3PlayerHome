@@ -334,7 +334,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)){
                 try {
                     String uri = favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST, "");
-                    executeExternalSpotifyPlaylist(activity, uri);
+                    executeExternalSpotifyPlaylist(activity, uri,true);
                     //SpotifyPlaylistFragment.refresh=true;
                 } catch (Exception e) {
                     DebugLog.log( Log.getStackTraceString(e));
@@ -411,7 +411,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         }.run();
     }
 
-    public static void executeExternalSpotifyPlaylist(Activity activity, final String uri) {
+    public static void executeExternalSpotifyPlaylist(Activity activity, final String uri, boolean playfirst) {
         if (activity!=null) {
             loadingdialog = ProgressDialog.show(activity,
                     "", "Loading, please wait", true);
@@ -425,6 +425,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 loadingdialog.dismiss();
                 SpotifyFragment.playSpotify();
                 SpotifyPlaylistFragment.gettingList=false;
+                if (playfirst)
+                    SpotifyFragment.playAtPosition(0);
             }
         }.run();
     }

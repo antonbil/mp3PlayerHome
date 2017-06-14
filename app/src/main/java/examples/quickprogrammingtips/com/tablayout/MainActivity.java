@@ -573,8 +573,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                 @Override
                 public void atLast() {
                     loadingdialog.dismiss();
-                    SpotifyFragment.playAtPosition(0);
                     MainActivity.getInstance().startPlaylistSpotify();
+                    SpotifyFragment.playAtPosition(0);
                 }
             }.run();
         } catch (Exception e) {

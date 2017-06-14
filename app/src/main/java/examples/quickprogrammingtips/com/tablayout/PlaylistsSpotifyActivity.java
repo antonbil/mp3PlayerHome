@@ -119,7 +119,7 @@ public class PlaylistsSpotifyActivity extends Activity {
                                     //    SelectFragment.executeExternalSpotifyPlaylist30Songs(getThis, "https://open.spotify.com/" + url.substring(8).replace(":", "/"));
                                     //    break;
                                     case "play list":
-                                        SelectFragment.executeExternalSpotifyPlaylist(getThis, url);
+                                        SelectFragment.executeExternalSpotifyPlaylist(getThis, url, true);
 
                                         break;
                                     case "add to favorites":
