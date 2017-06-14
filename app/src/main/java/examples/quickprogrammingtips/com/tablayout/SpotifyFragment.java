@@ -2497,15 +2497,15 @@ Other possible field filters, depending on object types being searched, include 
                 } catch (Exception e) {
                     Log.v("samba", Log.getStackTraceString(e));
                 }
+                MainActivity.getInstance().runOnUiThread(() -> {
+                    albumAdapter.notifyDataSetChanged();
+                    Utils.setDynamicHeight(albumsListview, 0);
+                });
                 if (albumPager.items.size()==50){
                     getAlbumsInternal( id, beatles,  spotify,  map,  offset+50);
 
                 }else {
-                    MainActivity.getInstance().runOnUiThread(() -> {
-                        albumAdapter.notifyDataSetChanged();
-                        Utils.setDynamicHeight(albumsListview, 0);
-                    });
-                    DatabaseListThread a = new DatabaseListThread(MainActivity.getInstance().getLogic().getMpc(), String.format("find \"artist\" \"%s\"", beatles), getInstance());
+                     DatabaseListThread a = new DatabaseListThread(MainActivity.getInstance().getLogic().getMpc(), String.format("find \"artist\" \"%s\"", beatles), getInstance());
                     a.start();
                 }
 
