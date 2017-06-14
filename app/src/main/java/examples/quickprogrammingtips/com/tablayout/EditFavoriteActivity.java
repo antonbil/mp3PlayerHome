@@ -62,6 +62,10 @@ public class EditFavoriteActivity extends AppCompatActivity{
 
 
         String   urlString= extras.getString("url");
+        if (urlString.indexOf(":playlist:")>0) {
+            urlString = urlString.replace("spotify:album:", "");
+            urlString = urlString.replace(Favorite.SPOTIFYALBUM, "");
+        }
         String    descriptionString= extras.getString("description");
         String    categoryString= extras.getString("category");
         String    sortkeyString= extras.getString("sortkey");
