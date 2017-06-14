@@ -225,7 +225,6 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
     }
 
     public void setStaticLinks() {
-        //DebugLog.log( "set static favorites");
         ArrayList<Favorite> favoritesSpotifyListItem = favoritesListItemArray.get(0).favoritesAdded;
         favoritesSpotifyListItem.clear();
         favoritesSpotifyListItem.add(new Favorite("00tags/favorites", "favorites", "1"));
@@ -255,12 +254,6 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE", "Classical new releases", "2"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"pureclassical/playlist/3BFUsfko9tiABDX4D211sE", "Pure Classical", "2"));
         favoritesSpotifyListItem.add(new Favorite(Favorite.SPOTIFYPLAYLISTPREFIX+"naxosofficial/playlist/15zSadmJPYq07xXoPg4am1", "Naxos Official", "2"));
-        //https://play.spotify.com/user/spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE
-
-        //spotify://
-        //https://open.spotify.com/user/nederlandse_top_40/playlist/5lH9NjOeJvctAO92ZrKQNB
-        //https://open.spotify.com/user/spotify/playlist/4gWfh2NYhzzJ9NGP9D9fHE
-        //spotify:user:pureclassical:playlist:3BFUsfko9tiABDX4D211sE spotify:user:naxosofficial:playlist:15zSadmJPYq07xXoPg4am1 http://static.echonest.com/playlistminer/index.html​
     }
 
     public void setListViewHeight(ListView myListView, int height) {
@@ -301,14 +294,12 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
     @Override
     public void favoritesCall(Favorite favorite, String id) {
-        //DebugLog.log( favorite.getUri());
-        //spotify://
         FragmentActivity activity = this.getActivity();
+        //todo: check that 30 tracks is not possible anymore
         if (favorite.getUri().startsWith(Favorite.SPOTIFYPLAYLISTPREFIX)){
             try {
                 String uri = favorite.getUri();
                 executeExternalSpotifyPlaylist30Songs(activity, uri);
-                //SpotifyPlaylistFragment.refresh=true;
             } catch (Exception e) {
                 DebugLog.log( Log.getStackTraceString(e));
                 //DebugLog.log( Log.getStackTraceString(e));
@@ -318,10 +309,8 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
         else {
             if (id.equals("edit")) {
                 EditFavoriteActivity.editFavorite(getActivity(),favorite);
-                //getFavorites();
             } else if (id.equals("save")) {
                 EditFavoriteActivity.saveFavorite(favorite);
-                //getFavorites();
             } else if (id.equals("delete")) {
                 if (favorite.getRecord() != null) {
 
@@ -335,7 +324,6 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
                 try {
                     String uri = favorite.getUri().replace(Favorite.SPOTIFYPRIVATEPLAYLIST, "");
                     executeExternalSpotifyPlaylist(activity, uri,true);
-                    //SpotifyPlaylistFragment.refresh=true;
                 } catch (Exception e) {
                     DebugLog.log( Log.getStackTraceString(e));
                     //DebugLog.log( Log.getStackTraceString(e));
@@ -353,7 +341,6 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
 
                     } else {
                         SpotifyFragment.getAlbumtracksFromSpotify(favorite.getUri().replace(Favorite.SPOTIFYALBUM/*"spotifyalbum://"*/, ""), a[1], MainActivity.getInstance(), true);
-                        //SpotifyPlaylistFragment.notifyList();
                     }
                 } catch (Exception e) {
                     DebugLog.log( Log.getStackTraceString(e));
@@ -363,7 +350,6 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             else
             if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)||favorite.getUri().startsWith("spotify:")) {
                 SpotifyFragment.addPlaylist(favorite.getUri());
-                Toast.makeText(MainActivity.getInstance(), "add:"+favorite.getUri(), Toast.LENGTH_SHORT).show();
             } else
                 {
                 String uri = favorite.getUri();
@@ -442,7 +428,6 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             if (resultCode == Activity.RESULT_OK)
             {
                 // this is successful mission, do with it.
-                //favorites.clear();
                 getFavorites();
 
 
