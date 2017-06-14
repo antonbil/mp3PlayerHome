@@ -91,12 +91,12 @@ public class PlaylistsSpotifyActivity extends Activity {
                 DebugLog.log("https://open.spotify.com/"+url.substring(8).replace(":","/"));
                 if (url.startsWith("spotify:")){
                     ArrayList<String> choices=new ArrayList<>();
-                    choices.add("first 30 tracks");
-                    choices.add("entire list");
+                    //choices.add("first 30 tracks");
+                    choices.add("play list");
                     choices.add("add to favorites");
                     AlertDialog.Builder builderSingle = new AlertDialog.Builder(getThis);
                     builderSingle.setIcon(R.drawable.common_ic_googleplayservices);
-                    builderSingle.setTitle("Play entire playlist?");
+                    builderSingle.setTitle("Action playlist");
 
                     final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                             getThis,
@@ -115,10 +115,10 @@ public class PlaylistsSpotifyActivity extends Activity {
                                 final String title1 = arrayAdapter.getItem(which);
                                 assert title1 != null;
                                 switch (title1) {
-                                    case "first 30 tracks":
-                                        SelectFragment.executeExternalSpotifyPlaylist30Songs(getThis, "https://open.spotify.com/" + url.substring(8).replace(":", "/"));
-                                        break;
-                                    case "entire list":
+                                   //case "first 30 tracks":
+                                    //    SelectFragment.executeExternalSpotifyPlaylist30Songs(getThis, "https://open.spotify.com/" + url.substring(8).replace(":", "/"));
+                                    //    break;
+                                    case "play list":
                                         SelectFragment.executeExternalSpotifyPlaylist(getThis, url);
 
                                         break;
