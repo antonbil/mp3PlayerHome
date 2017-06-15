@@ -2130,8 +2130,6 @@ Other possible field filters, depending on object types being searched, include 
 
         int p=id.lastIndexOf(":");
         id=id.substring(p+1);
-        //String.format("https://api.spotify.com/v1/browse/new-releases?country=NL&limit=50&offset=%s",start);
-        int start=0;
         ArrayList<String> ids=new ArrayList<>();
         int limit=100;
         int result;
@@ -2142,10 +2140,12 @@ Other possible field filters, depending on object types being searched, include 
             i++;
         } while (result==limit);
 
+        clearSpotifyPlaylist();
         new AddTracksToPlaylist(ids, MainActivity.getInstance()) {
             @Override
             public void atEnd() {
                 refreshPlaylistFromSpotify(null, MainActivity.getInstance());
+                playAtPosition(0);
             }
 
         }.run();
