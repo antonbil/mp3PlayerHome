@@ -2132,13 +2132,12 @@ Other possible field filters, depending on object types being searched, include 
         id=id.substring(p+1);
         ArrayList<String> ids=new ArrayList<>();
         int limit=100;
-        int result;
-        //read playlists until no more items
-        int i=0;
-        do {
-            result = getPlaylistForUserSpotifyInternal(id, limit, i * limit, ids);
-            i++;
-        } while (result==limit);
+        int result=100;
+        //playlist-size maximum 1000; should be enough?
+         for (int i=0;i<10;i++) {
+            if (result == 100)
+                result = getPlaylistForUserSpotifyInternal(id, limit, i*limit, ids);
+        }
 
         clearSpotifyPlaylist();
         new AddTracksToPlaylist(ids, MainActivity.getInstance()) {
@@ -2152,7 +2151,7 @@ Other possible field filters, depending on object types being searched, include 
     }
 
     private static int getPlaylistForUserSpotifyInternal(String id, int limit, int start, ArrayList<String> ids) {
-        String getResult = getStringFromUrl(String.format("https://api.spotify.com/v1/users/spotify/playlists/"+id"&limit=%s&offset=%s",limit,start));
+        String getResult = getStringFromUrl(String.format("https://api.spotify.com/v1/users/spotify/playlists/"+id+"?limit=%s&offset=%s",limit,start));
         JSONArray items=null;
         try {
             items = new JSONObject(getResult).getJSONObject("tracks").getJSONArray("items");
@@ -2164,6 +2163,7 @@ Other possible field filters, depending on object types being searched, include 
 
         } catch (Exception e) {
                 e.printStackTrace();
+            return 0;
         }
         return items.length();
     }
