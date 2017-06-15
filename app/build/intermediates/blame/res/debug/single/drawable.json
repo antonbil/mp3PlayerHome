@@ -9,7 +9,7 @@
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/common_plus_signin_btn_icon_light.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable/common_plus_signin_btn_icon_light.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/drawable/common_plus_signin_btn_icon_light.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/design_snackbar_background.xml",
@@ -25,7 +25,7 @@
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/common_plus_signin_btn_text_dark.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable/common_plus_signin_btn_text_dark.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/drawable/common_plus_signin_btn_text_dark.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_ic_ab_back_material.xml",
@@ -68,16 +68,16 @@
         "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_ratingbar_material.xml"
     },
     {
-        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_btn_check_material.xml",
-        "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_btn_check_material.xml"
+        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_item_background_holo_dark.xml",
+        "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_item_background_holo_dark.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_btn_radio_material.xml",
         "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_btn_radio_material.xml"
     },
     {
-        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_item_background_holo_dark.xml",
-        "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_item_background_holo_dark.xml"
+        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_btn_check_material.xml",
+        "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/drawable/abc_btn_check_material.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/ic_refresh_white.png",
@@ -85,7 +85,7 @@
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/common_plus_signin_btn_text_light.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable/common_plus_signin_btn_text_light.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/drawable/common_plus_signin_btn_text_light.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_cab_background_top_material.xml",
@@ -109,7 +109,7 @@
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/common_google_signin_btn_icon_light.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable/common_google_signin_btn_icon_light.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/drawable/common_google_signin_btn_icon_light.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_seekbar_tick_mark_material.xml",
@@ -137,7 +137,7 @@
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/common_google_signin_btn_icon_dark.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable/common_google_signin_btn_icon_dark.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/drawable/common_google_signin_btn_icon_dark.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/forward.png",
@@ -145,7 +145,7 @@
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/common_google_signin_btn_text_dark.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable/common_google_signin_btn_text_dark.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/drawable/common_google_signin_btn_text_dark.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_dialog_material_background.xml",
@@ -177,7 +177,7 @@
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/common_plus_signin_btn_icon_dark.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable/common_plus_signin_btn_icon_dark.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/drawable/common_plus_signin_btn_icon_dark.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_ic_clear_material.xml",
@@ -185,7 +185,7 @@
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/common_google_signin_btn_text_light.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/drawable/common_google_signin_btn_text_light.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/drawable/common_google_signin_btn_text_light.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/drawable/abc_ratingbar_small_material.xml",

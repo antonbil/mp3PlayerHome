@@ -349,7 +349,7 @@ public class SelectFragment extends Fragment implements FavoritesInterface{
             }
             else
             if (favorite.getUri().startsWith(Favorite.SPOTIFYPRIVATEPLAYLIST)||favorite.getUri().startsWith("spotify:")) {
-                SpotifyFragment.addPlaylist(favorite.getUri());
+                SpotifyFragment.addPlaylist(this.getActivity(), favorite.getUri());
             } else
                 {
                 String uri = favorite.getUri();

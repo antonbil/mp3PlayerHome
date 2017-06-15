@@ -6,11 +6,17 @@ import android.util.Log;
 import java.util.ArrayList;
 
 public     class NewAlbumsActivityElectronic extends NewAlbumsActivity {
+    public static NewAlbumsActivityElectronic getInstance(){
+        return instance;
+    }
 
     FillListviewWithValues fv;
+    private static NewAlbumsActivityElectronic instance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+        instance=this;
         fv=MainActivity.getInstance().fillListviewWithValues;
         }
             @Override

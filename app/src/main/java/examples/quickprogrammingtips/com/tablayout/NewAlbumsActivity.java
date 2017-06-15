@@ -300,14 +300,8 @@ public class NewAlbumsActivity extends Activity  {
     public void processAlbum(NewAlbum album){
         Log.v("samba","process:"+album.url);
         if (album.url.indexOf("playlist")>0) {
-            SpotifyFragment.clearSpotifyPlaylist();
+            SpotifyFragment.addPlaylist(this,album.url);
             //AddAlbumToPlaylist(album.url);
-            if (album.url.startsWith("spotify:user:spotify:"))
-                SpotifyFragment.addPlaylistForUserSpotify(album.url);
-            else
-                SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), (album.url), false);
-
-            SpotifyFragment.playAtPosition(0);
         }
         else {
             SpotifyFragment.artistName = album.artist;

@@ -1,7 +1,7 @@
 [
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/color/common_google_signin_btn_text_light.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/color/common_google_signin_btn_text_light.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/color/common_google_signin_btn_text_light.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/color/switch_thumb_material_light.xml",
@@ -41,15 +41,15 @@
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/color/common_plus_signin_btn_text_light.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/color/common_plus_signin_btn_text_light.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/color/common_plus_signin_btn_text_light.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/color/common_google_signin_btn_text_dark.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/color/common_google_signin_btn_text_dark.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/color/common_google_signin_btn_text_dark.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/color/common_plus_signin_btn_text_dark.xml",
-        "source": "/home/anton/.android/build-cache/49d71ca236216e16d1e201e2f93f62b1106b6f2c/output/res/color/common_plus_signin_btn_text_dark.xml"
+        "source": "/home/anton/.android/build-cache/e6cc11800477da3e01a324845d49bafc8bc2b9f9/output/res/color/common_plus_signin_btn_text_dark.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/color/abc_tint_default.xml",

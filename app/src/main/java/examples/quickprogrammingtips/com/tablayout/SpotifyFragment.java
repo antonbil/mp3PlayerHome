@@ -2038,7 +2038,7 @@ Other possible field filters, depending on object types being searched, include 
                     try{
                         String url = album.url;
                         Log.v("samba","pl2:"+ url);
-                        addPlaylist(url);
+                        addPlaylist(NewAlbumsActivityElectronic.getInstance(), url);
                     } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -2047,13 +2047,12 @@ Other possible field filters, depending on object types being searched, include 
         });
     }
 
-    public static void addPlaylist(String url) {
+    public static void addPlaylist(Activity newAlbumsActivity, String url) {
         clearSpotifyPlaylist();
         if (url.startsWith("spotify:user:spotify:"))
-            addPlaylistForUserSpotify(url);
+            addPlaylistForUserSpotify(newAlbumsActivity,url);
                     else
-        SelectFragment.executeExternalSpotifyPlaylist(MainActivity.getInstance(), url, true);
-        playAtPosition(0);
+        SelectFragment.executeExternalSpotifyPlaylist(newAlbumsActivity, url, true);
     }
 
     public static void billboardAlbumChart(final String url) {
@@ -2125,14 +2124,20 @@ Other possible field filters, depending on object types being searched, include 
 
             });
     }
+    private static ProgressDialog loadingdialog;
 
-    public static void addPlaylistForUserSpotify(String id){
+    public static void addPlaylistForUserSpotify(Activity activity, String id){
+        //todo: check if this method also fit to create playlist of another user
+        if (activity!=null) {
+            loadingdialog = ProgressDialog.show(activity,
+                    "", "Loading, please wait", true);
+        }
 
         int p=id.lastIndexOf(":");
         id=id.substring(p+1);
         ArrayList<String> ids=new ArrayList<>();
         int limit=100;
-        int result=100;
+        int result=100;//to be sure first iteration is done
         //playlist-size maximum 1000; should be enough?
          for (int i=0;i<10;i++) {
             if (result == 100)
@@ -2145,6 +2150,8 @@ Other possible field filters, depending on object types being searched, include 
             public void atEnd() {
                 refreshPlaylistFromSpotify(null, MainActivity.getInstance());
                 playAtPosition(0);
+                if (activity!=null)
+                    loadingdialog.dismiss();
             }
 
         }.run();
