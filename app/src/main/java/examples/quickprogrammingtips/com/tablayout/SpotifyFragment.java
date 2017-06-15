@@ -2130,27 +2130,42 @@ Other possible field filters, depending on object types being searched, include 
 
         int p=id.lastIndexOf(":");
         id=id.substring(p+1);
-        String getResult = getStringFromUrl("https://api.spotify.com/v1/users/spotify/playlists/"+id);
-        JSONArray items;
+        //String.format("https://api.spotify.com/v1/browse/new-releases?country=NL&limit=50&offset=%s",start);
+        int start=0;
+        ArrayList<String> ids=new ArrayList<>();
+        int limit=100;
+        int result;
+        //read playlists until no more items
+        int i=0;
+        do {
+            result = getPlaylistForUserSpotifyInternal(id, limit, i * limit, ids);
+            i++;
+        } while (result==limit);
+
+        new AddTracksToPlaylist(ids, MainActivity.getInstance()) {
+            @Override
+            public void atEnd() {
+                refreshPlaylistFromSpotify(null, MainActivity.getInstance());
+            }
+
+        }.run();
+    }
+
+    private static int getPlaylistForUserSpotifyInternal(String id, int limit, int start, ArrayList<String> ids) {
+        String getResult = getStringFromUrl(String.format("https://api.spotify.com/v1/users/spotify/playlists/"+id"&limit=%s&offset=%s",limit,start));
+        JSONArray items=null;
         try {
             items = new JSONObject(getResult).getJSONObject("tracks").getJSONArray("items");
-            ArrayList<String> ids=new ArrayList<>();
-            for (int i = 0; i < items.length(); i++) {
+             for (int i = 0; i < items.length(); i++) {
                 JSONObject o = items.getJSONObject(i).getJSONObject("track");
                 String trackid=o.getString("id");
                 ids.add(trackid);
             }
-            new AddTracksToPlaylist(ids, MainActivity.getInstance()) {
-                @Override
-                public void atEnd() {
-                        refreshPlaylistFromSpotify(null, MainActivity.getInstance());
-                }
-
-            }.run();
 
         } catch (Exception e) {
                 e.printStackTrace();
-            }
+        }
+        return items.length();
     }
 
     public static class getEntirePlaylistFromSpotify {
