@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PlaylistsSpotifyActivity extends Activity {
+    public static final String HTTP_PLAYLISTS_NET_CHARTS = "http://playlists.net/charts";
     private LeftDrawerPlaylist leftDrawerPlaylist;
     private PlaylistsSpotifyActivity getThis;
     private WebView webView;
@@ -30,7 +31,7 @@ public class PlaylistsSpotifyActivity extends Activity {
 
                 ArrayList<String> menuItemsArray = new ArrayList<>(
                         Arrays.asList("Settings",
-                                "sep","Topsify", "Dutch Playlists", "Populairste", "Playlists.net","sep","Play-Dialog","sep","Close","sep"  ));
+                                "sep","Topsify", "Dutch Playlists", "Populairste", "Playlists.net","Charts","sep","Play-Dialog","sep","Close","sep"  ));
                 leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                 R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
             @Override
@@ -49,6 +50,9 @@ public class PlaylistsSpotifyActivity extends Activity {
                             webView.loadUrl(s);
                         }else
                         switch (s) {//https://muziekstreamen.com/muziek/de-populairste-spotify-playlists-dagelijks-bijgewerkt
+                            case "Charts":
+                                webView.loadUrl(HTTP_PLAYLISTS_NET_CHARTS);
+                                break;
                             case "Topsify":
                                 webView.loadUrl("http://topsify.com");
                                 break;
@@ -80,8 +84,8 @@ public class PlaylistsSpotifyActivity extends Activity {
 
         webView = (WebView) findViewById(R.id.webView1);
         webView.getSettings().setJavaScriptEnabled(true);
-            String url = "http://playlists.net/charts";
-            leftDrawerPlaylist.addItem(url);
+            String url = HTTP_PLAYLISTS_NET_CHARTS;
+            //leftDrawerPlaylist.addItem(url);
             webView.loadUrl(url);
             //noinspection deprecation
             webView.setWebViewClient(new WebViewClient() {

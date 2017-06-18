@@ -2770,6 +2770,10 @@ Other possible field filters, depending on object types being searched, include 
                     sb.append(line);
                 }
                 String retvalue=sb.toString();
+                if (retvalue.indexOf("The access token expired")>0){
+                    setSpotifyToken();
+                    return getStringFromUrl(urlString);
+                } else
                 //Log.v("samba","retvalue:"+retvalue);
                 return retvalue;
             }

@@ -251,10 +251,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             //DebugLog.log("Text:5");
             ArrayList<String> menuItemsArray = new ArrayList<>(
                     Arrays.asList("Settings", "Large Display",
-                            "sep", "Search mpd", "Search album", "sep", "Dutch album top 100", "Billboard top albums",
-                            "sep", "New albums categories","New albums","Classical newest","sep", "Spotify Album Shortcuts","sep","Playlists users","Get Genre Recommendation",
-                            "Mood list","Recommendation Artist", "sep", "Volume", "Refresh Spotify",
-                            "sep", "Playlists", "sep", "Close"));
+                            "sep", "Search mpd", "Search album", "sep", "Spotify Album Shortcuts",
+                            "sep", "Dutch album top 100", "Billboard top albums",
+                            "sep", "New albums categories","New albums","Classical newest","sep","Playlists users","Get Genre Recommendation",
+                            "Mood list","Recommendation Artist", "sep", "Playlists sites", "sep", "Volume", "Refresh Spotify",
+                            "sep", "Close"));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                     R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
                 @Override
@@ -321,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
                         case "Volume":
                             setVolume(getInstance());
                             break;
-                        case "Playlists":
+                        case "Playlists sites":
                             //DebugLog.log("miner");
                             Intent myIntent = new Intent(getInstance(), PlaylistsSpotifyActivity.class);
                             getInstance().startActivity(myIntent);
