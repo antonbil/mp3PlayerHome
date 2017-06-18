@@ -298,15 +298,20 @@ public class NewAlbumsActivity extends Activity  {
         else return "spotify:album:";
     }
     public void processAlbum(NewAlbum album){
-        Log.v("samba","process:"+album.url);
-        if (album.url.indexOf("playlist")>0) {
-            SpotifyFragment.addPlaylist(this,album.url);
+        String url = album.url;
+        Log.v("samba","process:"+ url);
+        String[] split = url.split(":");
+        if (url.startsWith("spotify:user:")&& split.length==3)
+            SpotifyFragment.listPlaylists(split[2]);
+        if (url.indexOf("playlist")>0) {
+            SpotifyFragment.addPlaylist(this, url);
             //AddAlbumToPlaylist(album.url);
         }
         else {
+            Log.v("samba","no playlist");
             SpotifyFragment.artistName = album.artist;
             try {
-                SpotifyFragment.getAlbumtracksFromSpotify(getRightSpotifyUri(album.url), album.album, this);//todo playlist not playing, because playlist must be part of uri!
+                SpotifyFragment.getAlbumtracksFromSpotify(getRightSpotifyUri(url), album.album, this);//todo playlist not playing, because playlist must be part of uri!
             } catch (Exception e) {
                 e.printStackTrace();
             }
