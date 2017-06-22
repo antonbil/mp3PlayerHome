@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
@@ -91,19 +93,24 @@ public  class ListParentFragment extends Fragment implements SambaInterface, MPC
     @Override
     public void sambaCallCompleted(ArrayList<File> files1a, ArrayList<File> filesMp3, String id) {
         if (Objects.equals(id, "add to mopidy")) {
+            int spotifyStartPosition=0;
+            JSONArray playlist = SpotifyFragment.getPlaylist();
+            if (playlist!=null) {
+                spotifyStartPosition = playlist.length();
+            }
+
             ArrayList<String> files=new ArrayList<>();
             filesMp3 = logic.sort(filesMp3);
             for (File f:filesMp3){
-                if (f instanceof Mp3File)
-                {
-                    Mp3File mp=(Mp3File)f;
-                }
                 String filename = f.getPath() + "/" + f.getFname();
                 files.add(filename);
                 SpotifyFragment.AddSpotifyItemToPlaylist("file://", filename.replace("//","/"));
 
             }
-            }else
+            SpotifyFragment.stopMpd();
+            SpotifyFragment.playlistGotoPosition(spotifyStartPosition);
+
+        }else
         if (Objects.equals(id, "Download")) {
             ArrayList<String> files=new ArrayList<>();
             String dirname="artist-album";
