@@ -2421,7 +2421,7 @@ Other possible field filters, depending on object types being searched, include 
 
         spotifyHeader.setArtistText(beatles, image);
         if (isNewArtist) {
-            SpotifyService spotify = api.getService();
+            SpotifyService spotify = getSpotifyService();
             getArtistAlbums(id, beatles, spotify);
             getRelatedArtists(id, spotify);
             SpotifyFragment.isNewArtist=false;
