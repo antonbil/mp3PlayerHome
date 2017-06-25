@@ -59,6 +59,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,6 +143,7 @@ public class SpotifyFragment extends Fragment implements
     private static ArrayList<NewAlbum> previousNewAlbums=null;
     protected SpotifyHeader spotifyHeader;
     public static String spotifyToken="";
+    public static Date timeoutSpotifyToken;
     private static SpotifyFragment instance;
     private SpotifyInterface getSpotifyInterface;
     private static int spotifyStartPosition = 0;
@@ -231,9 +233,7 @@ public class SpotifyFragment extends Fragment implements
             String ip = MainActivity.getInstance().getLogic().getMpc().getAddress();
             ipAddress = String.format("http://%s:8080/jsonrpc", ip);
             setSpotifyInterface(new SpotifyInterface());
-            api = new SpotifyApi();
-            api.setAccessToken(spotifyToken);
-            spotify = api.getService();
+            spotify = getSpotifyService();
             dialog1 = new ProgressDialog(activityThis);
 
             onActivityCreated();
@@ -246,10 +246,21 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void setSpotifyToken() {
-        if (spotifyToken.length()==0) {
+        boolean refresh=false;
+        if (timeoutSpotifyToken==null)
+            refresh=true;
+        else {
+            Date now = new Date();
+
+            if (now.getTime() - timeoutSpotifyToken.getTime() >= 59 * 60 * 1000) {
+                refresh=true;
+            }
+        }
+        if (refresh||spotifyToken.length()==0) {
             Log.v("samba","get new token:");
             String token = getSpotifyAccessToken();
             spotifyToken = token;
+            timeoutSpotifyToken=new Date();
         }
     }
 
@@ -1065,8 +1076,8 @@ public class SpotifyFragment extends Fragment implements
             }
 
             void updateSpotifyList(int counter) {
-                Log.v("samba", "Spotify-token:"+spotifyToken);
-                api.setAccessToken(spotifyToken);
+                //Log.v("samba", "Spotify-token:"+spotifyToken);
+                //api.setAccessToken(spotifyToken);
                 try {
                     getAlbumtracksFromSpotify(counter);
                 } catch (Exception e) {
@@ -1558,9 +1569,7 @@ public class SpotifyFragment extends Fragment implements
 
     public static void addSpotifyAlbumToPlaylist(final String albumid, final String albumname, final Activity getThis1, final boolean display) {
         Log.v("samba","get album:"+albumid);
-        SpotifyApi api=new SpotifyApi();
-        api.setAccessToken(spotifyToken);
-        api.getService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
+        getSpotifyService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
 
             @Override
             public void success(Pager<Track> trackPager, Response response) {
@@ -2517,7 +2526,7 @@ Other possible field filters, depending on object types being searched, include 
                         }
                     }
                 } catch (Exception e) {
-                    Log.v("samba", Log.getStackTraceString(e));
+                    //Log.v("samba", Log.getStackTraceString(e));
                 }
                 MainActivity.getInstance().runOnUiThread(() -> {
                     albumAdapter.notifyDataSetChanged();
