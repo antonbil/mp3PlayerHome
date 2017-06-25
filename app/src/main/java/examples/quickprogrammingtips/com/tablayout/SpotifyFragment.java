@@ -1201,7 +1201,7 @@ public class SpotifyFragment extends Fragment implements
             @Override
             protected void infoAlbum(int position) {
 Log.v("samba","inside spotifyfragment");
-                SpotifyFragment.infoAlbum(getData().albumIds.get(position),getData().albumList.get(position));
+                SpotifyFragment.infoAlbum(getData().albumIds.get(position),getData().albumList.get(position), MainActivity.getInstance());
             }
         };
         albumAdapter.setDisplayCurrentTrack(false);
@@ -2190,7 +2190,7 @@ Other possible field filters, depending on object types being searched, include 
         return items.length();
     }
 
-    public static void infoAlbum(String albumid, String albumname) {
+    public static void infoAlbum(String albumid, String albumname, Activity getThis) {
         //final String albumid=SpotifyFragment.getData().tracksPlaylist.get(position).album.id;
         //String albumname=SpotifyFragment.getData().tracksPlaylist.get(position).name;
         SpotifyFragment.getSpotifyService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
@@ -2213,7 +2213,7 @@ Other possible field filters, depending on object types being searched, include 
                 }
                 String s=sb.toString();
                 Log.v("samba","string:"+s);
-                new AlertDialog.Builder(MainActivity.getInstance())
+                new AlertDialog.Builder(getThis)
                         .setTitle(albumname)
                         .setMessage(s)
                         .setIcon(android.R.drawable.ic_dialog_alert)
