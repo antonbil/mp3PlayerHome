@@ -195,4 +195,13 @@ class SpotifyPlaylistAdapter extends PlanetAdapter {
     public void addAlbumNoplay(int counter) {
     }
 
+    @Override
+    protected void infoAlbum(int position) {
+        String albumid=SpotifyFragment.getData().tracksPlaylist.get(position).album.id;
+        String albumname=SpotifyFragment.getData().tracksPlaylist.get(position).name;
+
+        SpotifyFragment.infoAlbum(albumid,albumname);
+
+    }
+
 }

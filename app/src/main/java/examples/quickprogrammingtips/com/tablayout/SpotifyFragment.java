@@ -246,17 +246,17 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void setSpotifyToken() {
-        boolean refresh=false;
+        boolean refreshBecauseOfTimeout=false;
         if (timeoutSpotifyToken==null)
-            refresh=true;
+            refreshBecauseOfTimeout=true;
         else {
             Date now = new Date();
 
             if (now.getTime() - timeoutSpotifyToken.getTime() >= 59 * 60 * 1000) {
-                refresh=true;
+                refreshBecauseOfTimeout=true;
             }
         }
-        if (refresh||spotifyToken.length()==0) {
+        if (refreshBecauseOfTimeout||spotifyToken.length()==0) {
             Log.v("samba","get new token:");
             String token = getSpotifyAccessToken();
             spotifyToken = token;
@@ -1196,6 +1196,12 @@ public class SpotifyFragment extends Fragment implements
                 String uri = getData().albumIds.get(counter);
                 String prefix="spotify:album:";
                 AddSpotifyItemToPlaylist(prefix, uri);
+            }
+
+            @Override
+            protected void infoAlbum(int position) {
+Log.v("samba","inside spotifyfragment");
+                SpotifyFragment.infoAlbum(getData().albumIds.get(position),getData().albumList.get(position));
             }
         };
         albumAdapter.setDisplayCurrentTrack(false);
@@ -2184,6 +2190,50 @@ Other possible field filters, depending on object types being searched, include 
         return items.length();
     }
 
+    public static void infoAlbum(String albumid, String albumname) {
+        //final String albumid=SpotifyFragment.getData().tracksPlaylist.get(position).album.id;
+        //String albumname=SpotifyFragment.getData().tracksPlaylist.get(position).name;
+        SpotifyFragment.getSpotifyService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
+
+            @Override
+            public void success(Pager<Track> trackPager, Response response) {
+                ArrayList<String> ids = new ArrayList<>();
+                StringBuilder sb = new StringBuilder();
+                sb.append("Album:"+albumname+ "\n");
+
+                for (Track t : trackPager.items) {
+
+                    try {
+                        Log.v("samba","get album-track:"+t.id);
+                        sb.append(String.format("%s-%s(%s)\n",t.track_number,t.name,Mp3File.niceTime((int) (t.duration_ms/1000))));
+                    } catch (Exception e) {
+                        Log.v("samba", Log.getStackTraceString(e));
+                    }
+
+                }
+                String s=sb.toString();
+                Log.v("samba","string:"+s);
+                new AlertDialog.Builder(MainActivity.getInstance())
+                        .setTitle(albumname)
+                        .setMessage(s)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        //.setPositiveButton(android.R.string.yes, (dialog, whichButton) ->
+                        //        addSpotifyAlbumToPlaylist(albumid, albumname, getThis1, display))
+                        .setNegativeButton(android.R.string.no, (dialog, whichButton) ->
+                        {}).show();
+
+
+
+            }
+
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+    }
+
     public static class getEntirePlaylistFromSpotify {
         String playlistid;
         Activity getThis;
@@ -2395,7 +2445,7 @@ Other possible field filters, depending on object types being searched, include 
 
     }
 
-    private static SpotifyService getSpotifyService() {
+    public static SpotifyService getSpotifyService() {
         SpotifyApi api=new SpotifyApi();
         api.setAccessToken(spotifyToken);
         return api.getService();

@@ -207,6 +207,10 @@ public class NewAlbumsActivity extends Activity  {
 
                     } else if (item.getTitle().toString().equals("add album")) {
                         AddAlbumToPlaylist(position);
+                    } else if (item.getTitle().toString().equals("info album")) {
+                        String[] ids=items.get(position).url.split((":"));
+                        Log.v("samba","url:"+items.get(position).url);
+                        SpotifyFragment.infoAlbum(ids[ids.length-1],items.get(position).album);
                     } else if (item.getTitle().toString().equals("large image")) {
                         MainActivity.displayLargeImage(getThis, p.getImage());
 
@@ -229,6 +233,7 @@ public class NewAlbumsActivity extends Activity  {
                 menu.getMenu().add("wikipedia");
                 menu.getMenu().add("recommendation");
                 menu.getMenu().add("large image");
+                menu.getMenu().add("info album");
                 menu.getMenu().add("finish");
                 menu.show();
             });

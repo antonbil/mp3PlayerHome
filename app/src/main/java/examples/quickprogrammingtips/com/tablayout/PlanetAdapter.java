@@ -258,6 +258,10 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                         //tracksPlaylist.get(position).url
                         addAlbumToFavoritesAlbum(position);
                         break;
+                    case "info album":
+                        Log.v("samba","id:"+position);
+                        infoAlbum(position);
+                        break;
                 }
 
                 return true;
@@ -266,6 +270,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
             menu.getMenu().add("replace and play");//submenu
             menu.getMenu().add("add and play");//submenu
             menu.getMenu().add("add");//submenu
+            menu.getMenu().add("info album");//submenu
             menu.getMenu().add("add album to favorites");//submenu
             menu.getMenu().add("wikipedia artist");//submenu
             menu.getMenu().add("recommendation");
@@ -274,6 +279,9 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
         }
         menu.show();
     }
+
+    protected abstract void infoAlbum(int position);
+
     void setDisplayCurrentTrack(boolean displayCurrentTrack) {
         this.displayCurrentTrack = displayCurrentTrack;
     }
