@@ -1200,8 +1200,7 @@ public class SpotifyFragment extends Fragment implements
 
             @Override
             protected void infoAlbum(int position) {
-Log.v("samba","inside spotifyfragment");
-                SpotifyFragment.infoAlbum(getData().albumIds.get(position),getData().albumList.get(position), MainActivity.getInstance());
+                SpotifyFragment.infoAlbum(getData().albumIds.get(position),getData().albumList.get(position), "", MainActivity.getInstance());
             }
         };
         albumAdapter.setDisplayCurrentTrack(false);
@@ -2190,37 +2189,65 @@ Other possible field filters, depending on object types being searched, include 
         return items.length();
     }
 
-    public static void infoAlbum(String albumid, String albumname, Activity getThis) {
+    public static void infoAlbum(String albumid, String albumname, String image, Activity getThis) {
         //final String albumid=SpotifyFragment.getData().tracksPlaylist.get(position).album.id;
         //String albumname=SpotifyFragment.getData().tracksPlaylist.get(position).name;
         SpotifyFragment.getSpotifyService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
 
             @Override
             public void success(Pager<Track> trackPager, Response response) {
-                ArrayList<String> ids = new ArrayList<>();
-                StringBuilder sb = new StringBuilder();
-                sb.append("Album:"+albumname+ "\n");
 
-                for (Track t : trackPager.items) {
+                displayList(new FillListviewWithValues() {
 
-                    try {
-                        Log.v("samba","get album-track:"+t.id);
-                        sb.append(String.format("%s-%s(%s)\n",t.track_number,t.name,Mp3File.niceTime((int) (t.duration_ms/1000))));
-                    } catch (Exception e) {
-                        Log.v("samba", Log.getStackTraceString(e));
+                    @Override
+                    public void generateList(ArrayList<NewAlbum> newAlbums) {
+                        ArrayList<String> ids = new ArrayList<>();
+                        boolean first=true;
+
+                        for (Track t : trackPager.items) {
+
+                            try {
+                                Log.v("samba","get album-track:"+t.id);
+                                /*final Image im=new Image();
+                                im.url="";
+                                new DownLoadImageUrlTask() {
+                                    @Override
+                                    public void setUrl(String logo) {
+                                        //Log.v("samba","logo:"+logo+image);
+                                        im.url=logo;
+                                    }
+                                }.execute(albumid);*/
+                                Log.v("samba","logo:"+image);
+                                String image1=null;
+                                String album=String.format("%s-%s",t.track_number,t.name);
+                                if (first){
+                                    image1=image;
+                                    album=album+String.format("(%s)",albumname);
+                                }
+                                first=false;
+                                newAlbums.add(new NewAlbum(t.uri, album,String.format("%s",Mp3File.niceTime((int) (t.duration_ms/1000)), image1)));
+
+                                //sb.append(String.format("%s-%s(%s)\n",t.track_number,t.name,Mp3File.niceTime((int) (t.duration_ms/1000))));
+                            } catch (Exception e) {
+                                Log.v("samba", Log.getStackTraceString(e));
+                            }
+
+                        }
+
+                    }
+                    @Override
+                    public boolean processAlbum(NewAlbum category) {
+                        String[] l=category.url.split(":");
+                        String uri=l[l.length-1];
+                        String prefix=category.url.replace(uri,"");
+                        AddSpotifyItemToPlaylist(prefix, uri);
+                        //getPlaylists("https://api.spotify.com/v1/browse/categories/%s/playlists", true, new ArrayList<>(), category.url);
+                        return true;
                     }
 
-                }
-                String s=sb.toString();
-                Log.v("samba","string:"+s);
-                new AlertDialog.Builder(getThis)
-                        .setTitle(albumname)
-                        .setMessage(s)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        //.setPositiveButton(android.R.string.yes, (dialog, whichButton) ->
-                        //        addSpotifyAlbumToPlaylist(albumid, albumname, getThis1, display))
-                        .setNegativeButton(android.R.string.no, (dialog, whichButton) ->
-                        {}).show();
+
+                });
+
 
 
 

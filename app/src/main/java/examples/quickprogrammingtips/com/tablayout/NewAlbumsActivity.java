@@ -210,7 +210,7 @@ public class NewAlbumsActivity extends Activity  {
                     } else if (item.getTitle().toString().equals("info album")) {
                         String[] ids=items.get(position).url.split((":"));
                         Log.v("samba","url:"+items.get(position).url);
-                        SpotifyFragment.infoAlbum(ids[ids.length-1],items.get(position).album,getThis);
+                        SpotifyFragment.infoAlbum(ids[ids.length-1],items.get(position).album,items.get(position).getImage(),getThis);
                     } else if (item.getTitle().toString().equals("large image")) {
                         MainActivity.displayLargeImage(getThis, p.getImage());
 
