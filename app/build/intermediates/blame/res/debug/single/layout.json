@@ -8,12 +8,12 @@
         "source": "/home/anton/tablayout/app/src/main/res/layout/spotify_header.xml"
     },
     {
-        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/layout/abc_search_view.xml",
-        "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/layout/abc_search_view.xml"
-    },
-    {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/layout/abc_screen_content_include.xml",
         "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/layout/abc_screen_content_include.xml"
+    },
+    {
+        "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/layout/abc_search_view.xml",
+        "source": "/home/anton/.android/build-cache/3a66e6ee4b10f9b106fbfe14033f697633eba24a/output/res/layout/abc_search_view.xml"
     },
     {
         "merged": "/home/anton/tablayout/app/build/intermediates/res/merged/debug/layout/item_newalbum.xml",

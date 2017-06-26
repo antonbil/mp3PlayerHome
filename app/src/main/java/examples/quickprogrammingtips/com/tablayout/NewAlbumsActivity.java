@@ -176,12 +176,14 @@ public class NewAlbumsActivity extends Activity  {
             if (tt2 != null) {
                 tt2.setText(p.album);
             }
-            if (p.getImage().length() > 0) {
+            if (p.getImage()!=null){
+                if (p.getImage().length() > 0) {
 
-                MainActivity.getInstance().imageLoader.DisplayImage(p.getImage(), image, bitmap -> {
-                });
+                    MainActivity.getInstance().imageLoader.DisplayImage(p.getImage(), image, bitmap -> {
+                    });
 
-            }
+                }else image.setVisibility(View.GONE);
+            }else image.setVisibility(View.GONE);
 
             rowView.setOnClickListener(v -> processAlbum(items.get(position)));
             rowView.setOnLongClickListener(v -> {
@@ -208,9 +210,9 @@ public class NewAlbumsActivity extends Activity  {
                     } else if (item.getTitle().toString().equals("add album")) {
                         AddAlbumToPlaylist(position);
                     } else if (item.getTitle().toString().equals("info album")) {
-                        String[] ids=items.get(position).url.split((":"));
-                        Log.v("samba","url:"+items.get(position).url);
-                        SpotifyFragment.infoAlbum(ids[ids.length-1],items.get(position).album,items.get(position).getImage(),getThis);
+                        ArrayList<NewAlbum> myItems = items;
+                        Activity instance = getThis;
+                        SpotifyFragment.infoAlbum(position, myItems, instance);
                     } else if (item.getTitle().toString().equals("large image")) {
                         MainActivity.displayLargeImage(getThis, p.getImage());
 
@@ -283,6 +285,7 @@ public class NewAlbumsActivity extends Activity  {
              NewAlbumsActivity.this.AddAlbumToPlaylist(uri);
          }
      }
+
 
     public void AddAlbumToPlaylist(String uri) {
         String prefix=getRightPrefix(uri);

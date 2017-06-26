@@ -2188,6 +2188,16 @@ Other possible field filters, depending on object types being searched, include 
         }
         return items.length();
     }
+    public static void infoAlbum(int position, ArrayList<NewAlbum> myItems, Activity instance) {
+        String albumid= getData().tracksPlaylist.get(position).album.id;
+        String artist = getData().tracksPlaylist.get(position).artists.get(0).name;
+        String albumname= artist +"-"+getData().tracksPlaylist.get(position).name;
+
+        String url = getData().tracksPlaylist.get(position).album.images.get(0).url;
+        //DebugLog.log("ids:"+artist+url);
+        String[] ids=myItems.get(position).url.split((":"));
+        infoAlbum(ids[ids.length-1],albumname,url,instance);
+    }
 
     public static void infoAlbum(String albumid, String albumname, String image, Activity getThis) {
         //final String albumid=SpotifyFragment.getData().tracksPlaylist.get(position).album.id;
