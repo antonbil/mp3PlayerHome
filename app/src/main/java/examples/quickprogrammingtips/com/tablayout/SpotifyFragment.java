@@ -2194,7 +2194,7 @@ Other possible field filters, depending on object types being searched, include 
         String albumname= artist +"-"+getData().tracksPlaylist.get(position).name;
 
         String url = getData().tracksPlaylist.get(position).album.images.get(0).url;
-        //DebugLog.log("ids:"+artist+url);
+        DebugLog.log("ids:"+artist+url);
         String[] ids=myItems.get(position).url.split((":"));
         infoAlbum(ids[ids.length-1],albumname,url,instance);
     }
@@ -2235,7 +2235,7 @@ Other possible field filters, depending on object types being searched, include 
                                     album=album+String.format("(%s)",albumname);
                                 }
                                 first=false;
-                                newAlbums.add(new NewAlbum(t.uri, album,String.format("%s",Mp3File.niceTime((int) (t.duration_ms/1000)), image1)));
+                                newAlbums.add(new NewAlbum(t.uri, album,String.format("%s",Mp3File.niceTime((int) (t.duration_ms/1000))), image1));
 
                                 //sb.append(String.format("%s-%s(%s)\n",t.track_number,t.name,Mp3File.niceTime((int) (t.duration_ms/1000))));
                             } catch (Exception e) {

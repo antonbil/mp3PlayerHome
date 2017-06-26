@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Mon Jun 26 21:25:29 CEST 2017
+#Mon Jun 26 21:41:47 CEST 2017
 210.set=ANDROID_RESOURCE
 282.file=/home/anton/tablayout/app/build/intermediates/res/resources-debug.ap_/res/color/abc_primary_text_disable_only_material_light.xml
 14.set=ANDROID_RESOURCE

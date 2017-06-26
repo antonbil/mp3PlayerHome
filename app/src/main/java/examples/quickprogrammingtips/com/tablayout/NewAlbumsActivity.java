@@ -212,7 +212,9 @@ public class NewAlbumsActivity extends Activity  {
                     } else if (item.getTitle().toString().equals("info album")) {
                         ArrayList<NewAlbum> myItems = items;
                         Activity instance = getThis;
-                        SpotifyFragment.infoAlbum(position, myItems, instance);
+                        //SpotifyFragment.infoAlbum(position, myItems, instance);
+                        String[] url = items.get(position).url.split(":");
+                        SpotifyFragment.infoAlbum(url[2], items.get(position).artist+"-"+items.get(position).album, items.get(position).getImage(), instance);
                     } else if (item.getTitle().toString().equals("large image")) {
                         MainActivity.displayLargeImage(getThis, p.getImage());
 
