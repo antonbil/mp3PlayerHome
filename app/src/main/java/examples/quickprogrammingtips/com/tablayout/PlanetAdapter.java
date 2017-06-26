@@ -260,7 +260,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
                         break;
                     case "info album":
                         Log.v("samba","id:"+position);
-                        infoAlbum(position);
+                        infoAlbum(position,imageUrl);
                         break;
                 }
 
@@ -280,7 +280,7 @@ abstract class PlanetAdapter extends ArrayAdapter<String> {
         menu.show();
     }
 
-    protected abstract void infoAlbum(int position);
+    protected abstract void infoAlbum(int position, String imageUrl);
 
     void setDisplayCurrentTrack(boolean displayCurrentTrack) {
         this.displayCurrentTrack = displayCurrentTrack;

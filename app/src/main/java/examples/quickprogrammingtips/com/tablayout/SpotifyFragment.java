@@ -1199,8 +1199,8 @@ public class SpotifyFragment extends Fragment implements
             }
 
             @Override
-            protected void infoAlbum(int position) {
-                SpotifyFragment.infoAlbum(getData().albumIds.get(position),getData().albumList.get(position), "", MainActivity.getInstance());
+            protected void infoAlbum(int position, String imageUrl) {
+                SpotifyFragment.infoAlbum(getData().albumIds.get(position),getData().albumList.get(position), imageUrl, MainActivity.getInstance());
             }
         };
         albumAdapter.setDisplayCurrentTrack(false);
@@ -2194,7 +2194,7 @@ Other possible field filters, depending on object types being searched, include 
         String albumname= artist +"-"+getData().tracksPlaylist.get(position).name;
 
         String url = getData().tracksPlaylist.get(position).album.images.get(0).url;
-        DebugLog.log("ids:"+artist+url);
+        //DebugLog.log("ids:"+artist+url);
         String[] ids=myItems.get(position).url.split((":"));
         infoAlbum(ids[ids.length-1],albumname,url,instance);
     }
