@@ -214,7 +214,9 @@ public class NewAlbumsActivity extends Activity  {
                         Activity instance = getThis;
                         //SpotifyFragment.infoAlbum(position, myItems, instance);
                         String[] url = items.get(position).url.split(":");
-                        SpotifyFragment.infoAlbum(url[2], items.get(position).artist+"-"+items.get(position).album, items.get(position).getImage(), instance);
+                        String albumname = items.get(position).artist + "-" + items.get(position).album;
+                        DebugLog.log("newAlbums:");
+                        SpotifyFragment.infoAlbum(url[url.length-1], albumname, items.get(position).getImage(), MainActivity.getInstance());
                     } else if (item.getTitle().toString().equals("large image")) {
                         MainActivity.displayLargeImage(getThis, p.getImage());
 

@@ -199,6 +199,11 @@ class SpotifyPlaylistAdapter extends PlanetAdapter {
     protected void infoAlbum(int position, String imageUrl) {
         String albumid=SpotifyFragment.getData().tracksPlaylist.get(position).album.id;
         String albumname=SpotifyFragment.getData().tracksPlaylist.get(position).name;
+        try {
+            String artist = SpotifyFragment.getData().tracksPlaylist.get(position).artists.get(0).name;
+            DebugLog.log("artist:" + artist);
+        }
+        catch (Exception e){}
         String url = SpotifyFragment.getData().tracksPlaylist.get(position).album.images.get(0).url;
 
         SpotifyFragment.infoAlbum(albumid,albumname, url, MainActivity.getInstance());

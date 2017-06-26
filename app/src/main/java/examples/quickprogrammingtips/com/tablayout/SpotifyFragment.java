@@ -2217,7 +2217,7 @@ Other possible field filters, depending on object types being searched, include 
                         for (Track t : trackPager.items) {
 
                             try {
-                                Log.v("samba","get album-track:"+t.id);
+                                //Log.v("samba","get album-track:"+t.id);
                                 /*final Image im=new Image();
                                 im.url="";
                                 new DownLoadImageUrlTask() {
@@ -2227,7 +2227,7 @@ Other possible field filters, depending on object types being searched, include 
                                         im.url=logo;
                                     }
                                 }.execute(albumid);*/
-                                Log.v("samba","logo:"+image);
+                                //Log.v("samba","logo:"+image);
                                 String image1=null;
                                 String album=String.format("%s-%s",t.track_number,t.name);
                                 if (first){
