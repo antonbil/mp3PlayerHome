@@ -3,16 +3,22 @@ package examples.quickprogrammingtips.com.tablayout;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -150,11 +156,19 @@ public class NewAlbumsActivity extends Activity  {
     public class ListAdapter extends ArrayAdapter<NewAlbum> {
         private Context context;
         ArrayList<NewAlbum> items;
+        private int extrawidth=0;
 
         ListAdapter(Context context, int resource, ArrayList<NewAlbum> items) {
             super(context, resource, items);
             this.items=items;
             this.context = context;
+        }
+
+        ListAdapter(Context context, int resource, ArrayList<NewAlbum> items, int extrawidth) {
+            super(context, resource, items);
+            this.items=items;
+            this.context = context;
+            this.extrawidth=extrawidth;
         }
 
         @NonNull
@@ -173,8 +187,20 @@ public class NewAlbumsActivity extends Activity  {
                 tt1.setText(p.artist);
             }
 
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int widthscreen = size.x;
             if (tt2 != null) {
                 tt2.setText(p.album);
+                Rect bounds = new Rect();
+                Paint textPaint = tt2.getPaint();
+                textPaint.getTextBounds(p.album, 0, p.album.length(), bounds);
+                int height = bounds.height();
+                int width = bounds.width();
+
+                if (width>widthscreen/2)width=widthscreen/2;
+                extrawidth = widthscreen-width-180;
             }
             if (p.getImage()!=null){
                 if (p.getImage().length() > 0) {
@@ -182,8 +208,11 @@ public class NewAlbumsActivity extends Activity  {
                     MainActivity.getInstance().imageLoader.DisplayImage(p.getImage(), image, bitmap -> {
                     });
 
+                    extrawidth = extrawidth-120;
                 }else image.setVisibility(View.GONE);
             }else image.setVisibility(View.GONE);
+            ViewGroup.LayoutParams layPar=tt1.getLayoutParams();
+            tt1.setLayoutParams(new LinearLayout.LayoutParams(extrawidth,LinearLayoutCompat.LayoutParams.WRAP_CONTENT));
 
             rowView.setOnClickListener(v -> processAlbum(items.get(position)));
             rowView.setOnLongClickListener(v -> {
