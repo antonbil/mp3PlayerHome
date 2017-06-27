@@ -252,7 +252,7 @@ public class SpotifyFragment extends Fragment implements
         else {
             Date now = new Date();
 
-            if (now.getTime() - timeoutSpotifyToken.getTime() >= 59 * 60 * 1000) {
+            if (now.getTime() - timeoutSpotifyToken.getTime() >= 29 * 60 * 1000) {
                 refreshBecauseOfTimeout=true;
             }
         }
@@ -2484,6 +2484,7 @@ Other possible field filters, depending on object types being searched, include 
 
     public static SpotifyService getSpotifyService() {
         SpotifyApi api=new SpotifyApi();
+        setSpotifyToken();
         api.setAccessToken(spotifyToken);
         return api.getService();
     }
