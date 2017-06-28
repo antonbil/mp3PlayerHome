@@ -218,10 +218,12 @@ public class NewAlbumsActivity extends Activity  {
 
             rowView.setOnClickListener(v -> processAlbum(items.get(position)));
             rowView.setOnLongClickListener(v -> {
-                        PopupMenu menu = new PopupMenu(v.getContext(), v);
+                        if (!isTrack(position)) {
+                            PopupMenu menu = new PopupMenu(v.getContext(), v);
 
-                        basicMenu(position, menu);
-                        menu.show();
+                            basicMenu(position, menu);
+                            menu.show();
+                        }
                         return true;
                     }
             );
