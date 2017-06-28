@@ -30,6 +30,8 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import kaaes.spotify.webapi.android.models.Track;
+
 public class NewAlbumsActivity extends Activity  {
     ArrayList<NewAlbum> newAlbums=new ArrayList<>();
     static Activity getThis;
@@ -228,50 +230,73 @@ public class NewAlbumsActivity extends Activity  {
         }
 
         public void createPopupMenuForClickOnImage(int position, NewAlbum p, ImageView image, boolean playlist) {
+            boolean finalTrack =  isTrack(position);
             image.setOnClickListener(v -> {
                 PopupMenu menu = new PopupMenu(v.getContext(), v);
 
                 menu.setOnMenuItemClickListener(item -> {
-
+                    String albumname = items.get(position).album;
+                    String uri = items.get(position).url;
+                    String[] url = uri.split(":");
+                    String albumid=url[url.length-1];
+                    String artist = items.get(position).artist;
+                    if (isTrack(position)){
+                        String[]urilist=items.get(position).url.split(":");
+                        Track a = SpotifyFragment.getSpotifyService().getTrack(urilist[urilist.length-1]);
+                        albumname=a.album.name;
+                        albumid=a.album.id;
+                        artist=a.artists.get(0).name;
+                        DebugLog.log("album:"+artist+albumid);
+                        uri = "spotify:album:"+albumid;
+                    }
                     if (item.getTitle().toString().equals("add album to favorites")) {
                         MainActivity.getInstance().fillListviewWithValues.addToFavorites(items.get(position));
 
                     } else if (item.getTitle().toString().equals("add album")) {
-                        AddAlbumToPlaylist(position);
-                    } else if (item.getTitle().toString().equals("info album")) {
-                        ArrayList<NewAlbum> myItems = items;
-                        Activity instance = getThis;
-                        //SpotifyFragment.infoAlbum(position, myItems, instance);
-                        String[] url = items.get(position).url.split(":");
-                        String albumname = items.get(position).artist + "-" + items.get(position).album;
-                        DebugLog.log("newAlbums:");
-                        SpotifyFragment.infoAlbum(url[url.length-1], albumname, items.get(position).getImage(), MainActivity.getInstance());
-                    } else if (item.getTitle().toString().equals("large image")) {
-                        MainActivity.displayLargeImage(getThis, p.getImage());
+                        NewAlbumsActivity.this.AddAlbumToPlaylist(uri);
+                    } else {
+                        if (item.getTitle().toString().equals("info album")) {
+                            String albumname1 = artist + "-" + albumname;
+                            SpotifyFragment.infoAlbum(albumid, albumname1, items.get(position).getImage(), MainActivity.getInstance());
+                        } else if (item.getTitle().toString().equals("large image")) {
+                            MainActivity.displayLargeImage(getThis, p.getImage());
 
-                    } else if (item.getTitle().toString().equals("play")) {
-                        SpotifyFragment.showPlayMenu(getThis);
-                    } else if (item.getTitle().toString().equals("wikipedia")) {
-                        MainActivity.startWikipediaPage(items.get(position).artist);
-                    } else if (item.getTitle().toString().equals("finish")) {
-                        SpotifyFragment.categoriesMenu.dismiss();
-                        finish();
+                        } else if (item.getTitle().toString().equals("play")) {
+                            SpotifyFragment.showPlayMenu(getThis);
+                        } else if (item.getTitle().toString().equals("wikipedia")) {
+                            MainActivity.startWikipediaPage(artist);
+                        }    else
+                            if (item.getTitle().toString().equals("recommendation")) {
+                                MainActivity.getRecommendation(artist);
+                            }
+                            else if (item.getTitle().toString().equals("finish")) {
+                            SpotifyFragment.categoriesMenu.dismiss();
+                            finish();
+                        }
                     }
                     return true;
                 });
 
-                if (!playlist) {
+                if (!playlist/*&&!finalTrack*/) {
                     menu.getMenu().add("add album");
-                    menu.getMenu().add("add album to favorites");
+                    if (!finalTrack)menu.getMenu().add("add album to favorites");
                 }
-                menu.getMenu().add("info album");
+                if (!finalTrack)menu.getMenu().add("info album");
                 menu.getMenu().add("play");//
-                menu.getMenu().add("wikipedia");
-                menu.getMenu().add("recommendation");
+                /*if (!finalTrack)*/menu.getMenu().add("wikipedia");
+                if (!finalTrack)menu.getMenu().add("recommendation");
                 menu.getMenu().add("large image");
                 menu.getMenu().add("finish");
                 menu.show();
             });
+        }
+
+        private boolean isTrack(int position) {
+            String uri = items.get(position).url;
+            boolean track=false;
+            DebugLog.log("uri:"+uri);
+            if (uri.startsWith("spotify:track"))track=true;
+            return track;
         }
 
         private PopupMenu basicMenu(int position, PopupMenu menu) {
@@ -315,6 +340,15 @@ public class NewAlbumsActivity extends Activity  {
 
          void AddAlbumToPlaylist(int position) {//spotify:user:
              String uri = items.get(position).url;
+             if (isTrack(position)){
+                 String[]urilist=items.get(position).url.split(":");
+                 Track a = SpotifyFragment.getSpotifyService().getTrack(urilist[2]);
+                 String album=a.album.id;
+                 String artist=a.artists.get(0).name;
+                 DebugLog.log("album:"+artist+album);
+                 uri = "spotify:album:"+album;
+             }else {
+             }
              NewAlbumsActivity.this.AddAlbumToPlaylist(uri);
          }
      }
@@ -326,14 +360,14 @@ public class NewAlbumsActivity extends Activity  {
         SpotifyFragment.AddSpotifyItemToPlaylist(prefix, uri);
     }
 
-    private String getRightSpotifyUri(String s){
+    private static String getRightSpotifyUri(String s){
         int p=s.indexOf("playlist");
         if (p>0)
             return s.substring(p+9);
         else
             return s.replace("spotify:album:", "").replace("spotify:user:", "");
     }
-    private String getRightPrefix(String s){
+    private static String getRightPrefix(String s){
         int p=s.indexOf("playlist");
         if (p>=0)return s.substring(0,p+9);
         else return "spotify:album:";
