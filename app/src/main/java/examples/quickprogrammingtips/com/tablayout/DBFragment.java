@@ -69,8 +69,7 @@ public class DBFragment extends ListParentFragment implements MPCDatabaseListene
         currentId=id;
         //if path is filename
         if (path.endsWith(".mp3")){
-            String[] pathLines=path.split("/");
-            String f=pathLines[pathLines.length-1];
+            String f=SpotifyFragment.getLastItem(path,"/");
             path=path.substring(0,path.length()-f.length()-1);
         }
         displayContents(path);

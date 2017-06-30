@@ -1115,7 +1115,7 @@ public class SpotifyFragment extends Fragment implements
 
             @Override
             public void recommendation(int counter) {
-                String s = getData().tracksPlaylist.get(counter).artists.get(0).name;
+                String s = getArtistFromPlaylistItem(counter);
                 MainActivity.getRecommendation(s);
             }
             @Override
@@ -1131,8 +1131,8 @@ public class SpotifyFragment extends Fragment implements
 
             @Override
             public void displayArtistWikipedia(int counter) {
-                    String s = getData().tracksPlaylist.get(counter).artists.get(0).name;
-                    MainActivity.startWikipediaPage(s);
+                String s = getArtistFromPlaylistItem(counter);
+                MainActivity.startWikipediaPage(s);
             }
 
             @Override
@@ -1205,6 +1205,10 @@ public class SpotifyFragment extends Fragment implements
         };
         albumAdapter.setDisplayCurrentTrack(false);
         return albumAdapter;
+    }
+
+    private static String getArtistFromPlaylistItem(int counter) {
+        return getData().tracksPlaylist.get(counter).artists.get(0).name;
     }
 
     public boolean playMpdAlbum(String s, boolean clear, boolean ret, boolean play) {
@@ -1409,16 +1413,16 @@ public class SpotifyFragment extends Fragment implements
     public static void addAlbumStatic(int counter) {
         artistName = getData().tracksPlaylist.get(counter).artists.get(0).name;
         try {
-            getAlbumtracksFromSpotify(getData().tracksPlaylist.get(counter).album.id, getData().tracksPlaylist.get(counter).album.name,activityThis);
+            getAlbumtracksFromSpotify(getTotalAlbumFromPlaylistItem(counter).id, getTotalAlbumFromPlaylistItem(counter).name,activityThis);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void addAlbumToFavoritesTrackwise(int counter) {//
-        String url = Favorite.SPOTIFYALBUM + getData().tracksPlaylist.get(counter).album.id;
-        String name = getData().tracksPlaylist.get(counter).artists.get(0).name;
-        String album = getData().tracksPlaylist.get(counter).album.name;
+        String url = Favorite.SPOTIFYALBUM + getTotalAlbumFromPlaylistItem(counter).id;
+        String name = getArtistFromPlaylistItem(counter);
+        String album = getTotalAlbumFromPlaylistItem(counter).name;
         String description = name + "-" + album;
         String newalbum = Favorite.NEWALBUM;
         newFavorite(url, description, newalbum, getData().albumTracks.get(counter).url);
@@ -1433,9 +1437,9 @@ public class SpotifyFragment extends Fragment implements
     }
 
     public static void removeAlbum(PlanetAdapter albumAdapter, int counter, Activity getThis) {
-        String albumid = getData().tracksPlaylist.get(counter).album.id;
+        String albumid = getTotalAlbumFromPlaylistItem(counter).id;
         for (int i = getData().tracksPlaylist.size() - 1; i >= 0; i--) {
-            if (getData().tracksPlaylist.get(i).album.id.equals(albumid)) removeTrackSpotify(i);
+            if (getTotalAlbumFromPlaylistItem(i).id.equals(albumid)) removeTrackSpotify(i);
         }
         refreshPlaylistFromSpotify(albumAdapter,  getThis);
     }
@@ -1882,19 +1886,17 @@ public class SpotifyFragment extends Fragment implements
     public static void getNewest(String genre){
         /*
         The field filter year can be used with album, artist and track searches to limit the results to a particular year (for example, q=bob%20year:2014) or date range (for example, q=bob%20year:1980-2020).
-
 The field filter tag:new can be used in album searches to retrieve only albums released in the last two weeks. The field filter tag:hipster can be used in album searches to retrieve only albums with the lowest 10% popularity.
-
 Other possible field filters, depending on object types being searched, include genre (applicable to tracks and artists), upc, and isrc. For example, q=lil%20genre:%22southern%20hip%20hop%22&type=artist. Use double quotation marks around the genre keyword string if it contains spaces.
          */
         displayList(new FillListviewWithValues() {
 
             @Override
             public void generateList(ArrayList<NewAlbum> newAlbums) {
-                //curl -X GET "https://api.spotify.com/v1/search?q=%3Aclassical%3A+tag%3Anew%3A&type=album"
-                int start=0;
+                //LIMIT = 50 BY DEFAULT
                 getNextNewest(newAlbums, 0);
                 getNextNewest(newAlbums, 50);
+                getNextNewest(newAlbums, 100);
             }
 
             private void getNextNewest(ArrayList<NewAlbum> newAlbums, int start) {
@@ -1909,7 +1911,6 @@ Other possible field filters, depending on object types being searched, include 
                             String id=o.getString("id");
                             String artist = o.getJSONArray("artists").getJSONObject(0).getString("name");
                             String albumName = o.getString("name");
-                            String uri = o.getString("uri");
                             String imageuri = o.getJSONArray("images").getJSONObject(0).getString("url");
                             newAlbums.add(new NewAlbum(id, artist, String.format("%s",albumName), imageuri));
                         } catch (Exception e) {
@@ -2051,7 +2052,7 @@ Other possible field filters, depending on object types being searched, include 
                 public boolean processAlbum(NewAlbum album){//
                     try{
                         String url = album.url;
-                        Log.v("samba","pl2:"+ url);
+                        //Log.v("samba","pl2:"+ url);
                         addPlaylist(NewAlbumsActivityElectronic.getInstance(), url);
                     } catch (Exception e) {
                     e.printStackTrace();
@@ -2147,8 +2148,7 @@ Other possible field filters, depending on object types being searched, include 
                     "", "Loading, please wait", true);
         }
 
-        int p=id.lastIndexOf(":");
-        id=id.substring(p+1);
+        id=getLastItemBasedOnColon(id);
         ArrayList<String> ids=new ArrayList<>();
         int limit=100;
         int result=100;//to be sure first iteration is done
@@ -2188,20 +2188,16 @@ Other possible field filters, depending on object types being searched, include 
         }
         return items.length();
     }
-    public static void infoAlbum(int position, ArrayList<NewAlbum> myItems, Activity instance) {
-        String albumid= getData().tracksPlaylist.get(position).album.id;
-        String artist = getData().tracksPlaylist.get(position).artists.get(0).name;
-        String albumname= artist +"-"+getData().tracksPlaylist.get(position).name;
 
-        String url = getData().tracksPlaylist.get(position).album.images.get(0).url;
-        //DebugLog.log("ids:"+artist+url);
-        String[] ids=myItems.get(position).url.split((":"));
-        infoAlbum(ids[ids.length-1],albumname,url,instance);
+    private static AlbumSimple getTotalAlbumFromPlaylistItem(int position) {
+        return getData().tracksPlaylist.get(position).album;
+    }
+
+    private static String getAlbumFromPlaylistItem(int position) {
+        return getData().tracksPlaylist.get(position).name;
     }
 
     public static void infoAlbum(String albumid, String albumname, String image, Activity getThis) {
-        //final String albumid=SpotifyFragment.getData().tracksPlaylist.get(position).album.id;
-        //String albumname=SpotifyFragment.getData().tracksPlaylist.get(position).name;
         SpotifyFragment.getSpotifyService().getAlbumTracks(albumid, new Callback<Pager<Track>>() {
 
             @Override
@@ -2211,23 +2207,11 @@ Other possible field filters, depending on object types being searched, include 
 
                     @Override
                     public void generateList(ArrayList<NewAlbum> newAlbums) {
-                        ArrayList<String> ids = new ArrayList<>();
                         boolean first=true;
 
                         for (Track t : trackPager.items) {
 
                             try {
-                                //Log.v("samba","get album-track:"+t.id);
-                                /*final Image im=new Image();
-                                im.url="";
-                                new DownLoadImageUrlTask() {
-                                    @Override
-                                    public void setUrl(String logo) {
-                                        //Log.v("samba","logo:"+logo+image);
-                                        im.url=logo;
-                                    }
-                                }.execute(albumid);*/
-                                //Log.v("samba","logo:"+image);
                                 String image1=null;
                                 String album=String.format("%s-%s",t.track_number,t.name);
                                 if (first){
@@ -2236,8 +2220,6 @@ Other possible field filters, depending on object types being searched, include 
                                 }
                                 first=false;
                                 newAlbums.add(new NewAlbum(t.uri, album,String.format("%s",Mp3File.niceTime((int) (t.duration_ms/1000))), image1));
-
-                                //sb.append(String.format("%s-%s(%s)\n",t.track_number,t.name,Mp3File.niceTime((int) (t.duration_ms/1000))));
                             } catch (Exception e) {
                                 Log.v("samba", Log.getStackTraceString(e));
                             }
@@ -2247,11 +2229,10 @@ Other possible field filters, depending on object types being searched, include 
                     }
                     @Override
                     public boolean processAlbum(NewAlbum category) {
-                        String[] l=category.url.split(":");
-                        String uri=l[l.length-1];
-                        String prefix=category.url.replace(uri,"");
+                        String url = category.url;
+                        String uri = getLastItemBasedOnColon(url);
+                        String prefix= url.replace(uri,"");
                         AddSpotifyItemToPlaylist(prefix, uri);
-                        //getPlaylists("https://api.spotify.com/v1/browse/categories/%s/playlists", true, new ArrayList<>(), category.url);
                         return true;
                     }
 
@@ -2269,6 +2250,16 @@ Other possible field filters, depending on object types being searched, include 
 
             }
         });
+    }
+
+    private static String getLastItemBasedOnColon(String url) {
+        String splitchar = ":";
+        return getLastItem(url, splitchar);
+    }
+
+    public static String getLastItem(String url, String splitchar) {
+        String[] l= url.split(splitchar);
+        return l[l.length-1];
     }
 
     public static class getEntirePlaylistFromSpotify {

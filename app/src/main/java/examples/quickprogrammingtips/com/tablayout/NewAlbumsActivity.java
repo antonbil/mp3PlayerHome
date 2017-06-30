@@ -179,57 +179,54 @@ public class NewAlbumsActivity extends Activity  {
             LayoutInflater inflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View rowView = inflater.inflate(R.layout.item_newalbum, parent, false);
-            NewAlbum p = items.get(position);
+            NewAlbum currentItem = items.get(position);
 
-            TextView tt1 = (TextView) rowView.findViewById(R.id.artistname);
-            TextView tt2 = (TextView) rowView.findViewById(R.id.albumname);
+            TextView textLeft = (TextView) rowView.findViewById(R.id.artistname);
+            TextView textRight = (TextView) rowView.findViewById(R.id.albumname);
             final ImageView image = (ImageView) rowView.findViewById(R.id.spotifylistimageView1);
 
-            if (tt1 != null) {
-                tt1.setText(p.artist);
+            if (textLeft != null) {
+                textLeft.setText(currentItem.artist);
             }
 
             Display display = getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
             int widthscreen = size.x;
-            if (tt2 != null) {
-                tt2.setText(p.album);
+            if (textRight != null) {
+                textRight.setText(currentItem.album);
                 Rect bounds = new Rect();
-                Paint textPaint = tt2.getPaint();
-                textPaint.getTextBounds(p.album, 0, p.album.length(), bounds);
-                int height = bounds.height();
+                Paint textRightPaint = textRight.getPaint();
+                textRightPaint.getTextBounds(currentItem.album, 0, currentItem.album.length(), bounds);
+                //int height = bounds.height();
                 int width = bounds.width();
 
                 if (width>widthscreen/2)width=widthscreen/2;
                 extrawidth = widthscreen-width-180;
             }
-            if (p.getImage()!=null){
-                if (p.getImage().length() > 0) {
+            if (currentItem.getImage()!=null){
+                if (currentItem.getImage().length() > 0) {
 
-                    MainActivity.getInstance().imageLoader.DisplayImage(p.getImage(), image, bitmap -> {
+                    MainActivity.getInstance().imageLoader.DisplayImage(currentItem.getImage(), image, bitmap -> {
                     });
 
                     extrawidth = extrawidth-120;
                 }else image.setVisibility(View.GONE);
             }else image.setVisibility(View.GONE);
-            ViewGroup.LayoutParams layPar=tt1.getLayoutParams();
-            tt1.setLayoutParams(new LinearLayout.LayoutParams(extrawidth,LinearLayoutCompat.LayoutParams.WRAP_CONTENT));
+            //ViewGroup.LayoutParams layPar=textLeft.getLayoutParams();
+            textLeft.setLayoutParams(new LinearLayout.LayoutParams(extrawidth,LinearLayoutCompat.LayoutParams.WRAP_CONTENT));
 
             rowView.setOnClickListener(v -> processAlbum(items.get(position)));
-            boolean playlist = p.url.indexOf("playlist") > 0;
+            boolean isPlaylist = currentItem.url.indexOf("playlist") > 0;
             rowView.setOnLongClickListener(v -> {
-                        //if (!isTrack(position)) {
-                            PopupMenu menu = new PopupMenu(v.getContext(), v);
+                    PopupMenu menu = new PopupMenu(v.getContext(), v);
 
-                            setMenuForContextPopup(position, playlist, menu);
-                            //basicMenu(position, menu);
-                            menu.show();
-                        //}
-                        return true;
-                    }
+                    setMenuForContextPopup(position, isPlaylist, menu);
+                    menu.show();
+                    return true;
+                }
             );
-            createPopupMenuForClickOnImage(position, p, image,playlist);
+            createPopupMenuForClickOnImage(position, currentItem, image,isPlaylist);
             return rowView;
         }
 
@@ -243,7 +240,6 @@ public class NewAlbumsActivity extends Activity  {
         }
 
         private void setMenuForContextPopup(int position, boolean playlist, PopupMenu menu) {
-            boolean finalTrack =  isTrack(position);
             menu.setOnMenuItemClickListener(item -> {
                 NewAlbum itemInCurrentList = items.get(position);
                 String albumname = itemInCurrentList.album;
@@ -257,7 +253,7 @@ public class NewAlbumsActivity extends Activity  {
                     albumname=a.album.name;
                     albumid=a.album.id;
                     artist=a.artists.get(0).name;
-                    DebugLog.log("album:"+artist+albumid);
+                    //DebugLog.log("album:"+artist+albumid);
                     uri = "spotify:album:"+albumid;
                 }
                 if (item.getTitle().toString().equals("add album to favorites")) {
@@ -268,6 +264,7 @@ public class NewAlbumsActivity extends Activity  {
                 } else {
                     if (item.getTitle().toString().equals("info album")) {
                         String albumname1 = artist + "-" + albumname;
+                        //todo: check if getThis can be used for MainActivity.getInstance() in next line
                         SpotifyFragment.infoAlbum(albumid, albumname1, itemInCurrentList.getImage(), MainActivity.getInstance());
                     } else if (item.getTitle().toString().equals("large image")) {
                         MainActivity.displayLargeImage(getThis, itemInCurrentList.getImage());
@@ -288,13 +285,13 @@ public class NewAlbumsActivity extends Activity  {
                 return true;
             });
 
-            if (!playlist/*&&!finalTrack*/) {
+            boolean finalTrack =  isTrack(position);
+            if (!playlist) {
                 menu.getMenu().add("add album");
                 if (!finalTrack)menu.getMenu().add("add album to favorites");
             }
             if (!finalTrack)menu.getMenu().add("info album");
             menu.getMenu().add("play");//
-                /*if (!finalTrack)*/
             menu.getMenu().add("wikipedia");
             if (!finalTrack)menu.getMenu().add("recommendation");
             menu.getMenu().add("large image");
@@ -304,63 +301,11 @@ public class NewAlbumsActivity extends Activity  {
         private boolean isTrack(int position) {
             String uri = items.get(position).url;
             boolean track=false;
-            DebugLog.log("uri:"+uri);
+            //DebugLog.log("uri:"+uri);
             if (uri.startsWith("spotify:track"))track=true;
             return track;
         }
 
-        /*private PopupMenu basicMenu(int position, PopupMenu menu) {
-             menu.setOnMenuItemClickListener(item -> {
-                 if (!MainActivity.getInstance().fillListviewWithValues.processChoice(item.getTitle().toString(),this,items,position))
-                 if (item.getTitle().toString().equals("add album")) {
-                     AddAlbumToPlaylist(position);
-                 }else
-                 if (item.getTitle().toString().equals("add album to favorites")) {
-                     MainActivity.getInstance().fillListviewWithValues.addToFavorites(items.get(position));
-
-                 }else
-                 if (item.getTitle().toString().equals("wikipedia")) {
-                     MainActivity.startWikipediaPage(items.get(position).artist);
-                 }else
-                 if (item.getTitle().toString().equals("recommendation")) {
-                     MainActivity.getRecommendation(items.get(position).artist);
-                 }else
-                 if (item.getTitle().toString().equals("play album on server")) {
-                     new SetAndPlayOnServer(getThis){
-                         @Override
-                         public void atEnd(){
-                             processAlbum(items.get(position));
-                         }
-                     };
-                 }
-                 return true;
-             });
-
-             ArrayList<String>choices= MainActivity.getInstance().fillListviewWithValues.getChoices();
-             for (String s:choices){
-                 menu.getMenu().add(s);
-             }
-             menu.getMenu().add("add album to favorites");
-             menu.getMenu().add("add album");
-             menu.getMenu().add("play album on server");
-             menu.getMenu().add("wikipedia");
-             return menu;
-         }*/
-
-
-         void AddAlbumToPlaylist(int position) {//spotify:user:
-             String uri = items.get(position).url;
-             if (isTrack(position)){
-                 String[]urilist=items.get(position).url.split(":");
-                 Track a = SpotifyFragment.getSpotifyService().getTrack(urilist[2]);
-                 String album=a.album.id;
-                 String artist=a.artists.get(0).name;
-                 DebugLog.log("album:"+artist+album);
-                 uri = "spotify:album:"+album;
-             }else {
-             }
-             NewAlbumsActivity.this.AddAlbumToPlaylist(uri);
-         }
      }
 
 
@@ -384,7 +329,7 @@ public class NewAlbumsActivity extends Activity  {
     }
     public void processAlbum(NewAlbum album){
         String url = album.url;
-        Log.v("samba","process:"+ url);
+        //Log.v("samba","process:"+ url);
         String[] split = url.split(":");
         if (url.startsWith("spotify:user:")&& split.length==3)
             SpotifyFragment.listPlaylists(split[2]);
@@ -393,7 +338,7 @@ public class NewAlbumsActivity extends Activity  {
             //AddAlbumToPlaylist(album.url);
         }
         else {
-            Log.v("samba","no playlist");
+            //Log.v("samba","no playlist");
             SpotifyFragment.artistName = album.artist;
             try {
                 SpotifyFragment.getAlbumtracksFromSpotify(getRightSpotifyUri(url), album.album, this);//todo playlist not playing, because playlist must be part of uri!

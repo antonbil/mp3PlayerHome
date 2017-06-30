@@ -48,8 +48,7 @@ public class MenuAdapter extends ArrayAdapter<String> {
         listItem.setBackgroundColor(Color.WHITE);
         listItem.setTextColor(Color.BLACK);
         //if title is url, display only last part
-        String[] segments = user.split("/");
-        user = segments[segments.length-1];
+        user=SpotifyFragment.getLastItem(user,"/");
 
         // Populate the data into the template view using the data object
         if (user.equals("sep")){
