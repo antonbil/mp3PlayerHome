@@ -2832,6 +2832,7 @@ Other possible field filters, depending on object types being searched, include 
     }
 
     private static String getStringFromUrl(String urlString){
+        setSpotifyToken();
         String response=null;
         String accessToken;
         try {
@@ -2932,7 +2933,8 @@ Other possible field filters, depending on object types being searched, include 
                 }
 
 
-            } else             try {
+            } else
+                try {
                 String urlString = "https://api.spotify.com/v1/albums/" + albumId;
                 String getResult = getStringFromUrl(urlString);
                 imageUrl = new JSONObject(getResult).getJSONArray("images").getJSONObject(0).getString("url");
