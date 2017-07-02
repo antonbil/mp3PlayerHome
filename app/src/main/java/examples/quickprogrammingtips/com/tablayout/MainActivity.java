@@ -96,6 +96,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static final int SPOTIFYPLAYLISTTAB = 6;
     public static final int SELECTTAB = 2;
     public static final int PLAYLISTTAB = 5;
+    public static final String[] MAIN_MENU_STRINGS = {"Settings", "Large Display",
+            "sep", "Search mpd", "Search album", "sep", "Spotify Album Shortcuts",
+            "sep", "Dutch album top 100", "Billboard top albums",
+            "sep", "New albums categories", "New albums", "Classical newest", "sep", "Playlists users", "Get Genre Recommendation",
+            "Mood list", "Recommendation Artist", "sep", "Playlists sites", "sep", "Volume", "Refresh Spotify",
+            "sep", "Close"};
     public static int playingStatus= MPD_PLAYING;
 
     private Logic logic;
@@ -250,12 +256,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
             //DebugLog.log("Text:5");
             ArrayList<String> menuItemsArray = new ArrayList<>(
-                    Arrays.asList("Settings", "Large Display",
-                            "sep", "Search mpd", "Search album", "sep", "Spotify Album Shortcuts",
-                            "sep", "Dutch album top 100", "Billboard top albums",
-                            "sep", "New albums categories","New albums","Classical newest","sep","Playlists users","Get Genre Recommendation",
-                            "Mood list","Recommendation Artist", "sep", "Playlists sites", "sep", "Volume", "Refresh Spotify",
-                            "sep", "Close"));
+                    Arrays.asList(MAIN_MENU_STRINGS));
             leftDrawerPlaylist=new LeftDrawerPlaylist(this, /*this,*/ R.id.newalbumsdrawer_layout, R.id.newalbumsdrawer_list,
                     R.id.newalbumsmpddrawer_list, R.id.fabswapplaylist) {
                 @Override
@@ -269,73 +270,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
                 @Override
                 protected void doMenuAction(int position) {
-                    switch (menuItemsArray.get(position)) {
-                        case "Settings":
-                            doSettings();
-                            break;
-                        case "Large Display":
-                            displayLargeTime(MainActivity.getInstance());
-                            break;
-                        case "Search mpd":
-                            searchTerm();
-                            break;
-                        case "Search album":
-                            doSearchAlbum();
-                            break;
-                        case "New albums categories":
-                            doNewAlbumsCategories();
-                            break;//
-                        case "Dutch album top 100":
-                            doDutchAlbumTop40();
-                            break;
-                        case "Get Genre Recommendation":
-                            getGenreRecommendation();
-                            break;
-                        case "Mood list":
-                            getMoodLists();
-                            break;
-                        //getMoodLists
-
-                        case "Billboard top albums":
-                            doBillboardAlbumTop200();
-                            break;
-//playlistsUsers
-                        case "Playlists users":
-                            playlistsUsers();
-                            break;
-
-                        case "Recommendation Artist":
-                            getRecommendationArtist();
-                            break;
-
-                        case "Classical newest":
-                            getNewest("classical");
-                            break;
-
-                        case "New albums":
-                            newAlbums();
-                            break;
-
-                        case "Spotify Album Shortcuts":
-                            doSpotifyAlbumShortcuts();
-                            break;
-                        case "Volume":
-                            setVolume(getInstance());
-                            break;
-                        case "Playlists sites":
-                            //DebugLog.log("miner");
-                            Intent myIntent = new Intent(getInstance(), PlaylistsSpotifyActivity.class);
-                            getInstance().startActivity(myIntent);
-                            //DebugLog.log("miner");
-
-                            break;
-                        case "Refresh Spotify":
-                            try{SpotifyPlaylistFragment.getInstance().setCurrentTracklist();} catch (Exception e) { /*empty*/       }
-                            break;
-                        case "Close":
-                            getInstance().finish();
-                            break;
-                    }
+                    String s = menuItemsArray.get(position);
+                    doMainMenuAction(s);
                 }
             };
             leftDrawerPlaylist.setMenu(menuItemsArray);
@@ -458,6 +394,77 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
             }
 
         }   catch (Exception e){Log.v("samba",Log.getStackTraceString(e));}
+    }
+
+    private void doMainMenuAction(String s) {
+        switch (s) {
+            case "Settings":
+                doSettings();
+                break;
+            case "Large Display":
+                displayLargeTime(MainActivity.getInstance());
+                break;
+            case "Search mpd":
+                searchTerm();
+                break;
+            case "Search album":
+                doSearchAlbum();
+                break;
+            case "New albums categories":
+                doNewAlbumsCategories();
+                break;//
+            case "Dutch album top 100":
+                doDutchAlbumTop40();
+                break;
+            case "Get Genre Recommendation":
+                getGenreRecommendation();
+                break;
+            case "Mood list":
+                getMoodLists();
+                break;
+            //getMoodLists
+
+            case "Billboard top albums":
+                doBillboardAlbumTop200();
+                break;
+//playlistsUsers
+            case "Playlists users":
+                playlistsUsers();
+                break;
+
+            case "Recommendation Artist":
+                getRecommendationArtist();
+                break;
+
+            case "Classical newest":
+                getNewest("classical");
+                break;
+
+            case "New albums":
+                newAlbums();
+                break;
+
+            case "Spotify Album Shortcuts":
+                doSpotifyAlbumShortcuts();
+                break;
+            case "Volume":
+                setVolume(getInstance());
+                break;
+            case "Playlists sites":
+                //DebugLog.log("miner");
+                Intent myIntent = new Intent(getInstance(), PlaylistsSpotifyActivity.class);
+                getInstance().startActivity(myIntent);
+                //DebugLog.log("miner");
+
+                break;
+            case "Refresh Spotify":
+                try{
+                    SpotifyPlaylistFragment.getInstance().setCurrentTracklist();} catch (Exception e) { /*empty*/       }
+                break;
+            case "Close":
+                getInstance().finish();
+                break;
+        }
     }
 
 
@@ -647,6 +654,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        for (int i = 0; i<MAIN_MENU_STRINGS.length; i++) {
+            String mainMenuString = MAIN_MENU_STRINGS[i];
+            if (mainMenuString!="sep")
+                menu.add(0, i, 0, mainMenuString).setShortcut('0', mainMenuString.charAt(0));
+        }
+
         return true;
     }
 
@@ -657,8 +670,8 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem checkable = menu.findItem(R.id.display_footer);
-        checkable.setChecked(leftDrawerPlaylist.footerVisible);
+        //MenuItem checkable = menu.findItem(R.id.display_footer);
+        //checkable.setChecked(leftDrawerPlaylist.footerVisible);
 
         return true;
     }
@@ -688,50 +701,11 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a logic activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            doSettings();
-            return true;
-        }
-        if (id == R.id.set_volume) {
-            setVolume(getInstance());
-        }
-        if (id == R.id.new_albums_categories) {
-            doNewAlbumsCategories();
-            return true;
-        }
-        if (id == R.id.dutch_album_top_100) {
-            doDutchAlbumTop40();
-            return true;
-        }
-        if (id == R.id.spotify_album_shortcuts) {
-            doSpotifyAlbumShortcuts();
-            return true;
-        }
-        if (id == R.id.search_album) {
-            doSearchAlbum();
-            return true;
-        }
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.display_footer) {
-            doDisplayFooter(item);
-            return true;
-        }
-        if ((id == R.id.search_option)) {//playlists_option
-            searchTerm();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
-    public void doDisplayFooter(MenuItem item) {
-        boolean isChecked = !item.isChecked();
-        item.setChecked(isChecked);
-        leftDrawerPlaylist.footerVisible=leftDrawerPlaylist.setFooterVisibility(leftDrawerPlaylist.footerVisible);
+        String s = item.getTitle().toString();
+        doMainMenuAction(s);
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void doSearchAlbum() {
