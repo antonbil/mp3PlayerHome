@@ -35,6 +35,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -96,12 +97,12 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static final int SPOTIFYPLAYLISTTAB = 6;
     public static final int SELECTTAB = 2;
     public static final int PLAYLISTTAB = 5;
-    public static final String[] MAIN_MENU_STRINGS = {"Settings", "Large Display",
-            "sep", "Search mpd", "Search album", "sep", "Spotify Album Shortcuts",
-            "sep", "Dutch album top 100", "Billboard top albums",
-            "sep", "New albums categories", "New albums", "Classical newest", "sep", "Playlists users", "Get Genre Recommendation",
-            "Mood list", "Recommendation Artist", "sep", "Playlists sites", "sep", "Volume", "Refresh Spotify",
-            "sep", "Close"};
+    public static final String[] MAIN_MENU_STRINGS = {"Settings",
+            "sep;Search", "Search mpd", "Search album", "sep;Main", "Spotify Album Shortcuts",
+            "sep;Top charts", "Dutch album top 100", "Billboard top albums",
+            "sep;New", "New albums categories", "New albums", "Classical newest", "sep;Playlists", "Playlists users", "Get Genre Recommendation",
+            "Mood list", "Recommendation Artist", "sep;Main", "Playlists sites", "sep;View", "Large Display", "Volume",
+            "sep;Main", "Refresh Spotify", "Close"};
     public static int playingStatus= MPD_PLAYING;
 
     private Logic logic;
@@ -654,10 +655,26 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        boolean submenu = false;
+        SubMenu item=null;
         for (int i = 0; i<MAIN_MENU_STRINGS.length; i++) {
             String mainMenuString = MAIN_MENU_STRINGS[i];
-            if (mainMenuString!="sep")
-                menu.add(0, i, 0, mainMenuString).setShortcut('0', mainMenuString.charAt(0));
+            if (!mainMenuString.startsWith("sep")) {
+                if (!submenu)
+                    menu.add(0, i, 0, mainMenuString).setShortcut('0', mainMenuString.charAt(0));
+                else
+                    item.add(mainMenuString);
+            }
+            else{
+                String[] split = mainMenuString.split(";");
+                String s= split[1];
+                DebugLog.log("s:"+mainMenuString+":"+s);
+                if (!s.equals("Main")) {
+                    item = menu.addSubMenu(0, i, 0,s);
+                    submenu = true;
+                }else
+                    submenu=false;
+           }
         }
 
         return true;

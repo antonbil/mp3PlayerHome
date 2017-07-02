@@ -51,7 +51,7 @@ public class MenuAdapter extends ArrayAdapter<String> {
         user=SpotifyFragment.getLastItem(user,"/");
 
         // Populate the data into the template view using the data object
-        if (user.equals("sep")){
+        if (user.startsWith("sep")){
             user="";
             listItem.setBackgroundColor(Color.GREEN);
             listItem.setHeight(separatorHeight);

@@ -105,7 +105,7 @@ public abstract class LeftDrawerPlaylist implements  HeaderSongInterface,MpdInte
                                 drawerListRight.performClick();
                                 performClickOnRightDrawer();
                                 shouldClick = false;
-                                if (position>=0 &&(!(getItemsArray().get(position).equals("sep")))&& getItemsArray().get(position).length()>0) {
+                                if (position>=0 &&(!(getItemsArray().get(position).startsWith("sep")))&& getItemsArray().get(position).length()>0) {
                                     //Log.v("samba","close drawers");
                                     //mDrawerLayout.closeDrawers();
                                     //return true;
