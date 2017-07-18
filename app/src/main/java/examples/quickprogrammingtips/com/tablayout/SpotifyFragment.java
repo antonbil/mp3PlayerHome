@@ -1725,6 +1725,7 @@ public class SpotifyFragment extends Fragment implements
 
     public static void billboardAlbumTop200() {
         String url = "http://www.billboard.com/charts/billboard-200";
+        DebugLog.log("billboard:"+url);
         billboardAlbumChart(url);
 
     }
@@ -2087,6 +2088,7 @@ Other possible field filters, depending on object types being searched, include 
                 @Override
                 public void executeUrl(String s){
                     s= s.replace("http://","http://www.billboard.com/charts/");
+                    DebugLog.log("billboard:"+s);
                     billboardAlbumChart(s);
                 }
                 @Override
@@ -2098,16 +2100,22 @@ Other possible field filters, depending on object types being searched, include 
                     } catch (IOException e) {
                         Log.v("samba", Log.getStackTraceString(e));
                     }
+                    DebugLog.log("billboard:"+url);
 
                     Elements trackelements = doc.getElementsByClass("chart-row");
                     int i=0;
                     for (Element element : trackelements) {
                         i++;
+                        String image1="";
                         try {
                             String currentWeek=element.getElementsByClass("chart-row__current-week").get(0).text();
+                            DebugLog.log("currentWeek:"+currentWeek);
                             String albumTitle=element.getElementsByClass("chart-row__song").get(0).text();
+                            DebugLog.log("albumTitle:"+albumTitle);
                             String artistTitle=element.getElementsByClass("chart-row__artist").get(0).text();//data-imagesrc
-                            String image1=element.getElementsByClass("chart-row__image").get(0).attr("data-imagesrc");
+                            DebugLog.log("artistTitle:"+artistTitle);
+                            image1=element.getElementsByClass("chart-row__image").get(0).attr("style");
+                            DebugLog.log("image1:"+image1);
                             String lastweek="";
                             try{
                             lastweek=element.select(".chart-row__last-week>.chart-row__value").first().text();
@@ -2115,14 +2123,23 @@ Other possible field filters, depending on object types being searched, include 
                             Log.v("samba", Log.getStackTraceString(e));
 
                         }
+                            String id="";
+                            String nr="--";
+                        try{
                             String incharts=element.getElementsByClass("chart-row__weeks-on-chart").get(0).getElementsByClass("chart-row__value").get(0).text();
+                            DebugLog.log("incharts:"+incharts);
                             if (image1.length()==0)
                              image1=element.getElementsByClass("chart-row__image").get(0).attr("style").replace("background-image: url(","").replace(")","");
-                            String id=element.attr("data-spotifyid");
+                            id=element.attr("data-spotifyid");
                             if (id.length()==0)continue;
                             //todo: check if id valid spotify-link
-                            String nr=String.format("%s-%s-(%s)-",currentWeek,lastweek,incharts);
+                            nr=String.format("%s-%s-(%s)-",currentWeek,lastweek,incharts);
+                        } catch (Exception e) {
+                            //Log.v("samba", Log.getStackTraceString(e));
 
+                        }
+
+                            DebugLog.log("id:"+id);
                             newAlbums.add(new NewAlbum(id, artistTitle, nr+albumTitle, image1));
                         } catch (Exception e) {
                             Log.v("samba", Log.getStackTraceString(e));

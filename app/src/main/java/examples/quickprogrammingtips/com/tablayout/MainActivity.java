@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements MpdInterface, MPC
     public static final int PLAYLISTTAB = 5;
     public static final String[] MAIN_MENU_STRINGS = {"Settings",
             "sep;Search", "Search mpd", "Search album", "sep;Main", "Spotify Album Shortcuts",
-            "sep;Top charts", "Dutch album top 100", "Billboard top albums",
+            "sep;Main", "Dutch album top 100",
             "sep;New", "New albums categories", "New albums", "Classical newest", "sep;Playlists", "Playlists users", "Get Genre Recommendation",
             "Mood list", "Recommendation Artist", "sep;Main", "Playlists sites", "sep;View", "Large Display", "Volume",
             "sep;Main", "Refresh Spotify", "Close"};
